@@ -53,6 +53,15 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""CameraSprint"",
+                    ""type"": ""Button"",
+                    ""id"": ""4165d590-83fc-42b5-b01f-8ed4529507da"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -176,6 +185,17 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""action"": ""CameraScroll"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6f8afda5-2070-49f7-bede-a86d410060df"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CameraSprint"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -187,6 +207,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         m_InGame_CameraMovement = m_InGame.FindAction("CameraMovement", throwIfNotFound: true);
         m_InGame_CameraRotation = m_InGame.FindAction("CameraRotation", throwIfNotFound: true);
         m_InGame_CameraScroll = m_InGame.FindAction("CameraScroll", throwIfNotFound: true);
+        m_InGame_CameraSprint = m_InGame.FindAction("CameraSprint", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -249,6 +270,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
     private readonly InputAction m_InGame_CameraMovement;
     private readonly InputAction m_InGame_CameraRotation;
     private readonly InputAction m_InGame_CameraScroll;
+    private readonly InputAction m_InGame_CameraSprint;
     public struct InGameActions
     {
         private @Controls m_Wrapper;
@@ -256,6 +278,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         public InputAction @CameraMovement => m_Wrapper.m_InGame_CameraMovement;
         public InputAction @CameraRotation => m_Wrapper.m_InGame_CameraRotation;
         public InputAction @CameraScroll => m_Wrapper.m_InGame_CameraScroll;
+        public InputAction @CameraSprint => m_Wrapper.m_InGame_CameraSprint;
         public InputActionMap Get() { return m_Wrapper.m_InGame; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -274,6 +297,9 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @CameraScroll.started -= m_Wrapper.m_InGameActionsCallbackInterface.OnCameraScroll;
                 @CameraScroll.performed -= m_Wrapper.m_InGameActionsCallbackInterface.OnCameraScroll;
                 @CameraScroll.canceled -= m_Wrapper.m_InGameActionsCallbackInterface.OnCameraScroll;
+                @CameraSprint.started -= m_Wrapper.m_InGameActionsCallbackInterface.OnCameraSprint;
+                @CameraSprint.performed -= m_Wrapper.m_InGameActionsCallbackInterface.OnCameraSprint;
+                @CameraSprint.canceled -= m_Wrapper.m_InGameActionsCallbackInterface.OnCameraSprint;
             }
             m_Wrapper.m_InGameActionsCallbackInterface = instance;
             if (instance != null)
@@ -287,6 +313,9 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @CameraScroll.started += instance.OnCameraScroll;
                 @CameraScroll.performed += instance.OnCameraScroll;
                 @CameraScroll.canceled += instance.OnCameraScroll;
+                @CameraSprint.started += instance.OnCameraSprint;
+                @CameraSprint.performed += instance.OnCameraSprint;
+                @CameraSprint.canceled += instance.OnCameraSprint;
             }
         }
     }
@@ -296,5 +325,6 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         void OnCameraMovement(InputAction.CallbackContext context);
         void OnCameraRotation(InputAction.CallbackContext context);
         void OnCameraScroll(InputAction.CallbackContext context);
+        void OnCameraSprint(InputAction.CallbackContext context);
     }
 }

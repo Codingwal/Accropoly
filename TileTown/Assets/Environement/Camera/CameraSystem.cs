@@ -1,5 +1,6 @@
 using UnityEngine;
 using Cinemachine;
+using System;
 
 public class CameraSystem : MonoBehaviour
 {
@@ -12,6 +13,9 @@ public class CameraSystem : MonoBehaviour
     [SerializeField] private float followOffsetMaxY;
     [SerializeField] private float zoomLerpSpeed;
 
+    [SerializeField] private float sprintSpeedMultiplier;
+    private float currentSpeedMultiplier;
+
     [SerializeField] private CinemachineVirtualCamera cinemachineVirtualCamera;
 
     private Vector3 followOffset;
@@ -22,10 +26,26 @@ public class CameraSystem : MonoBehaviour
     }
     private void FixedUpdate()
     {
+        CheckIfSprinting();
         MoveCamera();
         RotateCamera();
         ZoomCamera();
     }
+
+    private void CheckIfSprinting()
+    {
+        bool isSprinting = InputManager.Instance.inGameActions.CameraSprint.IsPressed();
+
+        if (isSprinting)
+        {
+            currentSpeedMultiplier = sprintSpeedMultiplier;
+        }
+        else
+        {
+            currentSpeedMultiplier = 1;
+        }
+    }
+
     private void MoveCamera()
     {
         // Get the input
@@ -35,7 +55,7 @@ public class CameraSystem : MonoBehaviour
         Vector3 moveDir = transform.forward * moveDirInput.y + transform.right * moveDirInput.x;
 
         // Move the camera
-        transform.position += moveDir * moveSpeed * Time.deltaTime;
+        transform.position += moveDir * moveSpeed * currentSpeedMultiplier * Time.deltaTime;
     }
     private void RotateCamera()
     {
@@ -43,7 +63,7 @@ public class CameraSystem : MonoBehaviour
         float rotateDirInput = InputManager.Instance.inGameActions.CameraRotation.ReadValue<float>();
 
         // Rotate the camera
-        transform.eulerAngles += new Vector3(0, rotateDirInput * rotationSpeed * Time.deltaTime, 0);
+        transform.eulerAngles += new Vector3(0, rotateDirInput * rotationSpeed * currentSpeedMultiplier * Time.deltaTime, 0);
     }
     private void ZoomCamera()
     {
@@ -52,11 +72,11 @@ public class CameraSystem : MonoBehaviour
 
         if (scrollInput > 0)
         {
-            followOffset.y -=  zoomSpeed;
+            followOffset.y -= zoomSpeed * currentSpeedMultiplier;
         }
         if (scrollInput < 0)
         {
-            followOffset.y += zoomSpeed;
+            followOffset.y += zoomSpeed * currentSpeedMultiplier;
         }
 
         followOffset.y = Mathf.Clamp(followOffset.y, followOffsetMinY, followOffsetMaxY);
