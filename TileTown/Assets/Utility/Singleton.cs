@@ -1,10 +1,22 @@
+using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
+public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour, new()
 {
-    public static T Instance { get; protected set; }
+    protected static T _instance;
+    public static T Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = FindObjectOfType<T>();
+            }
+            return _instance;
+        }
+    }
 
     /// <summary>
     ///  Do not override this. Use SingletonAwake instead.
@@ -25,18 +37,18 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         }
 
         // Set this as the instance
-        Instance = this as T;
+        _instance = this as T;
 
         // Call a seperate awake function for singleton objects which is only executed if this is the instance
         SingletonAwake();
     }
     protected virtual void SingletonAwake() { }
 }
-public abstract class SingletonPersistant<T> : Singleton<T> where T : MonoBehaviour
+public abstract class SingletonPersistant<T> : Singleton<T> where T : MonoBehaviour, new()
 {
     protected override void Awake()
     {
-         // Check if this is null, if yes, return
+        // Check if this is null, if yes, return
         if (this == null)
         {
             return;
@@ -50,12 +62,12 @@ public abstract class SingletonPersistant<T> : Singleton<T> where T : MonoBehavi
         }
 
         // Set this as the instance
-        Instance = this as T;
+        _instance = this as T;
 
         // Call a seperate awake function for singleton objects which is only executed if this is the instance
         SingletonAwake();
         DontDestroyOnLoad(gameObject);
 
-        
+
     }
 }
