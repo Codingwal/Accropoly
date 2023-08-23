@@ -12,7 +12,7 @@ public class GameLoopManager : Singleton<GameLoopManager>
 
     private MapHandler mapHandler;
 
-    protected override void SingletonAwake()
+    private void Awake()
     {
         mapHandler = MapHandler.Instance;
 

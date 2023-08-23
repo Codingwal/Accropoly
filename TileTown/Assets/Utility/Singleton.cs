@@ -10,64 +10,36 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour, new(
     {
         get
         {
+            Debug.Log("Instance has been requested");
             if (_instance == null)
             {
-                _instance = FindObjectOfType<T>();
+                Debug.Log("Creating new instance");
+
+                GameObject manager = GameObject.Find("Manager");
+                T component = manager.AddComponent<T>();
+                _instance = component;
             }
             return _instance;
         }
     }
-
-    /// <summary>
-    ///  Do not override this. Use SingletonAwake instead.
-    /// </summary>
-    protected virtual void Awake()
-    {
-        // Check if this is null, if yes, return
-        if (this == null)
-        {
-            return;
-        }
-
-        // Check if there already is an instance, if yes, return
-        if (Instance != null)
-        {
-            Destroy(this);
-            return;
-        }
-
-        // Set this as the instance
-        _instance = this as T;
-
-        // Call a seperate awake function for singleton objects which is only executed if this is the instance
-        SingletonAwake();
-    }
-    protected virtual void SingletonAwake() { }
 }
-public abstract class SingletonPersistant<T> : Singleton<T> where T : MonoBehaviour, new()
+public abstract class SingletonPersistant<T> where T : MonoBehaviour, new()
 {
-    protected override void Awake()
+    protected static T _instance;
+    public static T Instance
     {
-        // Check if this is null, if yes, return
-        if (this == null)
+        get
         {
-            return;
+            if (_instance == null)
+            {
+
+                GameObject manager = GameObject.Find("Manager");
+                T component = manager.AddComponent<T>();
+                _instance = component;
+
+                Object.DontDestroyOnLoad(manager);
+            }
+            return _instance;
         }
-
-        // Check if there already is an instance, if yes, return
-        if (Instance != null)
-        {
-            Destroy(this);
-            return;
-        }
-
-        // Set this as the instance
-        _instance = this as T;
-
-        // Call a seperate awake function for singleton objects which is only executed if this is the instance
-        SingletonAwake();
-        DontDestroyOnLoad(gameObject);
-
-
     }
 }
