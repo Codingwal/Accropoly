@@ -7,8 +7,6 @@ public class InputManager : Singleton<InputManager>
     private void Awake() {
         inputActions = new Controls();
         inGameActions = inputActions.InGame;
-
-        Debug.Log("Created input actions");
     }
     private void OnEnable() {
         inGameActions.Enable();
