@@ -10,11 +10,8 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour, new(
     {
         get
         {
-            Debug.Log("Instance has been requested");
             if (_instance == null)
             {
-                Debug.Log("Creating new instance");
-
                 GameObject manager = GameObject.Find("Manager");
                 T component = manager.AddComponent<T>();
                 _instance = component;
@@ -32,7 +29,6 @@ public abstract class SingletonPersistant<T> where T : MonoBehaviour, new()
         {
             if (_instance == null)
             {
-
                 GameObject manager = GameObject.Find("Manager");
                 T component = manager.AddComponent<T>();
                 _instance = component;
