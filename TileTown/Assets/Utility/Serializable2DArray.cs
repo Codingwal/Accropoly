@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Serialization;
 using UnityEngine;
 
 [Serializable]
@@ -64,6 +65,10 @@ public class Serializable2DArray<T>
     }
     public int GetLength(int dimension)
     {
+        if (array2D.Length == 0)
+        {
+            return 0;
+        }
         return dimension switch
         {
             0 => array2D.Length,

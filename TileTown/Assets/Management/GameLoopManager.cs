@@ -1,25 +1,26 @@
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Tilemaps;
-
 public class GameLoopManager : Singleton<GameLoopManager>
 {
-    
-
-    [Header("Temporary")]
-    [SerializeField] private bool generateTileMap;
-
-    private MapHandler mapHandler;
-
     private void Awake()
     {
-        mapHandler = MapHandler.Instance;
-
-        if (generateTileMap)
-        {
-            mapHandler.GenerateTileMap();
-        }
+        FileHandler.Init();
+        LoadWorld();
     }
-    
+    private void OnApplicationQuit()
+    {
+        SaveWorld();
+    }
+
+    public void LoadWorld()
+    {
+        Serializable2DArray<TileType> map = DataHandler.Instance.LoadMap();
+
+        MapHandler.Instance.GenerateTileMap(map);
+    }
+    public void SaveWorld()
+    {
+        Serializable2DArray<TileType> map = MapHandler.Instance.SaveTileMap();
+
+        DataHandler.Instance.SaveMap(map);
+    }
+
 }

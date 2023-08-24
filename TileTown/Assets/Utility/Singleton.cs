@@ -13,8 +13,14 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour, new(
             if (_instance == null)
             {
                 GameObject manager = GameObject.Find("Manager");
-                T component = manager.AddComponent<T>();
-                _instance = component;
+
+                _instance = manager.GetComponent<T>();
+
+                if (_instance == null)
+                {
+                    T component = manager.AddComponent<T>();
+                    _instance = component;
+                }
             }
             return _instance;
         }

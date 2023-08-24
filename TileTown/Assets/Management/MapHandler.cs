@@ -5,27 +5,18 @@ using System;
 
 public class MapHandler : Singleton<MapHandler>
 {
+    public string mapName;
     [SerializeField] private float tileSize = 30;
-
     [SerializeField] private Transform tileParent;
 
     [Header("Tile prefabs dictionary")]
     [SerializeField] private List<TileType> tilePrefabsDictKeys;
     [SerializeField] private List<GameObject> tilePrefabsDictValues;
 
-    [Header("Saved maps dictionary")]
-    [SerializeField] private List<string> savedMapsDictKeys;
-    [SerializeField] private List<Serializable2DArray<TileType>> savedMapsDictValues;
+    
 
-    private Serializable2DArray<TileType> selectedMap = null;
-
-    [Header("For saving / generating map")]
-    public string mapName;
-
-    public void GenerateTileMap()
+    public void GenerateTileMap(Serializable2DArray<TileType> selectedMap)
     {
-        selectedMap = savedMapsDictValues[savedMapsDictKeys.IndexOf(mapName)];
-
         List<GameObject> childs = new();
         foreach (Transform child in tileParent)
         {
@@ -58,7 +49,7 @@ public class MapHandler : Singleton<MapHandler>
         tile.transform.position = position;
         tile.transform.localScale = new(tileSize, 1, tileSize);
     }
-    public void SaveTileMap()
+    public Serializable2DArray<TileType> SaveTileMap()
     {
         int tileMapSize = (int)Math.Sqrt(tileParent.childCount);
         Serializable2DArray<TileType> tilemap = new(tileMapSize, tileMapSize);
@@ -72,7 +63,7 @@ public class MapHandler : Singleton<MapHandler>
                 tilemap[i, j] = child.GetComponent<IMapTile>().GetTileType();
             }
         }
-        savedMapsDictKeys.Add(mapName);
-        savedMapsDictValues.Add(tilemap);
+
+        return tilemap;
     }
 }
