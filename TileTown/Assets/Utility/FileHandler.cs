@@ -82,4 +82,10 @@ public static class FileHandler
 
         return obj;
     }
+    public static void DeleteFile(string directory, string name)
+    {
+        string filePath = $"{Application.persistentDataPath}/data/{directory}/{name}.json";
+
+        File.Delete(filePath);
+    }
 }
