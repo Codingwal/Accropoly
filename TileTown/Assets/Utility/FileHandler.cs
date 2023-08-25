@@ -16,11 +16,14 @@ public static class FileHandler
         Dictionary<string, IInstantiatable> requiredFiles = new Dictionary<string, IInstantiatable>()
         {
             {"UserData/userdata", new UserData()},
-            {"Templates/DefaultMap", MapTemplates.defaultMap},
-            {"Templates/PlainsMap", MapTemplates.plainsMap},
-            {"Templates/ForestMap", MapTemplates.forestMap}
         };
 
+        foreach (KeyValuePair<string, Serializable2DArray<TileType>> keyValuePair in MapTemplates.mapTemplates)
+        {
+            requiredFiles.Add("Templates/" + keyValuePair.Key, keyValuePair.Value);
+        }
+
+        // Generate folders and files
         foreach (string directory in requiredDirectories)
         {
             if (!Directory.Exists($"{Application.persistentDataPath}/data/{directory}/"))
