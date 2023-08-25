@@ -26,12 +26,16 @@ public class SceneHandler : Singleton<SceneHandler>
         {
             await Task.Delay(100);
             LoadingScene.Invoke(scene.progress / 0.9f);
-        } while (!scene.isDone);
+        } while (scene.progress < 0.9f);
 
         // Deactivate the loading screen
         ActivateLoadingScreen.Invoke(false);
 
         // Activate the loaded scene
         scene.allowSceneActivation = true;
+
+        await Task.Delay(150);
+
+        GameLoopManager.Instance.GameState = GameState.InGame;
     }
 }

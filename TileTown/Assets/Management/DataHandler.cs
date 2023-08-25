@@ -21,7 +21,7 @@ public class DataHandler : Singleton<DataHandler>
 
         SaveUserData(userData);
     }
-    private string GetMapName()
+    public string GetMapName()
     {
         return GetUserData().worldName;
     }

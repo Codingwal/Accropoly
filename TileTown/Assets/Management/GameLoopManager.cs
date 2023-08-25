@@ -1,10 +1,38 @@
+using System;
+
 public class GameLoopManager : Singleton<GameLoopManager>
 {
+    public event Action<GameState> GameStateChanged;
+    private GameState _gameState;
+    public GameState GameState
+    {
+        get
+        {
+            return _gameState;
+        }
+        set
+        {
+            GameState oldGameState = _gameState;
+            _gameState = value;
+            GameStateChanged?.Invoke(oldGameState);
+        }
+    }
     private void Awake()
     {
+        GameState = GameState.MainMenu;
+        GameStateChanged += OnGameStateChanged;
+
         FileHandler.Init();
-        LoadWorld();
     }
+
+    private void OnGameStateChanged(GameState oldGameState)
+    {
+        if (oldGameState == GameState.MainMenu && GameState == GameState.InGame)
+        {
+            LoadWorld();
+        }
+    }
+
     private void OnApplicationQuit()
     {
         SaveWorld();
@@ -22,5 +50,10 @@ public class GameLoopManager : Singleton<GameLoopManager>
 
         DataHandler.Instance.SaveMap(map);
     }
-
+}
+public enum GameState
+{
+    MainMenu,
+    InGame,
+    PauseMenu
 }

@@ -13,10 +13,15 @@ public class MapHandler : Singleton<MapHandler>
     [SerializeField] private List<TileType> tilePrefabsDictKeys;
     [SerializeField] private List<GameObject> tilePrefabsDictValues;
 
-    
+
 
     public void GenerateTileMap(Serializable2DArray<TileType> selectedMap)
     {
+        if (tileParent == null)
+        {
+            Debug.Log("TileParent == null");
+            tileParent = GameObject.Find("TileMap").transform;
+        }
         List<GameObject> childs = new();
         foreach (Transform child in tileParent)
         {
