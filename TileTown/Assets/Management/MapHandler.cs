@@ -5,7 +5,6 @@ using System;
 
 public class MapHandler : SingletonPersistant<MapHandler>
 {
-    public string mapName;
     [SerializeField] private float tileSize = 30;
     [SerializeField] private Transform tileParent;
 
@@ -13,7 +12,45 @@ public class MapHandler : SingletonPersistant<MapHandler>
     [SerializeField] private List<TileType> tilePrefabsDictKeys;
     [SerializeField] private List<GameObject> tilePrefabsDictValues;
 
+    private static readonly TileType p = TileType.Plains;
+    private static readonly TileType f = TileType.Forest;
 
+
+    public static Dictionary<string, TileType[][]> mapTemplates = new() {
+        {
+            "DefaultMap",
+            new TileType[][]
+            {
+                new TileType[] { p, p, p, f, p},
+                new TileType[] { p, f, f, p, p},
+                new TileType[] { p, p, f, p, f},
+                new TileType[] { p, p, f, p, p},
+                new TileType[] { p, p, p, p, p},
+            }
+        },
+        {
+            "PlainsMap",
+            new TileType[][]
+            {
+                new TileType[] { p, p, p, p, p},
+                new TileType[] { p, p, p, p, p},
+                new TileType[] { p, p, p, p, p},
+                new TileType[] { p, p, p, p, p},
+                new TileType[] { p, p, p, p, p},
+            }
+        },
+        {
+            "ForestMap",
+            new TileType[][]
+            {
+                new TileType[] { f, f, f, f, f},
+                new TileType[] { f, f, f, f, f},
+                new TileType[] { f, f, f, f, f},
+                new TileType[] { f, f, f, f, f},
+                new TileType[] { f, f, f, f, f},
+            }
+        },
+    };
 
     public void GenerateTileMap(Serializable2DArray<TileType> selectedMap)
     {

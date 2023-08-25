@@ -18,10 +18,6 @@ public class GameLoopManagerEditor : Editor
         {
             gameLoopManager.SaveWorld();
         }
-        if (GUILayout.Button("Change map name"))
-        {
-            DataHandler.Instance.ChangeMapName(MapHandler.Instance.mapName);
-        }
         if (GUILayout.Button("List all maps"))
         {
             string[] maps = FileHandler.ListFiles("Saves");

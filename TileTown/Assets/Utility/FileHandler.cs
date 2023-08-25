@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization;
 using UnityEngine;
 
 public static class FileHandler
 {
     public static void Init()
     {
-        // 
         string[] requiredDirectories =
         {
             "UserData",
@@ -17,7 +15,10 @@ public static class FileHandler
         };
         Dictionary<string, IInstantiatable> requiredFiles = new Dictionary<string, IInstantiatable>()
         {
-            {"UserData/userdata", new UserData()}
+            {"UserData/userdata", new UserData()},
+            {"Templates/DefaultMap", MapTemplates.defaultMap},
+            {"Templates/PlainsMap", MapTemplates.plainsMap},
+            {"Templates/ForestMap", MapTemplates.forestMap}
         };
 
         foreach (string directory in requiredDirectories)
