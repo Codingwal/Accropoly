@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
 using UnityEngine;
@@ -7,14 +8,16 @@ public static class FileHandler
 {
     public static void Init()
     {
+        // 
         string[] requiredDirectories =
         {
             "UserData",
+            "Templates",
             "Saves"
         };
-        string[] requiredFiles =
+        Dictionary<string, IInstantiatable> requiredFiles = new Dictionary<string, IInstantiatable>()
         {
-            "UserData/userdata"
+            {"UserData/userdata", new UserData()}
         };
 
         foreach (string directory in requiredDirectories)
@@ -24,14 +27,14 @@ public static class FileHandler
                 Directory.CreateDirectory($"{Application.persistentDataPath}/data/{directory}/");
             }
         }
-        foreach (string file in requiredFiles)
+        foreach (string file in requiredFiles.Keys)
         {
             if (!File.Exists($"{Application.persistentDataPath}/data/{file}.json"))
             {
-                File.Create($"{Application.persistentDataPath}/data/{file}.json/");
+                // File.Create($"{Application.persistentDataPath}/data/{file}.json");
+                File.WriteAllText($"{Application.persistentDataPath}/data/{file}.json", JsonUtility.ToJson(requiredFiles[file]));
             }
         }
-
     }
     public static string[] ListFiles(string directory)
     {
