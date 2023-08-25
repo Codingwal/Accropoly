@@ -19,8 +19,6 @@ public class MenuManager : MonoBehaviour
     {
         sceneHandler = SceneHandler.Instance;
 
-        sceneHandler.ActivateLoadingScreen += OnActivateLoadingScreen;
-        sceneHandler.ActivateMenu += OnActivateMenu;
         sceneHandler.LoadingScene += OnLoadingScene;
 
         startGameButton.onClick.AddListener(OnStartGame);
@@ -30,15 +28,7 @@ public class MenuManager : MonoBehaviour
         mainMenu.SetActive(true);
         loadingScreen.SetActive(false);
 
-        mapNameField.text = DataHandler.Instance.GetMapName();  
-    }
-    private void OnActivateLoadingScreen(bool newState)
-    {
-        loadingScreen.SetActive(newState);
-    }
-    private void OnActivateMenu(bool newState)
-    {
-        mainMenu.SetActive(newState);
+        mapNameField.text = DataHandler.Instance.GetMapName();
     }
     private void OnLoadingScene(float progress)
     {
@@ -46,7 +36,10 @@ public class MenuManager : MonoBehaviour
     }
     private void OnStartGame()
     {
-        sceneHandler.LoadScene("Game");
+        mainMenu.SetActive(false);
+        loadingScreen.SetActive(true);
+        
+        GameLoopManager.Instance.GameState = GameState.InGame;
     }
     private void OnChangeMapName()
     {

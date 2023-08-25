@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class MapHandler : Singleton<MapHandler>
+public class MapHandler : SingletonPersistant<MapHandler>
 {
     public string mapName;
     [SerializeField] private float tileSize = 30;
@@ -19,7 +19,6 @@ public class MapHandler : Singleton<MapHandler>
     {
         if (tileParent == null)
         {
-            Debug.Log("TileParent == null");
             tileParent = GameObject.Find("TileMap").transform;
         }
         List<GameObject> childs = new();

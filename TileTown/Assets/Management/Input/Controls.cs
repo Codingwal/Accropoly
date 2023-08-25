@@ -198,6 +198,34 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Pause"",
+            ""id"": ""adb67511-4bb6-495e-8ef5-fea1bd906034"",
+            ""actions"": [
+                {
+                    ""name"": ""Pause"",
+                    ""type"": ""Button"",
+                    ""id"": ""f8ad0456-55c1-447d-84cd-6994aa99c56a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""a8e8ebbe-abb6-4257-80a2-0a47962ab2f3"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -208,6 +236,9 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         m_InGame_CameraRotation = m_InGame.FindAction("CameraRotation", throwIfNotFound: true);
         m_InGame_CameraScroll = m_InGame.FindAction("CameraScroll", throwIfNotFound: true);
         m_InGame_CameraSprint = m_InGame.FindAction("CameraSprint", throwIfNotFound: true);
+        // Pause
+        m_Pause = asset.FindActionMap("Pause", throwIfNotFound: true);
+        m_Pause_Pause = m_Pause.FindAction("Pause", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -320,11 +351,48 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         }
     }
     public InGameActions @InGame => new InGameActions(this);
+
+    // Pause
+    private readonly InputActionMap m_Pause;
+    private IPauseActions m_PauseActionsCallbackInterface;
+    private readonly InputAction m_Pause_Pause;
+    public struct PauseActions
+    {
+        private @Controls m_Wrapper;
+        public PauseActions(@Controls wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Pause => m_Wrapper.m_Pause_Pause;
+        public InputActionMap Get() { return m_Wrapper.m_Pause; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(PauseActions set) { return set.Get(); }
+        public void SetCallbacks(IPauseActions instance)
+        {
+            if (m_Wrapper.m_PauseActionsCallbackInterface != null)
+            {
+                @Pause.started -= m_Wrapper.m_PauseActionsCallbackInterface.OnPause;
+                @Pause.performed -= m_Wrapper.m_PauseActionsCallbackInterface.OnPause;
+                @Pause.canceled -= m_Wrapper.m_PauseActionsCallbackInterface.OnPause;
+            }
+            m_Wrapper.m_PauseActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @Pause.started += instance.OnPause;
+                @Pause.performed += instance.OnPause;
+                @Pause.canceled += instance.OnPause;
+            }
+        }
+    }
+    public PauseActions @Pause => new PauseActions(this);
     public interface IInGameActions
     {
         void OnCameraMovement(InputAction.CallbackContext context);
         void OnCameraRotation(InputAction.CallbackContext context);
         void OnCameraScroll(InputAction.CallbackContext context);
         void OnCameraSprint(InputAction.CallbackContext context);
+    }
+    public interface IPauseActions
+    {
+        void OnPause(InputAction.CallbackContext context);
     }
 }

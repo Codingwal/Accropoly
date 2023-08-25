@@ -26,22 +26,9 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour, new(
         }
     }
 }
-public abstract class SingletonPersistant<T> where T : MonoBehaviour, new()
+public abstract class SingletonPersistant<T> : Singleton<T> where T : MonoBehaviour, new()
 {
-    protected static T _instance;
-    public static T Instance
-    {
-        get
-        {
-            if (_instance == null)
-            {
-                GameObject manager = GameObject.Find("Manager");
-                T component = manager.AddComponent<T>();
-                _instance = component;
-
-                Object.DontDestroyOnLoad(manager);
-            }
-            return _instance;
-        }
+    private void Awake() {
+        Object.DontDestroyOnLoad(Object.FindObjectOfType(typeof(T)));
     }
 }

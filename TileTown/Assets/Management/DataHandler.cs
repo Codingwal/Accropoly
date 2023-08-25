@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class DataHandler : Singleton<DataHandler>
+public class DataHandler : SingletonPersistant<DataHandler>
 {
     public Serializable2DArray<TileType> LoadMap()
     {

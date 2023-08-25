@@ -12,8 +12,6 @@ public class GameLoopManagerEditor : Editor
 
         if (GUILayout.Button("Generate tile map"))
         {
-            Serializable2DArray<TileType> map = DataHandler.Instance.LoadMap();
-
             gameLoopManager.LoadWorld();
         }
         if (GUILayout.Button("Save tile map"))

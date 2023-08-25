@@ -1,9 +1,12 @@
 using System;
+using System.Threading.Tasks;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class GameLoopManager : Singleton<GameLoopManager>
+public class GameLoopManager : SingletonPersistant<GameLoopManager>
 {
-    public event Action<GameState> GameStateChanged;
-    private GameState _gameState;
+    public event Action<GameState, GameState> GameStateChanged;
+    public GameState _gameState;
     public GameState GameState
     {
         get
@@ -14,28 +17,48 @@ public class GameLoopManager : Singleton<GameLoopManager>
         {
             GameState oldGameState = _gameState;
             _gameState = value;
-            GameStateChanged?.Invoke(oldGameState);
+            if (oldGameState != _gameState)
+            {
+                OnGameStateChanged(_gameState, oldGameState);
+            }
         }
     }
     private void Awake()
     {
-        GameState = GameState.MainMenu;
-        GameStateChanged += OnGameStateChanged;
-
         FileHandler.Init();
+
+        SceneHandler.Instance.SceneIsUnloading += OnSceneIsUnloading;
     }
 
-    private void OnGameStateChanged(GameState oldGameState)
+    private void OnSceneIsUnloading(string newScene)
     {
-        if (oldGameState == GameState.MainMenu && GameState == GameState.InGame)
+        if (newScene == "Menu")
         {
-            LoadWorld();
+            SaveWorld();
         }
     }
 
-    private void OnApplicationQuit()
+    private async void OnGameStateChanged(GameState newGameState, GameState oldGameState)
     {
-        SaveWorld();
+        switch (newGameState)
+        {
+            case GameState.InGame:
+                if (oldGameState == GameState.MainMenu)
+                {
+                    await SwitchToGame();
+                }
+                break;
+            case GameState.MainMenu:
+                await SceneHandler.Instance.LoadScene("Menu");
+                break;
+        }
+        GameStateChanged?.Invoke(_gameState, oldGameState);
+    }
+
+    private async Task SwitchToGame()
+    {
+        await SceneHandler.Instance.LoadScene("Game");
+        LoadWorld();
     }
 
     public void LoadWorld()
