@@ -5,8 +5,8 @@ public enum TileType
     Forest,
 
     // // Normal street, houses can connect
-    // Street,
-    // StreetCorner,
+    Street,
+    StreetCorner,
 
     // // Faster street, houses can't connect
     // Highway,

@@ -909,10 +909,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tileSize: 30
   tileParent: {fileID: 0}
-  tilePrefabsDictKeys: 0000000001000000
+  tilePrefabsDictKeys: 00000000010000000200000003000000
   tilePrefabsDictValues:
   - {fileID: 1018065688083463063, guid: 043e4a60b6860a543bf31c9e81a9b636, type: 3}
   - {fileID: 7947999506322420293, guid: 883af793d4c4cee40bc25c1c483b3689, type: 3}
+  - {fileID: 1018065688083463063, guid: d77f9d8433aae9849b8f9726708df8d9, type: 3}
+  - {fileID: 1018065688083463063, guid: ae21f5cb3195aa1468939841012e67c0, type: 3}
 --- !u!114 &584725053
 MonoBehaviour:
   m_ObjectHideFlags: 0

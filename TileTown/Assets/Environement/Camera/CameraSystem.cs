@@ -54,7 +54,7 @@ public class CameraSystem : MonoBehaviour
 
     private void InitCameraSystem(World world)
     {
-        transform.SetPositionAndRotation(world.cameraSystemPos, world.cameraSystemRotation);
+        transform.SetPositionAndRotation(new(world.cameraSystemPos.x, 0, world.cameraSystemPos.y), world.cameraSystemRotation);
 
         followOffset.y = world.followOffsetY;
 
@@ -62,7 +62,7 @@ public class CameraSystem : MonoBehaviour
     }
     private void SaveCameraSystem(ref World world)
     {
-        world.cameraSystemPos = transform.position;
+        world.cameraSystemPos = new(transform.position.x, transform.position.z);
         world.cameraSystemRotation = transform.rotation;
         world.followOffsetY = followOffset.y;
     }

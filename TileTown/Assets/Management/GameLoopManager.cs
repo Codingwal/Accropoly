@@ -1,7 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class GameLoopManager : SingletonPersistant<GameLoopManager>
 {
@@ -10,7 +8,7 @@ public class GameLoopManager : SingletonPersistant<GameLoopManager>
     public event RefAction<World> SaveWorld;
 
     public event Action<GameState, GameState> GameStateChanged;
-    public GameState _gameState;
+    private GameState _gameState;
     public GameState GameState
     {
         get
