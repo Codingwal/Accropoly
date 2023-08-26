@@ -1,24 +1,35 @@
 using UnityEngine;
 using Cinemachine;
+using System;
 
 public class CameraSystem : MonoBehaviour
 {
-    [SerializeField] private float moveSpeed;
+    [SerializeField] private CinemachineVirtualCamera cinemachineVirtualCamera;
+    private Vector3 followOffset;
 
+    [Header("Movement")]
+    [SerializeField] private float moveSpeed;
+    private float mapSize;
+
+    [Header("Rotation")]
     [SerializeField] private float rotationSpeed;
 
+    [Header("Zooming")]
     [SerializeField] private float zoomSpeed;
     [SerializeField] private float followOffsetMinY;
     [SerializeField] private float followOffsetMaxY;
     [SerializeField] private float zoomLerpSpeed;
 
+    [Header("Sprinting")]
     [SerializeField] private float sprintSpeedMultiplier;
     private float currentSpeedMultiplier;
 
-    [SerializeField] private CinemachineVirtualCamera cinemachineVirtualCamera;
 
-    private Vector3 followOffset;
 
+    private void Awake()
+    {
+
+    }
     private void Start()
     {
         followOffset = cinemachineVirtualCamera.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset;
@@ -29,6 +40,31 @@ public class CameraSystem : MonoBehaviour
         MoveCamera();
         RotateCamera();
         ZoomCamera();
+    }
+    private void OnEnable()
+    {
+        GameLoopManager.Instance.InitWorld += InitCameraSystem;
+        GameLoopManager.Instance.SaveWorld += SaveCameraSystem;
+    }
+    private void OnDisable()
+    {
+        GameLoopManager.Instance.InitWorld -= InitCameraSystem;
+        GameLoopManager.Instance.SaveWorld -= SaveCameraSystem;
+    }
+
+    private void InitCameraSystem(World world)
+    {
+        transform.SetPositionAndRotation(world.cameraSystemPos, world.cameraSystemRotation);
+
+        followOffset.y = world.followOffsetY;
+
+        mapSize = world.map.GetLength(0) * MapHandler.Instance.tileSize;
+    }
+    private void SaveCameraSystem(ref World world)
+    {
+        world.cameraSystemPos = transform.position;
+        world.cameraSystemRotation = transform.rotation;
+        world.followOffsetY = followOffset.y;
     }
 
     private void CheckIfSprinting()
@@ -54,7 +90,10 @@ public class CameraSystem : MonoBehaviour
         Vector3 moveDir = transform.forward * moveDirInput.y + transform.right * moveDirInput.x;
 
         // Move the camera
-        transform.position += moveDir * moveSpeed * currentSpeedMultiplier * Time.deltaTime;
+        transform.position += currentSpeedMultiplier * moveSpeed * Time.deltaTime * moveDir;
+
+        float maxDistance = mapSize / 2;
+        transform.position = new(Mathf.Clamp(transform.position.x, -maxDistance, maxDistance), 0, Mathf.Clamp(transform.position.z, -maxDistance, maxDistance));
     }
     private void RotateCamera()
     {

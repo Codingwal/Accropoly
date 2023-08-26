@@ -5,6 +5,10 @@ using UnityEngine.SceneManagement;
 
 public class GameLoopManager : SingletonPersistant<GameLoopManager>
 {
+    public delegate void RefAction<T>(ref T obj);
+    public event Action<World> InitWorld;
+    public event RefAction<World> SaveWorld;
+
     public event Action<GameState, GameState> GameStateChanged;
     public GameState _gameState;
     public GameState GameState
@@ -26,15 +30,28 @@ public class GameLoopManager : SingletonPersistant<GameLoopManager>
     private void Awake()
     {
         FileHandler.Init();
-
+    }
+    private void OnEnable()
+    {
         SceneHandler.Instance.SceneIsUnloading += OnSceneIsUnloading;
+    }
+    private void OnDisable()
+    {
+        SceneHandler.Instance.SceneIsUnloading -= OnSceneIsUnloading;
     }
 
     private void OnSceneIsUnloading(string newScene)
     {
         if (newScene == "Menu")
         {
-            SaveWorld();
+            Serializable2DArray<TileType> map = MapHandler.Instance.SaveTileMap();
+
+            World world = DataHandler.Instance.LoadWorld();
+
+            world.map = map;
+            SaveWorld.Invoke(ref world);
+
+            DataHandler.Instance.SaveWorld(world);
         }
     }
 
@@ -63,15 +80,10 @@ public class GameLoopManager : SingletonPersistant<GameLoopManager>
 
     public void LoadWorld()
     {
-        Serializable2DArray<TileType> map = DataHandler.Instance.LoadMap();
+        World world = DataHandler.Instance.LoadWorld();
 
-        MapHandler.Instance.GenerateTileMap(map);
-    }
-    public void SaveWorld()
-    {
-        Serializable2DArray<TileType> map = MapHandler.Instance.SaveTileMap();
-
-        DataHandler.Instance.SaveMap(map);
+        MapHandler.Instance.GenerateTileMap(world.map);
+        InitWorld.Invoke(world);
     }
 }
 public enum GameState

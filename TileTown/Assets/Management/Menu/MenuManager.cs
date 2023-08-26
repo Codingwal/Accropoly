@@ -41,7 +41,7 @@ public class MenuManager : MonoBehaviour
         mainMenu.SetActive(true);
         loadingScreen.SetActive(false);
 
-        mapNameField.text = DataHandler.Instance.GetMapName();
+        mapNameField.text = DataHandler.Instance.GetWorldName();
 
         ReloadUI();
     }
@@ -51,18 +51,18 @@ public class MenuManager : MonoBehaviour
         mainMenu.SetActive(false);
         loadingScreen.SetActive(true);
 
-        DataHandler.Instance.ChangeMapName(mapsDropdown.options[mapsDropdown.value].text);
+        DataHandler.Instance.ChangeWorldName(mapsDropdown.options[mapsDropdown.value].text);
 
         GameLoopManager.Instance.GameState = GameState.InGame;
     }
     private void OnCreateMap()
     {
-        DataHandler.Instance.ChangeMapName(mapNameField.text);
+        DataHandler.Instance.ChangeWorldName(mapNameField.text);
 
         string mapTemplateName = mapTemplateDropdown.options[mapTemplateDropdown.value].text;
 
-        Serializable2DArray<TileType> mapTemplate = FileHandler.LoadObject<Serializable2DArray<TileType>>("Templates", mapTemplateName);
-        FileHandler.SaveObject("Saves", mapNameField.text, mapTemplate);
+        DataHandler.Instance.CreateWorld(mapTemplateName);
+        
 
         ReloadUI();
     }

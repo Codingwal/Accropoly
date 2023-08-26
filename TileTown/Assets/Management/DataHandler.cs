@@ -2,18 +2,26 @@ using UnityEngine;
 
 public class DataHandler : SingletonPersistant<DataHandler>
 {
-    public Serializable2DArray<TileType> LoadMap()
+    public World LoadWorld()
     {
-        string mapName = GetMapName();
-        return FileHandler.LoadObject<Serializable2DArray<TileType>>("Saves", mapName);
+        string mapName = GetWorldName();
+        return FileHandler.LoadObject<World>("Saves", mapName);
     }
-    public void SaveMap(Serializable2DArray<TileType> map)
+    public void SaveWorld(World world)
     {
-        string mapName = GetMapName();
+        string worldName = GetWorldName();
 
-        FileHandler.SaveObject("Saves", mapName, map);
+        FileHandler.SaveObject("Saves", worldName, world);
     }
-    public void ChangeMapName(string newMapName)
+    public void CreateWorld(string mapTemplateName)
+    {
+        Serializable2DArray<TileType> mapTemplate = FileHandler.LoadObject<Serializable2DArray<TileType>>("Templates", mapTemplateName);
+
+        World world = new(mapTemplate);
+
+        FileHandler.SaveObject("Saves", GetWorldName(), world);
+    }
+    public void ChangeWorldName(string newMapName)
     {
         UserData userData = GetUserData();
 
@@ -21,7 +29,7 @@ public class DataHandler : SingletonPersistant<DataHandler>
 
         SaveUserData(userData);
     }
-    public string GetMapName()
+    public string GetWorldName()
     {
         return GetUserData().worldName;
     }
