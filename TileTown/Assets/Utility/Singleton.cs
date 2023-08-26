@@ -28,7 +28,8 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour, new(
 }
 public abstract class SingletonPersistant<T> : Singleton<T> where T : MonoBehaviour, new()
 {
-    private void Awake() {
-        Object.DontDestroyOnLoad(Object.FindObjectOfType(typeof(T)));
+    private void Awake()
+    {
+        DontDestroyOnLoad(FindObjectOfType(typeof(T)));
     }
 }
