@@ -178,13 +178,22 @@
             ]
         },
         {
-            "name": "Pause",
+            "name": "UI",
             "id": "adb67511-4bb6-495e-8ef5-fea1bd906034",
             "actions": [
                 {
-                    "name": "Pause",
+                    "name": "Escape",
                     "type": "Button",
                     "id": "f8ad0456-55c1-447d-84cd-6994aa99c56a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "BuildingMenuHotkey",
+                    "type": "Button",
+                    "id": "6a9e8041-d132-4cf8-b436-22d18546849d",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -199,7 +208,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Pause",
+                    "action": "Escape",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2b4edb86-417b-4b1e-a152-b404fda3ffae",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "BuildingMenuHotkey",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

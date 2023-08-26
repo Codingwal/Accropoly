@@ -11,19 +11,38 @@ public class PauseMenuManager : MonoBehaviour
     [SerializeField] private Button continueButton;
 
     private GameLoopManager gameLoopManager;
+    private InputManager inputManager;
     private void Awake()
     {
         gameLoopManager = GameLoopManager.Instance;
-        gameLoopManager.GameStateChanged += OnGameStateChanged;
+        inputManager = InputManager.Instance;
 
         continueButton.onClick.AddListener(OnContinuePressed);
         toMainMenuButton.onClick.AddListener(OnToMainMenuPressed);
     }
+    private void OnEnable()
+    {
+        gameLoopManager.GameStateChanged += OnGameStateChanged;
+        inputManager.Escape += OnEscape;
+    }
     private void OnDisable()
     {
         gameLoopManager.GameStateChanged -= OnGameStateChanged;
+        inputManager.Escape -= OnEscape;
     }
 
+    private void OnEscape()
+    {
+        switch (gameLoopManager.GameState)
+        {
+            case GameState.PauseMenu:
+                gameLoopManager.GameState = GameState.InGame;
+                break;
+            case GameState.InGame:
+                gameLoopManager.GameState = GameState.PauseMenu;
+                break;
+        }
+    }
     private void OnContinuePressed()
     {
         gameLoopManager.GameState = GameState.InGame;

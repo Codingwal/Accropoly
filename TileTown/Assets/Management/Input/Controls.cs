@@ -200,13 +200,22 @@ public partial class @Controls : IInputActionCollection2, IDisposable
             ]
         },
         {
-            ""name"": ""Pause"",
+            ""name"": ""UI"",
             ""id"": ""adb67511-4bb6-495e-8ef5-fea1bd906034"",
             ""actions"": [
                 {
-                    ""name"": ""Pause"",
+                    ""name"": ""Escape"",
                     ""type"": ""Button"",
                     ""id"": ""f8ad0456-55c1-447d-84cd-6994aa99c56a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""BuildingMenuHotkey"",
+                    ""type"": ""Button"",
+                    ""id"": ""6a9e8041-d132-4cf8-b436-22d18546849d"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -221,7 +230,18 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Pause"",
+                    ""action"": ""Escape"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2b4edb86-417b-4b1e-a152-b404fda3ffae"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""BuildingMenuHotkey"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -236,9 +256,10 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         m_InGame_CameraRotation = m_InGame.FindAction("CameraRotation", throwIfNotFound: true);
         m_InGame_CameraScroll = m_InGame.FindAction("CameraScroll", throwIfNotFound: true);
         m_InGame_CameraSprint = m_InGame.FindAction("CameraSprint", throwIfNotFound: true);
-        // Pause
-        m_Pause = asset.FindActionMap("Pause", throwIfNotFound: true);
-        m_Pause_Pause = m_Pause.FindAction("Pause", throwIfNotFound: true);
+        // UI
+        m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
+        m_UI_Escape = m_UI.FindAction("Escape", throwIfNotFound: true);
+        m_UI_BuildingMenuHotkey = m_UI.FindAction("BuildingMenuHotkey", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -352,38 +373,46 @@ public partial class @Controls : IInputActionCollection2, IDisposable
     }
     public InGameActions @InGame => new InGameActions(this);
 
-    // Pause
-    private readonly InputActionMap m_Pause;
-    private IPauseActions m_PauseActionsCallbackInterface;
-    private readonly InputAction m_Pause_Pause;
-    public struct PauseActions
+    // UI
+    private readonly InputActionMap m_UI;
+    private IUIActions m_UIActionsCallbackInterface;
+    private readonly InputAction m_UI_Escape;
+    private readonly InputAction m_UI_BuildingMenuHotkey;
+    public struct UIActions
     {
         private @Controls m_Wrapper;
-        public PauseActions(@Controls wrapper) { m_Wrapper = wrapper; }
-        public InputAction @Pause => m_Wrapper.m_Pause_Pause;
-        public InputActionMap Get() { return m_Wrapper.m_Pause; }
+        public UIActions(@Controls wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Escape => m_Wrapper.m_UI_Escape;
+        public InputAction @BuildingMenuHotkey => m_Wrapper.m_UI_BuildingMenuHotkey;
+        public InputActionMap Get() { return m_Wrapper.m_UI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
         public bool enabled => Get().enabled;
-        public static implicit operator InputActionMap(PauseActions set) { return set.Get(); }
-        public void SetCallbacks(IPauseActions instance)
+        public static implicit operator InputActionMap(UIActions set) { return set.Get(); }
+        public void SetCallbacks(IUIActions instance)
         {
-            if (m_Wrapper.m_PauseActionsCallbackInterface != null)
+            if (m_Wrapper.m_UIActionsCallbackInterface != null)
             {
-                @Pause.started -= m_Wrapper.m_PauseActionsCallbackInterface.OnPause;
-                @Pause.performed -= m_Wrapper.m_PauseActionsCallbackInterface.OnPause;
-                @Pause.canceled -= m_Wrapper.m_PauseActionsCallbackInterface.OnPause;
+                @Escape.started -= m_Wrapper.m_UIActionsCallbackInterface.OnEscape;
+                @Escape.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnEscape;
+                @Escape.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnEscape;
+                @BuildingMenuHotkey.started -= m_Wrapper.m_UIActionsCallbackInterface.OnBuildingMenuHotkey;
+                @BuildingMenuHotkey.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnBuildingMenuHotkey;
+                @BuildingMenuHotkey.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnBuildingMenuHotkey;
             }
-            m_Wrapper.m_PauseActionsCallbackInterface = instance;
+            m_Wrapper.m_UIActionsCallbackInterface = instance;
             if (instance != null)
             {
-                @Pause.started += instance.OnPause;
-                @Pause.performed += instance.OnPause;
-                @Pause.canceled += instance.OnPause;
+                @Escape.started += instance.OnEscape;
+                @Escape.performed += instance.OnEscape;
+                @Escape.canceled += instance.OnEscape;
+                @BuildingMenuHotkey.started += instance.OnBuildingMenuHotkey;
+                @BuildingMenuHotkey.performed += instance.OnBuildingMenuHotkey;
+                @BuildingMenuHotkey.canceled += instance.OnBuildingMenuHotkey;
             }
         }
     }
-    public PauseActions @Pause => new PauseActions(this);
+    public UIActions @UI => new UIActions(this);
     public interface IInGameActions
     {
         void OnCameraMovement(InputAction.CallbackContext context);
@@ -391,8 +420,9 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         void OnCameraScroll(InputAction.CallbackContext context);
         void OnCameraSprint(InputAction.CallbackContext context);
     }
-    public interface IPauseActions
+    public interface IUIActions
     {
-        void OnPause(InputAction.CallbackContext context);
+        void OnEscape(InputAction.CallbackContext context);
+        void OnBuildingMenuHotkey(InputAction.CallbackContext context);
     }
 }
