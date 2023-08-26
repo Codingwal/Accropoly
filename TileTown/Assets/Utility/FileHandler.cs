@@ -88,4 +88,48 @@ public static class FileHandler
 
         File.Delete(filePath);
     }
+
+
+    ////////////////////////////////////////////////////////////////////////////////
+
+
+    public static World LoadWorld()
+    {
+        string mapName = GetWorldName();
+        return FileHandler.LoadObject<World>("Saves", mapName);
+    }
+    public static void SaveWorld(World world)
+    {
+        string worldName = GetWorldName();
+
+        FileHandler.SaveObject("Saves", worldName, world);
+    }
+    public static void CreateWorld(string mapTemplateName)
+    {
+        Serializable2DArray<TileType> mapTemplate = FileHandler.LoadObject<Serializable2DArray<TileType>>("Templates", mapTemplateName);
+
+        World world = new(mapTemplate);
+
+        FileHandler.SaveObject("Saves", GetWorldName(), world);
+    }
+    public static void ChangeWorldName(string newMapName)
+    {
+        UserData userData = GetUserData();
+
+        userData.worldName = newMapName;
+
+        SaveUserData(userData);
+    }
+    public static string GetWorldName()
+    {
+        return GetUserData().worldName;
+    }
+    private static UserData GetUserData()
+    {
+        return FileHandler.LoadObject<UserData>("UserData", "userdata");
+    }
+    private static void SaveUserData(UserData userData)
+    {
+        FileHandler.SaveObject("UserData", "userdata", userData);
+    }
 }

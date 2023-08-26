@@ -791,6 +791,7 @@ MonoBehaviour:
   followOffsetMaxY: 400
   zoomLerpSpeed: 10
   sprintSpeedMultiplier: 4
+  inputManager: {fileID: 1028602568}
 --- !u!4 &451880818 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7947999506322420294, guid: 883af793d4c4cee40bc25c1c483b3689, type: 3}
@@ -1818,7 +1819,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0.38268346, y: 1e-45, z: -0, w: 0.92387956}
+  m_LocalRotation: {x: 0.38268346, y: -3e-45, z: 1e-45, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 50, z: -50}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2055,6 +2056,75 @@ Transform:
   m_Father: {fileID: 223597872}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 135, z: 0}
+--- !u!1 &1028602566
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1028602569}
+  - component: {fileID: 1028602568}
+  - component: {fileID: 1028602567}
+  m_Layer: 0
+  m_Name: Management
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1028602567
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1028602566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 589d6593a6c865741b91fcd846002678, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileSize: 30
+  tileParent: {fileID: 0}
+  tilePrefabsDictKeys: 0000000001000000020000000300000004000000050000000600000007000000
+  tilePrefabsDictValues:
+  - {fileID: 1018065688083463063, guid: 043e4a60b6860a543bf31c9e81a9b636, type: 3}
+  - {fileID: 7947999506322420293, guid: 883af793d4c4cee40bc25c1c483b3689, type: 3}
+  - {fileID: 1018065688083463063, guid: d77f9d8433aae9849b8f9726708df8d9, type: 3}
+  - {fileID: 1018065688083463063, guid: 03cb30aa1f12b9e409087532d1c54282, type: 3}
+  - {fileID: 1018065688083463063, guid: ae21f5cb3195aa1468939841012e67c0, type: 3}
+  - {fileID: 1018065688083463063, guid: 3098b4b963dd817449b884a5340ae7ce, type: 3}
+  - {fileID: 1018065688083463063, guid: 17ec13f1a48236e4abbf89db16fafabc, type: 3}
+  - {fileID: 1018065688083463063, guid: eb22b995a9a535e44a0b1c8388998fa2, type: 3}
+--- !u!114 &1028602568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1028602566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0f47713562bde74db5a4a9a65d02412, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1028602569
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1028602566}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 102.821686, y: -170.55643, z: 530.51685}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1059465668
 GameObject:
   m_ObjectHideFlags: 0
@@ -2645,7 +2715,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1394332838}
-  m_LocalRotation: {x: 0.38268346, y: 1e-45, z: -0, w: 0.92387956}
+  m_LocalRotation: {x: 0.38268346, y: -3e-45, z: 1e-45, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 50, z: -50}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -3158,10 +3228,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1646735746}
+  - component: {fileID: 1646735742}
   - component: {fileID: 1646735745}
   - component: {fileID: 1646735744}
   - component: {fileID: 1646735743}
-  - component: {fileID: 1646735742}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged

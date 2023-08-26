@@ -25,17 +25,24 @@ public class GameLoopManager : SingletonPersistant<GameLoopManager>
             }
         }
     }
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
+        if (this == null)
+        {
+            return;
+        }
+
         FileHandler.Init();
     }
     private void OnEnable()
     {
-        SceneHandler.Instance.SceneIsUnloading += OnSceneIsUnloading;
+        SceneManagement.SceneIsUnloading += OnSceneIsUnloading;
     }
     private void OnDisable()
     {
-        SceneHandler.Instance.SceneIsUnloading -= OnSceneIsUnloading;
+        SceneManagement.SceneIsUnloading -= OnSceneIsUnloading;
     }
 
     private void OnSceneIsUnloading(string newScene)
@@ -44,12 +51,12 @@ public class GameLoopManager : SingletonPersistant<GameLoopManager>
         {
             Serializable2DArray<TileType> map = MapHandler.Instance.SaveTileMap();
 
-            World world = DataHandler.Instance.LoadWorld();
+            World world = FileHandler.LoadWorld();
 
             world.map = map;
             SaveWorld.Invoke(ref world);
 
-            DataHandler.Instance.SaveWorld(world);
+            FileHandler.SaveWorld(world);
         }
     }
 
@@ -64,7 +71,7 @@ public class GameLoopManager : SingletonPersistant<GameLoopManager>
                 }
                 break;
             case GameState.MainMenu:
-                await SceneHandler.Instance.LoadScene("Menu");
+                await SceneManagement.LoadScene("Menu");
                 break;
         }
         GameStateChanged?.Invoke(_gameState, oldGameState);
@@ -72,13 +79,13 @@ public class GameLoopManager : SingletonPersistant<GameLoopManager>
 
     private async Task SwitchToGame()
     {
-        await SceneHandler.Instance.LoadScene("Game");
+        await SceneManagement.LoadScene("Game");
         LoadWorld();
     }
 
     public void LoadWorld()
     {
-        World world = DataHandler.Instance.LoadWorld();
+        World world = FileHandler.LoadWorld();
 
         MapHandler.Instance.GenerateTileMap(world.map);
         InitWorld.Invoke(world);

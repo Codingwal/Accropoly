@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class InputManager : SingletonPersistant<InputManager>
+public class InputManager : MonoBehaviour
 {
     public Controls inputActions;
     public Controls.InGameActions inGameActions;
@@ -10,16 +10,20 @@ public class InputManager : SingletonPersistant<InputManager>
         inputActions = new Controls();
         inGameActions = inputActions.InGame;
 
-        inputActions.Pause.Pause.performed += OnPause;
-
         GameLoopManager.Instance.GameStateChanged += OnGameStateChanged;
     }
-    private void OnDisable() {
+    private void OnEnable()
+    {
+        inputActions.Pause.Pause.performed += OnPause;
+    }
+    private void OnDisable()
+    {
         inputActions.Pause.Pause.performed -= OnPause;
     }
 
     private void OnPause(UnityEngine.InputSystem.InputAction.CallbackContext context)
     {
+        Debug.Log("OnPause");
         switch (GameLoopManager.Instance.GameState)
         {
             case GameState.InGame:
