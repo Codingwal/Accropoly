@@ -52,6 +52,7 @@ public class MapHandler : Singleton<MapHandler>
         tile.transform.eulerAngles = new(0, rotation, 0);
         tile.transform.localScale = new(tileSize, 1, tileSize);
     }
+    
     public Serializable2DArray<Tile> SaveTileMap()
     {
         int tileMapSize = (int)Math.Sqrt(tileParent.childCount);

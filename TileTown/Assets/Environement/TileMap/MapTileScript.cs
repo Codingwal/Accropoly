@@ -20,20 +20,33 @@ public class MapTileScript : MonoBehaviour, IMapTile
     }
     private void OnMouseEnter()
     {
+
         if (buildingSystemHandler.highlightTiles)
         {
-            renderer.material.color = Color.blue;
-
             buildingSystemHandler.selectedTile = transform;
         }
     }
     private void OnMouseExit()
     {
         renderer.material.color = defaultColor;
+
+        if (buildingSystemHandler.selectedTile == transform)
+        {
+            buildingSystemHandler.selectedTile = null;
+        }
     }
 
     public Tile GetTile()
     {
         return new Tile(tileType, (int)transform.eulerAngles.y / 90);
+    }
+    public void PlaceableColor()
+    {
+        renderer.material.color = Color.green;
+    }
+
+    public void NotPlaceableColor()
+    {
+        renderer.material.color = Color.red;
     }
 }

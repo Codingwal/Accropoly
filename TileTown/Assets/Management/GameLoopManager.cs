@@ -44,20 +44,28 @@ public class GameLoopManager : SingletonPersistant<GameLoopManager>
     {
         SceneManagement.SceneIsUnloading -= OnSceneIsUnloading;
     }
-
+    private void OnApplicationQuit()
+    {
+        SaveWorldData();
+    }
     private void OnSceneIsUnloading(string newScene)
     {
         if (newScene == "Menu")
         {
-            Serializable2DArray<Tile> map = MapHandler.Instance.SaveTileMap();
-
-            World world = FileHandler.LoadWorld();
-
-            world.map = map;
-            SaveWorld.Invoke(ref world);
-
-            FileHandler.SaveWorld(world);
+            SaveWorldData();
         }
+    }
+
+    private void SaveWorldData()
+    {
+        Serializable2DArray<Tile> map = MapHandler.Instance.SaveTileMap();
+
+        World world = FileHandler.LoadWorld();
+
+        world.map = map;
+        SaveWorld.Invoke(ref world);
+
+        FileHandler.SaveWorld(world);
     }
 
     private async void OnGameStateChanged(GameState newGameState, GameState oldGameState)

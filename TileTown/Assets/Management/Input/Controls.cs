@@ -62,6 +62,24 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Place"",
+                    ""type"": ""Button"",
+                    ""id"": ""4fc6073c-5444-46a7-aa50-272d23b11771"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Cancel"",
+                    ""type"": ""Button"",
+                    ""id"": ""5c9d33a5-b5e8-4d0e-a70c-24464da5779b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -196,6 +214,28 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""action"": ""CameraSprint"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c84c9b63-41a2-41e9-a898-798dde8cead6"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Place"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""30268a4a-12b5-492e-9270-21cd2a90f891"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Cancel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -256,6 +296,8 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         m_InGame_CameraRotation = m_InGame.FindAction("CameraRotation", throwIfNotFound: true);
         m_InGame_CameraScroll = m_InGame.FindAction("CameraScroll", throwIfNotFound: true);
         m_InGame_CameraSprint = m_InGame.FindAction("CameraSprint", throwIfNotFound: true);
+        m_InGame_Place = m_InGame.FindAction("Place", throwIfNotFound: true);
+        m_InGame_Cancel = m_InGame.FindAction("Cancel", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Escape = m_UI.FindAction("Escape", throwIfNotFound: true);
@@ -323,6 +365,8 @@ public partial class @Controls : IInputActionCollection2, IDisposable
     private readonly InputAction m_InGame_CameraRotation;
     private readonly InputAction m_InGame_CameraScroll;
     private readonly InputAction m_InGame_CameraSprint;
+    private readonly InputAction m_InGame_Place;
+    private readonly InputAction m_InGame_Cancel;
     public struct InGameActions
     {
         private @Controls m_Wrapper;
@@ -331,6 +375,8 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         public InputAction @CameraRotation => m_Wrapper.m_InGame_CameraRotation;
         public InputAction @CameraScroll => m_Wrapper.m_InGame_CameraScroll;
         public InputAction @CameraSprint => m_Wrapper.m_InGame_CameraSprint;
+        public InputAction @Place => m_Wrapper.m_InGame_Place;
+        public InputAction @Cancel => m_Wrapper.m_InGame_Cancel;
         public InputActionMap Get() { return m_Wrapper.m_InGame; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -352,6 +398,12 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @CameraSprint.started -= m_Wrapper.m_InGameActionsCallbackInterface.OnCameraSprint;
                 @CameraSprint.performed -= m_Wrapper.m_InGameActionsCallbackInterface.OnCameraSprint;
                 @CameraSprint.canceled -= m_Wrapper.m_InGameActionsCallbackInterface.OnCameraSprint;
+                @Place.started -= m_Wrapper.m_InGameActionsCallbackInterface.OnPlace;
+                @Place.performed -= m_Wrapper.m_InGameActionsCallbackInterface.OnPlace;
+                @Place.canceled -= m_Wrapper.m_InGameActionsCallbackInterface.OnPlace;
+                @Cancel.started -= m_Wrapper.m_InGameActionsCallbackInterface.OnCancel;
+                @Cancel.performed -= m_Wrapper.m_InGameActionsCallbackInterface.OnCancel;
+                @Cancel.canceled -= m_Wrapper.m_InGameActionsCallbackInterface.OnCancel;
             }
             m_Wrapper.m_InGameActionsCallbackInterface = instance;
             if (instance != null)
@@ -368,6 +420,12 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @CameraSprint.started += instance.OnCameraSprint;
                 @CameraSprint.performed += instance.OnCameraSprint;
                 @CameraSprint.canceled += instance.OnCameraSprint;
+                @Place.started += instance.OnPlace;
+                @Place.performed += instance.OnPlace;
+                @Place.canceled += instance.OnPlace;
+                @Cancel.started += instance.OnCancel;
+                @Cancel.performed += instance.OnCancel;
+                @Cancel.canceled += instance.OnCancel;
             }
         }
     }
@@ -419,6 +477,8 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         void OnCameraRotation(InputAction.CallbackContext context);
         void OnCameraScroll(InputAction.CallbackContext context);
         void OnCameraSprint(InputAction.CallbackContext context);
+        void OnPlace(InputAction.CallbackContext context);
+        void OnCancel(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,6 +21,10 @@ public class PlayerUIManager : MonoBehaviour
         inputManager = InputManager.Instance;
 
         buildingMenuButton.onClick.AddListener(ToggleBuildingMenu);
+        forestButton.onClick.AddListener(OnPlaceForest);
+        streetButton.onClick.AddListener(OnPlaceStreet);
+        streetCornerButton.onClick.AddListener(OnPlaceStreetCorner);
+        clearButton.onClick.AddListener(OnClear);
     }
     private void OnEnable()
     {
@@ -49,10 +50,26 @@ public class PlayerUIManager : MonoBehaviour
         }
         return false;
     }
-
     private void ToggleBuildingMenu()
     {
         buildingSystemHandler.highlightTiles = !buildingSystemHandler.highlightTiles;
         buildingMenu.SetActive(buildingSystemHandler.highlightTiles);
+    }
+
+    private void OnPlaceForest()
+    {
+        StartCoroutine(buildingSystemHandler.PlaceTile(TileType.Forest));
+    }
+    private void OnPlaceStreet()
+    {
+        StartCoroutine(buildingSystemHandler.PlaceTile(TileType.Street));
+    }
+    private void OnPlaceStreetCorner()
+    {
+        StartCoroutine(buildingSystemHandler.PlaceTile(TileType.StreetCorner));
+    }
+    private void OnClear()
+    {
+        StartCoroutine(buildingSystemHandler.ClearTile());
     }
 }
