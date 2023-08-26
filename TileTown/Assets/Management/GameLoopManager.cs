@@ -49,7 +49,7 @@ public class GameLoopManager : SingletonPersistant<GameLoopManager>
     {
         if (newScene == "Menu")
         {
-            Serializable2DArray<TileType> map = MapHandler.Instance.SaveTileMap();
+            Serializable2DArray<Tile> map = MapHandler.Instance.SaveTileMap();
 
             World world = FileHandler.LoadWorld();
 

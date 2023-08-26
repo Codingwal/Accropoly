@@ -8,9 +8,9 @@ public struct World
     public Quaternion cameraSystemRotation;
     public float followOffsetY;
 
-    public Serializable2DArray<TileType> map;
+    public Serializable2DArray<Tile> map;
 
-    public World(Serializable2DArray<TileType> map)
+    public World(Serializable2DArray<Tile> map)
     {
         this.map = map;
 

@@ -13,12 +13,12 @@ public static class FileHandler
             "Templates",
             "Saves"
         };
-        Dictionary<string, IInstantiatable> requiredFiles = new Dictionary<string, IInstantiatable>()
+        Dictionary<string, IInstantiatable> requiredFiles = new()
         {
             {"UserData/userdata", new UserData()},
         };
 
-        foreach (KeyValuePair<string, Serializable2DArray<TileType>> keyValuePair in MapTemplates.mapTemplates)
+        foreach (KeyValuePair<string, Serializable2DArray<Tile>> keyValuePair in MapTemplates.mapTemplates)
         {
             requiredFiles.Add("Templates/" + keyValuePair.Key, keyValuePair.Value);
         }
@@ -96,21 +96,21 @@ public static class FileHandler
     public static World LoadWorld()
     {
         string mapName = GetWorldName();
-        return FileHandler.LoadObject<World>("Saves", mapName);
+        return LoadObject<World>("Saves", mapName);
     }
     public static void SaveWorld(World world)
     {
         string worldName = GetWorldName();
 
-        FileHandler.SaveObject("Saves", worldName, world);
+        SaveObject("Saves", worldName, world);
     }
     public static void CreateWorld(string mapTemplateName)
     {
-        Serializable2DArray<TileType> mapTemplate = FileHandler.LoadObject<Serializable2DArray<TileType>>("Templates", mapTemplateName);
+        Serializable2DArray<Tile> mapTemplate = LoadObject<Serializable2DArray<Tile>>("Templates", mapTemplateName);
 
         World world = new(mapTemplate);
 
-        FileHandler.SaveObject("Saves", GetWorldName(), world);
+        SaveObject("Saves", GetWorldName(), world);
     }
     public static void ChangeWorldName(string newMapName)
     {
@@ -126,10 +126,10 @@ public static class FileHandler
     }
     private static UserData GetUserData()
     {
-        return FileHandler.LoadObject<UserData>("UserData", "userdata");
+        return LoadObject<UserData>("UserData", "userdata");
     }
     private static void SaveUserData(UserData userData)
     {
-        FileHandler.SaveObject("UserData", "userdata", userData);
+        SaveObject("UserData", "userdata", userData);
     }
 }
