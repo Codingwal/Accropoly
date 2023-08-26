@@ -18,9 +18,15 @@ public class InputManager : Singleton<InputManager>
         inGameActions = inputActions.InGame;
         uIActions = inputActions.UI;
 
-        uIActions.Escape.performed += OnEscape;
-
         GameLoopManager.Instance.GameStateChanged += OnGameStateChanged;
+    }
+    private void OnEnable()
+    {
+        uIActions.Escape.performed += OnEscape;
+    }
+    private void OnDisable()
+    {
+        uIActions.Escape.performed -= OnEscape;
     }
 
     private void OnEscape(UnityEngine.InputSystem.InputAction.CallbackContext context)

@@ -25,11 +25,13 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
     {
         inputManager.inGameActions.Place.performed += OnPlace;
         inputManager.inGameActions.Cancel.performed += OnCancel;
+        inputManager.inGameActions.Rotate.performed += OnRotate;
     }
     private void OnDisable()
     {
         inputManager.inGameActions.Place.performed -= OnPlace;
         inputManager.inGameActions.Cancel.performed -= OnCancel;
+        inputManager.inGameActions.Rotate.performed -= OnRotate;
     }
 
     private void OnPlace(UnityEngine.InputSystem.InputAction.CallbackContext context)
@@ -39,6 +41,14 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
     private void OnCancel(UnityEngine.InputSystem.InputAction.CallbackContext context)
     {
         canceled = true;
+    }
+    private void OnRotate(UnityEngine.InputSystem.InputAction.CallbackContext context)
+    {
+        if (tilePlaced || canceled)
+        {
+            return;
+        }
+        tile.transform.rotation *= Quaternion.Euler(0, 90, 0);
     }
 
     public IEnumerator ClearTile()

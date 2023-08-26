@@ -80,6 +80,15 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Rotate"",
+                    ""type"": ""Button"",
+                    ""id"": ""fd387708-2e9f-4e1a-a8c1-f9a69cdfb2b9"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -236,6 +245,17 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""action"": ""Cancel"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4292caad-9cef-48cc-91ff-bd5e1550eb1e"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -298,6 +318,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         m_InGame_CameraSprint = m_InGame.FindAction("CameraSprint", throwIfNotFound: true);
         m_InGame_Place = m_InGame.FindAction("Place", throwIfNotFound: true);
         m_InGame_Cancel = m_InGame.FindAction("Cancel", throwIfNotFound: true);
+        m_InGame_Rotate = m_InGame.FindAction("Rotate", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Escape = m_UI.FindAction("Escape", throwIfNotFound: true);
@@ -367,6 +388,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
     private readonly InputAction m_InGame_CameraSprint;
     private readonly InputAction m_InGame_Place;
     private readonly InputAction m_InGame_Cancel;
+    private readonly InputAction m_InGame_Rotate;
     public struct InGameActions
     {
         private @Controls m_Wrapper;
@@ -377,6 +399,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         public InputAction @CameraSprint => m_Wrapper.m_InGame_CameraSprint;
         public InputAction @Place => m_Wrapper.m_InGame_Place;
         public InputAction @Cancel => m_Wrapper.m_InGame_Cancel;
+        public InputAction @Rotate => m_Wrapper.m_InGame_Rotate;
         public InputActionMap Get() { return m_Wrapper.m_InGame; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -404,6 +427,9 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @Cancel.started -= m_Wrapper.m_InGameActionsCallbackInterface.OnCancel;
                 @Cancel.performed -= m_Wrapper.m_InGameActionsCallbackInterface.OnCancel;
                 @Cancel.canceled -= m_Wrapper.m_InGameActionsCallbackInterface.OnCancel;
+                @Rotate.started -= m_Wrapper.m_InGameActionsCallbackInterface.OnRotate;
+                @Rotate.performed -= m_Wrapper.m_InGameActionsCallbackInterface.OnRotate;
+                @Rotate.canceled -= m_Wrapper.m_InGameActionsCallbackInterface.OnRotate;
             }
             m_Wrapper.m_InGameActionsCallbackInterface = instance;
             if (instance != null)
@@ -426,6 +452,9 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @Cancel.started += instance.OnCancel;
                 @Cancel.performed += instance.OnCancel;
                 @Cancel.canceled += instance.OnCancel;
+                @Rotate.started += instance.OnRotate;
+                @Rotate.performed += instance.OnRotate;
+                @Rotate.canceled += instance.OnRotate;
             }
         }
     }
@@ -479,6 +508,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         void OnCameraSprint(InputAction.CallbackContext context);
         void OnPlace(InputAction.CallbackContext context);
         void OnCancel(InputAction.CallbackContext context);
+        void OnRotate(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

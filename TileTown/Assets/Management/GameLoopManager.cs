@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using UnityEngine.SceneManagement;
 
 public class GameLoopManager : SingletonPersistant<GameLoopManager>
 {
@@ -46,6 +47,10 @@ public class GameLoopManager : SingletonPersistant<GameLoopManager>
     }
     private void OnApplicationQuit()
     {
+        if (SceneManager.GetActiveScene().name == "Menu")
+        {
+            return;
+        }
         SaveWorldData();
     }
     private void OnSceneIsUnloading(string newScene)
