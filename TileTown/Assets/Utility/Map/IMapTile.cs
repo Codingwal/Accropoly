@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface IMapTile
 {
-    public TileType GetTileType();
+    public Tile GetTile();
 }

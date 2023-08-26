@@ -13,12 +13,12 @@ public static class FileHandler
             "Templates",
             "Saves"
         };
-        Dictionary<string, IInstantiatable> requiredFiles = new Dictionary<string, IInstantiatable>()
+        Dictionary<string, IInstantiatable> requiredFiles = new()
         {
             {"UserData/userdata", new UserData()},
         };
 
-        foreach (KeyValuePair<string, Serializable2DArray<TileType>> keyValuePair in MapTemplates.mapTemplates)
+        foreach (KeyValuePair<string, Serializable2DArray<Tile>> keyValuePair in MapTemplates.mapTemplates)
         {
             requiredFiles.Add("Templates/" + keyValuePair.Key, keyValuePair.Value);
         }
@@ -87,5 +87,49 @@ public static class FileHandler
         string filePath = $"{Application.persistentDataPath}/data/{directory}/{name}.json";
 
         File.Delete(filePath);
+    }
+
+
+    ////////////////////////////////////////////////////////////////////////////////
+
+
+    public static World LoadWorld()
+    {
+        string mapName = GetWorldName();
+        return LoadObject<World>("Saves", mapName);
+    }
+    public static void SaveWorld(World world)
+    {
+        string worldName = GetWorldName();
+
+        SaveObject("Saves", worldName, world);
+    }
+    public static void CreateWorld(string mapTemplateName)
+    {
+        Serializable2DArray<Tile> mapTemplate = LoadObject<Serializable2DArray<Tile>>("Templates", mapTemplateName);
+
+        World world = new(mapTemplate);
+
+        SaveObject("Saves", GetWorldName(), world);
+    }
+    public static void ChangeWorldName(string newMapName)
+    {
+        UserData userData = GetUserData();
+
+        userData.worldName = newMapName;
+
+        SaveUserData(userData);
+    }
+    public static string GetWorldName()
+    {
+        return GetUserData().worldName;
+    }
+    private static UserData GetUserData()
+    {
+        return LoadObject<UserData>("UserData", "userdata");
+    }
+    private static void SaveUserData(UserData userData)
+    {
+        SaveObject("UserData", "userdata", userData);
     }
 }

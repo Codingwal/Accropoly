@@ -24,18 +24,18 @@ public class CameraSystem : MonoBehaviour
     [SerializeField] private float sprintSpeedMultiplier;
     private float currentSpeedMultiplier;
 
+    [SerializeField] private InputManager inputManager;
+    Controls.InGameActions inGameActions;
 
-
-    private void Awake()
-    {
-
-    }
     private void Start()
     {
         followOffset = cinemachineVirtualCamera.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset;
+
+
     }
     private void FixedUpdate()
     {
+        inGameActions = inputManager.inGameActions;
         CheckIfSprinting();
         MoveCamera();
         RotateCamera();
@@ -69,7 +69,7 @@ public class CameraSystem : MonoBehaviour
 
     private void CheckIfSprinting()
     {
-        bool isSprinting = InputManager.Instance.inGameActions.CameraSprint.IsPressed();
+        bool isSprinting = inGameActions.CameraSprint.IsPressed();
 
         if (isSprinting)
         {
@@ -84,7 +84,7 @@ public class CameraSystem : MonoBehaviour
     private void MoveCamera()
     {
         // Get the input
-        Vector2 moveDirInput = InputManager.Instance.inGameActions.CameraMovement.ReadValue<Vector2>();
+        Vector2 moveDirInput = inGameActions.CameraMovement.ReadValue<Vector2>();
 
         // Transform it so it depends on object direction
         Vector3 moveDir = transform.forward * moveDirInput.y + transform.right * moveDirInput.x;
@@ -98,7 +98,7 @@ public class CameraSystem : MonoBehaviour
     private void RotateCamera()
     {
         // Get the input
-        float rotateDirInput = InputManager.Instance.inGameActions.CameraRotation.ReadValue<float>();
+        float rotateDirInput = inGameActions.CameraRotation.ReadValue<float>();
 
         // Rotate the camera
         transform.eulerAngles += new Vector3(0, rotateDirInput * rotationSpeed * currentSpeedMultiplier * Time.deltaTime, 0);
@@ -106,7 +106,7 @@ public class CameraSystem : MonoBehaviour
     private void ZoomCamera()
     {
         // Get the input
-        float scrollInput = InputManager.Instance.inGameActions.CameraScroll.ReadValue<float>();
+        float scrollInput = inGameActions.CameraScroll.ReadValue<float>();
 
         if (scrollInput > 0)
         {

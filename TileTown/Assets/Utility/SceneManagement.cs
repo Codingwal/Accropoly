@@ -1,14 +1,13 @@
 using System;
-using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class SceneHandler : SingletonPersistant<SceneHandler>
+public static class SceneManagement
 {
-    public event Action<string> SceneIsUnloading;
-    public event Action<float> LoadingScene;
-    public async Task LoadScene(string sceneName)
+    public static event Action<string> SceneIsUnloading;
+    public static event Action<float> LoadingScene;
+    public static async Task LoadScene(string sceneName)
     {
         // Start loading the scene
         AsyncOperation scene = SceneManager.LoadSceneAsync(sceneName);
