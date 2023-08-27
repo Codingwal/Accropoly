@@ -7,11 +7,10 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
     public bool highlightTiles;
     public Transform selectedTile;
 
-    private bool tilePlaced;
     private bool canceled;
 
-    public GameObject tile;
-
+    public GameObject tile = null;
+    private IMapTile mapTileScript;
     private InputManager inputManager;
     private MapHandler mapHandler;
     protected override void Awake()
@@ -23,117 +22,217 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
     }
     private void OnEnable()
     {
-        inputManager.inGameActions.Place.performed += OnPlace;
         inputManager.inGameActions.Cancel.performed += OnCancel;
         inputManager.inGameActions.Rotate.performed += OnRotate;
     }
     private void OnDisable()
     {
-        inputManager.inGameActions.Place.performed -= OnPlace;
         inputManager.inGameActions.Cancel.performed -= OnCancel;
         inputManager.inGameActions.Rotate.performed -= OnRotate;
     }
 
-    private void OnPlace(UnityEngine.InputSystem.InputAction.CallbackContext context)
-    {
-        tilePlaced = true;
-    }
     private void OnCancel(UnityEngine.InputSystem.InputAction.CallbackContext context)
     {
         canceled = true;
     }
     private void OnRotate(UnityEngine.InputSystem.InputAction.CallbackContext context)
     {
-        if (tilePlaced || canceled)
+        if (tile.transform == null)
         {
             return;
         }
-        tile.transform.rotation *= Quaternion.Euler(0, 90, 0);
+        if (inputManager.inGameActions.Shift.IsPressed())
+        {
+            tile.transform.rotation *= Quaternion.Euler(0, -90, 0);
+        }
+        else
+        {
+            tile.transform.rotation *= Quaternion.Euler(0, 90, 0);
+        }
+
     }
 
     public IEnumerator ClearTile()
     {
-        canceled = false;
-        tilePlaced = false;
+        // Terminate all other running loops
+        yield return TerminatePlacingLoops();
 
-        while (!(tilePlaced || canceled))
+        GameObject tilePrefab = mapHandler.tilePrefabsDictValues[mapHandler.tilePrefabsDictKeys.IndexOf(TileType.Plains)];
+
+        tile = Instantiate(tilePrefab);
+
+        tile.layer = 2;
+
+        canceled = false;
+
+        mapTileScript = tile.GetComponent<IMapTile>();
+
+        while (true)
         {
             if (selectedTile != null)
             {
-                selectedTile.GetComponent<IMapTile>().PlaceableColor();
+                tile.transform.position = selectedTile.position + new Vector3(0, 1, 0);
+
+                mapTileScript.PlaceableColor();
             }
-            yield return null;
+            if (canceled)
+            {
+                Destroy(tile);
+                yield break;
+            }
+            if (inputManager.inGameActions.Place.IsPressed())
+            {
+                if (selectedTile != null)
+                {
+                    Quaternion tileRotation = tile.transform.rotation;
+                    ReplaceTile();
+
+                    tile = Instantiate(tilePrefab);
+                    tile.transform.rotation = tileRotation;
+                    tile.layer = 2;
+
+                    mapTileScript = tile.GetComponent<IMapTile>();
+                }
+            }
+            yield return new WaitForEndOfFrame();
         }
-        if (canceled || selectedTile == null)
+    }
+
+    public IEnumerator PlaceTile(TileType tileType)
+    {
+        yield return TerminatePlacingLoops();
+
+        GameObject tilePrefab = mapHandler.tilePrefabsDictValues[mapHandler.tilePrefabsDictKeys.IndexOf(tileType)];
+
+        tile = Instantiate(tilePrefab);
+        tile.layer = 2;
+
+        canceled = false;
+
+        mapTileScript = tile.GetComponent<IMapTile>();
+
+        while (true)
         {
-            yield break;
+            if (selectedTile != null)
+            {
+                tile.transform.position = selectedTile.position + new Vector3(0, 1, 0);
+            }
+            if (CanBePlaced())
+            {
+                mapTileScript.PlaceableColor();
+            }
+            else
+            {
+                mapTileScript.NotPlaceableColor();
+            }
+            if (canceled)
+            {
+                Destroy(tile);
+                yield break;
+            }
+            if (inputManager.inGameActions.Place.IsPressed())
+            {
+                if (CanBePlaced())
+                {
+                    Quaternion tileRotation = tile.transform.rotation;
+                    ReplaceTile();
+
+                    tile = Instantiate(tilePrefab);
+                    tile.transform.rotation = tileRotation;
+                    tile.layer = 2;
+
+                    mapTileScript = tile.GetComponent<IMapTile>();
+                }
+            }
+            yield return new WaitForEndOfFrame();
         }
+    }
 
-        GameObject tilePrefab = mapHandler.tilePrefabsDictValues[mapHandler.tilePrefabsDictKeys.IndexOf(TileType.Plains)];
-        GameObject tile = Instantiate(tilePrefab);
-
+    private IEnumerator TerminatePlacingLoops()
+    {
+        canceled = true;
+        yield return new WaitForEndOfFrame();
+        if (tile != null)
+        {
+            Destroy(tile);
+        }
+    }
+    private bool CanBePlaced()
+    {
+        if (selectedTile == null)
+        {
+            return false;
+        }
+        return selectedTile.GetComponent<IMapTile>().GetTile().tileType == TileType.Plains;
+    }
+    private void ReplaceTile()
+    {
         tile.transform.position = selectedTile.position;
         tile.transform.parent = MapHandler.Instance.tileParent;
         tile.transform.SetSiblingIndex(selectedTile.GetSiblingIndex());
 
+        tile.layer = 0;
+        tile.GetComponent<IMapTile>().DefaultColor();
+
         Destroy(selectedTile.gameObject);
     }
-    public IEnumerator PlaceTile(TileType tileType)
-    {
-        GameObject tilePrefab = mapHandler.tilePrefabsDictValues[mapHandler.tilePrefabsDictKeys.IndexOf(tileType)];
-        tile = Instantiate(tilePrefab);
-
-        // Ignore Raycast
-        tile.layer = 2;
-
-        canceled = false;
-        tilePlaced = false;
-
-        IMapTile mapTile = null;
-
-        while (!(tilePlaced || canceled))
-        {
-            if (selectedTile != null)
-            {
-                tile.SetActive(true);
-                tile.transform.position = selectedTile.position + new Vector3(0, 20, 0);
-
-                mapTile = selectedTile.GetComponent<IMapTile>();
-                if (mapTile.GetTile().tileType == TileType.Plains)
-                {
-                    mapTile.PlaceableColor();
-                }
-                else
-                {
-                    mapTile.NotPlaceableColor();
-                }
-            }
-            else
-            {
-                tile.SetActive(false);
-            }
-            yield return new WaitForEndOfFrame();
-        }
-        if (canceled || selectedTile == null)
-        {
-            Destroy(tile);
-            yield break;
-        }
-
-        if (mapTile.GetTile().tileType == TileType.Plains)
-        {
-            tile.transform.position -= new Vector3(0, 20, 0);
-            tile.transform.parent = MapHandler.Instance.tileParent;
-            tile.transform.SetSiblingIndex(selectedTile.GetSiblingIndex());
-
-            Destroy(selectedTile.gameObject);
-
-            // Default layer
-            tile.layer = 0;
-        }
-        else
-        {
-            Destroy(tile);
-        }
-    }
 }
+
+// public IEnumerator PlaceTile(TileType tileType)
+// {
+//     GameObject tilePrefab = mapHandler.tilePrefabsDictValues[mapHandler.tilePrefabsDictKeys.IndexOf(tileType)];
+//     tile = Instantiate(tilePrefab);
+
+//     // Ignore Raycast
+//     tile.layer = 2;
+
+//     canceled = false;
+//     tilePlaced = false;
+
+//     IMapTile mapTile = null;
+
+//     while (!(tilePlaced || canceled))
+//     {
+//         if (selectedTile != null)
+//         {
+//             tile.SetActive(true);
+//             tile.transform.position = selectedTile.position + new Vector3(0, 20, 0);
+
+//             mapTile = selectedTile.GetComponent<IMapTile>();
+//             if (mapTile.GetTile().tileType == TileType.Plains)
+//             {
+//                 mapTile.PlaceableColor();
+//             }
+//             else
+//             {
+//                 mapTile.NotPlaceableColor();
+//             }
+//         }
+//         else
+//         {
+//             tile.SetActive(false);
+//         }
+//         yield return new WaitForEndOfFrame();
+//     }
+//     if (canceled || selectedTile == null)
+//     {
+//         Destroy(tile);
+//         yield break;
+//     }
+
+//     if (mapTile.GetTile().tileType == TileType.Plains)
+//     {
+//         tile.transform.position -= new Vector3(0, 20, 0);
+//         tile.transform.parent = MapHandler.Instance.tileParent;
+//         tile.transform.SetSiblingIndex(selectedTile.GetSiblingIndex());
+
+//         Destroy(selectedTile.gameObject);
+
+//         // Default layer
+//         tile.layer = 0;
+//     }
+//     else
+//     {
+//         Destroy(tile);
+//     }
+// }

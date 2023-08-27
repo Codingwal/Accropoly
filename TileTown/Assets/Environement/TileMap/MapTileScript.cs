@@ -11,7 +11,7 @@ public class MapTileScript : MonoBehaviour, IMapTile
     private BuildingSystemHandler buildingSystemHandler;
 
 
-    private void Start()
+    private void Awake()
     {
         renderer = GetComponent<Renderer>();
         buildingSystemHandler = BuildingSystemHandler.Instance;
@@ -20,7 +20,10 @@ public class MapTileScript : MonoBehaviour, IMapTile
     }
     private void OnMouseEnter()
     {
-
+        if (buildingSystemHandler.tile == gameObject)
+        {
+            return;
+        }
         if (buildingSystemHandler.highlightTiles)
         {
             buildingSystemHandler.selectedTile = transform;
@@ -28,7 +31,7 @@ public class MapTileScript : MonoBehaviour, IMapTile
     }
     private void OnMouseExit()
     {
-        renderer.material.color = defaultColor;
+        DefaultColor();
 
         if (buildingSystemHandler.selectedTile == transform)
         {
@@ -40,11 +43,14 @@ public class MapTileScript : MonoBehaviour, IMapTile
     {
         return new Tile(tileType, (int)transform.eulerAngles.y / 90);
     }
+    public void DefaultColor()
+    {
+        renderer.material.color = defaultColor;
+    }
     public void PlaceableColor()
     {
         renderer.material.color = Color.green;
     }
-
     public void NotPlaceableColor()
     {
         renderer.material.color = Color.red;

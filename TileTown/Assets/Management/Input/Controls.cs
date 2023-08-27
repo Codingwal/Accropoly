@@ -89,6 +89,15 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Shift"",
+                    ""type"": ""Button"",
+                    ""id"": ""930b3c14-5ee5-4255-a56c-1bb65723064d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -256,6 +265,17 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""action"": ""Rotate"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""96b953de-687b-4746-bd7c-b076bd07fda4"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Shift"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -319,6 +339,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         m_InGame_Place = m_InGame.FindAction("Place", throwIfNotFound: true);
         m_InGame_Cancel = m_InGame.FindAction("Cancel", throwIfNotFound: true);
         m_InGame_Rotate = m_InGame.FindAction("Rotate", throwIfNotFound: true);
+        m_InGame_Shift = m_InGame.FindAction("Shift", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Escape = m_UI.FindAction("Escape", throwIfNotFound: true);
@@ -389,6 +410,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
     private readonly InputAction m_InGame_Place;
     private readonly InputAction m_InGame_Cancel;
     private readonly InputAction m_InGame_Rotate;
+    private readonly InputAction m_InGame_Shift;
     public struct InGameActions
     {
         private @Controls m_Wrapper;
@@ -400,6 +422,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         public InputAction @Place => m_Wrapper.m_InGame_Place;
         public InputAction @Cancel => m_Wrapper.m_InGame_Cancel;
         public InputAction @Rotate => m_Wrapper.m_InGame_Rotate;
+        public InputAction @Shift => m_Wrapper.m_InGame_Shift;
         public InputActionMap Get() { return m_Wrapper.m_InGame; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -430,6 +453,9 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @Rotate.started -= m_Wrapper.m_InGameActionsCallbackInterface.OnRotate;
                 @Rotate.performed -= m_Wrapper.m_InGameActionsCallbackInterface.OnRotate;
                 @Rotate.canceled -= m_Wrapper.m_InGameActionsCallbackInterface.OnRotate;
+                @Shift.started -= m_Wrapper.m_InGameActionsCallbackInterface.OnShift;
+                @Shift.performed -= m_Wrapper.m_InGameActionsCallbackInterface.OnShift;
+                @Shift.canceled -= m_Wrapper.m_InGameActionsCallbackInterface.OnShift;
             }
             m_Wrapper.m_InGameActionsCallbackInterface = instance;
             if (instance != null)
@@ -455,6 +481,9 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @Rotate.started += instance.OnRotate;
                 @Rotate.performed += instance.OnRotate;
                 @Rotate.canceled += instance.OnRotate;
+                @Shift.started += instance.OnShift;
+                @Shift.performed += instance.OnShift;
+                @Shift.canceled += instance.OnShift;
             }
         }
     }
@@ -509,6 +538,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         void OnPlace(InputAction.CallbackContext context);
         void OnCancel(InputAction.CallbackContext context);
         void OnRotate(InputAction.CallbackContext context);
+        void OnShift(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

@@ -125,7 +125,7 @@ GameObject:
   - component: {fileID: 1502441625267286280}
   - component: {fileID: 1473240843955220323}
   - component: {fileID: 3276706751646277304}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Street2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -222,7 +222,7 @@ GameObject:
   - component: {fileID: 3727977514874915009}
   - component: {fileID: 748698983409410996}
   - component: {fileID: 7296579945513181668}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Street
   m_TagString: Untagged
   m_Icon: {fileID: 0}
