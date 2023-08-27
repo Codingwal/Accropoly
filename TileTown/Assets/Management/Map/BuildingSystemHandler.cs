@@ -69,12 +69,17 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
 
         while (true)
         {
-            if (selectedTile != null)
+            if (selectedTile == null)
             {
+                tile.SetActive(false);
+            }
+            else
+            {
+                tile.SetActive(true);
                 tile.transform.position = selectedTile.position + new Vector3(0, 1, 0);
-
                 mapTileScript.PlaceableColor();
             }
+
             if (canceled)
             {
                 Destroy(tile);
@@ -113,8 +118,13 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
 
         while (true)
         {
-            if (selectedTile != null)
+            if (selectedTile == null)
             {
+                tile.SetActive(false);
+            }
+            else
+            {
+                tile.SetActive(true);
                 tile.transform.position = selectedTile.position + new Vector3(0, 1, 0);
             }
             if (CanBePlaced())

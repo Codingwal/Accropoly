@@ -23,6 +23,8 @@ public enum TileType
     // Normal street, houses can connect
     Street,
     StreetCorner,
+    StreetTJunction,
+    StreetJunction
 
     // // Faster street, houses can't connect
     // Highway,

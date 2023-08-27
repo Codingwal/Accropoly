@@ -293,9 +293,63 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""BuildingMenuHotkey"",
+                    ""name"": ""Ctrl"",
+                    ""type"": ""Button"",
+                    ""id"": ""4ecf67ce-b982-4c85-9a83-86331ad701aa"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Hotkey1"",
                     ""type"": ""Button"",
                     ""id"": ""6a9e8041-d132-4cf8-b436-22d18546849d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Hotkey2"",
+                    ""type"": ""Button"",
+                    ""id"": ""0ac1708e-6b48-4829-8050-d5ee7f650639"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Hotkey3"",
+                    ""type"": ""Button"",
+                    ""id"": ""de429163-b4d4-4671-aec5-00a557042977"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Hotkey4"",
+                    ""type"": ""Button"",
+                    ""id"": ""8055c9fb-ded2-452c-a9ab-773942ed730b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Hotkey5"",
+                    ""type"": ""Button"",
+                    ""id"": ""43bb6ccf-2f7f-401f-b4db-ee6775f59356"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Hotkey6"",
+                    ""type"": ""Button"",
+                    ""id"": ""5884bfc6-11fa-4071-9e2d-4fd2f23463ec"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -321,7 +375,73 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""BuildingMenuHotkey"",
+                    ""action"": ""Hotkey1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""082256b8-a5c3-49ac-bb2c-d60dc0f38c02"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Hotkey2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""26ba4819-0e1b-4391-bccf-b45020c167b3"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Hotkey3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""20aa146d-2dcb-414e-9ec5-7ef485b0a390"",
+                    ""path"": ""<Keyboard>/4"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Hotkey4"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a1e0d9ed-9854-4a46-abdd-d32cf5e5ccdb"",
+                    ""path"": ""<Keyboard>/5"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Hotkey5"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""27a71fbf-6e2d-4280-a657-2728df3e368c"",
+                    ""path"": ""<Keyboard>/6"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Hotkey6"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0a50f7d0-b2a2-4d25-95c5-6344f7f9d52c"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Ctrl"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -343,7 +463,13 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Escape = m_UI.FindAction("Escape", throwIfNotFound: true);
-        m_UI_BuildingMenuHotkey = m_UI.FindAction("BuildingMenuHotkey", throwIfNotFound: true);
+        m_UI_Ctrl = m_UI.FindAction("Ctrl", throwIfNotFound: true);
+        m_UI_Hotkey1 = m_UI.FindAction("Hotkey1", throwIfNotFound: true);
+        m_UI_Hotkey2 = m_UI.FindAction("Hotkey2", throwIfNotFound: true);
+        m_UI_Hotkey3 = m_UI.FindAction("Hotkey3", throwIfNotFound: true);
+        m_UI_Hotkey4 = m_UI.FindAction("Hotkey4", throwIfNotFound: true);
+        m_UI_Hotkey5 = m_UI.FindAction("Hotkey5", throwIfNotFound: true);
+        m_UI_Hotkey6 = m_UI.FindAction("Hotkey6", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -493,13 +619,25 @@ public partial class @Controls : IInputActionCollection2, IDisposable
     private readonly InputActionMap m_UI;
     private IUIActions m_UIActionsCallbackInterface;
     private readonly InputAction m_UI_Escape;
-    private readonly InputAction m_UI_BuildingMenuHotkey;
+    private readonly InputAction m_UI_Ctrl;
+    private readonly InputAction m_UI_Hotkey1;
+    private readonly InputAction m_UI_Hotkey2;
+    private readonly InputAction m_UI_Hotkey3;
+    private readonly InputAction m_UI_Hotkey4;
+    private readonly InputAction m_UI_Hotkey5;
+    private readonly InputAction m_UI_Hotkey6;
     public struct UIActions
     {
         private @Controls m_Wrapper;
         public UIActions(@Controls wrapper) { m_Wrapper = wrapper; }
         public InputAction @Escape => m_Wrapper.m_UI_Escape;
-        public InputAction @BuildingMenuHotkey => m_Wrapper.m_UI_BuildingMenuHotkey;
+        public InputAction @Ctrl => m_Wrapper.m_UI_Ctrl;
+        public InputAction @Hotkey1 => m_Wrapper.m_UI_Hotkey1;
+        public InputAction @Hotkey2 => m_Wrapper.m_UI_Hotkey2;
+        public InputAction @Hotkey3 => m_Wrapper.m_UI_Hotkey3;
+        public InputAction @Hotkey4 => m_Wrapper.m_UI_Hotkey4;
+        public InputAction @Hotkey5 => m_Wrapper.m_UI_Hotkey5;
+        public InputAction @Hotkey6 => m_Wrapper.m_UI_Hotkey6;
         public InputActionMap Get() { return m_Wrapper.m_UI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -512,9 +650,27 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @Escape.started -= m_Wrapper.m_UIActionsCallbackInterface.OnEscape;
                 @Escape.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnEscape;
                 @Escape.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnEscape;
-                @BuildingMenuHotkey.started -= m_Wrapper.m_UIActionsCallbackInterface.OnBuildingMenuHotkey;
-                @BuildingMenuHotkey.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnBuildingMenuHotkey;
-                @BuildingMenuHotkey.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnBuildingMenuHotkey;
+                @Ctrl.started -= m_Wrapper.m_UIActionsCallbackInterface.OnCtrl;
+                @Ctrl.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnCtrl;
+                @Ctrl.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnCtrl;
+                @Hotkey1.started -= m_Wrapper.m_UIActionsCallbackInterface.OnHotkey1;
+                @Hotkey1.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnHotkey1;
+                @Hotkey1.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnHotkey1;
+                @Hotkey2.started -= m_Wrapper.m_UIActionsCallbackInterface.OnHotkey2;
+                @Hotkey2.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnHotkey2;
+                @Hotkey2.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnHotkey2;
+                @Hotkey3.started -= m_Wrapper.m_UIActionsCallbackInterface.OnHotkey3;
+                @Hotkey3.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnHotkey3;
+                @Hotkey3.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnHotkey3;
+                @Hotkey4.started -= m_Wrapper.m_UIActionsCallbackInterface.OnHotkey4;
+                @Hotkey4.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnHotkey4;
+                @Hotkey4.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnHotkey4;
+                @Hotkey5.started -= m_Wrapper.m_UIActionsCallbackInterface.OnHotkey5;
+                @Hotkey5.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnHotkey5;
+                @Hotkey5.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnHotkey5;
+                @Hotkey6.started -= m_Wrapper.m_UIActionsCallbackInterface.OnHotkey6;
+                @Hotkey6.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnHotkey6;
+                @Hotkey6.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnHotkey6;
             }
             m_Wrapper.m_UIActionsCallbackInterface = instance;
             if (instance != null)
@@ -522,9 +678,27 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @Escape.started += instance.OnEscape;
                 @Escape.performed += instance.OnEscape;
                 @Escape.canceled += instance.OnEscape;
-                @BuildingMenuHotkey.started += instance.OnBuildingMenuHotkey;
-                @BuildingMenuHotkey.performed += instance.OnBuildingMenuHotkey;
-                @BuildingMenuHotkey.canceled += instance.OnBuildingMenuHotkey;
+                @Ctrl.started += instance.OnCtrl;
+                @Ctrl.performed += instance.OnCtrl;
+                @Ctrl.canceled += instance.OnCtrl;
+                @Hotkey1.started += instance.OnHotkey1;
+                @Hotkey1.performed += instance.OnHotkey1;
+                @Hotkey1.canceled += instance.OnHotkey1;
+                @Hotkey2.started += instance.OnHotkey2;
+                @Hotkey2.performed += instance.OnHotkey2;
+                @Hotkey2.canceled += instance.OnHotkey2;
+                @Hotkey3.started += instance.OnHotkey3;
+                @Hotkey3.performed += instance.OnHotkey3;
+                @Hotkey3.canceled += instance.OnHotkey3;
+                @Hotkey4.started += instance.OnHotkey4;
+                @Hotkey4.performed += instance.OnHotkey4;
+                @Hotkey4.canceled += instance.OnHotkey4;
+                @Hotkey5.started += instance.OnHotkey5;
+                @Hotkey5.performed += instance.OnHotkey5;
+                @Hotkey5.canceled += instance.OnHotkey5;
+                @Hotkey6.started += instance.OnHotkey6;
+                @Hotkey6.performed += instance.OnHotkey6;
+                @Hotkey6.canceled += instance.OnHotkey6;
             }
         }
     }
@@ -543,6 +717,12 @@ public partial class @Controls : IInputActionCollection2, IDisposable
     public interface IUIActions
     {
         void OnEscape(InputAction.CallbackContext context);
-        void OnBuildingMenuHotkey(InputAction.CallbackContext context);
+        void OnCtrl(InputAction.CallbackContext context);
+        void OnHotkey1(InputAction.CallbackContext context);
+        void OnHotkey2(InputAction.CallbackContext context);
+        void OnHotkey3(InputAction.CallbackContext context);
+        void OnHotkey4(InputAction.CallbackContext context);
+        void OnHotkey5(InputAction.CallbackContext context);
+        void OnHotkey6(InputAction.CallbackContext context);
     }
 }

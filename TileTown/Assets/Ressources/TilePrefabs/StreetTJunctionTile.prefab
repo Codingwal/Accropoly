@@ -9,12 +9,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1018065688083463062}
+  - component: {fileID: 1173711955999131589}
   - component: {fileID: 1018065688083463059}
   - component: {fileID: 1018065688083463060}
   - component: {fileID: 1018065688083463061}
-  - component: {fileID: 1173711955999131589}
   m_Layer: 0
-  m_Name: StreetCornerTile_270
+  m_Name: StreetTJunctionTile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27,16 +27,29 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1018065688083463063}
-  m_LocalRotation: {x: 0, y: 0.7071068, z: -0, w: -0.7071068}
-  m_LocalPosition: {x: 0, y: -0.5, z: 0}
-  m_LocalScale: {x: 30, y: 1.1, z: 30}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 30, y: 1, z: 30}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 9112050651481898925}
-  - {fileID: 4976216133876136947}
+  - {fileID: 6687159703716219017}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 270, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1173711955999131589
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1018065688083463063}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15f1ff8e5212b8f4fb8e297cce4ab17c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileType: 4
 --- !u!33 &1018065688083463059
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -100,20 +113,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1173711955999131589
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1018065688083463063}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 15f1ff8e5212b8f4fb8e297cce4ab17c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tile: 7
---- !u!1 &1697097314469277721
+--- !u!1 &6604125619576604972
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -121,47 +121,47 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4976216133876136947}
-  - component: {fileID: 1502441625267286280}
-  - component: {fileID: 1473240843955220323}
-  - component: {fileID: 3276706751646277304}
-  m_Layer: 0
+  - component: {fileID: 6687159703716219017}
+  - component: {fileID: 7425420128800744295}
+  - component: {fileID: 5605701237391946019}
+  - component: {fileID: 4583719297606457317}
+  m_Layer: 2
   m_Name: Street2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4976216133876136947
+--- !u!4 &6687159703716219017
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1697097314469277721}
-  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_GameObject: {fileID: 6604125619576604972}
+  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 0.126, y: 0.1, z: 0}
-  m_LocalScale: {x: 0.5, y: 1, z: 0.75}
+  m_LocalScale: {x: 0.5, y: 1, z: 0.75000024}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1018065688083463062}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
---- !u!33 &1502441625267286280
+--- !u!33 &7425420128800744295
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1697097314469277721}
+  m_GameObject: {fileID: 6604125619576604972}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &1473240843955220323
+--- !u!23 &5605701237391946019
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1697097314469277721}
+  m_GameObject: {fileID: 6604125619576604972}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -197,13 +197,13 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &3276706751646277304
+--- !u!65 &4583719297606457317
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1697097314469277721}
+  m_GameObject: {fileID: 6604125619576604972}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
@@ -222,7 +222,7 @@ GameObject:
   - component: {fileID: 3727977514874915009}
   - component: {fileID: 748698983409410996}
   - component: {fileID: 7296579945513181668}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Street
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -237,8 +237,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8705282327283111383}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.1, z: 0.126}
-  m_LocalScale: {x: 0.5, y: 1, z: 0.75}
+  m_LocalPosition: {x: 0, y: 0.1, z: 0}
+  m_LocalScale: {x: 0.5, y: 1, z: 1.00001}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1018065688083463062}
