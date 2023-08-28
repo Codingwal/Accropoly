@@ -26,7 +26,6 @@ public class InputManager : Singleton<InputManager>
     public event Action MenuHotkey5;
     public event Action MenuHotkey6;
 
-
     protected override void Awake()
     {
         base.Awake();

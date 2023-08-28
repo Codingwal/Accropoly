@@ -5,6 +5,12 @@ using UnityEngine;
 public class MapTileScript : MonoBehaviour, IMapTile
 {
     [SerializeField] private TileType tileType;
+
+    // Index
+    public int X { get; set; }
+    public int Y { get; set; }
+
+
     private Color defaultColor;
 
     private new Renderer renderer;
@@ -20,10 +26,10 @@ public class MapTileScript : MonoBehaviour, IMapTile
     }
     private void OnMouseEnter()
     {
-        // if (buildingSystemHandler.tile == gameObject)
-        // {
-        //     return;
-        // }
+        if (this == null)
+        {
+            return;
+        }
         buildingSystemHandler.selectedTile = transform;
     }
     private void OnMouseExit()
@@ -51,5 +57,14 @@ public class MapTileScript : MonoBehaviour, IMapTile
     public void NotPlaceableColor()
     {
         renderer.material.color = Color.red;
+    }
+    public virtual bool CanBePlaced()
+    {
+        Transform selectedTile = MapHandler.Instance.map[X, Y].transform;
+        if (selectedTile == null)
+        {
+            return false;
+        }
+        return selectedTile.GetComponent<IMapTile>().GetTile().tileType == TileType.Plains;
     }
 }

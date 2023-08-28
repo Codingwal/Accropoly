@@ -63,6 +63,10 @@ public class Serializable2DArray<T> : IInstantiatable
 
         }
     }
+    public T GetValue(Vector2 index)
+    {
+        return array2D[(int)index.x][(int)index.y];
+    }
     public int GetLength(int dimension)
     {
         if (array2D.Length == 0)
