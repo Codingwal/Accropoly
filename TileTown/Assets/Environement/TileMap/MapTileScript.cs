@@ -20,14 +20,11 @@ public class MapTileScript : MonoBehaviour, IMapTile
     }
     private void OnMouseEnter()
     {
-        if (buildingSystemHandler.tile == gameObject)
-        {
-            return;
-        }
-        if (buildingSystemHandler.highlightTiles)
-        {
-            buildingSystemHandler.selectedTile = transform;
-        }
+        // if (buildingSystemHandler.tile == gameObject)
+        // {
+        //     return;
+        // }
+        buildingSystemHandler.selectedTile = transform;
     }
     private void OnMouseExit()
     {

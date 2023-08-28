@@ -15,13 +15,13 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "CameraRotation",
-                    "type": "Value",
-                    "id": "6adf67f1-b80a-4893-9a3a-10767107b108",
-                    "expectedControlType": "Axis",
+                    "name": "CameraSprint",
+                    "type": "Button",
+                    "id": "4165d590-83fc-42b5-b01f-8ed4529507da",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": true
+                    "initialStateCheck": false
                 },
                 {
                     "name": "CameraScroll",
@@ -33,27 +33,18 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "CameraSprint",
-                    "type": "Button",
-                    "id": "4165d590-83fc-42b5-b01f-8ed4529507da",
-                    "expectedControlType": "Button",
+                    "name": "CameraRotation",
+                    "type": "Value",
+                    "id": "6adf67f1-b80a-4893-9a3a-10767107b108",
+                    "expectedControlType": "Axis",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 },
                 {
-                    "name": "Place",
+                    "name": "Shift",
                     "type": "Button",
-                    "id": "4fc6073c-5444-46a7-aa50-272d23b11771",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Cancel",
-                    "type": "Button",
-                    "id": "5c9d33a5-b5e8-4d0e-a70c-24464da5779b",
+                    "id": "25ba70fa-f3ce-470b-974d-649c01c4e83d",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -62,16 +53,25 @@
                 {
                     "name": "Rotate",
                     "type": "Button",
-                    "id": "fd387708-2e9f-4e1a-a8c1-f9a69cdfb2b9",
+                    "id": "80dbd5dd-709e-44a1-b950-139a3fe8c748",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Shift",
+                    "name": "Cancel",
                     "type": "Button",
-                    "id": "930b3c14-5ee5-4255-a56c-1bb65723064d",
+                    "id": "4556e98d-309e-419a-9a14-c58ee6d08f3b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Place",
+                    "type": "Button",
+                    "id": "f52ac7ca-4a1e-42dd-8341-238b7f46fb36",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -135,6 +135,50 @@
                     "isPartOfComposite": true
                 },
                 {
+                    "name": "",
+                    "id": "90fe2f26-f7d3-41b2-ad4c-4fb8d815d6ad",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Place",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a5ace0ed-870a-4042-87df-8949a0e6527d",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Cancel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "64da14e7-e0f2-4964-8db8-3e8e1c183491",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Rotate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "82d797a5-52f2-473a-bdd1-fcc956d774f4",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Shift",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
                     "name": "QE",
                     "id": "ab9b0d56-01f3-40a9-8dda-6837b559ea25",
                     "path": "1DAxis",
@@ -148,7 +192,7 @@
                 {
                     "name": "positive",
                     "id": "8d511c7b-7f2f-4c47-9bde-20c31e51c5fe",
-                    "path": "<Keyboard>/q",
+                    "path": "<Keyboard>/e",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -159,7 +203,7 @@
                 {
                     "name": "negative",
                     "id": "ad155284-bad5-456c-8c78-13187be79fee",
-                    "path": "<Keyboard>/e",
+                    "path": "<Keyboard>/q",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -210,50 +254,6 @@
                     "action": "CameraSprint",
                     "isComposite": false,
                     "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "c84c9b63-41a2-41e9-a898-798dde8cead6",
-                    "path": "<Mouse>/leftButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Place",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "30268a4a-12b5-492e-9270-21cd2a90f891",
-                    "path": "<Mouse>/rightButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Cancel",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "4292caad-9cef-48cc-91ff-bd5e1550eb1e",
-                    "path": "<Keyboard>/r",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Rotate",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "96b953de-687b-4746-bd7c-b076bd07fda4",
-                    "path": "<Keyboard>/shift",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Shift",
-                    "isComposite": false,
-                    "isPartOfComposite": false
                 }
             ]
         },
@@ -265,6 +265,15 @@
                     "name": "Escape",
                     "type": "Button",
                     "id": "f8ad0456-55c1-447d-84cd-6994aa99c56a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Menu",
+                    "type": "Button",
+                    "id": "123fe9f2-c13b-4db8-953f-d1aa8c4d444e",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -328,6 +337,15 @@
                     "name": "Hotkey6",
                     "type": "Button",
                     "id": "5884bfc6-11fa-4071-9e2d-4fd2f23463ec",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Clear",
+                    "type": "Button",
+                    "id": "1d785eba-4278-42a9-858e-4b9f40fdd40c",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -420,6 +438,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Ctrl",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3249f896-051f-4876-bebe-737db0733c9d",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Menu",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7ffd6e19-f9aa-43a2-a48c-a280518bbb0d",
+                    "path": "<Keyboard>/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Clear",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

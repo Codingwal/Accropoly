@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
 {
-    public bool highlightTiles;
     public Transform selectedTile;
 
     private bool canceled;
@@ -51,7 +50,6 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
         }
 
     }
-
     public IEnumerator ClearTile()
     {
         // Terminate all other running loops
@@ -158,7 +156,7 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
         }
     }
 
-    private IEnumerator TerminatePlacingLoops()
+    public IEnumerator TerminatePlacingLoops()
     {
         canceled = true;
         yield return new WaitForEndOfFrame();
@@ -187,62 +185,3 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
         Destroy(selectedTile.gameObject);
     }
 }
-
-// public IEnumerator PlaceTile(TileType tileType)
-// {
-//     GameObject tilePrefab = mapHandler.tilePrefabsDictValues[mapHandler.tilePrefabsDictKeys.IndexOf(tileType)];
-//     tile = Instantiate(tilePrefab);
-
-//     // Ignore Raycast
-//     tile.layer = 2;
-
-//     canceled = false;
-//     tilePlaced = false;
-
-//     IMapTile mapTile = null;
-
-//     while (!(tilePlaced || canceled))
-//     {
-//         if (selectedTile != null)
-//         {
-//             tile.SetActive(true);
-//             tile.transform.position = selectedTile.position + new Vector3(0, 20, 0);
-
-//             mapTile = selectedTile.GetComponent<IMapTile>();
-//             if (mapTile.GetTile().tileType == TileType.Plains)
-//             {
-//                 mapTile.PlaceableColor();
-//             }
-//             else
-//             {
-//                 mapTile.NotPlaceableColor();
-//             }
-//         }
-//         else
-//         {
-//             tile.SetActive(false);
-//         }
-//         yield return new WaitForEndOfFrame();
-//     }
-//     if (canceled || selectedTile == null)
-//     {
-//         Destroy(tile);
-//         yield break;
-//     }
-
-//     if (mapTile.GetTile().tileType == TileType.Plains)
-//     {
-//         tile.transform.position -= new Vector3(0, 20, 0);
-//         tile.transform.parent = MapHandler.Instance.tileParent;
-//         tile.transform.SetSiblingIndex(selectedTile.GetSiblingIndex());
-
-//         Destroy(selectedTile.gameObject);
-
-//         // Default layer
-//         tile.layer = 0;
-//     }
-//     else
-//     {
-//         Destroy(tile);
-//     }
-// }
