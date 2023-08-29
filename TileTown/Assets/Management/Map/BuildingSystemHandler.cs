@@ -8,12 +8,10 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
 
     private bool canceled;
 
-    public GameObject tile = null;
-    private IMapTile mapTileScript;
+    private float tileRotation = 0;
+
     private InputManager inputManager;
     private MapHandler mapHandler;
-
-    IMapTile selectedTileScript;
     protected override void Awake()
     {
         base.Awake();
@@ -38,34 +36,37 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
     }
     private void OnRotate(UnityEngine.InputSystem.InputAction.CallbackContext context)
     {
-        if (tile.transform == null)
-        {
-            return;
-        }
         if (inputManager.inGameActions.Shift.IsPressed())
         {
-            tile.transform.rotation *= Quaternion.Euler(0, -90, 0);
+            tileRotation -= 90;
+            if (tileRotation < 0)
+            {
+                tileRotation += 360;
+            }
         }
         else
         {
-            tile.transform.rotation *= Quaternion.Euler(0, 90, 0);
+            tileRotation += 90;
+            if (tileRotation > 0)
+            {
+                tileRotation -= 360;
+            }
         }
-
     }
     public IEnumerator ClearTile()
     {
         // Terminate all other running loops
         yield return TerminatePlacingLoops();
 
-        GameObject tilePrefab = mapHandler.tilePrefabsDictValues[mapHandler.tilePrefabsDictKeys.IndexOf(TileType.Plains)];
+        GameObject tilePrefab = mapHandler.tilePrefabs[TileType.Plains];
 
-        tile = Instantiate(tilePrefab);
+        GameObject tile = Instantiate(tilePrefab);
 
         tile.layer = 2;
 
         canceled = false;
 
-        mapTileScript = tile.GetComponent<IMapTile>();
+        IMapTile mapTileScript = tile.GetComponent<IMapTile>();
 
         while (true)
         {
@@ -84,18 +85,14 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
                 tile.transform.position = selectedTile.position + new Vector3(0, 1, 0);
                 mapTileScript.PlaceableColor();
 
-                selectedTileScript = selectedTile.GetComponent<IMapTile>();
+                IMapTile selectedTileScript = selectedTile.GetComponent<IMapTile>();
                 mapTileScript.X = selectedTileScript.X;
                 mapTileScript.Y = selectedTileScript.Y;
 
                 if (inputManager.inGameActions.Place.IsPressed())
                 {
-
-                    Quaternion tileRotation = tile.transform.rotation;
-                    // ReplaceTile();
-
-                    tile = Instantiate(tilePrefab);
-                    tile.transform.rotation = tileRotation;
+                    ReplaceTile(new(TileType.Plains, 0), selectedTile);
+                    tile.transform.eulerAngles = new(tile.transform.eulerAngles.x, tileRotation, tile.transform.eulerAngles.z);
                     tile.layer = 2;
 
                     mapTileScript = tile.GetComponent<IMapTile>();
@@ -110,14 +107,16 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
     {
         yield return TerminatePlacingLoops();
 
-        GameObject tilePrefab = mapHandler.tilePrefabsDictValues[mapHandler.tilePrefabsDictKeys.IndexOf(tileType)];
+        tileRotation = 0;
 
-        tile = Instantiate(tilePrefab);
+        GameObject tilePrefab = mapHandler.tilePrefabs[tileType];
+
+        GameObject tile = Instantiate(tilePrefab);
         tile.layer = 2;
 
         canceled = false;
 
-        mapTileScript = tile.GetComponent<IMapTile>();
+        IMapTile mapTileScript = tile.GetComponent<IMapTile>();
 
         while (true)
         {
@@ -127,6 +126,7 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
                 yield break;
             }
 
+
             if (selectedTile == null)
             {
                 tile.SetActive(false);
@@ -135,8 +135,9 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
             {
                 tile.SetActive(true);
                 tile.transform.position = selectedTile.position + new Vector3(0, 1, 0);
+                tile.transform.eulerAngles = new(tile.transform.eulerAngles.x, tileRotation, tile.transform.eulerAngles.z);
 
-                selectedTileScript = selectedTile.GetComponent<IMapTile>();
+                IMapTile selectedTileScript = selectedTile.GetComponent<IMapTile>();
                 mapTileScript.X = selectedTileScript.X;
                 mapTileScript.Y = selectedTileScript.Y;
 
@@ -152,11 +153,8 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
                 {
                     if (mapTileScript.CanBePlaced())
                     {
-                        Quaternion tileRotation = tile.transform.rotation;
-                        // ReplaceTile();
+                        ReplaceTile(new(tileType, (int)tile.transform.eulerAngles.y / 90), selectedTile);
 
-                        tile = Instantiate(tilePrefab);
-                        tile.transform.rotation = tileRotation;
                         tile.layer = 2;
 
                         mapTileScript = tile.GetComponent<IMapTile>();
@@ -171,25 +169,26 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
     {
         canceled = true;
         yield return new WaitForEndOfFrame();
-        if (tile != null)
-        {
-            Destroy(tile);
-        }
     }
-    private void ReplaceTile(Tile newTile, GameObject oldTile)
+    public static void ReplaceTile(Tile newTile, Transform oldTile)
     {
-        // tile = Instantiate(MapHandler.Instance.)
-        tile.transform.position = selectedTile.position;
-        tile.transform.parent = MapHandler.Instance.tileParent;
-        tile.transform.SetSiblingIndex(selectedTile.GetSiblingIndex());
+        GameObject newtileObject = Instantiate(MapHandler.Instance.tilePrefabs[newTile.tileType], MapHandler.Instance.tileParent);
 
-        mapTileScript.X = selectedTileScript.X;
-        mapTileScript.Y = selectedTileScript.Y;
-        MapHandler.Instance.map[mapTileScript.X, mapTileScript.Y] = tile;
+        newtileObject.transform.position = oldTile.position;
+        newtileObject.transform.eulerAngles = new(0, newTile.direction * 90);
+        newtileObject.transform.SetSiblingIndex(oldTile.GetSiblingIndex());
 
-        tile.layer = 0;
-        mapTileScript.DefaultColor();
+        IMapTile oldTileScript = oldTile.GetComponent<IMapTile>();
+        IMapTile newTileScript = newtileObject.GetComponent<IMapTile>();
 
-        Destroy(selectedTile.gameObject);
+        newTileScript.X = oldTileScript.X;
+        newTileScript.Y = oldTileScript.Y;
+
+        MapHandler.Instance.map[newTileScript.X, newTileScript.Y] = newtileObject;
+
+        newtileObject.layer = 0;
+        newTileScript.DefaultColor();
+
+        Destroy(oldTile.gameObject);
     }
 }

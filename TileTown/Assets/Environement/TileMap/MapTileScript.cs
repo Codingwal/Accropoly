@@ -69,9 +69,21 @@ public class MapTileScript : MonoBehaviour, IMapTile
     }
     public void OnRemove()
     {
-        if (!MapHandler.Instance.map[X, Y].GetComponent<IMapTile>().CanBePlaced())
+        if (!MapHandler.Instance.map[X + 1, Y].GetComponent<IMapTile>().CanBePlaced())
         {
-            
+            BuildingSystemHandler.ReplaceTile(new(TileType.Plains, 0), MapHandler.Instance.map[X, Y].transform);
+        };
+        if (!MapHandler.Instance.map[X, Y + 1].GetComponent<IMapTile>().CanBePlaced())
+        {
+            BuildingSystemHandler.ReplaceTile(new(TileType.Plains, 0), MapHandler.Instance.map[X, Y].transform);
+        };
+        if (!MapHandler.Instance.map[X - 1, Y].GetComponent<IMapTile>().CanBePlaced())
+        {
+            BuildingSystemHandler.ReplaceTile(new(TileType.Plains, 0), MapHandler.Instance.map[X, Y].transform);
+        };
+        if (!MapHandler.Instance.map[X, Y + 1].GetComponent<IMapTile>().CanBePlaced())
+        {
+            BuildingSystemHandler.ReplaceTile(new(TileType.Plains, 0), MapHandler.Instance.map[X, Y].transform);
         };
     }
 }

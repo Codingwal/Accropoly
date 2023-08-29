@@ -13,19 +13,21 @@ public class StreetTile : MapTileScript, IHouseConnectable
             switch (tileType)
             {
                 case TileType.Street:
-                    switch (transform.eulerAngles.y)
-                    {
-                        case 0:
-                        case 180:
-                            _arableTiles.Add(new(X + 1, Y));
-                            _arableTiles.Add(new(X - 1, Y));
-                            break;
-                        case 90:
-                        case 270:
-                            _arableTiles.Add(new(X, Y + 1));
-                            _arableTiles.Add(new(X, Y - 1));
-                            break;
-                    }
+                    _arableTiles.Add(MapHandler.GetTilePosFromNeighbour(new(X, Y), transform.eulerAngles.y + 90));
+                    _arableTiles.Add(MapHandler.GetTilePosFromNeighbour(new(X, Y), transform.eulerAngles.y + 270));
+                    // switch (transform.eulerAngles.y)
+                    // {
+                    //     case 0:
+                    //     case 180:
+                    //         _arableTiles.Add(new(X + 1, Y));
+                    //         _arableTiles.Add(new(X - 1, Y));
+                    //         break;
+                    //     case 90:
+                    //     case 270:
+                    //         _arableTiles.Add(new(X, Y + 1));
+                    //         _arableTiles.Add(new(X, Y - 1));
+                    //         break;
+                    // }
                     break;
                 case TileType.StreetCorner:
                     switch (transform.eulerAngles.y)

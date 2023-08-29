@@ -7,9 +7,6 @@ public class MapHandler : Singleton<MapHandler>
     public float tileSize = 30;
     public Transform tileParent;
 
-    [Header("Tile prefabs dictionary")]
-    public List<TileType> tilePrefabsDictKeys;
-    public List<GameObject> tilePrefabsDictValues;
     public SerializableDictionary<TileType, GameObject> tilePrefabs;
 
     public Serializable2DArray<GameObject> map;
@@ -45,7 +42,7 @@ public class MapHandler : Singleton<MapHandler>
                 float worldPosZ = (j - mapSize.y * 0.5f + 0.5f) * tileSize;
 
                 Tile tile = selectedMap[i, j];
-                GameObject tilePrefab = tilePrefabsDictValues[tilePrefabsDictKeys.IndexOf(tile.tileType)];
+                GameObject tilePrefab = tilePrefabs[tile.tileType];
 
                 map[i, j] = GenerateTile(tilePrefab, tileSize, new(worldPosX, 0, worldPosZ), tile.direction * 90, i, j);
             }
@@ -81,5 +78,32 @@ public class MapHandler : Singleton<MapHandler>
         }
 
         return tilemap;
+    }
+
+    public static Vector2 GetTilePosFromNeighbour(Vector2 position, float direction)
+    {
+        direction = (int)Math.Round(direction);
+        while (direction >= 360)
+        {
+            direction -= 360;
+        }
+        while (direction < 0)
+        {
+            direction += 360;
+        }
+
+        return (float)(direction / 90) switch
+        {
+            0 => new(position.x, position.y + 1),
+            1 => new(position.x + 1, position.y),
+            2 => new(position.x, position.y - 1),
+            3 => new(position.x - 1, position.y),
+            _ => throw new Exception("This direction does not exist: " + direction),
+        };
+    }
+    public static GameObject GetTileFromNeighbour(Vector2 position, float direction)
+    {
+        Vector2 tilePos = GetTilePosFromNeighbour(position, direction);
+        return Instance.map[(int)tilePos.x, (int)tilePos.y];
     }
 }

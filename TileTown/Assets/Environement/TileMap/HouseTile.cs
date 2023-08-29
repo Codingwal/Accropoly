@@ -8,27 +8,12 @@ public class HouseTile : MapTileScript
         {
             return false;
         }
-        
+
         GameObject neighbour;
 
-        // Prevent out of index exceptions
-        try
-        {
-            neighbour = transform.eulerAngles.y switch
-            {
-                0 => MapHandler.Instance.map[X, Y + 1],
-                90 => MapHandler.Instance.map[X + 1, Y],
-                180 => MapHandler.Instance.map[X, Y - 1],
-                _ => MapHandler.Instance.map[X - 1, Y],
-            };
-        }
-        catch
-        {
-            return false;
-        }
+        neighbour = MapHandler.GetTileFromNeighbour(new(X, Y), transform.eulerAngles.y);
 
-        IHouseConnectable houseConnectableScript = neighbour.GetComponent<IHouseConnectable>();
-        if (houseConnectableScript == null)
+        if (!neighbour.TryGetComponent(out IHouseConnectable houseConnectableScript))
         {
             return false;
         }
