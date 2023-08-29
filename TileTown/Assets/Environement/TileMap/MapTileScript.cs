@@ -60,6 +60,8 @@ public class MapTileScript : MonoBehaviour, IMapTile
     }
     public virtual bool CanBePlaced()
     {
+        if (!CanPersist()) return false;
+
         Transform selectedTile = MapHandler.Instance.map[X, Y].transform;
         if (selectedTile == null)
         {
@@ -67,23 +69,19 @@ public class MapTileScript : MonoBehaviour, IMapTile
         }
         return selectedTile.GetComponent<IMapTile>().GetTile().tileType == TileType.Plains;
     }
+    public virtual bool CanPersist()
+    {
+        return true;
+    }
     public void OnRemove()
     {
-        if (!MapHandler.Instance.map[X + 1, Y].GetComponent<IMapTile>().CanBePlaced())
+        for (int dir = 0; dir < 4; dir++)
         {
-            BuildingSystemHandler.ReplaceTile(new(TileType.Plains, 0), MapHandler.Instance.map[X, Y].transform);
-        };
-        if (!MapHandler.Instance.map[X, Y + 1].GetComponent<IMapTile>().CanBePlaced())
-        {
-            BuildingSystemHandler.ReplaceTile(new(TileType.Plains, 0), MapHandler.Instance.map[X, Y].transform);
-        };
-        if (!MapHandler.Instance.map[X - 1, Y].GetComponent<IMapTile>().CanBePlaced())
-        {
-            BuildingSystemHandler.ReplaceTile(new(TileType.Plains, 0), MapHandler.Instance.map[X, Y].transform);
-        };
-        if (!MapHandler.Instance.map[X, Y + 1].GetComponent<IMapTile>().CanBePlaced())
-        {
-            BuildingSystemHandler.ReplaceTile(new(TileType.Plains, 0), MapHandler.Instance.map[X, Y].transform);
-        };
+            GameObject neighbourTile = MapHandler.GetTileFromNeighbour(new(X, Y), dir * 90);
+            if (!neighbourTile.GetComponent<IMapTile>().CanPersist())
+            {
+                BuildingSystemHandler.ReplaceTile(new(TileType.Plains, 0), neighbourTile.transform);
+            };
+        }
     }
 }

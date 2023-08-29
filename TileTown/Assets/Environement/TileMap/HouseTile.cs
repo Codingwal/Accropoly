@@ -2,13 +2,8 @@ using UnityEngine;
 
 public class HouseTile : MapTileScript
 {
-    public override bool CanBePlaced()
+    public override bool CanPersist()
     {
-        if (!base.CanBePlaced())
-        {
-            return false;
-        }
-
         GameObject neighbour;
 
         neighbour = MapHandler.GetTileFromNeighbour(new(X, Y), transform.eulerAngles.y);

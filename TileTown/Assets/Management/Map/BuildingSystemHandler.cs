@@ -170,16 +170,17 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
         canceled = true;
         yield return new WaitForEndOfFrame();
     }
+
     public static void ReplaceTile(Tile newTile, Transform oldTile)
     {
         GameObject newtileObject = Instantiate(MapHandler.Instance.tilePrefabs[newTile.tileType], MapHandler.Instance.tileParent);
 
+        IMapTile oldTileScript = oldTile.GetComponent<IMapTile>();
+        IMapTile newTileScript = newtileObject.GetComponent<IMapTile>();
+
         newtileObject.transform.position = oldTile.position;
         newtileObject.transform.eulerAngles = new(0, newTile.direction * 90);
         newtileObject.transform.SetSiblingIndex(oldTile.GetSiblingIndex());
-
-        IMapTile oldTileScript = oldTile.GetComponent<IMapTile>();
-        IMapTile newTileScript = newtileObject.GetComponent<IMapTile>();
 
         newTileScript.X = oldTileScript.X;
         newTileScript.Y = oldTileScript.Y;
@@ -189,6 +190,7 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
         newtileObject.layer = 0;
         newTileScript.DefaultColor();
 
+        oldTileScript.OnRemove();
         Destroy(oldTile.gameObject);
     }
 }
