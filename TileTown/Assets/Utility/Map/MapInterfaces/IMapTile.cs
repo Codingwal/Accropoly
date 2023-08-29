@@ -14,4 +14,5 @@ public interface IMapTile
     public void PlaceableColor();
     public void NotPlaceableColor();
     public bool CanBePlaced();
+    public void OnRemove();
 }

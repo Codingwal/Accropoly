@@ -10,6 +10,7 @@ public class MapHandler : Singleton<MapHandler>
     [Header("Tile prefabs dictionary")]
     public List<TileType> tilePrefabsDictKeys;
     public List<GameObject> tilePrefabsDictValues;
+    public SerializableDictionary<TileType, GameObject> tilePrefabs;
 
     public Serializable2DArray<GameObject> map;
 

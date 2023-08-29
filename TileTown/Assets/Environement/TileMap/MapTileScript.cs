@@ -67,4 +67,11 @@ public class MapTileScript : MonoBehaviour, IMapTile
         }
         return selectedTile.GetComponent<IMapTile>().GetTile().tileType == TileType.Plains;
     }
+    public void OnRemove()
+    {
+        if (!MapHandler.Instance.map[X, Y].GetComponent<IMapTile>().CanBePlaced())
+        {
+            
+        };
+    }
 }

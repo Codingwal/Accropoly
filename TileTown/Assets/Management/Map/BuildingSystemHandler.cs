@@ -92,7 +92,7 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
                 {
 
                     Quaternion tileRotation = tile.transform.rotation;
-                    ReplaceTile();
+                    // ReplaceTile();
 
                     tile = Instantiate(tilePrefab);
                     tile.transform.rotation = tileRotation;
@@ -153,7 +153,7 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
                     if (mapTileScript.CanBePlaced())
                     {
                         Quaternion tileRotation = tile.transform.rotation;
-                        ReplaceTile();
+                        // ReplaceTile();
 
                         tile = Instantiate(tilePrefab);
                         tile.transform.rotation = tileRotation;
@@ -176,17 +176,10 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
             Destroy(tile);
         }
     }
-    private void ReplaceTile()
+    private void ReplaceTile(Tile newTile, GameObject oldTile)
     {
-        try
-        {
-            tile.transform.position = selectedTile.position;
-        }
-        catch
-        {
-            Debug.Log(selectedTileScript.X + "; " + selectedTileScript.Y);
-        }
-
+        // tile = Instantiate(MapHandler.Instance.)
+        tile.transform.position = selectedTile.position;
         tile.transform.parent = MapHandler.Instance.tileParent;
         tile.transform.SetSiblingIndex(selectedTile.GetSiblingIndex());
 
