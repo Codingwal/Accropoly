@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface IHouseConnectable
 {
-    public List<Transform> ArableTiles { get; }
+    public List<Vector2> ArableTiles { get; }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MapTileScript : MonoBehaviour, IMapTile
 {
-    [SerializeField] private TileType tileType;
+    [SerializeField] protected TileType tileType;
 
     // Index
     public int X { get; set; }

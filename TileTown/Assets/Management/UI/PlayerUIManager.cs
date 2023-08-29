@@ -18,6 +18,7 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] private Button streetCornerButton;
     [SerializeField] private Button streetTJunctionButton;
     [SerializeField] private Button streetJunctionButton;
+    [SerializeField] private Button houseButton;
 
     private BuildingSystemHandler buildingSystemHandler;
     private InputManager inputManager;
@@ -35,6 +36,7 @@ public class PlayerUIManager : MonoBehaviour
         streetCornerButton.onClick.AddListener(OnPlaceStreetCorner);
         streetTJunctionButton.onClick.AddListener(OnPlaceStreetTJunction);
         streetJunctionButton.onClick.AddListener(OnPlaceStreetJunction);
+        houseButton.onClick.AddListener(OnPlaceHouse);
 
         clearButton.onClick.AddListener(() => { OnClear(new()); });
     }
@@ -51,6 +53,7 @@ public class PlayerUIManager : MonoBehaviour
         inputManager.Hotkey3 += OnPlaceStreetCorner;
         inputManager.Hotkey4 += OnPlaceStreetJunction;
         inputManager.Hotkey5 += OnPlaceStreetTJunction;
+        inputManager.Hotkey6 += OnPlaceHouse;
     }
     private void OnDisable()
     {
@@ -65,6 +68,7 @@ public class PlayerUIManager : MonoBehaviour
         inputManager.Hotkey3 -= OnPlaceStreetCorner;
         inputManager.Hotkey4 -= OnPlaceStreetJunction;
         inputManager.Hotkey5 -= OnPlaceStreetTJunction;
+        inputManager.Hotkey6 -= OnPlaceHouse;
     }
 
     private bool OnEscape()
@@ -124,5 +128,9 @@ public class PlayerUIManager : MonoBehaviour
     private void OnPlaceStreetJunction()
     {
         StartCoroutine(buildingSystemHandler.PlaceTile(TileType.StreetJunction));
+    }
+    private void OnPlaceHouse()
+    {
+        StartCoroutine(buildingSystemHandler.PlaceTile(TileType.House));
     }
 }
