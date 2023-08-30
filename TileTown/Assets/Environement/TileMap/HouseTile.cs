@@ -1,3 +1,4 @@
+using System.Runtime.Remoting.Messaging;
 using UnityEngine;
 
 public class HouseTile : MapTileScript
@@ -7,6 +8,8 @@ public class HouseTile : MapTileScript
         GameObject neighbour;
 
         neighbour = MapHandler.GetTileFromNeighbour(new(X, Y), transform.eulerAngles.y);
+
+        if (neighbour == null) return false;
 
         if (!neighbour.TryGetComponent(out IHouseConnectable houseConnectableScript))
         {

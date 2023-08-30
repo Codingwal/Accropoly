@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Analytics;
 
 public class MapTileScript : MonoBehaviour, IMapTile
 {
@@ -78,6 +79,9 @@ public class MapTileScript : MonoBehaviour, IMapTile
         for (int dir = 0; dir < 4; dir++)
         {
             GameObject neighbourTile = MapHandler.GetTileFromNeighbour(new(X, Y), dir * 90);
+
+            if (neighbourTile == null) continue;
+
             if (!neighbourTile.GetComponent<IMapTile>().CanPersist())
             {
                 BuildingSystemHandler.ReplaceTile(new(TileType.Plains, 0), neighbourTile.transform);

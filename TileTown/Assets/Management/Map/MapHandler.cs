@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Security.Principal;
 
 public class MapHandler : Singleton<MapHandler>
 {
@@ -104,6 +105,10 @@ public class MapHandler : Singleton<MapHandler>
     public static GameObject GetTileFromNeighbour(Vector2 position, float direction)
     {
         Vector2 tilePos = GetTilePosFromNeighbour(position, direction);
+
+        // Check if index is outside array bounds, if true, return
+        if (tilePos.x >= Instance.map.GetLength(0) || tilePos.x < 0 || tilePos.y >= Instance.map.GetLength(1) || tilePos.y < 0) return null;
+
         return Instance.map[(int)tilePos.x, (int)tilePos.y];
     }
 }
