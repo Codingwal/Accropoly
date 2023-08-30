@@ -1,19 +1,24 @@
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.InputSystem.InputAction;
 
 public class PlayerUIManager : MonoBehaviour
 {
-    [SerializeField] private GameObject buildingMenu;
+    [SerializeField] private Button mainMenuButton;
 
-    [Header("Buttons")]
+    [Header("Main menu")]
+    [SerializeField] private GameObject mainMenu;
     [SerializeField] private Button buildingMenuButton;
+    [SerializeField] private Button clearButton;
 
+    [Header("Building menu")]
+    [SerializeField] private GameObject buildingMenu;
     [SerializeField] private Button forestButton;
     [SerializeField] private Button streetButton;
     [SerializeField] private Button streetCornerButton;
     [SerializeField] private Button streetTJunctionButton;
     [SerializeField] private Button streetJunctionButton;
-    [SerializeField] private Button clearButton;
+    [SerializeField] private Button houseButton;
 
     private BuildingSystemHandler buildingSystemHandler;
     private InputManager inputManager;
@@ -23,6 +28,7 @@ public class PlayerUIManager : MonoBehaviour
         buildingSystemHandler = BuildingSystemHandler.Instance;
         inputManager = InputManager.Instance;
 
+        mainMenuButton.onClick.AddListener(ToggleMainMenu);
         buildingMenuButton.onClick.AddListener(ToggleBuildingMenu);
 
         forestButton.onClick.AddListener(OnPlaceForest);
@@ -30,64 +36,41 @@ public class PlayerUIManager : MonoBehaviour
         streetCornerButton.onClick.AddListener(OnPlaceStreetCorner);
         streetTJunctionButton.onClick.AddListener(OnPlaceStreetTJunction);
         streetJunctionButton.onClick.AddListener(OnPlaceStreetJunction);
+        houseButton.onClick.AddListener(OnPlaceHouse);
 
-        clearButton.onClick.AddListener(OnClear);
+        clearButton.onClick.AddListener(() => { OnClear(new()); });
     }
     private void OnEnable()
     {
         inputManager.PriorityEscape += OnEscape;
+        inputManager.MenuToggled += ToggleMainMenu;
 
-        inputManager.uIActions.Hotkey1.performed += OnHotkey1;
-        inputManager.uIActions.Hotkey2.performed += OnHotkey2;
-        inputManager.uIActions.Hotkey3.performed += OnHotkey3;
-        inputManager.uIActions.Hotkey4.performed += OnHotkey4;
-        inputManager.uIActions.Hotkey5.performed += OnHotkey5;
-        inputManager.uIActions.Hotkey6.performed += OnHotkey6;
+        inputManager.MenuHotkey1 += ToggleBuildingMenu;
+        inputManager.uIActions.Clear.performed += OnClear;
+
+        inputManager.Hotkey1 += OnPlaceForest;
+        inputManager.Hotkey2 += OnPlaceStreet;
+        inputManager.Hotkey3 += OnPlaceStreetCorner;
+        inputManager.Hotkey4 += OnPlaceStreetJunction;
+        inputManager.Hotkey5 += OnPlaceStreetTJunction;
+        inputManager.Hotkey6 += OnPlaceHouse;
     }
     private void OnDisable()
     {
         inputManager.PriorityEscape -= OnEscape;
+        inputManager.MenuToggled -= ToggleMainMenu;
 
-        inputManager.uIActions.Hotkey1.performed -= OnHotkey1;
-        inputManager.uIActions.Hotkey2.performed -= OnHotkey2;
-        inputManager.uIActions.Hotkey3.performed -= OnHotkey3;
-        inputManager.uIActions.Hotkey4.performed -= OnHotkey4;
-        inputManager.uIActions.Hotkey5.performed -= OnHotkey5;
-        inputManager.uIActions.Hotkey6.performed -= OnHotkey6;
+        inputManager.MenuHotkey1 -= ToggleBuildingMenu;
+        inputManager.uIActions.Clear.performed -= OnClear;
+
+        inputManager.Hotkey1 -= OnPlaceForest;
+        inputManager.Hotkey2 -= OnPlaceStreet;
+        inputManager.Hotkey3 -= OnPlaceStreetCorner;
+        inputManager.Hotkey4 -= OnPlaceStreetJunction;
+        inputManager.Hotkey5 -= OnPlaceStreetTJunction;
+        inputManager.Hotkey6 -= OnPlaceHouse;
     }
 
-    private void OnHotkey1(UnityEngine.InputSystem.InputAction.CallbackContext context)
-    {
-        if (inputManager.inGameActions.Shift.IsPressed())
-        {
-            ToggleBuildingMenu();
-        }
-        else
-        {
-            OnPlaceForest();
-        }
-
-    }
-    private void OnHotkey2(UnityEngine.InputSystem.InputAction.CallbackContext context)
-    {
-        OnPlaceStreet();
-    }
-    private void OnHotkey3(UnityEngine.InputSystem.InputAction.CallbackContext context)
-    {
-        OnPlaceStreetCorner();
-    }
-    private void OnHotkey4(UnityEngine.InputSystem.InputAction.CallbackContext context)
-    {
-        OnPlaceStreetTJunction();
-    }
-    private void OnHotkey5(UnityEngine.InputSystem.InputAction.CallbackContext context)
-    {
-        OnPlaceStreetJunction();
-    }
-    private void OnHotkey6(UnityEngine.InputSystem.InputAction.CallbackContext context)
-    {
-        OnClear();
-    }
     private bool OnEscape()
     {
         if (buildingMenu.activeSelf)
@@ -95,12 +78,35 @@ public class PlayerUIManager : MonoBehaviour
             ToggleBuildingMenu();
             return true;
         }
+        if (mainMenu.activeSelf)
+        {
+            ToggleMainMenu();
+            return true;
+        }
         return false;
+    }
+    private void ToggleMainMenu()
+    {
+        if (mainMenu.activeSelf)
+        {
+            mainMenuButton.gameObject.transform.Rotate(0, 0, -90);
+            mainMenu.SetActive(false);
+        }
+        else
+        {
+            mainMenuButton.gameObject.transform.Rotate(0, 0, 90);
+            mainMenu.SetActive(true);
+        }
+
     }
     private void ToggleBuildingMenu()
     {
-        buildingSystemHandler.highlightTiles = !buildingSystemHandler.highlightTiles;
-        buildingMenu.SetActive(buildingSystemHandler.highlightTiles);
+        buildingMenu.SetActive(!buildingMenu.activeSelf);
+    }
+
+    private void OnClear(CallbackContext ctx)
+    {
+        StartCoroutine(buildingSystemHandler.ClearTile());
     }
 
     private void OnPlaceForest()
@@ -123,8 +129,8 @@ public class PlayerUIManager : MonoBehaviour
     {
         StartCoroutine(buildingSystemHandler.PlaceTile(TileType.StreetJunction));
     }
-    private void OnClear()
+    private void OnPlaceHouse()
     {
-        StartCoroutine(buildingSystemHandler.ClearTile());
+        StartCoroutine(buildingSystemHandler.PlaceTile(TileType.House));
     }
 }

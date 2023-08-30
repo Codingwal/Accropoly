@@ -30,8 +30,7 @@ public class CameraSystem : MonoBehaviour
     private void Start()
     {
         followOffset = cinemachineVirtualCamera.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset;
-
-
+        inputManager = InputManager.Instance;
     }
     private void FixedUpdate()
     {
