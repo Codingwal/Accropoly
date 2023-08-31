@@ -8,7 +8,7 @@ public class PopulationManager : Singleton<PopulationManager>
     [SerializeField] GameObject personPrefab;
     [SerializeField] Transform populationParentObject;
 
-    private List<GameObject> population = new();
+    public List<GameObject> population = new();
     private void OnEnable()
     {
         GameLoopManager.Instance.InitWorld += InitPopulation;

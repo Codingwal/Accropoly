@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
+#if UNITY_EDITOR
 [CustomEditor(typeof(MapHandler))]
 [CanEditMultipleObjects]
 public class MapHandlerEditor : Editor
@@ -17,3 +18,4 @@ public class MapHandlerEditor : Editor
         }
     }
 }
+#endif
