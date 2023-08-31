@@ -7,7 +7,7 @@ public class HouseTile : MapTileScript
     {
         GameObject neighbour;
 
-        neighbour = MapHandler.GetTileFromNeighbour(new(X, Y), transform.eulerAngles.y);
+        neighbour = MapHandler.GetTileFromNeighbour(TilePos, transform.eulerAngles.y);
 
         if (neighbour == null) return false;
 
@@ -15,7 +15,7 @@ public class HouseTile : MapTileScript
         {
             return false;
         }
-        if (houseConnectableScript.ArableTiles.Contains(new(X, Y)))
+        if (houseConnectableScript.ArableTiles.Contains(TilePos))
         {
             return true;
         }

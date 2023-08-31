@@ -28,6 +28,10 @@ public class ArrayWrapper<T>
     {
         return array.Length;
     }
+    public bool Contains(T obj)
+    {
+        return Array.Exists(array, x => obj.Equals(x));
+    }
 }
 
 [Serializable]
@@ -79,5 +83,16 @@ public class Serializable2DArray<T> : IInstantiatable
             1 => array2D[0].GetLength(),
             _ => -1
         };
+    }
+    public bool Contains(T obj)
+    {
+        for (int i = 0; i < array2D.Length; i++)
+        {
+            if (array2D[i].Contains(obj))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

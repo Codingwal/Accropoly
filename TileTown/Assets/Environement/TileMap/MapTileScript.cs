@@ -7,13 +7,21 @@ public class MapTileScript : MonoBehaviour, IMapTile
 {
     [SerializeField] protected TileType tileType;
 
-    // Index
+    // Position / Index
     public int X { get; set; }
     public int Y { get; set; }
+    public Vector2 TilePos
+    {
+        get { return new(X, Y); }
+    }
 
-
+    // Design
     private Color defaultColor;
 
+    // Inhabitants
+    private List<GameObject> inhabitants = new();
+
+    // References
     private new Renderer renderer;
     private BuildingSystemHandler buildingSystemHandler;
 
@@ -40,6 +48,14 @@ public class MapTileScript : MonoBehaviour, IMapTile
         if (buildingSystemHandler.selectedTile == transform)
         {
             buildingSystemHandler.selectedTile = null;
+        }
+    }
+
+    public void Init()
+    {
+        if (tileType == TileType.House)
+        {
+            inhabitants = PopulationManager.Instance.NewHouse(HouseSize.normal, TilePos);
         }
     }
 
@@ -76,9 +92,14 @@ public class MapTileScript : MonoBehaviour, IMapTile
     }
     public void OnRemove()
     {
+        for (int i = 0; i < inhabitants.Count; i++)
+        {
+            PopulationManager.Instance.RemovePerson(inhabitants[i]);
+        }
+
         for (int dir = 0; dir < 4; dir++)
         {
-            GameObject neighbourTile = MapHandler.GetTileFromNeighbour(new(X, Y), dir * 90);
+            GameObject neighbourTile = MapHandler.GetTileFromNeighbour(TilePos, dir * 90);
 
             if (neighbourTile == null) continue;
 

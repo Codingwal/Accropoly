@@ -203,6 +203,9 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
         // Save the new tile at that position in the map array
         MapHandler.Instance.map[newTileScript.X, newTileScript.Y] = newtileObject;
 
+        // Initialize the new tile (for example, create inhabitants of a house)
+        newTileScript.Init();
+
         // Call the remove function so the old script can update all neighbours
         oldTileScript.OnRemove();
 
