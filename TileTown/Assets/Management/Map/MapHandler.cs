@@ -28,7 +28,7 @@ public class MapHandler : Singleton<MapHandler>
         }
         foreach (GameObject child in childs)
         {
-            DestroyImmediate(child);
+            Destroy(child);
         }
 
         Vector2 mapSize = new(selectedMap.GetLength(0), selectedMap.GetLength(1));

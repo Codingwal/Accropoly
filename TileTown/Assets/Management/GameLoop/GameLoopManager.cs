@@ -1,13 +1,23 @@
 using System;
 using System.Threading.Tasks;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
+public delegate void RefAction<T>(ref T obj);
 public class GameLoopManager : SingletonPersistant<GameLoopManager>
 {
-    public delegate void RefAction<T>(ref T obj);
+    // Time and tax system
+    [SerializeField] private float timeSpeed;
+    [SerializeField] private float taxInterval;
+    private float nextTaxTime;
+    public float playTime;
+    public event Action PayTaxes;
+
+    // Loading and saving
     public event Action<World> InitWorld;
     public event RefAction<World> SaveWorld;
 
+    // State machine
     public event Action<GameState, GameState> GameStateChanged;
     private GameState _gameState;
     public GameState GameState
@@ -37,6 +47,13 @@ public class GameLoopManager : SingletonPersistant<GameLoopManager>
 
         FileHandler.Init();
     }
+    private void Update()
+    {
+        if (GameState == GameState.InGame)
+        {
+            ProgressTimer();
+        }
+    }
     private void OnEnable()
     {
         SceneManagement.SceneIsUnloading += OnSceneIsUnloading;
@@ -53,6 +70,17 @@ public class GameLoopManager : SingletonPersistant<GameLoopManager>
         }
         SaveWorldData();
     }
+    // ------------------------------------------------------------------- //
+    private void ProgressTimer()
+    {
+        playTime += Time.deltaTime * timeSpeed;
+
+        if (playTime > nextTaxTime)
+        {
+            nextTaxTime += taxInterval;
+            PayTaxes?.Invoke();
+        }
+    }
     private void OnSceneIsUnloading(string newScene)
     {
         if (newScene == "Menu")
@@ -60,19 +88,6 @@ public class GameLoopManager : SingletonPersistant<GameLoopManager>
             SaveWorldData();
         }
     }
-
-    private void SaveWorldData()
-    {
-        Serializable2DArray<Tile> map = MapHandler.Instance.SaveTileMap();
-
-        World world = FileHandler.LoadWorld();
-
-        world.map = map;
-        SaveWorld.Invoke(ref world);
-
-        FileHandler.SaveWorld(world);
-    }
-
     private async void OnGameStateChanged(GameState newGameState, GameState oldGameState)
     {
         switch (newGameState)
@@ -96,9 +111,30 @@ public class GameLoopManager : SingletonPersistant<GameLoopManager>
         LoadWorld();
     }
 
+    private void SaveWorldData()
+    {
+        Serializable2DArray<Tile> map = MapHandler.Instance.SaveTileMap();
+
+        World world = new(map)
+        {
+            playTime = playTime
+        };
+
+        SaveWorld.Invoke(ref world);
+
+        FileHandler.SaveWorld(world);
+    }
     public void LoadWorld()
     {
         World world = FileHandler.LoadWorld();
+
+        playTime = world.playTime;
+
+        nextTaxTime = 0;
+        while (playTime > nextTaxTime)
+        {
+            nextTaxTime += taxInterval;
+        }
 
         MapHandler.Instance.GenerateTileMap(world.map);
         InitWorld.Invoke(world);

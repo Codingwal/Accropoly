@@ -173,24 +173,40 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
 
     public static void ReplaceTile(Tile newTile, Transform oldTile)
     {
+        // Get the old tile script
+        IMapTile oldTileScript = oldTile.GetComponent<IMapTile>();
+
+        // If the new tile is the same as the old tile, return
+        if (newTile == oldTileScript.GetTile()) return;
+
+        // Buy the tile or return if it can't be bought
+        if (!EconomyManager.Instance.BuyTile(newTile.tileType)) return;
+
+        // Sell the old tile
+        EconomyManager.Instance.SellTile(oldTileScript.GetTile().tileType);
+
+        // Create the new tile
         GameObject newtileObject = Instantiate(MapHandler.Instance.tilePrefabs[newTile.tileType], MapHandler.Instance.tileParent);
 
-        IMapTile oldTileScript = oldTile.GetComponent<IMapTile>();
+        // Get the new tile script
         IMapTile newTileScript = newtileObject.GetComponent<IMapTile>();
 
+        // Set the transform of the new tile
         newtileObject.transform.position = oldTile.position;
         newtileObject.transform.eulerAngles = new(0, newTile.direction * 90);
         newtileObject.transform.SetSiblingIndex(oldTile.GetSiblingIndex());
 
+        // Get the x and y position of the new tile
         newTileScript.X = oldTileScript.X;
         newTileScript.Y = oldTileScript.Y;
 
+        // Save the new tile at that position in the map array
         MapHandler.Instance.map[newTileScript.X, newTileScript.Y] = newtileObject;
 
-        newtileObject.layer = 0;
-        newTileScript.DefaultColor();
-
+        // Call the remove function so the old script can update all neighbours
         oldTileScript.OnRemove();
+
+        // Destroy the old tile
         Destroy(oldTile.gameObject);
     }
 }

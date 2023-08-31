@@ -111,26 +111,32 @@ public class PlayerUIManager : MonoBehaviour
 
     private void OnPlaceForest()
     {
+        if (!buildingMenu.activeSelf) return;
         StartCoroutine(buildingSystemHandler.PlaceTile(TileType.Forest));
     }
     private void OnPlaceStreet()
     {
+        if (!buildingMenu.activeSelf) return;
         StartCoroutine(buildingSystemHandler.PlaceTile(TileType.Street));
     }
     private void OnPlaceStreetCorner()
     {
+        if (!buildingMenu.activeSelf) return;
         StartCoroutine(buildingSystemHandler.PlaceTile(TileType.StreetCorner));
     }
     private void OnPlaceStreetTJunction()
     {
+        if (!buildingMenu.activeSelf) return;
         StartCoroutine(buildingSystemHandler.PlaceTile(TileType.StreetTJunction));
     }
     private void OnPlaceStreetJunction()
     {
+        if (!buildingMenu.activeSelf) return;
         StartCoroutine(buildingSystemHandler.PlaceTile(TileType.StreetJunction));
     }
     private void OnPlaceHouse()
     {
+        if (!buildingMenu.activeSelf) return;
         StartCoroutine(buildingSystemHandler.PlaceTile(TileType.House));
     }
 }
