@@ -10,6 +10,7 @@ public interface IMapTile
     public int Y { get; set; }
 
     public void Init();
+    public void Load();
     public Tile GetTile();
     public void DefaultColor();
     public void PlaceableColor();

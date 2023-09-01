@@ -6,11 +6,14 @@ public class TownManager : Singleton<TownManager>
 {
     // Economy
     public event RefAction<float> PayTaxes;
+    public event RefAction<float> CalculateExpenditure;
 
     [Header("Economy")]
     public float balance;
     [SerializeField] private SerializableDictionary<TileType, int> tileBuyPrices;
     [SerializeField] private SerializableDictionary<TileType, int> tileSellPrices;
+    public SerializableDictionary<TileType, float> tileExpenditure;
+    public float taxPerHappiness;
 
     // Population
     [Header("Population")]
@@ -20,9 +23,10 @@ public class TownManager : Singleton<TownManager>
     public List<GameObject> population = new();
 
     // Electricity
+    [Header("Electricity")]
+    public SerializableDictionary<TileType, float> tileEnergyProduction;
     public List<IEnergyProducer> energyProducers = new();
     public List<IEnergyConsumer> energyConsumers = new();
-    [Header("Electricity")]
     public float electricityUsagePerPerson;
 
     public float EnergyConsumption
@@ -52,25 +56,21 @@ public class TownManager : Singleton<TownManager>
 
     private void OnEnable()
     {
-        GameLoopManager.Instance.InitWorld += InitPopulation;
+        GameLoopManager.Instance.InitWorld += Init;
+        GameLoopManager.Instance.SaveWorld += Save;
 
-        GameLoopManager.Instance.InitWorld += InitEconomy;
-        GameLoopManager.Instance.SaveWorld += SaveEconomy;
-
-        GameLoopManager.Instance.PayTaxes += CalculateTaxes;
+        GameLoopManager.Instance.Invoice += CalculateInvoice;
     }
     private void OnDisable()
     {
-        GameLoopManager.Instance.InitWorld -= InitPopulation;
+        GameLoopManager.Instance.InitWorld -= Init;
+        GameLoopManager.Instance.SaveWorld -= Save;
 
-        GameLoopManager.Instance.InitWorld -= InitEconomy;
-        GameLoopManager.Instance.SaveWorld -= SaveEconomy;
-
-        GameLoopManager.Instance.PayTaxes -= CalculateTaxes;
+        GameLoopManager.Instance.Invoice -= CalculateInvoice;
     }
 
-    // -------------------------------- Initialization -------------------------------- //
-    private void InitPopulation(World world)
+    // -------------------------------- Initialization & Saving -------------------------------- //
+    private void Init(World world)
     {
         // Delete all existing childs
         List<GameObject> childs = new();
@@ -88,25 +88,29 @@ public class TownManager : Singleton<TownManager>
         {
             AddPerson(personData);
         }
-    }
-    private void InitEconomy(World world)
-    {
+
+        // Load balance
         balance = world.balance;
     }
 
-    // -------------------------------- Saving -------------------------------- //
-    private void SaveEconomy(ref World world)
+    private void Save(ref World world)
     {
+        // Save balance
         world.balance = balance;
     }
 
     // -------------------------------- Economy -------------------------------- //
-    public void CalculateTaxes()
+    public void CalculateInvoice()
     {
         float taxes = 0;
         PayTaxes?.Invoke(ref taxes);
         balance += taxes;
+
+        float expenditure = 0;
+        CalculateExpenditure?.Invoke(ref expenditure);
+        balance -= expenditure;
     }
+
     /// <returns>Can the tile be bought</returns>
     public bool BuyTile(TileType tileType)
     {

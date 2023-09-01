@@ -4,13 +4,11 @@ public class SolarPanelTile : MapTileScript, IEnergyProducer
     {
         get
         {
-            return 30;
+            return TownManager.Instance.tileEnergyProduction[tileType];
         }
     }
-
-    public override void Init()
+    public override void Load()
     {
-        base.Init();
         TownManager.Instance.energyProducers.Add(this);
     }
     public override void OnRemove()
@@ -18,4 +16,5 @@ public class SolarPanelTile : MapTileScript, IEnergyProducer
         base.OnRemove();
         TownManager.Instance.energyProducers.Remove(this);
     }
+
 }

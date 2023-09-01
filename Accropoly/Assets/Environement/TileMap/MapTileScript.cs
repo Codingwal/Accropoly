@@ -30,6 +30,14 @@ public class MapTileScript : MonoBehaviour, IMapTile
 
         defaultColor = renderer.material.color;
     }
+    private void OnEnable()
+    {
+        TownManager.Instance.CalculateExpenditure += CalculateExpenditure;
+    }
+    private void OnDisable()
+    {
+        TownManager.Instance.CalculateExpenditure -= CalculateExpenditure;
+    }
     private void OnMouseEnter()
     {
         if (this == null)
@@ -48,11 +56,16 @@ public class MapTileScript : MonoBehaviour, IMapTile
         }
     }
 
-    public virtual void Init()
+    private void CalculateExpenditure(ref float expenditure)
     {
-
+        expenditure += TownManager.Instance.tileExpenditure[tileType];
     }
 
+    public virtual void Init()
+    {
+        Load();
+    }
+    public virtual void Load() { }
     public Tile GetTile()
     {
         return new Tile(tileType, (int)transform.eulerAngles.y / 90);

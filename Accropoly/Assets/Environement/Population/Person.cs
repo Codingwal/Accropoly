@@ -40,6 +40,6 @@ public class Person : MonoBehaviour, IPerson
     }
     private void PayTaxes(ref float taxes)
     {
-        taxes += Happiness;
+        taxes += Happiness * TownManager.Instance.taxPerHappiness;
     }
 }

@@ -6,12 +6,12 @@ using UnityEngine.SceneManagement;
 public delegate void RefAction<T>(ref T obj);
 public class GameLoopManager : SingletonPersistant<GameLoopManager>
 {
-    // Time and tax system
+    // Time and invoice system
     [SerializeField] private float timeSpeed;
-    [SerializeField] private float taxInterval;
-    private float nextTaxTime;
+    [SerializeField] private float invoiceInterval;
+    private float nextInvoiceTime;
     public float playTime;
-    public event Action PayTaxes;
+    public event Action Invoice;
 
     // Loading and saving
     public event Action<World> InitWorld;
@@ -75,10 +75,10 @@ public class GameLoopManager : SingletonPersistant<GameLoopManager>
     {
         playTime += Time.deltaTime * timeSpeed;
 
-        if (playTime > nextTaxTime)
+        if (playTime > nextInvoiceTime)
         {
-            nextTaxTime += taxInterval;
-            PayTaxes?.Invoke();
+            nextInvoiceTime += invoiceInterval;
+            Invoice?.Invoke();
         }
     }
     private void OnSceneIsUnloading(string newScene)
@@ -130,10 +130,10 @@ public class GameLoopManager : SingletonPersistant<GameLoopManager>
 
         playTime = world.playTime;
 
-        nextTaxTime = 0;
-        while (playTime > nextTaxTime)
+        nextInvoiceTime = 0;
+        while (playTime > nextInvoiceTime)
         {
-            nextTaxTime += taxInterval;
+            nextInvoiceTime += invoiceInterval;
         }
 
         MapHandler.Instance.GenerateTileMap(world.map);

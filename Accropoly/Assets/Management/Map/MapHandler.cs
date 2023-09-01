@@ -60,6 +60,8 @@ public class MapHandler : Singleton<MapHandler>
         mapTileScript.X = indexX;
         mapTileScript.Y = indexY;
 
+        mapTileScript.Load();
+
         return tile;
     }
 
