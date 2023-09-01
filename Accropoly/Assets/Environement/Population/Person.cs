@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Person : MonoBehaviour, IPerson
 {
-    public Vector2? HomeTilePos { get; set; }
+    public Vector2 HomeTilePos { get; set; }
     public Vector2? WorkplaceTilePos { get; set; }
 
     public float Happiness

@@ -1,8 +1,11 @@
-using System.Runtime.Remoting.Messaging;
 using UnityEngine;
+using System.Collections.Generic;
+using UnityEngine.InputSystem.LowLevel;
 
-public class HouseTile : MapTileScript
+public class HouseTile : MapTileScript, IHouseTile
 {
+    // Inhabitants
+    public List<GameObject> Inhabitants { get; set; } = new();
     public override bool CanPersist()
     {
         GameObject neighbour;
@@ -20,5 +23,17 @@ public class HouseTile : MapTileScript
             return true;
         }
         return false;
+    }
+    public override void Init()
+    {
+         PopulationManager.Instance.NewHouse(HouseSize.normal, TilePos);
+    }
+    public override void OnRemove()
+    {
+        base.OnRemove();
+        for (int i = 0; i < Inhabitants.Count; i++)
+        {
+            PopulationManager.Instance.RemovePerson(Inhabitants[i]);
+        }
     }
 }

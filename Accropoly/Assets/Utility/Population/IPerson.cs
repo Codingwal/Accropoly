@@ -4,6 +4,6 @@ using UnityEngine;
 
 public interface IPerson
 {
-    public Vector2? HomeTilePos { get; set; }
+    public Vector2 HomeTilePos { get; set; }
     public Vector2? WorkplaceTilePos { get; set; }
 }

@@ -18,9 +18,6 @@ public class MapTileScript : MonoBehaviour, IMapTile
     // Design
     private Color defaultColor;
 
-    // Inhabitants
-    private List<GameObject> inhabitants = new();
-
     // References
     private new Renderer renderer;
     private BuildingSystemHandler buildingSystemHandler;
@@ -51,12 +48,9 @@ public class MapTileScript : MonoBehaviour, IMapTile
         }
     }
 
-    public void Init()
+    public virtual void Init()
     {
-        if (tileType == TileType.House)
-        {
-            inhabitants = PopulationManager.Instance.NewHouse(HouseSize.normal, TilePos);
-        }
+
     }
 
     public Tile GetTile()
@@ -90,13 +84,8 @@ public class MapTileScript : MonoBehaviour, IMapTile
     {
         return true;
     }
-    public void OnRemove()
+    public virtual void OnRemove()
     {
-        for (int i = 0; i < inhabitants.Count; i++)
-        {
-            PopulationManager.Instance.RemovePerson(inhabitants[i]);
-        }
-
         for (int dir = 0; dir < 4; dir++)
         {
             GameObject neighbourTile = MapHandler.GetTileFromNeighbour(TilePos, dir * 90);

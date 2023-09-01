@@ -53,7 +53,7 @@ public class PopulationManager : Singleton<PopulationManager>
         PayTaxes?.Invoke(ref taxes);
         balance += taxes;
     }
-    public List<GameObject> NewHouse(HouseSize houseSize, Vector2 houseTilePos)
+    public void NewHouse(HouseSize houseSize, Vector2 houseTilePos)
     {
         int personCount = 0;
 
@@ -65,17 +65,14 @@ public class PopulationManager : Singleton<PopulationManager>
         }
 
         // Add people to the house
-        List<GameObject> houseInhabitants = new();
-
         for (int i = 0; i < personCount; i++)
         {
             PersonData personData = new()
             {
                 homeTilePos = houseTilePos
             };
-            houseInhabitants.Add(AddPerson(personData));
+            AddPerson(personData);
         }
-        return houseInhabitants;
     }
     public GameObject AddPerson(PersonData personData)
     {
@@ -90,7 +87,12 @@ public class PopulationManager : Singleton<PopulationManager>
         personScript.HomeTilePos = personData.homeTilePos;
         personScript.WorkplaceTilePos = personData.workplaceTilePos;
 
+        // Add the person to the population list
         population.Add(person);
+
+        // Add the person to the house tile inhabitants list
+        IHouseTile houseTileScript = MapHandler.Instance.map.GetValue(personScript.HomeTilePos).GetComponent<IHouseTile>();
+        houseTileScript.Inhabitants.Add(person);
 
         return person;
     }
