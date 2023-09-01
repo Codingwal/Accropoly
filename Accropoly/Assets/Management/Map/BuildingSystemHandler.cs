@@ -180,10 +180,10 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
         if (newTile == oldTileScript.GetTile()) return;
 
         // Buy the tile or return if it can't be bought
-        if (!EconomyManager.Instance.BuyTile(newTile.tileType)) return;
+        if (!PopulationManager.Instance.BuyTile(newTile.tileType)) return;
 
         // Sell the old tile
-        EconomyManager.Instance.SellTile(oldTileScript.GetTile().tileType);
+        PopulationManager.Instance.SellTile(oldTileScript.GetTile().tileType);
 
         // Create the new tile
         GameObject newtileObject = Instantiate(MapHandler.Instance.tilePrefabs[newTile.tileType], MapHandler.Instance.tileParent);

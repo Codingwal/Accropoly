@@ -11,7 +11,7 @@ public class StatisticsDisplay : MonoBehaviour
 
     private void Update()
     {
-        int balance = (int)Math.Round(EconomyManager.Instance.balance);
+        int balance = (int)Math.Round(PopulationManager.Instance.balance);
         int population = PopulationManager.Instance.population.Count;
 
         balanceText.text = "Balance: " + balance;

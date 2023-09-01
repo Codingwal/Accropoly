@@ -2370,7 +2370,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0.38268346, y: -3e-45, z: 1e-45, w: 0.92387956}
+  m_LocalRotation: {x: 0.38268346, y: 1e-45, z: -1e-45, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 50, z: -50}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2646,13 +2646,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d450f3a5ebc3714085020486fe6e921, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  balance: 100
-  tileBuyPrices:
-    keys: 00000000010000000200000003000000040000000500000006000000
-    values: 0a0000000f0000001e0000001e00000023000000280000003c000000
-  tileSellPrices:
-    keys: 00000000010000000200000003000000040000000500000006000000
-    values: 00000000050000000f0000000f0000000f0000000f0000001e000000
 --- !u!114 &1028602573
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2668,6 +2661,13 @@ MonoBehaviour:
   personPrefab: {fileID: 725697737072484042, guid: d30f209018abdb34a884d20836842107, type: 3}
   populationParentObject: {fileID: 1057835179}
   population: []
+  balance: 0
+  tileBuyPrices:
+    keys: 00000000010000000200000003000000040000000500000006000000
+    values: 0a0000000f0000001e0000001e000000230000002800000064000000
+  tileSellPrices:
+    keys: 00000000010000000200000003000000040000000500000006000000
+    values: 00000000050000000f0000000f0000000f0000000f00000032000000
 --- !u!1 &1057835178
 GameObject:
   m_ObjectHideFlags: 0
@@ -2974,7 +2974,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1394332838}
-  m_LocalRotation: {x: 0.38268346, y: -3e-45, z: 1e-45, w: 0.92387956}
+  m_LocalRotation: {x: 0.38268346, y: 1e-45, z: -1e-45, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 50, z: -50}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
