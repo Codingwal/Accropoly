@@ -26,14 +26,14 @@ public class HouseTile : MapTileScript, IHouseTile
     }
     public override void Init()
     {
-         PopulationManager.Instance.NewHouse(HouseSize.normal, TilePos);
+        TownManager.Instance.NewHouse(HouseSize.normal, TilePos);
     }
     public override void OnRemove()
     {
         base.OnRemove();
         for (int i = 0; i < Inhabitants.Count; i++)
         {
-            PopulationManager.Instance.RemovePerson(Inhabitants[i]);
+            TownManager.Instance.RemovePerson(Inhabitants[i]);
         }
     }
 }

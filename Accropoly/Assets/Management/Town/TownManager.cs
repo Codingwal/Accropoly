@@ -1,14 +1,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PopulationManager : Singleton<PopulationManager>
+public class TownManager : Singleton<TownManager>
 {
     public event RefAction<float> PayTaxes;
 
+    [Header("Economy")]
+    public float balance;
+    [SerializeField] private SerializableDictionary<TileType, int> tileBuyPrices;
+    [SerializeField] private SerializableDictionary<TileType, int> tileSellPrices;
+
+    [Header("Population")]
     [SerializeField] GameObject personPrefab;
     [SerializeField] Transform populationParentObject;
 
     public List<GameObject> population = new();
+
+
+
     private void OnEnable()
     {
         GameLoopManager.Instance.InitWorld += InitPopulation;
@@ -28,6 +37,7 @@ public class PopulationManager : Singleton<PopulationManager>
         GameLoopManager.Instance.PayTaxes -= CalculateTaxes;
     }
 
+    // -------------------------------- Initialization -------------------------------- //
     private void InitPopulation(World world)
     {
         // Delete all existing childs
@@ -47,12 +57,41 @@ public class PopulationManager : Singleton<PopulationManager>
             AddPerson(personData);
         }
     }
+    private void InitEconomy(World world)
+    {
+        balance = world.balance;
+    }
+
+    // -------------------------------- Saving -------------------------------- //
+    private void SaveEconomy(ref World world)
+    {
+        world.balance = balance;
+    }
+
+    // -------------------------------- Economy -------------------------------- //
     public void CalculateTaxes()
     {
         float taxes = 0;
         PayTaxes?.Invoke(ref taxes);
         balance += taxes;
     }
+    /// <returns>Can the tile be bought</returns>
+    public bool BuyTile(TileType tileType)
+    {
+        balance -= tileBuyPrices[tileType];
+        if (balance < 0)
+        {
+            balance += tileBuyPrices[tileType];
+            return false;
+        }
+        return true;
+    }
+    public void SellTile(TileType tileType)
+    {
+        balance += tileSellPrices[tileType];
+    }
+
+    // -------------------------------- Population -------------------------------- //
     public void NewHouse(HouseSize houseSize, Vector2 houseTilePos)
     {
         int personCount = 0;
@@ -100,35 +139,6 @@ public class PopulationManager : Singleton<PopulationManager>
     {
         population.Remove(person);
         Destroy(person);
-    }
-
-    public float balance;
-    [SerializeField] private SerializableDictionary<TileType, int> tileBuyPrices;
-    [SerializeField] private SerializableDictionary<TileType, int> tileSellPrices;
-
-    /// <returns>Can the tile be bought</returns>
-    public bool BuyTile(TileType tileType)
-    {
-        balance -= tileBuyPrices[tileType];
-        if (balance < 0)
-        {
-            balance += tileBuyPrices[tileType];
-            return false;
-        }
-        return true;
-    }
-    public void SellTile(TileType tileType)
-    {
-        balance += tileSellPrices[tileType];
-    }
-
-    private void InitEconomy(World world)
-    {
-        balance = world.balance;
-    }
-    private void SaveEconomy(ref World world)
-    {
-        world.balance = balance;
     }
 }
 public enum HouseSize

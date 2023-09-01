@@ -11,8 +11,8 @@ public class StatisticsDisplay : MonoBehaviour
 
     private void Update()
     {
-        int balance = (int)Math.Round(PopulationManager.Instance.balance);
-        int population = PopulationManager.Instance.population.Count;
+        int balance = (int)Math.Round(TownManager.Instance.balance);
+        int population = TownManager.Instance.population.Count;
 
         balanceText.text = "Balance: " + balance;
         populationText.text = "Population: " + population;

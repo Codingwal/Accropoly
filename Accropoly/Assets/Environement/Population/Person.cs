@@ -17,12 +17,12 @@ public class Person : MonoBehaviour, IPerson
     private void OnEnable()
     {
         GameLoopManager.Instance.SaveWorld += SaveData;
-        PopulationManager.Instance.PayTaxes += PayTaxes;
+        TownManager.Instance.PayTaxes += PayTaxes;
     }
     private void OnDisable()
     {
         GameLoopManager.Instance.SaveWorld -= SaveData;
-        PopulationManager.Instance.PayTaxes -= PayTaxes;
+        TownManager.Instance.PayTaxes -= PayTaxes;
     }
     private void SaveData(ref World world)
     {
