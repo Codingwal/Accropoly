@@ -2559,7 +2559,6 @@ GameObject:
   - component: {fileID: 1028602567}
   - component: {fileID: 1028602570}
   - component: {fileID: 1028602571}
-  - component: {fileID: 1028602572}
   - component: {fileID: 1028602573}
   m_Layer: 0
   m_Name: Management
@@ -2583,7 +2582,7 @@ MonoBehaviour:
   tileSize: 30
   tileParent: {fileID: 0}
   tilePrefabs:
-    keys: 00000000010000000200000003000000040000000500000006000000
+    keys: 0000000001000000020000000300000004000000050000000600000007000000
     values:
     - {fileID: 1018065688083463063, guid: 043e4a60b6860a543bf31c9e81a9b636, type: 3}
     - {fileID: 7947999506322420293, guid: 883af793d4c4cee40bc25c1c483b3689, type: 3}
@@ -2592,6 +2591,7 @@ MonoBehaviour:
     - {fileID: 1018065688083463063, guid: 4f9e7c0adb4bec94aabb478eafbf5848, type: 3}
     - {fileID: 1018065688083463063, guid: f6416533bb78c0a4cb5b38aba1171f0a, type: 3}
     - {fileID: 1018065688083463063, guid: 183f1023989e79841acbe49c637bda72, type: 3}
+    - {fileID: 1018065688083463063, guid: 2379b9c826bc34e40a65f63e10989dcc, type: 3}
   map:
     array2D: []
 --- !u!4 &1028602569
@@ -2634,18 +2634,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0f47713562bde74db5a4a9a65d02412, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1028602572
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1028602566}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d450f3a5ebc3714085020486fe6e921, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1028602573
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2658,16 +2646,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c165aba501bd6eb41b9c70f1a422338d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  balance: 0
+  tileBuyPrices:
+    keys: 0000000001000000020000000300000004000000050000000600000007000000
+    values: 0a0000000f0000001e0000001e0000002300000028000000c800000096000000
+  tileSellPrices:
+    keys: 0000000001000000020000000300000004000000050000000600000007000000
+    values: 00000000050000000f0000000f0000000f0000000f000000640000004b000000
   personPrefab: {fileID: 725697737072484042, guid: d30f209018abdb34a884d20836842107, type: 3}
   populationParentObject: {fileID: 1057835179}
   population: []
-  balance: 0
-  tileBuyPrices:
-    keys: 00000000010000000200000003000000040000000500000006000000
-    values: 0a0000000f0000001e0000001e000000230000002800000064000000
-  tileSellPrices:
-    keys: 00000000010000000200000003000000040000000500000006000000
-    values: 00000000050000000f0000000f0000000f0000000f00000032000000
+  electricityUsagePerPerson: 4
 --- !u!1 &1057835178
 GameObject:
   m_ObjectHideFlags: 0

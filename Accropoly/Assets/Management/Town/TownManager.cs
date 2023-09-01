@@ -1,8 +1,10 @@
 using System.Collections.Generic;
+using System.Runtime.Remoting.Messaging;
 using UnityEngine;
 
 public class TownManager : Singleton<TownManager>
 {
+    // Economy
     public event RefAction<float> PayTaxes;
 
     [Header("Economy")]
@@ -10,13 +12,18 @@ public class TownManager : Singleton<TownManager>
     [SerializeField] private SerializableDictionary<TileType, int> tileBuyPrices;
     [SerializeField] private SerializableDictionary<TileType, int> tileSellPrices;
 
+    // Population
     [Header("Population")]
     [SerializeField] GameObject personPrefab;
     [SerializeField] Transform populationParentObject;
 
     public List<GameObject> population = new();
 
-
+    // Electricity
+    public List<IEnergyProducer> energyProducers = new();
+    public List<IEnergyConsumer> energyConsumers = new();
+    [Header("Electricity")]
+    public float electricityUsagePerPerson;
 
     private void OnEnable()
     {
@@ -139,6 +146,27 @@ public class TownManager : Singleton<TownManager>
     {
         population.Remove(person);
         Destroy(person);
+    }
+
+    // -------------------------------- Electricity -------------------------------- //
+    public bool HasElectricity()
+    {
+        float consumption = 0;
+        foreach (IEnergyConsumer energyConsumer in energyConsumers)
+        {
+            consumption += energyConsumer.EnergyConsumption;
+        }
+
+        float production = 0;
+        foreach (IEnergyProducer energyProducer in energyProducers)
+        {
+            production += energyProducer.EnergyProduction;
+        }
+
+        Debug.Log("Production: " + production);
+        Debug.Log("Consumption: " + consumption);
+
+        return production > consumption;
     }
 }
 public enum HouseSize

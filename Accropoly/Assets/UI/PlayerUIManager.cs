@@ -54,6 +54,7 @@ public class PlayerUIManager : MonoBehaviour
         inputManager.Hotkey4 += OnPlaceStreetJunction;
         inputManager.Hotkey5 += OnPlaceStreetTJunction;
         inputManager.Hotkey6 += OnPlaceHouse;
+        inputManager.Hotkey7 += OnPlaceSolarPanel;
     }
     private void OnDisable()
     {
@@ -69,6 +70,7 @@ public class PlayerUIManager : MonoBehaviour
         inputManager.Hotkey4 -= OnPlaceStreetJunction;
         inputManager.Hotkey5 -= OnPlaceStreetTJunction;
         inputManager.Hotkey6 -= OnPlaceHouse;
+        inputManager.Hotkey7 -= OnPlaceSolarPanel;
     }
 
     private bool OnEscape()
@@ -138,5 +140,10 @@ public class PlayerUIManager : MonoBehaviour
     {
         if (!buildingMenu.activeSelf) return;
         StartCoroutine(buildingSystemHandler.PlaceTile(TileType.House));
+    }
+    private void OnPlaceSolarPanel()
+    {
+        if (!buildingMenu.activeSelf) return;
+        StartCoroutine(buildingSystemHandler.PlaceTile(TileType.SolarPanel));
     }
 }

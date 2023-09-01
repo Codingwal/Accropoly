@@ -311,6 +311,15 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""Clear"",
+                    ""type"": ""Button"",
+                    ""id"": ""1d785eba-4278-42a9-858e-4b9f40fdd40c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Hotkey1"",
                     ""type"": ""Button"",
                     ""id"": ""6a9e8041-d132-4cf8-b436-22d18546849d"",
@@ -365,9 +374,9 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Clear"",
+                    ""name"": ""Hotkey7"",
                     ""type"": ""Button"",
-                    ""id"": ""1d785eba-4278-42a9-858e-4b9f40fdd40c"",
+                    ""id"": ""5780f40b-3259-4adf-8754-21e7df810aa8"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -476,6 +485,17 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""492990fe-1d85-4cdd-9bab-0988c2593f2d"",
+                    ""path"": ""<Keyboard>/7"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Hotkey7"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""7ffd6e19-f9aa-43a2-a48c-a280518bbb0d"",
                     ""path"": ""<Keyboard>/x"",
                     ""interactions"": """",
@@ -505,13 +525,14 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         m_UI_Escape = m_UI.FindAction("Escape", throwIfNotFound: true);
         m_UI_Menu = m_UI.FindAction("Menu", throwIfNotFound: true);
         m_UI_Ctrl = m_UI.FindAction("Ctrl", throwIfNotFound: true);
+        m_UI_Clear = m_UI.FindAction("Clear", throwIfNotFound: true);
         m_UI_Hotkey1 = m_UI.FindAction("Hotkey1", throwIfNotFound: true);
         m_UI_Hotkey2 = m_UI.FindAction("Hotkey2", throwIfNotFound: true);
         m_UI_Hotkey3 = m_UI.FindAction("Hotkey3", throwIfNotFound: true);
         m_UI_Hotkey4 = m_UI.FindAction("Hotkey4", throwIfNotFound: true);
         m_UI_Hotkey5 = m_UI.FindAction("Hotkey5", throwIfNotFound: true);
         m_UI_Hotkey6 = m_UI.FindAction("Hotkey6", throwIfNotFound: true);
-        m_UI_Clear = m_UI.FindAction("Clear", throwIfNotFound: true);
+        m_UI_Hotkey7 = m_UI.FindAction("Hotkey7", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -663,13 +684,14 @@ public partial class @Controls : IInputActionCollection2, IDisposable
     private readonly InputAction m_UI_Escape;
     private readonly InputAction m_UI_Menu;
     private readonly InputAction m_UI_Ctrl;
+    private readonly InputAction m_UI_Clear;
     private readonly InputAction m_UI_Hotkey1;
     private readonly InputAction m_UI_Hotkey2;
     private readonly InputAction m_UI_Hotkey3;
     private readonly InputAction m_UI_Hotkey4;
     private readonly InputAction m_UI_Hotkey5;
     private readonly InputAction m_UI_Hotkey6;
-    private readonly InputAction m_UI_Clear;
+    private readonly InputAction m_UI_Hotkey7;
     public struct UIActions
     {
         private @Controls m_Wrapper;
@@ -677,13 +699,14 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         public InputAction @Escape => m_Wrapper.m_UI_Escape;
         public InputAction @Menu => m_Wrapper.m_UI_Menu;
         public InputAction @Ctrl => m_Wrapper.m_UI_Ctrl;
+        public InputAction @Clear => m_Wrapper.m_UI_Clear;
         public InputAction @Hotkey1 => m_Wrapper.m_UI_Hotkey1;
         public InputAction @Hotkey2 => m_Wrapper.m_UI_Hotkey2;
         public InputAction @Hotkey3 => m_Wrapper.m_UI_Hotkey3;
         public InputAction @Hotkey4 => m_Wrapper.m_UI_Hotkey4;
         public InputAction @Hotkey5 => m_Wrapper.m_UI_Hotkey5;
         public InputAction @Hotkey6 => m_Wrapper.m_UI_Hotkey6;
-        public InputAction @Clear => m_Wrapper.m_UI_Clear;
+        public InputAction @Hotkey7 => m_Wrapper.m_UI_Hotkey7;
         public InputActionMap Get() { return m_Wrapper.m_UI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -702,6 +725,9 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @Ctrl.started -= m_Wrapper.m_UIActionsCallbackInterface.OnCtrl;
                 @Ctrl.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnCtrl;
                 @Ctrl.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnCtrl;
+                @Clear.started -= m_Wrapper.m_UIActionsCallbackInterface.OnClear;
+                @Clear.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnClear;
+                @Clear.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnClear;
                 @Hotkey1.started -= m_Wrapper.m_UIActionsCallbackInterface.OnHotkey1;
                 @Hotkey1.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnHotkey1;
                 @Hotkey1.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnHotkey1;
@@ -720,9 +746,9 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @Hotkey6.started -= m_Wrapper.m_UIActionsCallbackInterface.OnHotkey6;
                 @Hotkey6.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnHotkey6;
                 @Hotkey6.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnHotkey6;
-                @Clear.started -= m_Wrapper.m_UIActionsCallbackInterface.OnClear;
-                @Clear.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnClear;
-                @Clear.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnClear;
+                @Hotkey7.started -= m_Wrapper.m_UIActionsCallbackInterface.OnHotkey7;
+                @Hotkey7.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnHotkey7;
+                @Hotkey7.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnHotkey7;
             }
             m_Wrapper.m_UIActionsCallbackInterface = instance;
             if (instance != null)
@@ -736,6 +762,9 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @Ctrl.started += instance.OnCtrl;
                 @Ctrl.performed += instance.OnCtrl;
                 @Ctrl.canceled += instance.OnCtrl;
+                @Clear.started += instance.OnClear;
+                @Clear.performed += instance.OnClear;
+                @Clear.canceled += instance.OnClear;
                 @Hotkey1.started += instance.OnHotkey1;
                 @Hotkey1.performed += instance.OnHotkey1;
                 @Hotkey1.canceled += instance.OnHotkey1;
@@ -754,9 +783,9 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @Hotkey6.started += instance.OnHotkey6;
                 @Hotkey6.performed += instance.OnHotkey6;
                 @Hotkey6.canceled += instance.OnHotkey6;
-                @Clear.started += instance.OnClear;
-                @Clear.performed += instance.OnClear;
-                @Clear.canceled += instance.OnClear;
+                @Hotkey7.started += instance.OnHotkey7;
+                @Hotkey7.performed += instance.OnHotkey7;
+                @Hotkey7.canceled += instance.OnHotkey7;
             }
         }
     }
@@ -777,12 +806,13 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         void OnEscape(InputAction.CallbackContext context);
         void OnMenu(InputAction.CallbackContext context);
         void OnCtrl(InputAction.CallbackContext context);
+        void OnClear(InputAction.CallbackContext context);
         void OnHotkey1(InputAction.CallbackContext context);
         void OnHotkey2(InputAction.CallbackContext context);
         void OnHotkey3(InputAction.CallbackContext context);
         void OnHotkey4(InputAction.CallbackContext context);
         void OnHotkey5(InputAction.CallbackContext context);
         void OnHotkey6(InputAction.CallbackContext context);
-        void OnClear(InputAction.CallbackContext context);
+        void OnHotkey7(InputAction.CallbackContext context);
     }
 }

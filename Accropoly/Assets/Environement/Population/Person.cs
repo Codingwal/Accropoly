@@ -11,7 +11,11 @@ public class Person : MonoBehaviour, IPerson
     {
         get
         {
-            return 50;
+            float happiness = 50;
+
+            if (TownManager.Instance.HasElectricity()) { happiness += 10; } else { happiness -= 20; };
+
+            return happiness;
         }
     }
     private void OnEnable()

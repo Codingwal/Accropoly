@@ -36,15 +36,15 @@ public enum TileType
     Plains,
     Forest,
 
-    // Normal street, houses can connect
+    // Streets
     Street,
     StreetCorner,
     StreetTJunction,
     StreetJunction,
 
-    House
+    // Houses
+    House,
 
-    // // Faster street, houses can't connect
-    // Highway,
-    // HighwayCorner,
+    // Energy production
+    SolarPanel
 }

@@ -18,6 +18,7 @@ public class InputManager : Singleton<InputManager>
     public event Action Hotkey4;
     public event Action Hotkey5;
     public event Action Hotkey6;
+    public event Action Hotkey7;
 
     public event Action MenuHotkey1;
     public event Action MenuHotkey2;
@@ -25,6 +26,7 @@ public class InputManager : Singleton<InputManager>
     public event Action MenuHotkey4;
     public event Action MenuHotkey5;
     public event Action MenuHotkey6;
+    public event Action MenuHotkey7;
 
     protected override void Awake()
     {
@@ -47,6 +49,7 @@ public class InputManager : Singleton<InputManager>
         uIActions.Hotkey4.performed += OnHotkey4;
         uIActions.Hotkey5.performed += OnHotkey5;
         uIActions.Hotkey6.performed += OnHotkey6;
+        uIActions.Hotkey7.performed += OnHotkey7;
     }
     private void OnDisable()
     {
@@ -59,6 +62,7 @@ public class InputManager : Singleton<InputManager>
         uIActions.Hotkey4.performed -= OnHotkey4;
         uIActions.Hotkey5.performed -= OnHotkey5;
         uIActions.Hotkey6.performed -= OnHotkey6;
+        uIActions.Hotkey7.performed -= OnHotkey7;
     }
 
     private void OnEscape(CallbackContext ctx)
@@ -79,6 +83,7 @@ public class InputManager : Singleton<InputManager>
     private void OnHotkey4(CallbackContext context) { if (inGameActions.Shift.IsPressed()) { MenuHotkey4?.Invoke(); } else { Hotkey4?.Invoke(); } }
     private void OnHotkey5(CallbackContext context) { if (inGameActions.Shift.IsPressed()) { MenuHotkey5?.Invoke(); } else { Hotkey5?.Invoke(); } }
     private void OnHotkey6(CallbackContext context) { if (inGameActions.Shift.IsPressed()) { MenuHotkey6?.Invoke(); } else { Hotkey6?.Invoke(); } }
+    private void OnHotkey7(CallbackContext context) { if (inGameActions.Shift.IsPressed()) { MenuHotkey7?.Invoke(); } else { Hotkey7?.Invoke(); } }
 
     private void OnGameStateChanged(GameState newGameState, GameState oldGameState)
     {

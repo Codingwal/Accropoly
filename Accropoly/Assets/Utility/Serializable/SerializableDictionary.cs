@@ -12,7 +12,13 @@ public class SerializableDictionary<TKey, TValue>
     {
         get
         {
-            return values[keys.IndexOf(key)];
+            int valueIndex = keys.IndexOf(key);
+            if (valueIndex == -1)
+            {
+                Debug.LogWarning("Key does not exist");
+                return default;
+            }
+            return values[valueIndex];
         }
     }
 }

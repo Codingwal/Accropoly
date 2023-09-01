@@ -289,6 +289,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Clear",
+                    "type": "Button",
+                    "id": "1d785eba-4278-42a9-858e-4b9f40fdd40c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Hotkey1",
                     "type": "Button",
                     "id": "6a9e8041-d132-4cf8-b436-22d18546849d",
@@ -343,9 +352,9 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Clear",
+                    "name": "Hotkey7",
                     "type": "Button",
-                    "id": "1d785eba-4278-42a9-858e-4b9f40fdd40c",
+                    "id": "5780f40b-3259-4adf-8754-21e7df810aa8",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -449,6 +458,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Menu",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "492990fe-1d85-4cdd-9bab-0988c2593f2d",
+                    "path": "<Keyboard>/7",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Hotkey7",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
