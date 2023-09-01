@@ -25,6 +25,31 @@ public class TownManager : Singleton<TownManager>
     [Header("Electricity")]
     public float electricityUsagePerPerson;
 
+    public float EnergyConsumption
+    {
+        get
+        {
+            float consumption = 0;
+            foreach (IEnergyConsumer energyConsumer in energyConsumers)
+            {
+                consumption += energyConsumer.EnergyConsumption;
+            }
+            return consumption;
+        }
+    }
+    public float EnergyProduction
+    {
+        get
+        {
+            float production = 0;
+            foreach (IEnergyProducer energyProducer in energyProducers)
+            {
+                production += energyProducer.EnergyProduction;
+            }
+            return production;
+        }
+    }
+
     private void OnEnable()
     {
         GameLoopManager.Instance.InitWorld += InitPopulation;
@@ -151,22 +176,7 @@ public class TownManager : Singleton<TownManager>
     // -------------------------------- Electricity -------------------------------- //
     public bool HasElectricity()
     {
-        float consumption = 0;
-        foreach (IEnergyConsumer energyConsumer in energyConsumers)
-        {
-            consumption += energyConsumer.EnergyConsumption;
-        }
-
-        float production = 0;
-        foreach (IEnergyProducer energyProducer in energyProducers)
-        {
-            production += energyProducer.EnergyProduction;
-        }
-
-        Debug.Log("Production: " + production);
-        Debug.Log("Consumption: " + consumption);
-
-        return production > consumption;
+        return EnergyProduction > EnergyConsumption;
     }
 }
 public enum HouseSize
