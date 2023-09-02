@@ -27,9 +27,9 @@ public struct World
 
         cameraSystemPos = new();
         cameraSystemRotation = Quaternion.identity;
-        followOffsetY = 50;
+        followOffsetY = 100;
 
-        balance = 500;
+        balance = 10000;
 
         population = new();
 

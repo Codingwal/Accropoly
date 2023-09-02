@@ -46,5 +46,6 @@ public enum TileType
     House,
 
     // Energy production
-    SolarPanel
+    SolarPanel,
+    CoalPowerPlant
 }

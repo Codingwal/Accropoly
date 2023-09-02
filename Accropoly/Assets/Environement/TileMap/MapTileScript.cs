@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,20 +16,19 @@ public class MapTileScript : MonoBehaviour, IMapTile
         get { return new(X, Y); }
     }
 
-    // Design
-    private Color defaultColor;
+    // Temp
+    private bool isMouseHere = false;
+
+    public event Action ChildsDefaultColor;
+    public event Action ChildsPlaceableColor;
+    public event Action ChildsNotPlaceableColor;
 
     // References
-    private new Renderer renderer;
     private BuildingSystemHandler buildingSystemHandler;
-
 
     private void Awake()
     {
-        renderer = GetComponent<Renderer>();
         buildingSystemHandler = BuildingSystemHandler.Instance;
-
-        defaultColor = renderer.material.color;
     }
     private void OnEnable()
     {
@@ -38,15 +38,17 @@ public class MapTileScript : MonoBehaviour, IMapTile
     {
         TownManager.Instance.CalculateExpenditure -= CalculateExpenditure;
     }
-    private void OnMouseEnter()
+    public void OnMouseEnterChild()
     {
         if (this == null)
         {
             return;
         }
         buildingSystemHandler.selectedTile = transform;
+
+        isMouseHere = true;
     }
-    private void OnMouseExit()
+    public void OnMouseExitChild()
     {
         DefaultColor();
 
@@ -54,6 +56,8 @@ public class MapTileScript : MonoBehaviour, IMapTile
         {
             buildingSystemHandler.selectedTile = null;
         }
+
+        isMouseHere = true;
     }
 
     private void CalculateExpenditure(ref float expenditure)
@@ -72,15 +76,15 @@ public class MapTileScript : MonoBehaviour, IMapTile
     }
     public void DefaultColor()
     {
-        renderer.material.color = defaultColor;
+        ChildsDefaultColor?.Invoke();
     }
     public void PlaceableColor()
     {
-        renderer.material.color = Color.green;
+        ChildsPlaceableColor?.Invoke();
     }
     public void NotPlaceableColor()
     {
-        renderer.material.color = Color.red;
+        ChildsNotPlaceableColor?.Invoke();
     }
     public virtual bool CanBePlaced()
     {

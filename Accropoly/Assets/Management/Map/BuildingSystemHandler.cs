@@ -62,7 +62,7 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
 
         GameObject tile = Instantiate(tilePrefab);
 
-        tile.layer = 2;
+        SetIgnoreRaycast(tile);
 
         canceled = false;
 
@@ -93,7 +93,8 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
                 {
                     ReplaceTile(new(TileType.Plains, 0), selectedTile);
                     tile.transform.eulerAngles = new(tile.transform.eulerAngles.x, tileRotation, tile.transform.eulerAngles.z);
-                    tile.layer = 2;
+
+                    SetIgnoreRaycast(tile);
 
                     mapTileScript = tile.GetComponent<IMapTile>();
 
@@ -112,7 +113,8 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
         GameObject tilePrefab = mapHandler.tilePrefabs[tileType];
 
         GameObject tile = Instantiate(tilePrefab);
-        tile.layer = 2;
+
+        SetIgnoreRaycast(tile);
 
         canceled = false;
 
@@ -133,6 +135,7 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
             }
             else
             {
+    
                 tile.SetActive(true);
                 tile.transform.position = selectedTile.position + new Vector3(0, 1, 0);
                 tile.transform.eulerAngles = new(tile.transform.eulerAngles.x, tileRotation, tile.transform.eulerAngles.z);
@@ -155,7 +158,7 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
                     {
                         ReplaceTile(new(tileType, (int)tile.transform.eulerAngles.y / 90), selectedTile);
 
-                        tile.layer = 2;
+                        SetIgnoreRaycast(tile);
 
                         mapTileScript = tile.GetComponent<IMapTile>();
                     }
@@ -169,6 +172,14 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
     {
         canceled = true;
         yield return new WaitForEndOfFrame();
+    }
+
+    private void SetIgnoreRaycast(GameObject tile)
+    {
+        foreach (Transform child in tile.transform)
+        {
+            child.gameObject.layer = 2;
+        }
     }
 
     public static void ReplaceTile(Tile newTile, Transform oldTile)

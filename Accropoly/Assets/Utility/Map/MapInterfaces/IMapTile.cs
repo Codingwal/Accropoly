@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -12,10 +13,18 @@ public interface IMapTile
     public void Init();
     public void Load();
     public Tile GetTile();
+    
     public void DefaultColor();
     public void PlaceableColor();
     public void NotPlaceableColor();
+    public event Action ChildsDefaultColor;
+    public event Action ChildsPlaceableColor;
+    public event Action ChildsNotPlaceableColor;
+
     public bool CanBePlaced();
     public bool CanPersist();
     public void OnRemove();
+
+    public void OnMouseEnterChild();
+    public void OnMouseExitChild();
 }

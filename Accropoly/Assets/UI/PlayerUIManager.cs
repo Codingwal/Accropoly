@@ -8,17 +8,27 @@ public class PlayerUIManager : MonoBehaviour
 
     [Header("Main menu")]
     [SerializeField] private GameObject mainMenu;
-    [SerializeField] private Button buildingMenuButton;
+    [SerializeField] private Button streetMenuButton;
+    [SerializeField] private Button buildingsMenuButton;
     [SerializeField] private Button clearButton;
 
-    [Header("Building menu")]
-    [SerializeField] private GameObject buildingMenu;
+    [Header("Street menu")]
+    [SerializeField] private GameObject streetMenu;
     [SerializeField] private Button forestButton;
     [SerializeField] private Button streetButton;
     [SerializeField] private Button streetCornerButton;
     [SerializeField] private Button streetTJunctionButton;
     [SerializeField] private Button streetJunctionButton;
+    [SerializeField] private Button emptyButton1;
+
+    [Header("Buildings menu")]
+    [SerializeField] private GameObject buildingsMenu;
     [SerializeField] private Button houseButton;
+    [SerializeField] private Button skyscraperButton;
+    [SerializeField] private Button townhallButton;
+    [SerializeField] private Button solarpanelButton;
+    [SerializeField] private Button coalPowerPlantButton;
+    [SerializeField] private Button emptyButton2;
 
     private BuildingSystemHandler buildingSystemHandler;
     private InputManager inputManager;
@@ -29,14 +39,20 @@ public class PlayerUIManager : MonoBehaviour
         inputManager = InputManager.Instance;
 
         mainMenuButton.onClick.AddListener(ToggleMainMenu);
-        buildingMenuButton.onClick.AddListener(ToggleBuildingMenu);
+        streetMenuButton.onClick.AddListener(ToggleStreetMenu);
+        buildingsMenuButton.onClick.AddListener(ToggleBuildingsMenu);
 
         forestButton.onClick.AddListener(OnPlaceForest);
         streetButton.onClick.AddListener(OnPlaceStreet);
         streetCornerButton.onClick.AddListener(OnPlaceStreetCorner);
         streetTJunctionButton.onClick.AddListener(OnPlaceStreetTJunction);
         streetJunctionButton.onClick.AddListener(OnPlaceStreetJunction);
+
         houseButton.onClick.AddListener(OnPlaceHouse);
+        // skyscraperButton.onClick.AddListener();
+        // townhallButton.onClick.AddListener();
+        solarpanelButton.onClick.AddListener(OnPlaceSolarPanel);
+        coalPowerPlantButton.onClick.AddListener(OnPlaceCoalPowerPlant);
 
         clearButton.onClick.AddListener(() => { OnClear(new()); });
     }
@@ -45,7 +61,8 @@ public class PlayerUIManager : MonoBehaviour
         inputManager.PriorityEscape += OnEscape;
         inputManager.MenuToggled += ToggleMainMenu;
 
-        inputManager.MenuHotkey1 += ToggleBuildingMenu;
+        inputManager.MenuHotkey1 += ToggleStreetMenu;
+        inputManager.MenuHotkey2 += ToggleBuildingsMenu;
         inputManager.uIActions.Clear.performed += OnClear;
 
         inputManager.Hotkey1 += OnPlaceForest;
@@ -53,15 +70,18 @@ public class PlayerUIManager : MonoBehaviour
         inputManager.Hotkey3 += OnPlaceStreetCorner;
         inputManager.Hotkey4 += OnPlaceStreetJunction;
         inputManager.Hotkey5 += OnPlaceStreetTJunction;
-        inputManager.Hotkey6 += OnPlaceHouse;
-        inputManager.Hotkey7 += OnPlaceSolarPanel;
+
+        inputManager.Hotkey1 += OnPlaceHouse;
+        inputManager.Hotkey4 += OnPlaceSolarPanel;
+        inputManager.Hotkey5 += OnPlaceCoalPowerPlant;
     }
     private void OnDisable()
     {
         inputManager.PriorityEscape -= OnEscape;
         inputManager.MenuToggled -= ToggleMainMenu;
 
-        inputManager.MenuHotkey1 -= ToggleBuildingMenu;
+        inputManager.MenuHotkey1 -= ToggleStreetMenu;
+        inputManager.MenuHotkey2 -= ToggleBuildingsMenu;
         inputManager.uIActions.Clear.performed -= OnClear;
 
         inputManager.Hotkey1 -= OnPlaceForest;
@@ -69,22 +89,24 @@ public class PlayerUIManager : MonoBehaviour
         inputManager.Hotkey3 -= OnPlaceStreetCorner;
         inputManager.Hotkey4 -= OnPlaceStreetJunction;
         inputManager.Hotkey5 -= OnPlaceStreetTJunction;
-        inputManager.Hotkey6 -= OnPlaceHouse;
-        inputManager.Hotkey7 -= OnPlaceSolarPanel;
+
+        inputManager.Hotkey1 -= OnPlaceHouse;
+        inputManager.Hotkey4 -= OnPlaceSolarPanel;
+        inputManager.Hotkey5 -= OnPlaceCoalPowerPlant;
     }
 
     private bool OnEscape()
     {
-        if (buildingMenu.activeSelf)
-        {
-            ToggleBuildingMenu();
-            return true;
-        }
-        if (mainMenu.activeSelf)
-        {
-            ToggleMainMenu();
-            return true;
-        }
+        // if (buildingMenu.activeSelf)
+        // {
+        //     ToggleBuildingMenu();
+        //     return true;
+        // }
+        // if (mainMenu.activeSelf)
+        // {
+        //     ToggleMainMenu();
+        //     return true;
+        // }
         return false;
     }
     private void ToggleMainMenu()
@@ -101,9 +123,13 @@ public class PlayerUIManager : MonoBehaviour
         }
 
     }
-    private void ToggleBuildingMenu()
+    private void ToggleStreetMenu()
     {
-        buildingMenu.SetActive(!buildingMenu.activeSelf);
+        streetMenu.SetActive(!streetMenu.activeSelf);
+    }
+    private void ToggleBuildingsMenu()
+    {
+        buildingsMenu.SetActive(!buildingsMenu.activeSelf);
     }
 
     private void OnClear(CallbackContext ctx)
@@ -113,37 +139,42 @@ public class PlayerUIManager : MonoBehaviour
 
     private void OnPlaceForest()
     {
-        if (!buildingMenu.activeSelf) return;
+        if (!streetMenu.activeSelf) return;
         StartCoroutine(buildingSystemHandler.PlaceTile(TileType.Forest));
     }
     private void OnPlaceStreet()
     {
-        if (!buildingMenu.activeSelf) return;
+        if (!streetMenu.activeSelf) return;
         StartCoroutine(buildingSystemHandler.PlaceTile(TileType.Street));
     }
     private void OnPlaceStreetCorner()
     {
-        if (!buildingMenu.activeSelf) return;
+        if (!streetMenu.activeSelf) return;
         StartCoroutine(buildingSystemHandler.PlaceTile(TileType.StreetCorner));
     }
     private void OnPlaceStreetTJunction()
     {
-        if (!buildingMenu.activeSelf) return;
+        if (!streetMenu.activeSelf) return;
         StartCoroutine(buildingSystemHandler.PlaceTile(TileType.StreetTJunction));
     }
     private void OnPlaceStreetJunction()
     {
-        if (!buildingMenu.activeSelf) return;
+        if (!streetMenu.activeSelf) return;
         StartCoroutine(buildingSystemHandler.PlaceTile(TileType.StreetJunction));
     }
     private void OnPlaceHouse()
     {
-        if (!buildingMenu.activeSelf) return;
+        if (!buildingsMenu.activeSelf) return;
         StartCoroutine(buildingSystemHandler.PlaceTile(TileType.House));
     }
     private void OnPlaceSolarPanel()
     {
-        if (!buildingMenu.activeSelf) return;
+        if (!buildingsMenu.activeSelf) return;
         StartCoroutine(buildingSystemHandler.PlaceTile(TileType.SolarPanel));
+    }
+    private void OnPlaceCoalPowerPlant()
+    {
+        if (!buildingsMenu.activeSelf) return;
+        StartCoroutine(buildingSystemHandler.PlaceTile(TileType.CoalPowerPlant));
     }
 }

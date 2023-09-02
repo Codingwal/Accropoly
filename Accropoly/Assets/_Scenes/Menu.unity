@@ -879,7 +879,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf1edd700b43eb14f899e97823a9b6cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timeSpeed: 4
+  timeSpeed: 1
   invoiceInterval: 60
   playTime: 0
 --- !u!4 &584725055

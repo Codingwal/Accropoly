@@ -45,16 +45,16 @@ public class MapHandler : Singleton<MapHandler>
                 Tile tile = selectedMap[i, j];
                 GameObject tilePrefab = tilePrefabs[tile.tileType];
 
-                map[i, j] = GenerateTile(tilePrefab, tileSize, new(worldPosX, 0, worldPosZ), tile.direction * 90, i, j);
+                map[i, j] = GenerateTile(tilePrefab, new(worldPosX, 0, worldPosZ), tile.direction * 90, i, j);
             }
         }
     }
-    private GameObject GenerateTile(GameObject tilePrefab, float tileSize, Vector3 position, int rotation, int indexX, int indexY)
+    private GameObject GenerateTile(GameObject tilePrefab, Vector3 position, int rotation, int indexX, int indexY)
     {
         GameObject tile = Instantiate(tilePrefab, tileParent);
         tile.transform.position = position;
         tile.transform.eulerAngles = new(0, rotation, 0);
-        tile.transform.localScale = new(tileSize, 1, tileSize);
+        tile.transform.localScale = new(1, 1, 1);
 
         IMapTile mapTileScript = tile.GetComponent<IMapTile>();
         mapTileScript.X = indexX;
