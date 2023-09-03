@@ -30,11 +30,11 @@ public class MapTileScript : MonoBehaviour, IMapTile
     }
     private void OnEnable()
     {
-        TownManager.Instance.CalculateExpenditure += CalculateExpenditure;
+        TownManager.Instance.CollectInvoice += CalculateInvoice;
     }
     private void OnDisable()
     {
-        TownManager.Instance.CalculateExpenditure -= CalculateExpenditure;
+        TownManager.Instance.CollectInvoice -= CalculateInvoice;
     }
     public void OnMouseEnterChild()
     {
@@ -54,10 +54,10 @@ public class MapTileScript : MonoBehaviour, IMapTile
         }
     }
 
-    private void CalculateExpenditure(ref float expenditure)
+    private void CalculateInvoice(ref float invoice)
     {
         if (!TownManager.Instance.tileExpenditure.Contains(tileType)) return;
-        expenditure += TownManager.Instance.tileExpenditure[tileType];
+        invoice -= TownManager.Instance.tileExpenditure[tileType];
     }
 
     public virtual void Init()

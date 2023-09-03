@@ -5,8 +5,7 @@ using UnityEngine;
 public class TownManager : Singleton<TownManager>
 {
     // Economy
-    public event RefAction<float> PayTaxes;
-    public event RefAction<float> CalculateExpenditure;
+    public event RefAction<float> CollectInvoice;
 
     [Header("Economy")]
     public float balance;
@@ -20,7 +19,7 @@ public class TownManager : Singleton<TownManager>
     [SerializeField] GameObject personPrefab;
     [SerializeField] Transform populationParentObject;
 
-    public List<GameObject> population = new();
+    public List<IPerson> population = new();
 
     // Electricity
     [Header("Electricity")]
@@ -51,6 +50,18 @@ public class TownManager : Singleton<TownManager>
                 production += energyProducer.EnergyProduction;
             }
             return production;
+        }
+    }
+    public float AverageHappiness
+    {
+        get
+        {
+            float happinessSum = 0;
+            foreach (IPerson person in population)
+            {
+                happinessSum += person.Happiness;
+            }
+            return happinessSum / population.Count;
         }
     }
 
@@ -102,13 +113,13 @@ public class TownManager : Singleton<TownManager>
     // -------------------------------- Economy -------------------------------- //
     public void CalculateInvoice()
     {
-        float taxes = 0;
-        PayTaxes?.Invoke(ref taxes);
-        balance += taxes / (60 / GameLoopManager.Instance.invoiceInterval);
+        float Invoice = 0;
 
-        float expenditure = 0;
-        CalculateExpenditure?.Invoke(ref expenditure);
-        balance -= expenditure / (60 / GameLoopManager.Instance.invoiceInterval);
+        CollectInvoice?.Invoke(ref Invoice);
+
+        Invoice += AverageHappiness * population.Count * taxPerHappiness;
+
+        balance -= Invoice / (60 / GameLoopManager.Instance.invoiceInterval);
     }
 
     /// <returns>Can the tile be bought</returns>
@@ -163,7 +174,7 @@ public class TownManager : Singleton<TownManager>
         personScript.WorkplaceTilePos = personData.workplaceTilePos;
 
         // Add the person to the population list
-        population.Add(person);
+        population.Add(personScript);
 
         // Add the person to the house tile inhabitants list
         IHouseTile houseTileScript = MapHandler.Instance.map.GetValue(personScript.HomeTilePos).GetComponent<IHouseTile>();
@@ -171,10 +182,10 @@ public class TownManager : Singleton<TownManager>
 
         return person;
     }
-    public void RemovePerson(GameObject person)
+    public void RemovePerson(IPerson person)
     {
         population.Remove(person);
-        Destroy(person);
+        Destroy(person.PersonObject);
     }
 
     // -------------------------------- Electricity -------------------------------- //

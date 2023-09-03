@@ -49,7 +49,7 @@ public class HouseTile : MapTileScript, IHouseTile, IEnergyConsumer
 
         for (int i = 0; i < Inhabitants.Count; i++)
         {
-            TownManager.Instance.RemovePerson(Inhabitants[i]);
+            TownManager.Instance.RemovePerson(Inhabitants[i].GetComponent<IPerson>());
         }
 
         TownManager.Instance.energyConsumers.Remove(this);

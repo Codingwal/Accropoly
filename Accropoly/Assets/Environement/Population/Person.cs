@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Person : MonoBehaviour, IPerson
 {
+    public GameObject PersonObject { get { return gameObject; } }
     public Vector2 HomeTilePos { get; set; }
     public Vector2? WorkplaceTilePos { get; set; }
 
@@ -21,12 +22,10 @@ public class Person : MonoBehaviour, IPerson
     private void OnEnable()
     {
         GameLoopManager.Instance.SaveWorld += SaveData;
-        TownManager.Instance.PayTaxes += PayTaxes;
     }
     private void OnDisable()
     {
         GameLoopManager.Instance.SaveWorld -= SaveData;
-        TownManager.Instance.PayTaxes -= PayTaxes;
     }
     private void SaveData(ref World world)
     {
@@ -37,9 +36,5 @@ public class Person : MonoBehaviour, IPerson
             workplaceTilePos = WorkplaceTilePos
         };
         world.population.Add(personData);
-    }
-    private void PayTaxes(ref float taxes)
-    {
-        taxes += Happiness * TownManager.Instance.taxPerHappiness;
     }
 }

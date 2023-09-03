@@ -9,6 +9,7 @@ public class StatisticsDisplay : MonoBehaviour
     [SerializeField] private TMP_Text balanceText;
     [SerializeField] private TMP_Text populationText;
     [SerializeField] private TMP_Text electricityText;
+    [SerializeField] private TMP_Text averageHappinessText;
 
     private void Update()
     {
@@ -16,6 +17,7 @@ public class StatisticsDisplay : MonoBehaviour
         float population = TownManager.Instance.population.Count;
         float energyConsumption = TownManager.Instance.EnergyConsumption;
         float energyProduction = TownManager.Instance.EnergyProduction;
+        float averageHappiness = TownManager.Instance.AverageHappiness;
 
         balanceText.text = balance switch
         {
@@ -48,5 +50,7 @@ public class StatisticsDisplay : MonoBehaviour
             _ => $"{energyProduction}",
         };
         electricityText.text = $"Energie: {energyProductionText}/{energyConsumptionText}";
+
+        averageHappinessText.text = $"Glücklichkeit: {averageHappiness}";
     }
 }
