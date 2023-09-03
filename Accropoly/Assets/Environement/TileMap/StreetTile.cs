@@ -15,57 +15,14 @@ public class StreetTile : MapTileScript, IHouseConnectable
                 case TileType.Street:
                     _arableTiles.Add(MapHandler.GetTilePosFromNeighbour(TilePos, transform.eulerAngles.y + 90));
                     _arableTiles.Add(MapHandler.GetTilePosFromNeighbour(TilePos, transform.eulerAngles.y + 270));
-                    // switch (transform.eulerAngles.y)
-                    // {
-                    //     case 0:
-                    //     case 180:
-                    //         _arableTiles.Add(new(X + 1, Y));
-                    //         _arableTiles.Add(new(X - 1, Y));
-                    //         break;
-                    //     case 90:
-                    //     case 270:
-                    //         _arableTiles.Add(new(X, Y + 1));
-                    //         _arableTiles.Add(new(X, Y - 1));
-                    //         break;
-                    // }
                     break;
                 case TileType.StreetCorner:
-                    switch (transform.eulerAngles.y)
-                    {
-                        case 0:
-                            _arableTiles.Add(new(X - 1, Y));
-                            _arableTiles.Add(new(X, Y - 1));
-                            break;
-                        case 90:
-                            _arableTiles.Add(new(X - 1, Y));
-                            _arableTiles.Add(new(X, Y + 1));
-                            break;
-                        case 180:
-                            _arableTiles.Add(new(X + 1, Y));
-                            _arableTiles.Add(new(X, Y + 1));
-                            break;
-                        case 270:
-                            _arableTiles.Add(new(X + 1, Y));
-                            _arableTiles.Add(new(X, Y - 1));
-                            break;
-                    }
+                    _arableTiles.Add(MapHandler.GetTilePosFromNeighbour(TilePos, transform.eulerAngles.y + 270));
+                    _arableTiles.Add(MapHandler.GetTilePosFromNeighbour(TilePos, transform.eulerAngles.y + 180));
                     break;
+
                 case TileType.StreetTJunction:
-                    switch (transform.eulerAngles.y)
-                    {
-                        case 0:
-                            _arableTiles.Add(new(X - 1, Y));
-                            break;
-                        case 90:
-                            _arableTiles.Add(new(X, Y + 1));
-                            break;
-                        case 180:
-                            _arableTiles.Add(new(X + 1, Y));
-                            break;
-                        case 270:
-                            _arableTiles.Add(new(X, Y - 1));
-                            break;
-                    }
+                    _arableTiles.Add(MapHandler.GetTilePosFromNeighbour(TilePos, transform.eulerAngles.y + 270));
                     break;
             }
             return _arableTiles;
