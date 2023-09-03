@@ -880,7 +880,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   timeSpeed: 1
-  invoiceInterval: 60
+  invoiceInterval: 15
   playTime: 0
 --- !u!4 &584725055
 Transform:

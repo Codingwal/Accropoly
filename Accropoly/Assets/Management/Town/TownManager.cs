@@ -104,11 +104,11 @@ public class TownManager : Singleton<TownManager>
     {
         float taxes = 0;
         PayTaxes?.Invoke(ref taxes);
-        balance += taxes;
+        balance += taxes / (60 / GameLoopManager.Instance.invoiceInterval);
 
         float expenditure = 0;
         CalculateExpenditure?.Invoke(ref expenditure);
-        balance -= expenditure;
+        balance -= expenditure / (60 / GameLoopManager.Instance.invoiceInterval);
     }
 
     /// <returns>Can the tile be bought</returns>

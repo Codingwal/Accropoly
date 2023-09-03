@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2027799431267923453}
   - component: {fileID: 8682906159179432555}
   - component: {fileID: 7957361653526995758}
-  m_Layer: 2
+  m_Layer: 0
   m_Name: SolarPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -126,7 +126,7 @@ GameObject:
   - component: {fileID: 3188622304359096978}
   - component: {fileID: 6465978465685004706}
   - component: {fileID: 3815364638586658370}
-  m_Layer: 2
+  m_Layer: 0
   m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -287,7 +287,7 @@ GameObject:
   - component: {fileID: 5597925725288954136}
   - component: {fileID: 3403503176036864547}
   - component: {fileID: 2355723766500690305}
-  m_Layer: 2
+  m_Layer: 0
   m_Name: Stem
   m_TagString: Untagged
   m_Icon: {fileID: 0}

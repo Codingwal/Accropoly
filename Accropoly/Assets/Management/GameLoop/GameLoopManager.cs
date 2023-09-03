@@ -7,8 +7,9 @@ public delegate void RefAction<T>(ref T obj);
 public class GameLoopManager : SingletonPersistant<GameLoopManager>
 {
     // Time and invoice system
+    [Header("Time and invoice system")]
     [SerializeField] private float timeSpeed;
-    [SerializeField] private float invoiceInterval;
+    public float invoiceInterval;
     private float nextInvoiceTime;
     public float playTime;
     public event Action Invoice;

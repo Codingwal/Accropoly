@@ -126,10 +126,12 @@ public class PlayerUIManager : MonoBehaviour
     private void ToggleStreetMenu()
     {
         streetMenu.SetActive(!streetMenu.activeSelf);
+        buildingsMenu.SetActive(false);
     }
     private void ToggleBuildingsMenu()
     {
         buildingsMenu.SetActive(!buildingsMenu.activeSelf);
+        streetMenu.SetActive(false);
     }
 
     private void OnClear(CallbackContext ctx)

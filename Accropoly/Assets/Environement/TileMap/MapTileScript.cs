@@ -16,8 +16,6 @@ public class MapTileScript : MonoBehaviour, IMapTile
         get { return new(X, Y); }
     }
 
-    // Temp
-    private bool isMouseHere = false;
 
     public event Action ChildsDefaultColor;
     public event Action ChildsPlaceableColor;
@@ -45,8 +43,6 @@ public class MapTileScript : MonoBehaviour, IMapTile
             return;
         }
         buildingSystemHandler.selectedTile = transform;
-
-        isMouseHere = true;
     }
     public void OnMouseExitChild()
     {
@@ -56,12 +52,11 @@ public class MapTileScript : MonoBehaviour, IMapTile
         {
             buildingSystemHandler.selectedTile = null;
         }
-
-        isMouseHere = true;
     }
 
     private void CalculateExpenditure(ref float expenditure)
     {
+        if (!TownManager.Instance.tileExpenditure.Contains(tileType)) return;
         expenditure += TownManager.Instance.tileExpenditure[tileType];
     }
 
