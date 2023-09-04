@@ -61,6 +61,12 @@ public class TownManager : Singleton<TownManager>
             {
                 happinessSum += person.Happiness;
             }
+            Debug.Log("1: " + happinessSum);
+            Debug.Log("2: " + population.Count);
+            if (population.Count == 0)
+            {
+                return 0;
+            }
             return happinessSum / population.Count;
         }
     }
@@ -102,24 +108,34 @@ public class TownManager : Singleton<TownManager>
 
         // Load balance
         balance = world.balance;
+        Debug.Log(balance);
     }
 
     private void Save(ref World world)
     {
         // Save balance
         world.balance = balance;
+        Debug.Log(world.balance);
     }
 
     // -------------------------------- Economy -------------------------------- //
     public void CalculateInvoice()
     {
+        Debug.Log("Before Invoice: " + balance);
+
         float Invoice = 0;
 
         CollectInvoice?.Invoke(ref Invoice);
 
-        Invoice += AverageHappiness * population.Count * taxPerHappiness;
+        Debug.Log(AverageHappiness);
+        Debug.Log(population.Count);
+        Debug.Log(taxPerHappiness);
 
+        Invoice += AverageHappiness * population.Count * taxPerHappiness;
+        Debug.Log(Invoice);
         balance -= Invoice / (60 / GameLoopManager.Instance.invoiceInterval);
+
+        Debug.Log("After Invoice: " + balance);
     }
 
     /// <returns>Can the tile be bought</returns>
@@ -139,14 +155,17 @@ public class TownManager : Singleton<TownManager>
     }
 
     // -------------------------------- Population -------------------------------- //
-    public void NewHouse(HouseSize houseSize, Vector2 houseTilePos)
+    public void NewHouse(TileType tileType, Vector2 houseTilePos)
     {
         int personCount = 0;
 
-        switch (houseSize)
+        switch (tileType)
         {
-            case HouseSize.normal:
+            case TileType.House:
                 personCount = Random.Range(2, 5); // Returns 2, 3 or 4
+                break;
+            case TileType.Skyscraper:
+                personCount = Random.Range(10, 16);
                 break;
         }
 

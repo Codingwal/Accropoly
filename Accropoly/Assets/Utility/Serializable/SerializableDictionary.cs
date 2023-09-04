@@ -17,7 +17,7 @@ public class SerializableDictionary<TKey, TValue>
             int valueIndex = keys.IndexOf(key);
             if (valueIndex == -1)
             {
-                Debug.LogWarning("Key does not exist");
+                Debug.LogWarning($"Key {key} does not exist");
                 return default;
             }
             if (values.Count < keys.Count)

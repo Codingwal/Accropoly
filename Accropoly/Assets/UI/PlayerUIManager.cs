@@ -49,7 +49,7 @@ public class PlayerUIManager : MonoBehaviour
         streetJunctionButton.onClick.AddListener(OnPlaceStreetJunction);
 
         houseButton.onClick.AddListener(OnPlaceHouse);
-        // skyscraperButton.onClick.AddListener();
+        skyscraperButton.onClick.AddListener(OnPlaceSkyscraper);
         // townhallButton.onClick.AddListener();
         solarpanelButton.onClick.AddListener(OnPlaceSolarPanel);
         coalPowerPlantButton.onClick.AddListener(OnPlaceCoalPowerPlant);
@@ -72,6 +72,7 @@ public class PlayerUIManager : MonoBehaviour
         inputManager.Hotkey5 += OnPlaceStreetTJunction;
 
         inputManager.Hotkey1 += OnPlaceHouse;
+        inputManager.Hotkey2 += OnPlaceSkyscraper;
         inputManager.Hotkey4 += OnPlaceSolarPanel;
         inputManager.Hotkey5 += OnPlaceCoalPowerPlant;
     }
@@ -91,6 +92,7 @@ public class PlayerUIManager : MonoBehaviour
         inputManager.Hotkey5 -= OnPlaceStreetTJunction;
 
         inputManager.Hotkey1 -= OnPlaceHouse;
+        inputManager.Hotkey2 -= OnPlaceSkyscraper;
         inputManager.Hotkey4 -= OnPlaceSolarPanel;
         inputManager.Hotkey5 -= OnPlaceCoalPowerPlant;
     }
@@ -168,6 +170,11 @@ public class PlayerUIManager : MonoBehaviour
     {
         if (!buildingsMenu.activeSelf) return;
         StartCoroutine(buildingSystemHandler.PlaceTile(TileType.House));
+    }
+    private void OnPlaceSkyscraper()
+    {
+        if (!buildingsMenu.activeSelf) return;
+        StartCoroutine(buildingSystemHandler.PlaceTile(TileType.Skyscraper));
     }
     private void OnPlaceSolarPanel()
     {

@@ -44,6 +44,7 @@ public enum TileType
 
     // Houses
     House,
+    Skyscraper,
 
     // Energy production
     SolarPanel,

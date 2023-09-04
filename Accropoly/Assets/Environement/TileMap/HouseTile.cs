@@ -36,7 +36,7 @@ public class HouseTile : MapTileScript, IHouseTile, IEnergyConsumer
     }
     public override void Init()
     {
-        TownManager.Instance.NewHouse(HouseSize.normal, TilePos);
+        TownManager.Instance.NewHouse(tileType, TilePos);
         Load();
     }
     public override void Load()

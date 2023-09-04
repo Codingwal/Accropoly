@@ -273,7 +273,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a9134d8fcd0bf54fa1bba30a1b2dc20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tileType: 7
+  tileType: 8
 --- !u!1 &2325838762209015408
 GameObject:
   m_ObjectHideFlags: 0
