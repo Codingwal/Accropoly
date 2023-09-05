@@ -6,7 +6,7 @@ using UnityEngine;
 public class OfficeBuildingTile : MapTileScript, IWorkplace, IEnergyConsumer
 {
     public List<IPerson> Workers { get; set; } = new();
-    private int maxWorkerCount = 10;
+    private int maxWorkerCount = 20;
     public float EnergyConsumption
     {
         get

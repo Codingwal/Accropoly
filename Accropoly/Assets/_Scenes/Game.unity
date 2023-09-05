@@ -3796,7 +3796,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0.38268346, y: 1e-45, z: -1e-45, w: 0.92387956}
+  m_LocalRotation: {x: 0.38268346, y: -3e-45, z: 1e-45, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 50, z: -50}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -4008,19 +4008,29 @@ MonoBehaviour:
   tileSize: 30
   tileParent: {fileID: 0}
   tilePrefabs:
-    keys: 000000000100000002000000030000000400000005000000060000000700000008000000090000000a000000
-    values:
-    - {fileID: 1018065688083463063, guid: 043e4a60b6860a543bf31c9e81a9b636, type: 3}
-    - {fileID: 7947999506322420293, guid: 883af793d4c4cee40bc25c1c483b3689, type: 3}
-    - {fileID: 1018065688083463063, guid: d77f9d8433aae9849b8f9726708df8d9, type: 3}
-    - {fileID: 1018065688083463063, guid: ae21f5cb3195aa1468939841012e67c0, type: 3}
-    - {fileID: 1018065688083463063, guid: 4f9e7c0adb4bec94aabb478eafbf5848, type: 3}
-    - {fileID: 1018065688083463063, guid: f6416533bb78c0a4cb5b38aba1171f0a, type: 3}
-    - {fileID: 1018065688083463063, guid: 183f1023989e79841acbe49c637bda72, type: 3}
-    - {fileID: 1018065688083463063, guid: a154a86a3cb2d8848897d69fd7d20f72, type: 3}
-    - {fileID: 1018065688083463063, guid: 2379b9c826bc34e40a65f63e10989dcc, type: 3}
-    - {fileID: 1018065688083463063, guid: 02676a56ec1bfab40a685670c8ef11a6, type: 3}
-    - {fileID: 1018065688083463063, guid: b7ecb66d1b0282e45aa4634d58851e31, type: 3}
+    dictionary:
+    - key: 0
+      value: {fileID: 1018065688083463063, guid: 043e4a60b6860a543bf31c9e81a9b636, type: 3}
+    - key: 1
+      value: {fileID: 7947999506322420293, guid: 883af793d4c4cee40bc25c1c483b3689, type: 3}
+    - key: 2
+      value: {fileID: 1018065688083463063, guid: d77f9d8433aae9849b8f9726708df8d9, type: 3}
+    - key: 3
+      value: {fileID: 1018065688083463063, guid: ae21f5cb3195aa1468939841012e67c0, type: 3}
+    - key: 4
+      value: {fileID: 1018065688083463063, guid: 4f9e7c0adb4bec94aabb478eafbf5848, type: 3}
+    - key: 5
+      value: {fileID: 1018065688083463063, guid: f6416533bb78c0a4cb5b38aba1171f0a, type: 3}
+    - key: 6
+      value: {fileID: 1018065688083463063, guid: 183f1023989e79841acbe49c637bda72, type: 3}
+    - key: 7
+      value: {fileID: 1018065688083463063, guid: a154a86a3cb2d8848897d69fd7d20f72, type: 3}
+    - key: 8
+      value: {fileID: 1018065688083463063, guid: 2379b9c826bc34e40a65f63e10989dcc, type: 3}
+    - key: 9
+      value: {fileID: 1018065688083463063, guid: 02676a56ec1bfab40a685670c8ef11a6, type: 3}
+    - key: 10
+      value: {fileID: 1018065688083463063, guid: b7ecb66d1b0282e45aa4634d58851e31, type: 3}
   map:
     array2D: []
 --- !u!4 &1028602569
@@ -4076,25 +4086,67 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   balance: 0
-  tileBuyPrices:
-    keys: 000000000100000002000000030000000400000005000000060000000700000008000000090000000a000000
-    values: 0a0000000f0000001e0000001e0000002300000028000000c80000009001000096000000f40100002c010000
-  tileSellPrices:
-    keys: 000000000100000002000000030000000400000005000000060000000700000008000000090000000a000000
-    values: 00000000050000000f0000000f0000000f0000000f00000064000000c80000004b000000fa00000096000000
+  tilePrices:
+    dictionary:
+    - key: 0
+      value:
+        buyPrice: 10
+        sellPrice: 0
+    - key: 1
+      value:
+        buyPrice: 15
+        sellPrice: 5
+    - key: 2
+      value:
+        buyPrice: 30
+        sellPrice: 15
+    - key: 3
+      value:
+        buyPrice: 30
+        sellPrice: 15
+    - key: 4
+      value:
+        buyPrice: 35
+        sellPrice: 15
+    - key: 5
+      value:
+        buyPrice: 40
+        sellPrice: 15
+    - key: 6
+      value:
+        buyPrice: 200
+        sellPrice: 100
+    - key: 7
+      value:
+        buyPrice: 400
+        sellPrice: 200
+    - key: 8
+      value:
+        buyPrice: 150
+        sellPrice: 75
+    - key: 9
+      value:
+        buyPrice: 500
+        sellPrice: 250
+    - key: 10
+      value:
+        buyPrice: 300
+        sellPrice: 150
   tileExpenditure:
-    keys: 0800000009000000
-    values:
-    - 10
-    - 50
+    dictionary:
+    - key: 8
+      value: 5
+    - key: 9
+      value: 20
   taxPerHappiness: 1
   personPrefab: {fileID: 725697737072484042, guid: d30f209018abdb34a884d20836842107, type: 3}
   populationParentObject: {fileID: 1057835179}
   tileEnergyProduction:
-    keys: 0800000009000000
-    values:
-    - 50
-    - 400
+    dictionary:
+    - key: 8
+      value: 50
+    - key: 9
+      value: 400
   electricityUsagePerPerson: 4
   electricityUsagePerWorker: 2
 --- !u!1 &1057835178
@@ -4796,7 +4848,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1394332838}
-  m_LocalRotation: {x: 0.38268346, y: 1e-45, z: -1e-45, w: 0.92387956}
+  m_LocalRotation: {x: 0.38268346, y: -3e-45, z: 1e-45, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 50, z: -50}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

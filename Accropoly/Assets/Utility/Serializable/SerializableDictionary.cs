@@ -5,30 +5,41 @@ using UnityEngine;
 [Serializable]
 public class SerializableDictionary<TKey, TValue>
 {
-    [SerializeField] private List<TKey> keys = new();
-    [SerializeField] private List<TValue> values = new();
+    [SerializeField] private List<SerializableKeyValuePair<TKey, TValue>> dictionary = new();
 
-    public int Count { get { return keys.Count; } }
+    public int Count { get { return dictionary.Count; } }
 
     public TValue this[TKey key]
     {
         get
         {
-            int valueIndex = keys.IndexOf(key);
-            if (valueIndex == -1)
+            foreach (SerializableKeyValuePair<TKey, TValue> keyValuePair in dictionary)
             {
-                Debug.LogWarning($"Key {key} does not exist");
-                return default;
+                if (keyValuePair.key.Equals(key))
+                {
+                    return keyValuePair.value;
+                }
             }
-            if (values.Count < keys.Count)
-            {
-                Debug.LogWarning("There are more keys than values");
-            }
-            return values[valueIndex];
+            Debug.LogWarning($"Key {key} does not exist");
+            return default;
         }
     }
     public bool Contains(TKey key)
     {
-        return keys.IndexOf(key) != -1;
+        foreach (SerializableKeyValuePair<TKey, TValue> keyValuePair in dictionary)
+        {
+            if (keyValuePair.key.Equals(key))
+            {
+                return true;
+            }
+        }
+        return false;
     }
+}
+
+[Serializable]
+public struct SerializableKeyValuePair<TKey, TValue>
+{
+    public TKey key;
+    public TValue value;
 }

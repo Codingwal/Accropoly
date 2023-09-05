@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Runtime.Remoting.Messaging;
 using UnityEngine;
@@ -9,8 +10,7 @@ public class TownManager : Singleton<TownManager>
 
     [Header("Economy")]
     public float balance;
-    [SerializeField] private SerializableDictionary<TileType, int> tileBuyPrices;
-    [SerializeField] private SerializableDictionary<TileType, int> tileSellPrices;
+    [SerializeField] private SerializableDictionary<TileType, TilePrice> tilePrices;
     public SerializableDictionary<TileType, float> tileExpenditure;
     public float taxPerHappiness;
 
@@ -133,17 +133,17 @@ public class TownManager : Singleton<TownManager>
     /// <returns>Can the tile be bought</returns>
     public bool BuyTile(TileType tileType)
     {
-        balance -= tileBuyPrices[tileType];
+        balance -= tilePrices[tileType].buyPrice;
         if (balance < 0)
         {
-            balance += tileBuyPrices[tileType];
+            balance += tilePrices[tileType].buyPrice;
             return false;
         }
         return true;
     }
     public void SellTile(TileType tileType)
     {
-        balance += tileSellPrices[tileType];
+        balance += tilePrices[tileType].sellPrice;
     }
 
     // -------------------------------- Population -------------------------------- //
@@ -189,4 +189,10 @@ public class TownManager : Singleton<TownManager>
     {
         return EnergyProduction > EnergyConsumption;
     }
+}
+[Serializable]
+public struct TilePrice
+{
+    public int buyPrice;
+    public int sellPrice;
 }
