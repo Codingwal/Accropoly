@@ -190,7 +190,3 @@ public class TownManager : Singleton<TownManager>
         return EnergyProduction > EnergyConsumption;
     }
 }
-public enum HouseSize
-{
-    normal
-}

@@ -16,14 +16,13 @@ public class MapTileScript : MonoBehaviour, IMapTile
         get { return new(X, Y); }
     }
 
-
+    // Visualisation
     public event Action ChildsDefaultColor;
     public event Action ChildsPlaceableColor;
     public event Action ChildsNotPlaceableColor;
 
     // References
     private BuildingSystemHandler buildingSystemHandler;
-
     private void Awake()
     {
         buildingSystemHandler = BuildingSystemHandler.Instance;
@@ -36,6 +35,8 @@ public class MapTileScript : MonoBehaviour, IMapTile
     {
         TownManager.Instance.CollectInvoice -= CalculateInvoice;
     }
+
+    // Building system
     public void OnMouseEnterChild()
     {
         if (this == null)
@@ -60,15 +61,14 @@ public class MapTileScript : MonoBehaviour, IMapTile
         invoice -= TownManager.Instance.tileExpenditure[tileType];
     }
 
-    public virtual void Init()
-    {
-        Load();
-    }
+    public virtual void Init() { Load(); }
     public virtual void Load() { }
     public Tile GetTile()
     {
         return new Tile(tileType, (int)transform.eulerAngles.y / 90);
     }
+
+    // Visualisation
     public void DefaultColor()
     {
         ChildsDefaultColor?.Invoke();
@@ -81,6 +81,8 @@ public class MapTileScript : MonoBehaviour, IMapTile
     {
         ChildsNotPlaceableColor?.Invoke();
     }
+
+
     public virtual bool CanBePlaced()
     {
         if (!CanPersist()) return false;
