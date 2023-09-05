@@ -26,7 +26,12 @@ public class TownManager : Singleton<TownManager>
     public SerializableDictionary<TileType, float> tileEnergyProduction;
     public List<IEnergyProducer> energyProducers = new();
     public List<IEnergyConsumer> energyConsumers = new();
-    public float electricityUsagePerPerson;
+    public float electricityUsagePerPerson = 4;
+    public float electricityUsagePerWorker = 2;
+
+    // Workplaces
+    [Header("Workplaces")]
+    public List<IWorkplace> workplaces = new();
 
     public float EnergyConsumption
     {
@@ -61,8 +66,6 @@ public class TownManager : Singleton<TownManager>
             {
                 happinessSum += person.Happiness;
             }
-            Debug.Log("1: " + happinessSum);
-            Debug.Log("2: " + population.Count);
             if (population.Count == 0)
             {
                 return 0;
@@ -108,34 +111,23 @@ public class TownManager : Singleton<TownManager>
 
         // Load balance
         balance = world.balance;
-        Debug.Log(balance);
     }
 
     private void Save(ref World world)
     {
         // Save balance
         world.balance = balance;
-        Debug.Log(world.balance);
     }
 
     // -------------------------------- Economy -------------------------------- //
     public void CalculateInvoice()
     {
-        Debug.Log("Before Invoice: " + balance);
-
         float Invoice = 0;
 
         CollectInvoice?.Invoke(ref Invoice);
 
-        Debug.Log(AverageHappiness);
-        Debug.Log(population.Count);
-        Debug.Log(taxPerHappiness);
-
         Invoice += AverageHappiness * population.Count * taxPerHappiness;
-        Debug.Log(Invoice);
-        balance -= Invoice / (60 / GameLoopManager.Instance.invoiceInterval);
-
-        Debug.Log("After Invoice: " + balance);
+        balance += Invoice / (60 / GameLoopManager.Instance.invoiceInterval);
     }
 
     /// <returns>Can the tile be bought</returns>
@@ -155,30 +147,6 @@ public class TownManager : Singleton<TownManager>
     }
 
     // -------------------------------- Population -------------------------------- //
-    public void NewHouse(TileType tileType, Vector2 houseTilePos)
-    {
-        int personCount = 0;
-
-        switch (tileType)
-        {
-            case TileType.House:
-                personCount = Random.Range(2, 5); // Returns 2, 3 or 4
-                break;
-            case TileType.Skyscraper:
-                personCount = Random.Range(10, 16);
-                break;
-        }
-
-        // Add people to the house
-        for (int i = 0; i < personCount; i++)
-        {
-            PersonData personData = new()
-            {
-                homeTilePos = houseTilePos
-            };
-            AddPerson(personData);
-        }
-    }
     public GameObject AddPerson(PersonData personData)
     {
         // Create the person
@@ -190,6 +158,7 @@ public class TownManager : Singleton<TownManager>
         // Set the person data
         person.transform.position = personData.position;
         personScript.HomeTilePos = personData.homeTilePos;
+        personScript.HasWorkplace = personData.hasWorkplace;
         personScript.WorkplaceTilePos = personData.workplaceTilePos;
 
         // Add the person to the population list
@@ -198,6 +167,14 @@ public class TownManager : Singleton<TownManager>
         // Add the person to the house tile inhabitants list
         IHouseTile houseTileScript = MapHandler.Instance.map.GetValue(personScript.HomeTilePos).GetComponent<IHouseTile>();
         houseTileScript.Inhabitants.Add(person);
+
+        if (personScript.HasWorkplace)
+        {
+            IWorkplace workplaceTileScript = MapHandler.Instance.map.GetValue(personScript.WorkplaceTilePos).GetComponent<IWorkplace>();
+            workplaceTileScript.Workers.Add(personScript);
+        }
+
+        personScript.Init();
 
         return person;
     }

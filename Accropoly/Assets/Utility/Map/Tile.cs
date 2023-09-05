@@ -48,5 +48,8 @@ public enum TileType
 
     // Energy production
     SolarPanel,
-    CoalPowerPlant
+    CoalPowerPlant,
+
+    // Workplace
+    OfficeBuilding
 }

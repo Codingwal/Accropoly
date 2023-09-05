@@ -51,6 +51,6 @@ public class StatisticsDisplay : MonoBehaviour
         };
         electricityText.text = $"Energie: {energyProductionText}/{energyConsumptionText}";
 
-        averageHappinessText.text = $"Glücklichkeit: {averageHappiness}";
+        averageHappinessText.text = $"Glücklichkeit: {Math.Round(averageHappiness, 1)}";
     }
 }

@@ -2802,7 +2802,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Rathaus
+  m_text: "B\xFCro\ngeb\xE4ude"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -3796,7 +3796,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0.38268346, y: 1e-45, z: -0, w: 0.92387956}
+  m_LocalRotation: {x: 0.38268346, y: 1e-45, z: -1e-45, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 50, z: -50}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -4008,7 +4008,7 @@ MonoBehaviour:
   tileSize: 30
   tileParent: {fileID: 0}
   tilePrefabs:
-    keys: 00000000010000000200000003000000040000000500000006000000070000000800000009000000
+    keys: 000000000100000002000000030000000400000005000000060000000700000008000000090000000a000000
     values:
     - {fileID: 1018065688083463063, guid: 043e4a60b6860a543bf31c9e81a9b636, type: 3}
     - {fileID: 7947999506322420293, guid: 883af793d4c4cee40bc25c1c483b3689, type: 3}
@@ -4020,6 +4020,7 @@ MonoBehaviour:
     - {fileID: 1018065688083463063, guid: a154a86a3cb2d8848897d69fd7d20f72, type: 3}
     - {fileID: 1018065688083463063, guid: 2379b9c826bc34e40a65f63e10989dcc, type: 3}
     - {fileID: 1018065688083463063, guid: 02676a56ec1bfab40a685670c8ef11a6, type: 3}
+    - {fileID: 1018065688083463063, guid: b7ecb66d1b0282e45aa4634d58851e31, type: 3}
   map:
     array2D: []
 --- !u!4 &1028602569
@@ -4076,11 +4077,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   balance: 0
   tileBuyPrices:
-    keys: 00000000010000000200000003000000040000000500000006000000070000000800000009000000
-    values: 0a0000000f0000001e0000001e0000002300000028000000c80000009001000096000000f4010000
+    keys: 000000000100000002000000030000000400000005000000060000000700000008000000090000000a000000
+    values: 0a0000000f0000001e0000001e0000002300000028000000c80000009001000096000000f40100002c010000
   tileSellPrices:
-    keys: 00000000010000000200000003000000040000000500000006000000070000000800000009000000
-    values: 00000000050000000f0000000f0000000f0000000f00000064000000c80000004b000000fa000000
+    keys: 000000000100000002000000030000000400000005000000060000000700000008000000090000000a000000
+    values: 00000000050000000f0000000f0000000f0000000f00000064000000c80000004b000000fa00000096000000
   tileExpenditure:
     keys: 0800000009000000
     values:
@@ -4095,6 +4096,7 @@ MonoBehaviour:
     - 50
     - 400
   electricityUsagePerPerson: 4
+  electricityUsagePerWorker: 2
 --- !u!1 &1057835178
 GameObject:
   m_ObjectHideFlags: 0
@@ -4794,7 +4796,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1394332838}
-  m_LocalRotation: {x: 0.38268346, y: 1e-45, z: -0, w: 0.92387956}
+  m_LocalRotation: {x: 0.38268346, y: 1e-45, z: -1e-45, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 50, z: -50}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -4942,7 +4944,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1451563169
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5290,7 +5292,7 @@ GameObject:
   - component: {fileID: 1603497210}
   - component: {fileID: 1603497209}
   m_Layer: 5
-  m_Name: TownhallButton
+  m_Name: OfficeBuildingButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5545,7 +5547,7 @@ MonoBehaviour:
   buildingsMenu: {fileID: 1451563168}
   houseButton: {fileID: 194944649}
   skyscraperButton: {fileID: 214578237}
-  townhallButton: {fileID: 1603497209}
+  officeBuildingButton: {fileID: 1603497209}
   solarpanelButton: {fileID: 108266199}
   coalPowerPlantButton: {fileID: 903358040}
   emptyButton2: {fileID: 1350282157}

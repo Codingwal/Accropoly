@@ -9,11 +9,12 @@ public interface IMapTile
 {
     public int X { get; set; }
     public int Y { get; set; }
+    public Vector2 TilePos { get; }
 
     public void Init();
     public void Load();
     public Tile GetTile();
-    
+
     public void DefaultColor();
     public void PlaceableColor();
     public void NotPlaceableColor();

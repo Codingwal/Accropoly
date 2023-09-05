@@ -36,8 +36,30 @@ public class HouseTile : MapTileScript, IHouseTile, IEnergyConsumer
     }
     public override void Init()
     {
-        TownManager.Instance.NewHouse(tileType, TilePos);
-        Load();
+        base.Init();
+
+        // Add persons
+        int personCount = 0;
+
+        switch (tileType)
+        {
+            case TileType.House:
+                personCount = Random.Range(2, 5); // Returns 2, 3 or 4
+                break;
+            case TileType.Skyscraper:
+                personCount = Random.Range(10, 16);
+                break;
+        }
+
+        // Add people to the house
+        for (int i = 0; i < personCount; i++)
+        {
+            PersonData personData = new()
+            {
+                homeTilePos = TilePos
+            };
+            TownManager.Instance.AddPerson(personData);
+        }
     }
     public override void Load()
     {

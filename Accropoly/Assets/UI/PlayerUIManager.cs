@@ -25,7 +25,7 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] private GameObject buildingsMenu;
     [SerializeField] private Button houseButton;
     [SerializeField] private Button skyscraperButton;
-    [SerializeField] private Button townhallButton;
+    [SerializeField] private Button officeBuildingButton;
     [SerializeField] private Button solarpanelButton;
     [SerializeField] private Button coalPowerPlantButton;
     [SerializeField] private Button emptyButton2;
@@ -50,7 +50,7 @@ public class PlayerUIManager : MonoBehaviour
 
         houseButton.onClick.AddListener(OnPlaceHouse);
         skyscraperButton.onClick.AddListener(OnPlaceSkyscraper);
-        // townhallButton.onClick.AddListener();
+        officeBuildingButton.onClick.AddListener(OnPlaceOfficeBuilding);
         solarpanelButton.onClick.AddListener(OnPlaceSolarPanel);
         coalPowerPlantButton.onClick.AddListener(OnPlaceCoalPowerPlant);
 
@@ -73,6 +73,7 @@ public class PlayerUIManager : MonoBehaviour
 
         inputManager.Hotkey1 += OnPlaceHouse;
         inputManager.Hotkey2 += OnPlaceSkyscraper;
+        inputManager.Hotkey3 += OnPlaceOfficeBuilding;
         inputManager.Hotkey4 += OnPlaceSolarPanel;
         inputManager.Hotkey5 += OnPlaceCoalPowerPlant;
     }
@@ -93,6 +94,7 @@ public class PlayerUIManager : MonoBehaviour
 
         inputManager.Hotkey1 -= OnPlaceHouse;
         inputManager.Hotkey2 -= OnPlaceSkyscraper;
+        inputManager.Hotkey3 -= OnPlaceOfficeBuilding;
         inputManager.Hotkey4 -= OnPlaceSolarPanel;
         inputManager.Hotkey5 -= OnPlaceCoalPowerPlant;
     }
@@ -166,6 +168,8 @@ public class PlayerUIManager : MonoBehaviour
         if (!streetMenu.activeSelf) return;
         StartCoroutine(buildingSystemHandler.PlaceTile(TileType.StreetJunction));
     }
+
+
     private void OnPlaceHouse()
     {
         if (!buildingsMenu.activeSelf) return;
@@ -175,6 +179,11 @@ public class PlayerUIManager : MonoBehaviour
     {
         if (!buildingsMenu.activeSelf) return;
         StartCoroutine(buildingSystemHandler.PlaceTile(TileType.Skyscraper));
+    }
+    private void OnPlaceOfficeBuilding()
+    {
+        if (!buildingsMenu.activeSelf) return;
+        StartCoroutine(buildingSystemHandler.PlaceTile(TileType.OfficeBuilding));
     }
     private void OnPlaceSolarPanel()
     {
