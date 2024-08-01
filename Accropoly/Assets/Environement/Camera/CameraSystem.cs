@@ -20,25 +20,29 @@ public class CameraSystem : MonoBehaviour
     [SerializeField] private float followOffsetMinY;
     [SerializeField] private float followOffsetMaxY;
     [SerializeField] private float zoomLerpSpeed;
+    CinemachineTransposer cinemachineTransposer;
 
     [Header("Looking")]
     [SerializeField] private float lookSpeed;
+    [SerializeField] private float minAngle;
+    [SerializeField] private float maxAngle;
 
     [Header("Sprinting")]
     [SerializeField] private float sprintSpeedMultiplier;
     private float currentSpeedMultiplier;
 
     [SerializeField] private InputManager inputManager;
-    Controls.InGameActions inGameActions;
+    private Controls.InGameActions inGameActions;
 
     private void Start()
     {
-        followOffset = cinemachineVirtualCamera.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset;
+        cinemachineTransposer = cinemachineVirtualCamera.GetCinemachineComponent<CinemachineTransposer>();
+        followOffset = cinemachineTransposer.m_FollowOffset;
         inputManager = InputManager.Instance;
+        inGameActions = inputManager.inGameActions;
     }
     private void FixedUpdate()
     {
-        inGameActions = inputManager.inGameActions;
         CheckIfSprinting();
         MoveCamera();
         RotateCamera();
@@ -96,15 +100,13 @@ public class CameraSystem : MonoBehaviour
         // Move the camera
         transform.position += currentSpeedMultiplier * moveSpeed * Time.deltaTime * moveDir;
 
+        // Prevent flying of the map
         float maxDistance = mapSize / 2;
         transform.position = new(Mathf.Clamp(transform.position.x, -maxDistance, maxDistance), 0, Mathf.Clamp(transform.position.z, -maxDistance, maxDistance));
     }
     private void RotateCamera()
     {
-        // Get the input
         float rotateDirInput = inGameActions.CameraRotation.ReadValue<float>();
-
-        // Rotate the camera
         transform.eulerAngles += new Vector3(0, rotateDirInput * rotationSpeed * currentSpeedMultiplier * Time.deltaTime, 0);
     }
     private void ZoomCamera()
@@ -122,6 +124,7 @@ public class CameraSystem : MonoBehaviour
             followOffset += currentSpeedMultiplier * zoomSpeed * zoomDir;
         }
 
+        // Clamp the followOffset
         if (followOffset.magnitude > followOffsetMaxY)
         {
             followOffset = followOffsetMaxY * zoomDir;
@@ -131,8 +134,7 @@ public class CameraSystem : MonoBehaviour
             followOffset = followOffsetMinY * zoomDir;
         }
 
-        cinemachineVirtualCamera.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset =
-            Vector3.Lerp(cinemachineVirtualCamera.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset, followOffset, Time.deltaTime * zoomLerpSpeed);
+        cinemachineTransposer.m_FollowOffset = Vector3.Lerp(cinemachineTransposer.m_FollowOffset, followOffset, Time.deltaTime * zoomLerpSpeed);
     }
     private void Look()
     {
@@ -151,7 +153,7 @@ public class CameraSystem : MonoBehaviour
 
         Vector3 rotation = transform.eulerAngles;
         rotation += lookSpeed * Time.deltaTime * new Vector3(-lookInput.y, lookInput.x, 0);
-        rotation.x = Mathf.Clamp(rotation.x, 285, 350); // Min = -75°, Max = -10° -> a total of 60°
+        rotation.x = Mathf.Clamp(rotation.x, minAngle, maxAngle);
         transform.eulerAngles = rotation;
     }
 }
