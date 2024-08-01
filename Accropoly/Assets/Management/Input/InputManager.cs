@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 using static UnityEngine.InputSystem.InputAction;
 
 public class InputManager : Singleton<InputManager>

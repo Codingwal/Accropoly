@@ -115,11 +115,12 @@ public class CameraSystem : MonoBehaviour
 
         float scrollInput = inGameActions.CameraScroll.ReadValue<float>();
 
+        // Change the followOffset independent of scroll speed, just the direction is important
         if (scrollInput > 0)
         {
             followOffset -= currentSpeedMultiplier * zoomSpeed * zoomDir;
         }
-        if (scrollInput < 0)
+        else if (scrollInput < 0)
         {
             followOffset += currentSpeedMultiplier * zoomSpeed * zoomDir;
         }
@@ -129,7 +130,7 @@ public class CameraSystem : MonoBehaviour
         {
             followOffset = followOffsetMaxY * zoomDir;
         }
-        if (followOffset.magnitude < followOffsetMinY)
+        else if (followOffset.magnitude < followOffsetMinY)
         {
             followOffset = followOffsetMinY * zoomDir;
         }

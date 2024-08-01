@@ -5,7 +5,7 @@ using System.Security.Principal;
 
 public class MapHandler : Singleton<MapHandler>
 {
-    public float tileSize = 30;
+    public float tileSize;
     public Transform tileParent;
 
     public SerializableDictionary<TileType, GameObject> tilePrefabs;
