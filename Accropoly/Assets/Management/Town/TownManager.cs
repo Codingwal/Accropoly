@@ -79,14 +79,14 @@ public class TownManager : Singleton<TownManager>
         GameLoopManager.Instance.InitWorld += Init;
         GameLoopManager.Instance.SaveWorld += Save;
 
-        GameLoopManager.Instance.Invoice += CalculateInvoice;
+        transform.GetComponent<TimeManager>().NextDay += CalculateInvoice;
     }
     private void OnDisable()
     {
         GameLoopManager.Instance.InitWorld -= Init;
         GameLoopManager.Instance.SaveWorld -= Save;
 
-        GameLoopManager.Instance.Invoice -= CalculateInvoice;
+        transform.GetComponent<TimeManager>().NextDay -= CalculateInvoice;
     }
 
     // -------------------------------- Initialization & Saving -------------------------------- //
@@ -122,12 +122,12 @@ public class TownManager : Singleton<TownManager>
     // -------------------------------- Economy -------------------------------- //
     public void CalculateInvoice()
     {
-        float Invoice = 0;
+        float invoice = 0;
 
-        CollectInvoice?.Invoke(ref Invoice);
+        CollectInvoice?.Invoke(ref invoice);
 
-        Invoice += AverageHappiness * population.Count * taxPerHappiness;
-        balance += Invoice / (60 / GameLoopManager.Instance.invoiceInterval);
+        invoice += AverageHappiness * population.Count * taxPerHappiness;
+        balance += invoice;
     }
 
     /// <returns>Can the tile be bought</returns>

@@ -12,7 +12,6 @@ public class GameLoopManager : SingletonPersistant<GameLoopManager>
     public float invoiceInterval;
     private float nextInvoiceTime;
     public float playTime;
-    public event Action Invoice;
 
     // Loading and saving
     public event Action<World> InitWorld;
@@ -48,13 +47,6 @@ public class GameLoopManager : SingletonPersistant<GameLoopManager>
 
         FileHandler.Init();
     }
-    private void Update()
-    {
-        if (GameState == GameState.InGame)
-        {
-            ProgressTimer();
-        }
-    }
     private void OnEnable()
     {
         SceneManagement.SceneIsUnloading += OnSceneIsUnloading;
@@ -72,16 +64,6 @@ public class GameLoopManager : SingletonPersistant<GameLoopManager>
         SaveWorldData();
     }
     // ------------------------------------------------------------------- //
-    private void ProgressTimer()
-    {
-        playTime += Time.deltaTime * timeSpeed;
-
-        if (playTime > nextInvoiceTime)
-        {
-            nextInvoiceTime += invoiceInterval;
-            Invoice?.Invoke();
-        }
-    }
     private void OnSceneIsUnloading(string newScene)
     {
         if (newScene == "Menu")
