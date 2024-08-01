@@ -98,6 +98,24 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""CameraLook"",
+                    ""type"": ""Button"",
+                    ""id"": ""8c0ef223-696f-48b1-a5ca-b475481a6138"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""MouseMove"",
+                    ""type"": ""Value"",
+                    ""id"": ""d7c28d22-d4b4-4ef9-a03e-44d1c801f855"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": ""NormalizeVector2"",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -274,6 +292,28 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""CameraSprint"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d43e0485-6ad2-4696-a5be-16c4bd473d0d"",
+                    ""path"": ""<Mouse>/middleButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CameraLook"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""38787e0b-68f5-456d-8569-399f1af4f00e"",
+                    ""path"": ""<Mouse>/delta"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MouseMove"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -520,6 +560,8 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         m_InGame_Rotate = m_InGame.FindAction("Rotate", throwIfNotFound: true);
         m_InGame_Cancel = m_InGame.FindAction("Cancel", throwIfNotFound: true);
         m_InGame_Place = m_InGame.FindAction("Place", throwIfNotFound: true);
+        m_InGame_CameraLook = m_InGame.FindAction("CameraLook", throwIfNotFound: true);
+        m_InGame_MouseMove = m_InGame.FindAction("MouseMove", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Escape = m_UI.FindAction("Escape", throwIfNotFound: true);
@@ -600,6 +642,8 @@ public partial class @Controls : IInputActionCollection2, IDisposable
     private readonly InputAction m_InGame_Rotate;
     private readonly InputAction m_InGame_Cancel;
     private readonly InputAction m_InGame_Place;
+    private readonly InputAction m_InGame_CameraLook;
+    private readonly InputAction m_InGame_MouseMove;
     public struct InGameActions
     {
         private @Controls m_Wrapper;
@@ -612,6 +656,8 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         public InputAction @Rotate => m_Wrapper.m_InGame_Rotate;
         public InputAction @Cancel => m_Wrapper.m_InGame_Cancel;
         public InputAction @Place => m_Wrapper.m_InGame_Place;
+        public InputAction @CameraLook => m_Wrapper.m_InGame_CameraLook;
+        public InputAction @MouseMove => m_Wrapper.m_InGame_MouseMove;
         public InputActionMap Get() { return m_Wrapper.m_InGame; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -645,6 +691,12 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @Place.started -= m_Wrapper.m_InGameActionsCallbackInterface.OnPlace;
                 @Place.performed -= m_Wrapper.m_InGameActionsCallbackInterface.OnPlace;
                 @Place.canceled -= m_Wrapper.m_InGameActionsCallbackInterface.OnPlace;
+                @CameraLook.started -= m_Wrapper.m_InGameActionsCallbackInterface.OnCameraLook;
+                @CameraLook.performed -= m_Wrapper.m_InGameActionsCallbackInterface.OnCameraLook;
+                @CameraLook.canceled -= m_Wrapper.m_InGameActionsCallbackInterface.OnCameraLook;
+                @MouseMove.started -= m_Wrapper.m_InGameActionsCallbackInterface.OnMouseMove;
+                @MouseMove.performed -= m_Wrapper.m_InGameActionsCallbackInterface.OnMouseMove;
+                @MouseMove.canceled -= m_Wrapper.m_InGameActionsCallbackInterface.OnMouseMove;
             }
             m_Wrapper.m_InGameActionsCallbackInterface = instance;
             if (instance != null)
@@ -673,6 +725,12 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @Place.started += instance.OnPlace;
                 @Place.performed += instance.OnPlace;
                 @Place.canceled += instance.OnPlace;
+                @CameraLook.started += instance.OnCameraLook;
+                @CameraLook.performed += instance.OnCameraLook;
+                @CameraLook.canceled += instance.OnCameraLook;
+                @MouseMove.started += instance.OnMouseMove;
+                @MouseMove.performed += instance.OnMouseMove;
+                @MouseMove.canceled += instance.OnMouseMove;
             }
         }
     }
@@ -800,6 +858,8 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         void OnRotate(InputAction.CallbackContext context);
         void OnCancel(InputAction.CallbackContext context);
         void OnPlace(InputAction.CallbackContext context);
+        void OnCameraLook(InputAction.CallbackContext context);
+        void OnMouseMove(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

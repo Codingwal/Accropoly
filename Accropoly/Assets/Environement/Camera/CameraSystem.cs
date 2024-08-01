@@ -1,6 +1,7 @@
 using UnityEngine;
 using Cinemachine;
 using System;
+using UnityEngine.Animations;
 
 public class CameraSystem : MonoBehaviour
 {
@@ -19,6 +20,9 @@ public class CameraSystem : MonoBehaviour
     [SerializeField] private float followOffsetMinY;
     [SerializeField] private float followOffsetMaxY;
     [SerializeField] private float zoomLerpSpeed;
+
+    [Header("Looking")]
+    [SerializeField] private float lookSpeed;
 
     [Header("Sprinting")]
     [SerializeField] private float sprintSpeedMultiplier;
@@ -39,6 +43,7 @@ public class CameraSystem : MonoBehaviour
         MoveCamera();
         RotateCamera();
         ZoomCamera();
+        Look();
     }
     private void OnEnable()
     {
@@ -104,21 +109,51 @@ public class CameraSystem : MonoBehaviour
     }
     private void ZoomCamera()
     {
+        Vector3 zoomDir = followOffset.normalized;
+
         // Get the input
         float scrollInput = inGameActions.CameraScroll.ReadValue<float>();
 
         if (scrollInput > 0)
         {
-            followOffset.y -= zoomSpeed * currentSpeedMultiplier;
+            followOffset -= currentSpeedMultiplier * zoomSpeed * zoomDir;
         }
         if (scrollInput < 0)
         {
-            followOffset.y += zoomSpeed * currentSpeedMultiplier;
+            followOffset += currentSpeedMultiplier * zoomSpeed * zoomDir;
         }
 
-        followOffset.y = Mathf.Clamp(followOffset.y, followOffsetMinY, followOffsetMaxY);
+        if (followOffset.magnitude > followOffsetMaxY)
+        {
+            followOffset = followOffsetMaxY * zoomDir;
+        }
+        if (followOffset.magnitude < followOffsetMinY)
+        {
+            followOffset = followOffsetMinY * zoomDir;
+        }
 
         cinemachineVirtualCamera.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset =
             Vector3.Lerp(cinemachineVirtualCamera.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset, followOffset, Time.deltaTime * zoomLerpSpeed);
+    }
+    private void Look()
+    {
+        Vector2 lookInput = inGameActions.MouseMove.ReadValue<Vector2>();
+
+        if (!inGameActions.CameraLook.IsPressed())
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            return;
+        }
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
+        
+        Vector3 rotation = transform.eulerAngles;
+        rotation += lookSpeed * Time.deltaTime * new Vector3(-lookInput.y, lookInput.x, 0);
+        if (rotation.x < 100) rotation.x += 360;
+        rotation.x = Mathf.Clamp(rotation.x, 320, 400);
+        transform.eulerAngles = rotation;
     }
 }
