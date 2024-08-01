@@ -111,7 +111,6 @@ public class CameraSystem : MonoBehaviour
     {
         Vector3 zoomDir = followOffset.normalized;
 
-        // Get the input
         float scrollInput = inGameActions.CameraScroll.ReadValue<float>();
 
         if (scrollInput > 0)
@@ -137,8 +136,7 @@ public class CameraSystem : MonoBehaviour
     }
     private void Look()
     {
-        Vector2 lookInput = inGameActions.MouseMove.ReadValue<Vector2>();
-
+        // If the player isn't in CamerLook mode (middle mousebutton by default), set the cursorMode to free and return
         if (!inGameActions.CameraLook.IsPressed())
         {
             Cursor.lockState = CursorLockMode.None;
@@ -149,11 +147,11 @@ public class CameraSystem : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        
+        Vector2 lookInput = inGameActions.MouseMove.ReadValue<Vector2>();
+
         Vector3 rotation = transform.eulerAngles;
         rotation += lookSpeed * Time.deltaTime * new Vector3(-lookInput.y, lookInput.x, 0);
-        if (rotation.x < 100) rotation.x += 360;
-        rotation.x = Mathf.Clamp(rotation.x, 320, 400);
+        rotation.x = Mathf.Clamp(rotation.x, 285, 350); // Min = -75°, Max = -10° -> a total of 60°
         transform.eulerAngles = rotation;
     }
 }
