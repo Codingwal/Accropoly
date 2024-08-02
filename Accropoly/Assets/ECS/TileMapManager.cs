@@ -12,6 +12,9 @@ public class TileMapManager : MonoBehaviour
     public Entity[,] map;
     EntityManager entityManager;
 
+    [SerializeField] private Mesh mesh;
+    [SerializeField] private Material material;
+
     private void Awake()
     {
         Debug.Assert(World.DefaultGameObjectInjectionWorld != null);
@@ -25,9 +28,9 @@ public class TileMapManager : MonoBehaviour
 
         EntityArchetype entityArchetype = entityManager.CreateArchetype(
             typeof(MapTileComponent),
-            typeof(Translation)
-            // typeof(RenderMesh),
-            // typeof(LocalToWorld)
+            typeof(Translation),
+            typeof(RenderMesh),
+            typeof(LocalToWorld)
         );
 
         for (int x = 0; x < mapSize.x; x++)
@@ -43,6 +46,7 @@ public class TileMapManager : MonoBehaviour
                 map[x, y] = entityManager.CreateEntity(entityArchetype);
                 entityManager.SetComponentData(map[x, y], new Translation { Value = new(worldPosX, 0, worldPosZ) });
                 entityManager.SetComponentData(map[x, y], new MapTileComponent(x, y));
+                entityManager.SetSharedComponentData(map[x, y], new RenderMesh { mesh = mesh, material = material });
             }
         }
     }
