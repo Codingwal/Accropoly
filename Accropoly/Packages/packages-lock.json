@@ -185,6 +185,15 @@
       },
       "url": "https://packages.unity.com"
     },
+    "com.unity.rendering.hybrid": {
+      "version": "0.51.1-preview.21",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.entities": "0.51.1-preview.21"
+      },
+      "url": "https://packages.unity.com"
+    },
     "com.unity.roslyn": {
       "version": "0.2.2-preview",
       "depth": 1,
