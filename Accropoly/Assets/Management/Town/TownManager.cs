@@ -92,6 +92,7 @@ public class TownManager : Singleton<TownManager>
     // -------------------------------- Initialization & Saving -------------------------------- //
     private void Init(WorldData world)
     {
+        return;
         // Delete all existing childs
         List<GameObject> childs = new();
         foreach (Transform child in populationParentObject)
