@@ -93,12 +93,12 @@ public static class FileHandler
     ////////////////////////////////////////////////////////////////////////////////
 
 
-    public static World LoadWorld()
+    public static WorldData LoadWorld()
     {
         string mapName = GetWorldName();
-        return LoadObject<World>("Saves", mapName);
+        return LoadObject<WorldData>("Saves", mapName);
     }
-    public static void SaveWorld(World world)
+    public static void SaveWorld(WorldData world)
     {
         string worldName = GetWorldName();
 
@@ -108,7 +108,7 @@ public static class FileHandler
     {
         Serializable2DArray<Tile> mapTemplate = LoadObject<Serializable2DArray<Tile>>("Templates", mapTemplateName);
 
-        World world = new(mapTemplate);
+        WorldData world = new(mapTemplate);
 
         SaveObject("Saves", GetWorldName(), world);
     }

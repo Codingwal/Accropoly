@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public struct World
+public struct WorldData
 {
     // Time
     public float playTime;
@@ -21,7 +21,7 @@ public struct World
     // Tilemap system
     public Serializable2DArray<Tile> map;
 
-    public World(Serializable2DArray<Tile> map)
+    public WorldData(Serializable2DArray<Tile> map)
     {
         playTime = 0;
 

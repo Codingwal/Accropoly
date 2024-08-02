@@ -90,7 +90,7 @@ public class TownManager : Singleton<TownManager>
     }
 
     // -------------------------------- Initialization & Saving -------------------------------- //
-    private void Init(World world)
+    private void Init(WorldData world)
     {
         // Delete all existing childs
         List<GameObject> childs = new();
@@ -113,7 +113,7 @@ public class TownManager : Singleton<TownManager>
         balance = world.balance;
     }
 
-    private void Save(ref World world)
+    private void Save(ref WorldData world)
     {
         // Save balance
         world.balance = balance;

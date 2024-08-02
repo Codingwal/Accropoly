@@ -35,7 +35,7 @@ public class Person : MonoBehaviour, IPerson
     {
         GameLoopManager.Instance.SaveWorld -= SaveData;
     }
-    private void SaveData(ref World world)
+    private void SaveData(ref WorldData world)
     {
         PersonData personData = new()
         {

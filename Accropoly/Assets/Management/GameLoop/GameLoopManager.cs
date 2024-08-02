@@ -14,8 +14,8 @@ public class GameLoopManager : SingletonPersistant<GameLoopManager>
     public float playTime;
 
     // Loading and saving
-    public event Action<World> InitWorld;
-    public event RefAction<World> SaveWorld;
+    public event Action<WorldData> InitWorld;
+    public event RefAction<WorldData> SaveWorld;
 
     // State machine
     public event Action<GameState, GameState> GameStateChanged;
@@ -98,7 +98,7 @@ public class GameLoopManager : SingletonPersistant<GameLoopManager>
     {
         Serializable2DArray<Tile> map = MapHandler.Instance.SaveTileMap();
 
-        World world = new(map)
+        WorldData world = new(map)
         {
             playTime = playTime
         };
@@ -109,7 +109,7 @@ public class GameLoopManager : SingletonPersistant<GameLoopManager>
     }
     public void LoadWorld()
     {
-        World world = FileHandler.LoadWorld();
+        WorldData world = FileHandler.LoadWorld();
 
         playTime = world.playTime;
 

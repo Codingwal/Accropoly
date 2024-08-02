@@ -60,7 +60,7 @@ public class CameraSystem : MonoBehaviour
         GameLoopManager.Instance.SaveWorld -= SaveCameraSystem;
     }
 
-    private void InitCameraSystem(World world)
+    private void InitCameraSystem(WorldData world)
     {
         transform.SetPositionAndRotation(new(world.cameraSystemPos.x, 0, world.cameraSystemPos.y), world.cameraSystemRotation);
 
@@ -68,7 +68,7 @@ public class CameraSystem : MonoBehaviour
 
         mapSize = world.map.GetLength(0) * MapHandler.Instance.tileSize;
     }
-    private void SaveCameraSystem(ref World world)
+    private void SaveCameraSystem(ref WorldData world)
     {
         world.cameraSystemPos = new(transform.position.x, transform.position.z);
         world.cameraSystemRotation = transform.rotation;

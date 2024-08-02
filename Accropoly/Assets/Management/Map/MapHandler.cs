@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Security.Principal;
+using UnityEngine.Tilemaps;
 
 public class MapHandler : Singleton<MapHandler>
 {
@@ -15,6 +16,10 @@ public class MapHandler : Singleton<MapHandler>
 
     public void GenerateTileMap(Serializable2DArray<Tile> selectedMap)
     {
+        FindObjectOfType<TileMapManager>().GenerateTileMap(selectedMap);
+        return;
+
+
         if (tileParent == null)
         {
             tileParent = GameObject.Find("TileMap").transform;
