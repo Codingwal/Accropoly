@@ -3,56 +3,38 @@ using UnityEngine;
 using System;
 using System.Security.Principal;
 using UnityEngine.Tilemaps;
+using Unity.Entities;
+using Unity.Collections;
+using Unity.Transforms;
 
-public class MapHandler : Singleton<MapHandler>
+public class MapHandler : MonoBehaviour
 {
     public float tileSize;
     public Transform tileParent;
+    public Entity baseTilePrefabEntity;
 
     public SerializableDictionary<TileType, GameObject> tilePrefabs;
 
-    public Serializable2DArray<GameObject> map;
-
+    public Serializable2DArray<Entity> map;
 
     public void GenerateTileMap(Serializable2DArray<Tile> selectedMap)
     {
-        // FindObjectOfType<TileMapManager>().GenerateTileMap(selectedMap);
-        return;
+        EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+        int amountToSpawn = selectedMap.GetLength(0) * selectedMap.GetLength(1);
+        NativeArray<Entity> spawnedEntities = new(amountToSpawn, Allocator.Temp);
+        entityManager.Instantiate(baseTilePrefabEntity, spawnedEntities);
 
-
-        if (tileParent == null)
+        for (int x = 0; x < selectedMap.GetLength(0); x++)
         {
-            tileParent = GameObject.Find("TileMap").transform;
-        }
-
-        // Delete all existing childs
-        List<GameObject> childs = new();
-        foreach (Transform child in tileParent)
-        {
-            childs.Add(child.gameObject);
-        }
-        foreach (GameObject child in childs)
-        {
-            Destroy(child);
-        }
-
-        Vector2 mapSize = new(selectedMap.GetLength(0), selectedMap.GetLength(1));
-
-        map = new Serializable2DArray<GameObject>((int)mapSize.x, (int)mapSize.y);
-
-        for (int i = 0; i < mapSize.x; i++)
-        {
-            for (int j = 0; j < mapSize.y; j++)
+            for (int y = 0; y < selectedMap.GetLength(1); y++)
             {
-                float worldPosX = (i - mapSize.x * 0.5f + 0.5f) * tileSize;
-                float worldPosZ = (j - mapSize.y * 0.5f + 0.5f) * tileSize;
+                int i = x * selectedMap.GetLength(0) + y;
+                Entity entity = spawnedEntities[i];
 
-                Tile tile = selectedMap[i, j];
-                GameObject tilePrefab = tilePrefabs[tile.tileType];
-
-                map[i, j] = GenerateTile(tilePrefab, new(worldPosX, 0, worldPosZ), tile.direction * 90, i, j);
+                entityManager.SetComponentData(entity, LocalTransform.FromPosition(2 * x, 1, 2 * y));
             }
         }
+        spawnedEntities.Dispose();
     }
     private GameObject GenerateTile(GameObject tilePrefab, Vector3 position, int rotation, int indexX, int indexY)
     {
