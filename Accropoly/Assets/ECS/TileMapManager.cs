@@ -26,13 +26,6 @@ public class TileMapManager : MonoBehaviour
 
         map = new Entity[(int)mapSize.x, (int)mapSize.y];
 
-        EntityArchetype entityArchetype = entityManager.CreateArchetype(
-            typeof(MapTileComponent),
-            typeof(Translation),
-            typeof(RenderMesh),
-            typeof(LocalToWorld)
-        );
-
         for (int x = 0; x < mapSize.x; x++)
         {
             for (int y = 0; y < mapSize.y; y++)
@@ -43,10 +36,8 @@ public class TileMapManager : MonoBehaviour
                 // Tile tile = selectedMap[i, j];
 
 
-                map[x, y] = entityManager.CreateEntity(entityArchetype);
-                entityManager.SetComponentData(map[x, y], new Translation { Value = new(worldPosX, 0, worldPosZ) });
-                entityManager.SetComponentData(map[x, y], new MapTileComponent(x, y));
-                entityManager.SetSharedComponentData(map[x, y], new RenderMesh { mesh = mesh, material = material });
+                // map[x, y] = entityManager.CreateEntity(entityArchetype);
+
             }
         }
     }
