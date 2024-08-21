@@ -11,6 +11,7 @@ public class StatisticsDisplay : MonoBehaviour
     [SerializeField] private TMP_Text electricityText;
     [SerializeField] private TMP_Text averageHappinessText;
 
+    /*
     private void Update()
     {
         float balance = TownManager.Instance.balance;
@@ -53,4 +54,5 @@ public class StatisticsDisplay : MonoBehaviour
 
         averageHappinessText.text = $"Glücklichkeit: {Math.Round(averageHappiness, 1)}";
     }
+    */
 }

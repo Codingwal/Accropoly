@@ -33,6 +33,7 @@ public class PlayerUIManager : MonoBehaviour
     private BuildingSystemHandler buildingSystemHandler;
     private InputManager inputManager;
 
+    /*
     private void Awake()
     {
         buildingSystemHandler = BuildingSystemHandler.Instance;
@@ -195,4 +196,5 @@ public class PlayerUIManager : MonoBehaviour
         if (!buildingsMenu.activeSelf) return;
         StartCoroutine(buildingSystemHandler.PlaceTile(TileType.CoalPowerPlant));
     }
+    */
 }

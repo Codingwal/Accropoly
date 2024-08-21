@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class TownManager : Singleton<TownManager>
 {
+    /*
     // Economy
     public event RefAction<float> CollectInvoice;
 
@@ -190,6 +191,7 @@ public class TownManager : Singleton<TownManager>
     {
         return EnergyProduction > EnergyConsumption;
     }
+    */
 }
 [Serializable]
 public struct TilePrice

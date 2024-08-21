@@ -17,8 +17,9 @@ public class MapHandler : MonoBehaviour
 
     public Serializable2DArray<Entity> map;
 
-    public void GenerateTileMap(Serializable2DArray<Tile> selectedMap)
+    public static void GenerateTileMap(Serializable2DArray<Tile> selectedMap)
     {
+        /*
         EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
         int amountToSpawn = selectedMap.GetLength(0) * selectedMap.GetLength(1);
         NativeArray<Entity> spawnedEntities = new(amountToSpawn, Allocator.Temp);
@@ -35,6 +36,7 @@ public class MapHandler : MonoBehaviour
             }
         }
         spawnedEntities.Dispose();
+        */
     }
     private GameObject GenerateTile(GameObject tilePrefab, Vector3 position, int rotation, int indexX, int indexY)
     {
@@ -52,8 +54,10 @@ public class MapHandler : MonoBehaviour
         return tile;
     }
 
-    public Serializable2DArray<Tile> SaveTileMap()
+    public static Serializable2DArray<Tile> SaveTileMap()
     {
+        return null;
+        /*
         int tileMapSize = (int)Math.Sqrt(tileParent.childCount);
         Serializable2DArray<Tile> tilemap = new(tileMapSize, tileMapSize);
 
@@ -68,6 +72,7 @@ public class MapHandler : MonoBehaviour
         }
 
         return tilemap;
+        */
     }
 
     public static Vector2 GetTilePosFromNeighbour(Vector2 position, float direction)
@@ -90,14 +95,5 @@ public class MapHandler : MonoBehaviour
             3 => new(position.x - 1, position.y),
             _ => throw new Exception("This direction does not exist: " + direction),
         };
-    }
-    public static GameObject GetTileFromNeighbour(Vector2 position, float direction)
-    {
-        Vector2 tilePos = GetTilePosFromNeighbour(position, direction);
-
-        // Check if index is outside array bounds, if true, return
-        if (tilePos.x >= Instance.map.GetLength(0) || tilePos.x < 0 || tilePos.y >= Instance.map.GetLength(1) || tilePos.y < 0) return null;
-
-        return Instance.map[(int)tilePos.x, (int)tilePos.y];
     }
 }

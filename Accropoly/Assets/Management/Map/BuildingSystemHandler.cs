@@ -12,6 +12,7 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
 
     private InputManager inputManager;
     private MapHandler mapHandler;
+    /*
     protected override void Awake()
     {
         base.Awake();
@@ -223,4 +224,5 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
         // Destroy the old tile
         Destroy(oldTile.gameObject);
     }
+    */
 }

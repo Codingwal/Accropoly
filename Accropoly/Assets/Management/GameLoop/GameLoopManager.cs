@@ -96,7 +96,7 @@ public class GameLoopManager : SingletonPersistant<GameLoopManager>
 
     private void SaveWorldData()
     {
-        Serializable2DArray<Tile> map = MapHandler.Instance.SaveTileMap();
+        Serializable2DArray<Tile> map = MapHandler.SaveTileMap();
 
         WorldData world = new(map)
         {
@@ -119,7 +119,7 @@ public class GameLoopManager : SingletonPersistant<GameLoopManager>
             nextInvoiceTime += invoiceInterval;
         }
 
-        MapHandler.Instance.GenerateTileMap(world.map);
+        MapHandler.GenerateTileMap(world.map);
         InitWorld.Invoke(world);
     }
 }

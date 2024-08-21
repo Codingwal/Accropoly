@@ -5,9 +5,10 @@ public struct MapTileComponent : IComponentData
 {
     public TileType tileType;
     public float2 pos;
-    public MapTileComponent(int x, int y)
+    public MapTileComponent(int x, int y, TileType tileType)
     {
         pos = new float2(x, y);
+        this.tileType = tileType;
     }
 }
 public enum TileType

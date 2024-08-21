@@ -66,7 +66,7 @@ public class CameraSystem : MonoBehaviour
 
         followOffset.y = world.followOffsetY;
 
-        mapSize = world.map.GetLength(0) * MapHandler.Instance.tileSize;
+        mapSize = world.map.GetLength(0) * 30;
     }
     private void SaveCameraSystem(ref WorldData world)
     {
