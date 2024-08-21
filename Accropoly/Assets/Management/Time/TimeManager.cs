@@ -39,31 +39,25 @@ public struct TimeOfTheDay
         }
     }
 }
-public class TimeManager : MonoBehaviour
+public static class TimeManager
 {
     private const float reallifeMinutesPerIngameDay = 10;
     private const float timeScale = 24 * 60 / reallifeMinutesPerIngameDay; // Calculate the timeScale at compile time
 
-    public event Action NextDay;
-    public DaysOfTheWeek currentDay;
-    public TimeOfTheDay timeOfTheDay;
+    public static event Action NextDay;
+    public static DaysOfTheWeek currentDay;
+    public static TimeOfTheDay timeOfTheDay;
 
-    private void OnEnable()
+    static TimeManager()
     {
         timeOfTheDay.NextDay += OnNextDay;
     }
-    private void OnDisable()
+    public static void StepTime(float timeStep)
     {
-        timeOfTheDay.NextDay -= OnNextDay;
-    }
-    private void FixedUpdate()
-    {
-        if (GameLoopManager.Instance.GameState != GameState.InGame) return;
-
-        timeOfTheDay.AdvanceTime(Time.fixedDeltaTime * timeScale);
+        timeOfTheDay.AdvanceTime(timeStep * timeScale);
 
     }
-    private void OnNextDay()
+    private static void OnNextDay()
     {
         currentDay++;
         NextDay.Invoke();

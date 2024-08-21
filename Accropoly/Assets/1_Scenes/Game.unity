@@ -4146,70 +4146,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c165aba501bd6eb41b9c70f1a422338d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  balance: 0
-  tilePrices:
-    dictionary:
-    - key: 0
-      value:
-        buyPrice: 10
-        sellPrice: 0
-    - key: 1
-      value:
-        buyPrice: 15
-        sellPrice: 5
-    - key: 2
-      value:
-        buyPrice: 30
-        sellPrice: 15
-    - key: 3
-      value:
-        buyPrice: 30
-        sellPrice: 15
-    - key: 4
-      value:
-        buyPrice: 35
-        sellPrice: 15
-    - key: 5
-      value:
-        buyPrice: 40
-        sellPrice: 15
-    - key: 6
-      value:
-        buyPrice: 200
-        sellPrice: 100
-    - key: 7
-      value:
-        buyPrice: 400
-        sellPrice: 200
-    - key: 8
-      value:
-        buyPrice: 150
-        sellPrice: 75
-    - key: 9
-      value:
-        buyPrice: 500
-        sellPrice: 250
-    - key: 10
-      value:
-        buyPrice: 300
-        sellPrice: 150
-  tileExpenditure:
-    dictionary:
-    - key: 8
-      value: 5
-    - key: 9
-      value: 20
-  taxPerHappiness: 1
-  personPrefab: {fileID: 725697737072484042, guid: d30f209018abdb34a884d20836842107, type: 3}
-  populationParentObject: {fileID: 1057835179}
-  tileEnergyProduction:
-    dictionary:
-    - key: 8
-      value: 50
-    - key: 9
-      value: 400
-  electricityUsagePerPerson: 4
-  electricityUsagePerWorker: 2
 --- !u!114 &1028602574
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4219,10 +4155,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1028602566}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5c074f434df47bd4780a94aca849108a, type: 3}
+  m_Script: {fileID: 11500000, guid: cf1edd700b43eb14f899e97823a9b6cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentDay: 0
+  timeSpeed: 0
+  invoiceInterval: 0
+  playTime: 0
 --- !u!1 &1057835178
 GameObject:
   m_ObjectHideFlags: 0
