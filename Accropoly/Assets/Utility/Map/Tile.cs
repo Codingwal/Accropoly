@@ -30,26 +30,3 @@ public struct Tile
         return base.GetHashCode();
     }
 }
-public enum TileType
-{
-    // Naturally generated
-    Plains,
-    Forest,
-
-    // Streets
-    Street,
-    StreetCorner,
-    StreetTJunction,
-    StreetJunction,
-
-    // Houses
-    House,
-    Skyscraper,
-
-    // Energy production
-    SolarPanel,
-    CoalPowerPlant,
-
-    // Workplace
-    OfficeBuilding
-}
