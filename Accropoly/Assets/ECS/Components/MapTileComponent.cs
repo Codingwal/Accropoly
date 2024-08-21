@@ -1,12 +1,11 @@
 using Unity.Entities;
-using UnityEngine;
+using Unity.Mathematics;
 
-[assembly: RegisterGenericComponentType(typeof(MapTileComponent))]  
 public struct MapTileComponent : IComponentData
 {
-    public Vector2Int pos;
+    public float2 pos;
     public MapTileComponent(int x, int y)
     {
-        pos = new Vector2Int(x, y);
+        pos = new float2(x, y);
     }
 }

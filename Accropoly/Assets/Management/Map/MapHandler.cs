@@ -16,7 +16,7 @@ public class MapHandler : Singleton<MapHandler>
 
     public void GenerateTileMap(Serializable2DArray<Tile> selectedMap)
     {
-        FindObjectOfType<TileMapManager>().GenerateTileMap(selectedMap);
+        // FindObjectOfType<TileMapManager>().GenerateTileMap(selectedMap);
         return;
 
 
