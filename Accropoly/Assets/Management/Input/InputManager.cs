@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 using static UnityEngine.InputSystem.InputAction;
 
 public static class InputManager
@@ -29,6 +30,8 @@ public static class InputManager
 
     public static void Init()
     {
+        Debug.Log("Initializing InputManager");
+
         inputActions = new Controls();
         inGameActions = inputActions.InGame;
         uIActions = inputActions.UI;
@@ -45,6 +48,8 @@ public static class InputManager
         uIActions.Hotkey5.performed += OnHotkey5;
         uIActions.Hotkey6.performed += OnHotkey6;
         uIActions.Hotkey7.performed += OnHotkey7;
+
+        inGameActions.Enable();
     }
 
     private static void OnEscape(CallbackContext ctx)

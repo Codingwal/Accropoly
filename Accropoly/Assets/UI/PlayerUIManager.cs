@@ -31,7 +31,6 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] private Button emptyButton2;
 
     private BuildingSystemHandler buildingSystemHandler;
-    private InputManager inputManager;
 
     /*
     private void Awake()

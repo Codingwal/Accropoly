@@ -10,7 +10,6 @@ public class BuildingSystemHandler : Singleton<BuildingSystemHandler>
 
     private float tileRotation = 0;
 
-    private InputManager inputManager;
     private MapHandler mapHandler;
     /*
     protected override void Awake()

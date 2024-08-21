@@ -46,6 +46,7 @@ public class GameLoopManager : SingletonPersistant<GameLoopManager>
         }
 
         FileHandler.Init();
+        InputManager.Init();
     }
     private void OnEnable()
     {
@@ -54,6 +55,10 @@ public class GameLoopManager : SingletonPersistant<GameLoopManager>
     private void OnDisable()
     {
         SceneManagement.SceneIsUnloading -= OnSceneIsUnloading;
+    }
+    private void Start()
+    {
+        LoadWorld();
     }
     private void OnApplicationQuit()
     {
@@ -120,7 +125,7 @@ public class GameLoopManager : SingletonPersistant<GameLoopManager>
         }
 
         MapHandler.GenerateTileMap(world.map);
-        InitWorld.Invoke(world);
+        InitWorld?.Invoke(world);
     }
 }
 public enum GameState

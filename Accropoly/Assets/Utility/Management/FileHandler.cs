@@ -7,6 +7,8 @@ public static class FileHandler
 {
     public static void Init()
     {
+        Debug.Log("Initializing FileHandler");
+
         string[] requiredDirectories =
         {
             "UserData",
