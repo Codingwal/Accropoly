@@ -31,23 +31,13 @@ public class CameraSystem : MonoBehaviour
     [SerializeField] private float sprintSpeedMultiplier;
     private float currentSpeedMultiplier;
 
-    [SerializeField] private InputManager inputManager;
     private Controls.InGameActions inGameActions;
 
-    private void Start()
+    private void Awake()
     {
         cinemachineTransposer = cinemachineVirtualCamera.GetCinemachineComponent<CinemachineTransposer>();
         followOffset = cinemachineTransposer.m_FollowOffset;
-        inputManager = InputManager.Instance;
-        inGameActions = inputManager.inGameActions;
-    }
-    private void FixedUpdate()
-    {
-        CheckIfSprinting();
-        MoveCamera();
-        RotateCamera();
-        ZoomCamera();
-        Look();
+        inGameActions = InputManager.inGameActions;
     }
     private void OnEnable()
     {
@@ -59,14 +49,25 @@ public class CameraSystem : MonoBehaviour
         GameLoopManager.Instance.InitWorld -= InitCameraSystem;
         GameLoopManager.Instance.SaveWorld -= SaveCameraSystem;
     }
+    private void FixedUpdate()
+    {
+        CheckIfSprinting();
+        MoveCamera();
+        RotateCamera();
+        ZoomCamera();
+        Look();
+    }
 
     private void InitCameraSystem(WorldData world)
     {
+        Debug.Log("Initializing CameraSystem");
+
         transform.SetPositionAndRotation(new(world.cameraSystemPos.x, 0, world.cameraSystemPos.y), world.cameraSystemRotation);
 
         followOffset.y = world.followOffsetY;
 
         mapSize = world.map.GetLength(0) * 30;
+        mapSize = 500;
     }
     private void SaveCameraSystem(ref WorldData world)
     {
