@@ -33,6 +33,7 @@ public class CameraSystem : MonoBehaviour
 
     private Controls.InGameActions inGameActions;
 
+    /*
     private void Awake()
     {
         cinemachineTransposer = cinemachineVirtualCamera.GetCinemachineComponent<CinemachineTransposer>();
@@ -158,4 +159,5 @@ public class CameraSystem : MonoBehaviour
         rotation.x = Mathf.Clamp(rotation.x, minAngle, maxAngle);
         transform.eulerAngles = rotation;
     }
+    */
 }

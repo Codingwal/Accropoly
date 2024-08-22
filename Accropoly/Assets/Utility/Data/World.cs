@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 [System.Serializable]
@@ -8,8 +9,8 @@ public struct WorldData
     public float playTime;
 
     // Camera system
-    public Vector2 cameraSystemPos;
-    public Quaternion cameraSystemRotation;
+    public float2 cameraSystemPos;
+    public quaternion cameraSystemRotation;
     public float followOffsetY;
 
     // Economy system

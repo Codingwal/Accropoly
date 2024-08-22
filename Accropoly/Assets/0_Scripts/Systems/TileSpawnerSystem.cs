@@ -26,6 +26,7 @@ public partial struct TileSpawnerSystem : ISystem
     {
         state.Enabled = false;
 
+
         EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
         TileSpawnerConfig config = SystemAPI.GetSingleton<TileSpawnerConfig>();
         MapData mapData = SystemAPI.GetSingleton<MapData>();
@@ -42,6 +43,9 @@ public partial struct TileSpawnerSystem : ISystem
             }
         }
         tiles.Dispose();
+
+        Debug.Log("!");
+        Debug.Log(mapData.TotalSize);
     }
     [BurstCompile]
     public void OnDestroy()

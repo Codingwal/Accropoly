@@ -131,7 +131,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 903553016}
-  - component: {fileID: 903553015}
+  - component: {fileID: 903553017}
   m_Layer: 0
   m_Name: MapHandler
   m_TagString: Untagged
@@ -139,47 +139,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &903553015
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 903553014}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 589d6593a6c865741b91fcd846002678, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tileSize: 30
-  tileParent: {fileID: 903553016}
-  tilePrefab: {fileID: 8833141692400065624, guid: 0220ee1e56efbf44992718310e25e3f1, type: 3}
-  tilePrefabs:
-    dictionary:
-    - key: 0
-      value: {fileID: 1018065688083463063, guid: 043e4a60b6860a543bf31c9e81a9b636, type: 3}
-    - key: 1
-      value: {fileID: 7947999506322420293, guid: 883af793d4c4cee40bc25c1c483b3689, type: 3}
-    - key: 2
-      value: {fileID: 1018065688083463063, guid: d77f9d8433aae9849b8f9726708df8d9, type: 3}
-    - key: 3
-      value: {fileID: 1018065688083463063, guid: ae21f5cb3195aa1468939841012e67c0, type: 3}
-    - key: 4
-      value: {fileID: 1018065688083463063, guid: 4f9e7c0adb4bec94aabb478eafbf5848, type: 3}
-    - key: 5
-      value: {fileID: 1018065688083463063, guid: f6416533bb78c0a4cb5b38aba1171f0a, type: 3}
-    - key: 6
-      value: {fileID: 1018065688083463063, guid: 183f1023989e79841acbe49c637bda72, type: 3}
-    - key: 7
-      value: {fileID: 1018065688083463063, guid: a154a86a3cb2d8848897d69fd7d20f72, type: 3}
-    - key: 8
-      value: {fileID: 1018065688083463063, guid: 2379b9c826bc34e40a65f63e10989dcc, type: 3}
-    - key: 9
-      value: {fileID: 1018065688083463063, guid: 02676a56ec1bfab40a685670c8ef11a6, type: 3}
-    - key: 10
-      value: {fileID: 1018065688083463063, guid: b7ecb66d1b0282e45aa4634d58851e31, type: 3}
-  map:
-    array2D: []
 --- !u!4 &903553016
 Transform:
   m_ObjectHideFlags: 0
@@ -195,6 +154,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &903553017
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 903553014}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7aeaa149d5b5fd44890c85d2e574beab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tilePrefab: {fileID: 8833141692400065624, guid: 0220ee1e56efbf44992718310e25e3f1, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
