@@ -48,7 +48,7 @@ public class PauseMenuManager : MonoBehaviour
 
     private void OnToMainMenuPressed()
     {
-        gameLoopManager.GameState = GameState.MainMenu;
+        _ = SceneManagement.LoadScene("Menu");  // Discard used to prevent compiler warning
     }
 
     private void OnGameStateChanged(GameState newGameState, GameState oldGameState)

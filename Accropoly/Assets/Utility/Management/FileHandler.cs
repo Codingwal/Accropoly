@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Unity.Collections;
 using UnityEngine;
 
 public static class FileHandler
@@ -65,6 +66,20 @@ public static class FileHandler
 
         File.WriteAllText(dataPath, content);
     }
+    public static string ReadFile(string directory, string name)
+    {
+        string dataPath = $"{Application.persistentDataPath}/data/{directory}/{name}.json";
+
+        try
+        {
+            return File.ReadAllText(dataPath);
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"[FileHandler] Failed to read file '{directory}/{name}': " + e.Message);
+            return null;
+        }
+    }
     public static T LoadObject<T>(string directory, string name)
     {
         string dataPath = $"{Application.persistentDataPath}/data/{directory}/{name}.json";
@@ -110,7 +125,7 @@ public static class FileHandler
     {
         Serializable2DArray<Tile> mapTemplate = LoadObject<Serializable2DArray<Tile>>("Templates", mapTemplateName);
 
-        WorldData world = new(mapTemplate);
+        WorldData world = new((MapData)mapTemplate);
 
         SaveObject("Saves", GetWorldName(), world);
     }

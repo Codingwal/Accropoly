@@ -49,7 +49,7 @@ public class MenuManager : MonoBehaviour
 
         FileHandler.ChangeWorldName(mapsDropdown.options[mapsDropdown.value].text);
 
-        GameLoopManager.Instance.GameState = GameState.InGame;
+        _ = SceneManagement.LoadScene("Game");  // Discard used to prevent compiler warning
     }
     private void OnCreateMap()
     {

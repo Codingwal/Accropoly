@@ -19,9 +19,9 @@ public struct WorldData
     public List<PersonData> population;
 
     // Tilemap system
-    public Serializable2DArray<Tile> map;
+    public MapData map;
 
-    public WorldData(Serializable2DArray<Tile> map)
+    public WorldData(MapData map)
     {
         playTime = 0;
 

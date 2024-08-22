@@ -4041,7 +4041,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1028602569}
-  - component: {fileID: 1028602567}
   - component: {fileID: 1028602570}
   - component: {fileID: 1028602573}
   - component: {fileID: 1028602574}
@@ -4052,46 +4051,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1028602567
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1028602566}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 589d6593a6c865741b91fcd846002678, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tileSize: 30
-  tileParent: {fileID: 0}
-  tilePrefabs:
-    dictionary:
-    - key: 0
-      value: {fileID: 1018065688083463063, guid: 043e4a60b6860a543bf31c9e81a9b636, type: 3}
-    - key: 1
-      value: {fileID: 7947999506322420293, guid: 883af793d4c4cee40bc25c1c483b3689, type: 3}
-    - key: 2
-      value: {fileID: 1018065688083463063, guid: d77f9d8433aae9849b8f9726708df8d9, type: 3}
-    - key: 3
-      value: {fileID: 1018065688083463063, guid: ae21f5cb3195aa1468939841012e67c0, type: 3}
-    - key: 4
-      value: {fileID: 1018065688083463063, guid: 4f9e7c0adb4bec94aabb478eafbf5848, type: 3}
-    - key: 5
-      value: {fileID: 1018065688083463063, guid: f6416533bb78c0a4cb5b38aba1171f0a, type: 3}
-    - key: 6
-      value: {fileID: 1018065688083463063, guid: 183f1023989e79841acbe49c637bda72, type: 3}
-    - key: 7
-      value: {fileID: 1018065688083463063, guid: a154a86a3cb2d8848897d69fd7d20f72, type: 3}
-    - key: 8
-      value: {fileID: 1018065688083463063, guid: 2379b9c826bc34e40a65f63e10989dcc, type: 3}
-    - key: 9
-      value: {fileID: 1018065688083463063, guid: 02676a56ec1bfab40a685670c8ef11a6, type: 3}
-    - key: 10
-      value: {fileID: 1018065688083463063, guid: b7ecb66d1b0282e45aa4634d58851e31, type: 3}
-  map:
-    array2D: []
 --- !u!4 &1028602569
 Transform:
   m_ObjectHideFlags: 0
@@ -5742,8 +5701,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a861406c4bc7f8e49bea619f8f348b8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  material: {fileID: 2100000, guid: 98665253bb3e2194dbc753041c2727ae, type: 2}
 --- !u!1 &1671940775
 GameObject:
   m_ObjectHideFlags: 0

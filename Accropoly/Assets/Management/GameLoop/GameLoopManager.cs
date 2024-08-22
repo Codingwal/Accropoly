@@ -13,9 +13,6 @@ public class GameLoopManager : SingletonPersistant<GameLoopManager>
     private float nextInvoiceTime;
     public float playTime;
 
-    // Loading and saving
-    public event Action<WorldData> InitWorld;
-    public event RefAction<WorldData> SaveWorld;
 
     // State machine
     public event Action<GameState, GameState> GameStateChanged;
@@ -31,9 +28,7 @@ public class GameLoopManager : SingletonPersistant<GameLoopManager>
             GameState oldGameState = _gameState;
             _gameState = value;
             if (oldGameState != _gameState)
-            {
-                OnGameStateChanged(_gameState, oldGameState);
-            }
+                GameStateChanged?.Invoke(_gameState, oldGameState);
         }
     }
     protected override void Awake()
@@ -47,85 +42,6 @@ public class GameLoopManager : SingletonPersistant<GameLoopManager>
 
         FileHandler.Init();
         InputManager.Init();
-    }
-    private void OnEnable()
-    {
-        SceneManagement.SceneIsUnloading += OnSceneIsUnloading;
-    }
-    private void OnDisable()
-    {
-        SceneManagement.SceneIsUnloading -= OnSceneIsUnloading;
-    }
-    private void Start()
-    {
-        LoadWorld();
-    }
-    private void OnApplicationQuit()
-    {
-        if (SceneManager.GetActiveScene().name == "Menu")
-        {
-            return;
-        }
-        SaveWorldData();
-    }
-    // ------------------------------------------------------------------- //
-    private void OnSceneIsUnloading(string newScene)
-    {
-        if (newScene == "Menu")
-        {
-            SaveWorldData();
-        }
-    }
-    private async void OnGameStateChanged(GameState newGameState, GameState oldGameState)
-    {
-        switch (newGameState)
-        {
-            case GameState.InGame:
-                if (oldGameState == GameState.MainMenu)
-                {
-                    await SwitchToGame();
-                }
-                break;
-            case GameState.MainMenu:
-                await SceneManagement.LoadScene("Menu");
-                break;
-        }
-        GameStateChanged?.Invoke(_gameState, oldGameState);
-    }
-
-    private async Task SwitchToGame()
-    {
-        await SceneManagement.LoadScene("Game");
-        LoadWorld();
-    }
-
-    private void SaveWorldData()
-    {
-        Serializable2DArray<Tile> map = MapHandler.SaveTileMap();
-
-        WorldData world = new(map)
-        {
-            playTime = playTime
-        };
-
-        SaveWorld.Invoke(ref world);
-
-        FileHandler.SaveWorld(world);
-    }
-    public void LoadWorld()
-    {
-        WorldData world = FileHandler.LoadWorld();
-
-        playTime = world.playTime;
-
-        nextInvoiceTime = 0;
-        while (playTime > nextInvoiceTime)
-        {
-            nextInvoiceTime += invoiceInterval;
-        }
-
-        MapHandler.GenerateTileMap(world.map);
-        InitWorld?.Invoke(world);
     }
 }
 public enum GameState

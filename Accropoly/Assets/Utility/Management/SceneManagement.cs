@@ -22,7 +22,7 @@ public static class SceneManagement
             LoadingScene.Invoke(scene.progress / 0.9f);
         } while (scene.progress < 0.9f);
 
-        SceneIsUnloading.Invoke(sceneName);
+        SceneIsUnloading?.Invoke(sceneName);
 
         // Activate the loaded scene
         scene.allowSceneActivation = true;
