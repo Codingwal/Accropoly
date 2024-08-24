@@ -1,0 +1,4 @@
+- Write Serialization functions for custom types
+- Make sure all NativeArrays are disposed
+- Test Serialization system
+- Finish File system

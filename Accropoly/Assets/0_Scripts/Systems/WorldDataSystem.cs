@@ -18,12 +18,12 @@ public partial struct WorldDataSystem : ISystem
 
         state.Enabled = false;
 
-        string mapName = FileHandler.GetWorldName();
-        string dataString = FileHandler.ReadFile("Saves", mapName);
-        WorldData data = ParseWorldData(dataString);
+        // string mapName = FileHandler.GetWorldName();
+        // string dataString = FileHandler.ReadFile("Saves", mapName);
+        // WorldData data = ParseWorldData(dataString);
 
         Entity worldDataHolder = state.EntityManager.CreateSingleton<MapData>();
-        SystemAPI.SetComponent(worldDataHolder, data.map);
+        // SystemAPI.SetComponent(worldDataHolder, data.map);
     }
     [BurstCompile]
     public void OnDestroy(ref SystemState state)

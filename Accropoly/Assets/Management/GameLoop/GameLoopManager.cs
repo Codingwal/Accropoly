@@ -39,8 +39,6 @@ public class GameLoopManager : SingletonPersistant<GameLoopManager>
         {
             return;
         }
-
-        FileHandler.Init();
         InputManager.Init();
     }
 }
