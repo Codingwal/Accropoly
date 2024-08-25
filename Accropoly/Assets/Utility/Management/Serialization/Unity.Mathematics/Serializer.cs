@@ -7,7 +7,18 @@ public partial class Serializer
         bw.Write(data.x);
         bw.Write(data.y);
     }
+    public void Serialize(int2 data)
+    {
+        bw.Write(data.x);
+        bw.Write(data.y);
+    }
     public void Serialize(float3 data)
+    {
+        bw.Write(data.x);
+        bw.Write(data.y);
+        bw.Write(data.z);
+    }
+    public void Serialize(int3 data)
     {
         bw.Write(data.x);
         bw.Write(data.y);

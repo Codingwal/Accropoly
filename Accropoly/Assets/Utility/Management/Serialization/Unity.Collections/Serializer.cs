@@ -7,7 +7,7 @@ public partial class Serializer
         bw.Write(data.Length);
         foreach (var e in data)
         {
-            Serialize((dynamic)e!);
+            Serialize((dynamic)e);
         }
     }
 }

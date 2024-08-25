@@ -16,12 +16,32 @@ public partial class Serializer
     public void Serialize(char data) { bw.Write(data); }
     public void Serialize(string data) { bw.Write(data); }
 
+    public void Serialize<T>(T[] data)
+    {
+        bw.Write(data.Length);
+        foreach (var e in data)
+        {
+            Serialize((dynamic)e);
+        }
+    }
+    public void Serialize<T>(T[,] data)
+    {
+        bw.Write(data.GetLength(0));
+        bw.Write(data.GetLength(1));
+        for (int x = 0; x < data.GetLength(0); x++)
+        {
+            for (int y = 0; y < data.GetLength(1); y++)
+            {
+                Serialize((dynamic)data[x, y]);
+            }
+        }
+    }
     public void Serialize<T>(List<T> data)
     {
         bw.Write(data.Count);
         foreach (var e in data)
         {
-            Serialize((dynamic)e!);
+            Serialize((dynamic)e);
         }
     }
     public void Serialize<TKey, TValue>(Dictionary<TKey, TValue> data) where TKey : notnull
@@ -30,7 +50,7 @@ public partial class Serializer
         foreach (var pair in data)
         {
             Serialize((dynamic)pair.Key);
-            Serialize((dynamic)pair.Value!);
+            Serialize((dynamic)pair.Value);
         }
     }
 }
