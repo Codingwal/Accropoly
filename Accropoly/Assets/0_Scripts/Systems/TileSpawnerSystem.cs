@@ -39,17 +39,14 @@ public partial struct TileSpawnerSystem : ISystem
             {
                 Entity entity = tiles[mapData.GetIndex(x, y)];
 
-                entityManager.SetComponentData(entity, LocalTransform.FromPosition(x, 1, y));
+                entityManager.SetComponentData(entity, LocalTransform.FromPosition(2 * x, 1, 2 * y));
             }
         }
         tiles.Dispose();
-
-        Debug.Log("!");
-        Debug.Log(mapData.TotalSize);
     }
     [BurstCompile]
     public void OnDestroy()
     {
-
+        Debug.Log("System");
     }
 }
