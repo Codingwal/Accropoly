@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 public class SaveSystem : FileHandler
 {
@@ -13,6 +14,8 @@ public class SaveSystem : FileHandler
     }
     private SaveSystem()
     {
+        Debug.Log("Initializing SaveSystem");
+
         string[] requiredDirectories =
         {
             "UserData",
