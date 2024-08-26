@@ -27,4 +27,8 @@ public partial class Serializer
         bw.Write((int)data.tileType);
         bw.Write(data.direction);
     }
+    public void Serialize(UserData data)
+    {
+        bw.Write(data.worldName);
+    }
 }

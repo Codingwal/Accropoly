@@ -1,20 +1,9 @@
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-using Unity.Mathematics;
 using UnityEngine;
 
 public class FileHandler
 {
-    public static FileHandler Instance { get; private set; }
-    public FileHandler()
-    {
-        if (Instance != null) Debug.LogError("Multiple instances of singleton FileHandler");
-        Instance = this;
-
-        InitFileSystem();
-    }
     public static string[] ListFiles(string directory)
     {
         string dataPath = $"{Application.persistentDataPath}/data/{directory}/";
@@ -30,7 +19,7 @@ public class FileHandler
         }
         return files;
     }
-    public void SaveObject<T>(string directory, string name, T obj)
+    public static void SaveObject<T>(string directory, string name, T obj)
     {
         string dataPath = $"{Application.persistentDataPath}/data/{directory}/{name}.bin";
 
@@ -39,7 +28,7 @@ public class FileHandler
         serializer.Serialize((dynamic)obj);
         fs.Close();
     }
-    public T LoadObject<T>(string directory, string name) where T : new()
+    public static T LoadObject<T>(string directory, string name) where T : new()
     {
         string dataPath = $"{Application.persistentDataPath}/data/{directory}/{name}.bin";
 
@@ -51,29 +40,12 @@ public class FileHandler
     }
     public static void DeleteFile(string directory, string name)
     {
-        string filePath = $"{Application.persistentDataPath}/data/{directory}/{name}.json";
+        string filePath = $"{Application.persistentDataPath}/data/{directory}/{name}.bin";
 
         File.Delete(filePath);
     }
-    private void InitFileSystem()
+    public static void InitFileSystem(string[] requiredDirectories, Dictionary<string, object> requiredFiles)
     {
-        string[] requiredDirectories =
-                {
-            "UserData",
-            "Templates",
-            "Saves"
-        };
-        Dictionary<string, IInstantiatable> requiredFiles = new()
-        {
-            {"UserData/userdata", new UserData()},
-        };
-
-        foreach (KeyValuePair<string, Serializable2DArray<Tile>> keyValuePair in MapTemplates.mapTemplates)
-        {
-            requiredFiles.Add("Templates/" + keyValuePair.Key, keyValuePair.Value);
-        }
-
-        // Generate folders and files
         foreach (string directory in requiredDirectories)
         {
             if (!Directory.Exists($"{Application.persistentDataPath}/data/{directory}/"))
@@ -81,12 +53,11 @@ public class FileHandler
                 Directory.CreateDirectory($"{Application.persistentDataPath}/data/{directory}/");
             }
         }
-        foreach (string file in requiredFiles.Keys)
+        foreach (var fileDataPair in requiredFiles)
         {
-            if (!File.Exists($"{Application.persistentDataPath}/data/{file}.json"))
+            if (!File.Exists($"{Application.persistentDataPath}/data/{fileDataPair.Key}.bin"))
             {
-                // File.Create($"{Application.persistentDataPath}/data/{file}.json");
-                File.WriteAllText($"{Application.persistentDataPath}/data/{file}.json", JsonUtility.ToJson(requiredFiles[file]));
+                SaveObject("", fileDataPair.Key, fileDataPair.Value);
             }
         }
     }

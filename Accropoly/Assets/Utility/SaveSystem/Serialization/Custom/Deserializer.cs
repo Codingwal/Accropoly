@@ -32,4 +32,9 @@ public partial class Deserializer
         data.direction = br.ReadInt32();
         return data;
     }
+    public UserData Deserialize(UserData data)
+    {
+        data.worldName = br.ReadString();
+        return data;
+    }
 }
