@@ -18,7 +18,7 @@ public partial struct TileSpawnerSystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<TileSpawnerConfig>();
-        state.RequireForUpdate<MapData>();
+        state.RequireForUpdate<WorldData>();
     }
 
     [BurstCompile]
@@ -26,10 +26,10 @@ public partial struct TileSpawnerSystem : ISystem
     {
         state.Enabled = false;
 
-
         EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
         TileSpawnerConfig config = SystemAPI.GetSingleton<TileSpawnerConfig>();
-        MapData mapData = SystemAPI.GetSingleton<MapData>();
+        WorldData worldData = SystemAPI.GetSingleton<WorldData>();
+        ref MapData mapData = ref worldData.map;
 
         NativeArray<Entity> tiles = entityManager.Instantiate(config.tilePrefab, mapData.TotalSize, Allocator.Temp);
 

@@ -25,14 +25,27 @@ public class SaveSystem : FileHandler
         };
         foreach (KeyValuePair<string, Serializable2DArray<Tile>> keyValuePair in MapTemplates.mapTemplates)
         {
-            requiredFiles.Add("Templates/" + keyValuePair.Key, keyValuePair.Value);
+            requiredFiles.Add("Templates/" + keyValuePair.Key, (MapData)keyValuePair.Value);
         }
         InitFileSystem(requiredDirectories, requiredFiles);
     }
     public WorldData GetWorldData(string worldName) { return LoadObject<WorldData>("Saves", worldName); }
-    public WorldData GetWorldData() { return GetWorldData(GetUserData().worldName); }
+    public WorldData GetWorldData() { return GetWorldData(GetWorldName()); }
     public UserData GetUserData() { return LoadObject<UserData>("UserData", "userdata"); }
+    public string GetWorldName() { return GetUserData().worldName; }
     public void SaveWorldData(string worldName, WorldData worldData) { SaveObject("Saves", worldName, worldData); }
-    public void SaveWorldData(WorldData worldData) { SaveWorldData(GetUserData().worldName, worldData); }
+    public void SaveWorldData(WorldData worldData) { SaveWorldData(GetWorldName(), worldData); }
     public void SaveUserData(UserData userData) { SaveObject("UserData", "userdata", userData); }
+    public void UpdateWorldName(string newWorldName)
+    {
+        var userData = GetUserData();
+        userData.worldName = newWorldName;
+        SaveUserData(userData);
+    }
+    public void CreateWorld(string worldName, MapData mapTemplate)
+    {
+        WorldData worldData = new(mapTemplate);
+        SaveWorldData(worldName, worldData);
+    }
+    public void CreateWorld(string worldName, string mapTemplateName) { CreateWorld(worldName, LoadObject<MapData>("Templates", mapTemplateName)); }
 }

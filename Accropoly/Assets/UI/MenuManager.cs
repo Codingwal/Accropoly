@@ -26,8 +26,6 @@ public class MenuManager : MonoBehaviour
     [Header("Loading screen")]
     [SerializeField] private Scrollbar progressBar;
 
-    private FileHandler fileHandler;
-
     private void Awake()
     {
         SceneManagement.LoadingScene += OnLoadingScene;
@@ -39,8 +37,7 @@ public class MenuManager : MonoBehaviour
         mainMenu.SetActive(true);
         loadingScreen.SetActive(false);
 
-        fileHandler = new();
-        // mapNameField.text = fileHandler.LoadObject<UserData>("UserData", "userdata");
+        mapNameField.text = SaveSystem.Instance.GetWorldName();
 
         ReloadUI();
     }
@@ -50,18 +47,17 @@ public class MenuManager : MonoBehaviour
         mainMenu.SetActive(false);
         loadingScreen.SetActive(true);
 
-        // FileHandler.ChangeWorldName(mapsDropdown.options[mapsDropdown.value].text);
+        SaveSystem.Instance.UpdateWorldName(mapsDropdown.options[mapsDropdown.value].text);
 
         _ = SceneManagement.LoadScene("Game");  // Discard used to prevent compiler warning
     }
     private void OnCreateMap()
     {
-        // FileHandler.ChangeWorldName(mapNameField.text);
+        SaveSystem.Instance.UpdateWorldName(mapNameField.text);
 
         string mapTemplateName = mapTemplateDropdown.options[mapTemplateDropdown.value].text;
 
-        // FileHandler.CreateWorld(mapTemplateName);
-
+        SaveSystem.Instance.CreateWorld(mapNameField.text, mapTemplateName);
 
         ReloadUI();
     }

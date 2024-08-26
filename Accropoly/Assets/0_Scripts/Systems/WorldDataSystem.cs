@@ -1,10 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Burst;
-using Unity.Collections;
 using Unity.Entities;
-using Unity.Mathematics;
-using UnityEditorInternal;
 using UnityEngine;
 
 [BurstCompile]
@@ -14,21 +9,26 @@ public partial struct WorldDataSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        Debug.Log("Loading WorldData");
-
         state.Enabled = false;
 
-        // string mapName = FileHandler.GetWorldName();
-        // string dataString = FileHandler.ReadFile("Saves", mapName);
-        // WorldData data = ParseWorldData(dataString);
+        Debug.Log("Loading WorldData");
 
-        Entity worldDataHolder = state.EntityManager.CreateSingleton<MapData>();
-        // SystemAPI.SetComponent(worldDataHolder, data.map);
+        WorldData data = SaveSystem.Instance.GetWorldData();
+
+        Entity worldDataHolder = state.EntityManager.CreateSingleton<WorldData>();
+        SystemAPI.SetComponent(worldDataHolder, data);
     }
     [BurstCompile]
     public void OnDestroy(ref SystemState state)
     {
-        MapData mapData = SystemAPI.GetSingleton<MapData>();
-        mapData.tiles.Dispose();
+        Entity worldDataHolder = SystemAPI.GetSingletonEntity<WorldData>();
+        WorldData worldData = SystemAPI.GetComponent<WorldData>(worldDataHolder);
+
+        SaveSystem.Instance.SaveWorldData(worldData);
+
+        worldData.population.Dispose();
+        worldData.map.tiles.Dispose();
+
+        state.EntityManager.DestroyEntity(worldDataHolder);
     }
 }

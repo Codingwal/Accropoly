@@ -35,7 +35,7 @@ public class ArrayWrapper<T>
 }
 
 [Serializable]
-public class Serializable2DArray<T> : IInstantiatable
+public class Serializable2DArray<T>
 {
     public ArrayWrapper<T>[] array2D;
     public Serializable2DArray(int x, int y)

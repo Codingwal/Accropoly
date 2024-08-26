@@ -1,12 +1,45 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
-using UnityEditor.Build.Pipeline;
 using UnityEngine;
 
-public struct MapData : IComponentData
+[System.Serializable]
+public struct WorldData : IComponentData
+{
+    // Time
+    public float playTime;
+
+    // Camera system
+    public float2 cameraSystemPos;
+    public quaternion cameraSystemRotation;
+    public float followOffsetY;
+
+    // Economy system
+    public float balance;
+
+    // Population system
+    public NativeArray<PersonData> population;
+
+    // Tilemap system
+    public MapData map;
+
+    public WorldData(MapData map)
+    {
+        playTime = 0;
+
+        cameraSystemPos = new();
+        cameraSystemRotation = Quaternion.identity;
+        followOffsetY = 100;
+
+        balance = 10000;
+
+        population = new();
+
+        this.map = map;
+    }
+}
+
+public struct MapData
 {
     public int2 size;
     public NativeArray<Tile> tiles;
