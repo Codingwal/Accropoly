@@ -1,9 +1,11 @@
+using System;
 using Unity.Entities;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class WorldDataMono : MonoBehaviour
 {
-    void Start()
+    private void Start()
     {
         Debug.Log("Loading WorldData");
 
@@ -13,9 +15,21 @@ public class WorldDataMono : MonoBehaviour
 
         Entity worldDataHolder = entityManager.CreateSingleton<WorldData>();
         entityManager.SetComponentData(worldDataHolder, data);
+
+        SceneManager.sceneUnloaded += OnSceneUnloaded;
     }
 
-    void OnDisable()
+    private void OnSceneUnloaded(Scene scene)
+    {
+        if (scene.name == "Game")
+            SaveWorldData();
+    }
+
+    private void OnApplicationQuit()
+    {
+        SaveWorldData();
+    }
+    private void SaveWorldData()
     {
         Debug.Log("Saving WorldData");
 
@@ -28,6 +42,7 @@ public class WorldDataMono : MonoBehaviour
 
         worldData.population.Dispose();
         worldData.map.tiles.Dispose();
+
 
         entityManager.DestroyEntity(worldDataHolder);
     }

@@ -1,13 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Dynamic;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine;
 
 [BurstCompile]
 [UpdateInGroup(typeof(InitializationSystemGroup))]
@@ -43,10 +37,5 @@ public partial struct TileSpawnerSystem : ISystem
             }
         }
         tiles.Dispose();
-    }
-    [BurstCompile]
-    public void OnDestroy()
-    {
-        Debug.Log("System");
     }
 }
