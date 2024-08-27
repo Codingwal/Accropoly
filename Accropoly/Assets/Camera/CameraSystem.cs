@@ -1,7 +1,5 @@
 using UnityEngine;
 using Cinemachine;
-using System;
-using UnityEngine.Animations;
 
 public class CameraSystem : MonoBehaviour
 {
@@ -32,8 +30,6 @@ public class CameraSystem : MonoBehaviour
     private float currentSpeedMultiplier;
 
     private Controls.InGameActions inGameActions;
-
-    /*
     private void Awake()
     {
         cinemachineTransposer = cinemachineVirtualCamera.GetCinemachineComponent<CinemachineTransposer>();
@@ -42,13 +38,13 @@ public class CameraSystem : MonoBehaviour
     }
     private void OnEnable()
     {
-        GameLoopManager.Instance.InitWorld += InitCameraSystem;
-        GameLoopManager.Instance.SaveWorld += SaveCameraSystem;
+        WorldDataManager.onWorldDataLoaded += InitCameraSystem;
+        WorldDataManager.onWorldDataSaving += SaveCameraSystem;
     }
     private void OnDisable()
     {
-        GameLoopManager.Instance.InitWorld -= InitCameraSystem;
-        GameLoopManager.Instance.SaveWorld -= SaveCameraSystem;
+        WorldDataManager.onWorldDataLoaded -= InitCameraSystem;
+        WorldDataManager.onWorldDataSaving -= SaveCameraSystem;
     }
     private void FixedUpdate()
     {
@@ -67,7 +63,7 @@ public class CameraSystem : MonoBehaviour
 
         followOffset.y = world.followOffsetY;
 
-        mapSize = world.map.GetLength(0) * 30;
+        mapSize = world.map.size.x * 30;
         mapSize = 500;
     }
     private void SaveCameraSystem(ref WorldData world)
@@ -159,5 +155,4 @@ public class CameraSystem : MonoBehaviour
         rotation.x = Mathf.Clamp(rotation.x, minAngle, maxAngle);
         transform.eulerAngles = rotation;
     }
-    */
 }
