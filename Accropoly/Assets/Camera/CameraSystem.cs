@@ -152,7 +152,11 @@ public class CameraSystem : MonoBehaviour
 
         Vector3 rotation = transform.eulerAngles;
         rotation += lookSpeed * Time.deltaTime * new Vector3(-lookInput.y, lookInput.x, 0);
+
+        if (rotation.x > 180f)
+            rotation.x -= 360f;
         rotation.x = Mathf.Clamp(rotation.x, minAngle, maxAngle);
+
         transform.eulerAngles = rotation;
     }
 }

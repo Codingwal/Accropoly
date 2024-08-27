@@ -1419,8 +1419,8 @@ MonoBehaviour:
   followOffsetMaxY: 400
   zoomLerpSpeed: 10
   lookSpeed: 100
-  minAngle: 285
-  maxAngle: 350
+  minAngle: 0
+  maxAngle: 70
   sprintSpeedMultiplier: 10
 --- !u!1 &440955692
 GameObject:
