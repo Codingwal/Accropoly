@@ -1,10 +1,11 @@
+using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 
 [System.Serializable]
-public struct WorldData : IComponentData
+public struct WorldData
 {
     // Time
     public float playTime;
@@ -18,7 +19,7 @@ public struct WorldData : IComponentData
     public float balance;
 
     // Population system
-    public NativeArray<PersonData> population;
+    public List<PersonData> population;
 
     // Tilemap system
     public MapData map;
@@ -42,7 +43,7 @@ public struct WorldData : IComponentData
 public struct MapData
 {
     public int2 size;
-    public NativeArray<Tile> tiles;
+    public Tile[] tiles;
     public readonly int TotalSize => size.x * size.y;
     public readonly int GetIndex(int x, int y)
     {
@@ -54,7 +55,7 @@ public struct MapData
         {
             size = new(array.GetLength(0), array.GetLength(1))
         };
-        data.tiles = new(data.TotalSize, Allocator.Persistent);
+        data.tiles = new Tile[data.TotalSize];
         for (int x = 0; x < data.size.x; x++)
         {
             for (int y = 0; y < data.size.y; y++)

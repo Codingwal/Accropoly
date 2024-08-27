@@ -1,3 +1,1 @@
-- Make sure all NativeArrays are disposed
-- Test Serialization system
-- Finish File system
+- Fix camera clipping bug
