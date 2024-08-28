@@ -55,7 +55,7 @@ public class CameraSystem : MonoBehaviour
         Look();
     }
 
-    private void InitCameraSystem(WorldData world)
+    private void InitCameraSystem(ref WorldData world)
     {
         Debug.Log("Initializing CameraSystem");
 

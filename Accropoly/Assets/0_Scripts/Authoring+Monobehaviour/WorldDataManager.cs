@@ -5,8 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class WorldDataManager : MonoBehaviour
 {
-    public static WorldData worldData;
-    public static Action<WorldData> onWorldDataLoaded;
+    public static ActionRef<WorldData> onWorldDataLoaded;
     public static ActionRef<WorldData> onWorldDataSaving;
     private void Start()
     {
@@ -35,14 +34,15 @@ public class WorldDataManager : MonoBehaviour
     {
         Debug.Log("Loading WorldData");
 
-        worldData = SaveSystem.Instance.GetWorldData();
+        WorldData worldData = SaveSystem.Instance.GetWorldData();
 
-        onWorldDataLoaded?.Invoke(worldData);
+        onWorldDataLoaded?.Invoke(ref worldData);
     }
     private void SaveWorldData()
     {
         Debug.Log("Saving WorldData");
 
+        WorldData worldData = new();
         onWorldDataSaving?.Invoke(ref worldData);
 
         SaveSystem.Instance.SaveWorldData(worldData);
