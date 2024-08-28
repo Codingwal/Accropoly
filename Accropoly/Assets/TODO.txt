@@ -1,0 +1,7 @@
+- Correctly limit camera pos
+
+
+
+
+FUTURE:
+- Add namespaces (?)

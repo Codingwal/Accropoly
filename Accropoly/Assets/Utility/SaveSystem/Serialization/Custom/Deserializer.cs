@@ -1,3 +1,6 @@
+using Unity.Entities;
+using Unity.Mathematics;
+
 public partial class Deserializer
 {
     public WorldData Deserialize(WorldData data)
@@ -14,7 +17,6 @@ public partial class Deserializer
 
     public MapData Deserialize(MapData data)
     {
-        data.size = Deserialize(data.size);
         data.tiles = Deserialize(data.tiles);
         return data;
     }
@@ -28,8 +30,20 @@ public partial class Deserializer
     }
     public Tile Deserialize(Tile data)
     {
-        data.tileType = (TileType)br.ReadInt32();
-        data.direction = br.ReadInt32();
+        int count = br.Read();
+        data.components = new(count);
+        for (int i = 0; i < count; i++)
+        {
+            ComponentType type = Deserialize(new ComponentType());
+            if (type == typeof(MapTileComponent))
+            {
+                data.components[type] = new MapTileComponent()
+                {
+                    tileType = (TileType)br.Read(),
+                    pos = Deserialize(new float2())
+                };
+            }
+        }
         return data;
     }
     public UserData Deserialize(UserData data)

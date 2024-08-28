@@ -12,7 +12,6 @@ public partial class Serializer
     }
     public void Serialize(MapData data)
     {
-        Serialize(data.size);
         Serialize(data.tiles);
     }
     public void Serialize(PersonData data)
@@ -24,8 +23,17 @@ public partial class Serializer
     }
     public void Serialize(Tile data)
     {
-        bw.Write((int)data.tileType);
-        bw.Write(data.direction);
+        bw.Write(data.components.Count);
+        foreach (var component in data.components)
+        {
+            Serialize(component.Key);
+            if (component.Key == typeof(MapTileComponent))
+            {
+                MapTileComponent componentData = (MapTileComponent)component.Value;
+                bw.Write((int)componentData.tileType);
+                Serialize(componentData.pos);
+            }
+        }
     }
     public void Serialize(UserData data)
     {

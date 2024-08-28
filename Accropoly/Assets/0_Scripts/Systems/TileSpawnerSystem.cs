@@ -1,6 +1,10 @@
+using System;
+using System.ComponentModel;
+using System.Linq;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Entities.UniversalDelegates;
 using Unity.Transforms;
 
 [BurstCompile]
@@ -24,15 +28,23 @@ public partial struct TileSpawnerSystem : ISystem
         WorldData worldData = WorldDataManager.worldData;
         ref MapData mapData = ref worldData.map;
 
-        NativeArray<Entity> tiles = entityManager.Instantiate(config.tilePrefab, mapData.TotalSize, Allocator.Temp);
+        NativeArray<Entity> tiles = entityManager.Instantiate(config.tilePrefab, (int)mapData.tiles.LongLength, Allocator.Temp);
 
-        for (int x = 0; x < mapData.size.x; x++)
+        for (int x = 0; x < mapData.tiles.GetLength(0); x++)
         {
-            for (int y = 0; y < mapData.size.y; y++)
+            for (int y = 0; y < mapData.tiles.GetLength(0); y++)
             {
-                Entity entity = tiles[mapData.GetIndex(x, y)];
+                Entity entity = tiles[x * mapData.tiles.GetLength(0) + y];
 
                 entityManager.SetComponentData(entity, LocalTransform.FromPosition(2 * x, 1, 2 * y));
+
+                entityManager.AddComponent(entity, new ComponentTypeSet(mapData.tiles[x, y].components.Keys.ToArray()));
+                foreach (var component in mapData.tiles[x, y].components)
+                {
+
+                    SystemAPI.SetComponent(entity, (MapTileComponent)component.Value);
+                    entityManager.SetComponentData()
+                }
             }
         }
         tiles.Dispose();
