@@ -7,7 +7,6 @@ using Unity.Transforms;
 [UpdateInGroup(typeof(InitializationSystemGroup))]
 public partial struct TileSpawnerSystem : ISystem
 {
-
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
