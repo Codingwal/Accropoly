@@ -1,10 +1,10 @@
-using System;
 using Unity.Entities;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class WorldDataManager : MonoBehaviour
 {
+    public static WorldData worldData;
     public static ActionRef<WorldData> onWorldDataLoaded;
     public static ActionRef<WorldData> onWorldDataSaving;
     private void Start()
@@ -34,7 +34,7 @@ public class WorldDataManager : MonoBehaviour
     {
         Debug.Log("Loading WorldData");
 
-        WorldData worldData = SaveSystem.Instance.GetWorldData();
+        worldData = SaveSystem.Instance.GetWorldData();
 
         onWorldDataLoaded?.Invoke(ref worldData);
     }
@@ -42,7 +42,6 @@ public class WorldDataManager : MonoBehaviour
     {
         Debug.Log("Saving WorldData");
 
-        WorldData worldData = new();
         onWorldDataSaving?.Invoke(ref worldData);
 
         SaveSystem.Instance.SaveWorldData(worldData);
