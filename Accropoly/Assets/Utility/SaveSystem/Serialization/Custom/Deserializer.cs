@@ -34,10 +34,10 @@ public partial class Deserializer
         data.components = new(count);
         for (int i = 0; i < count; i++)
         {
-            ComponentType type = Deserialize(new ComponentType());
-            if (type == typeof(MapTileComponent))
+            Components type = (Components)br.Read();
+            if (type == Components.MapTileComponent)
             {
-                data.components[type] = new MapTileComponent()
+                data.components[i] = new MapTileComponent()
                 {
                     tileType = (TileType)br.Read(),
                     pos = Deserialize(new float2())

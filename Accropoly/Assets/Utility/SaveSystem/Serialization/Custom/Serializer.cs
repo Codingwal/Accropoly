@@ -1,3 +1,5 @@
+using System;
+
 public partial class Serializer
 {
     public void Serialize(WorldData data)
@@ -26,10 +28,12 @@ public partial class Serializer
         bw.Write(data.components.Count);
         foreach (var component in data.components)
         {
-            Serialize(component.Key);
-            if (component.Key == typeof(MapTileComponent))
+            Type type = component.GetType();
+            if (type == typeof(MapTileComponent))
             {
-                MapTileComponent componentData = (MapTileComponent)component.Value;
+                bw.Write((int)Components.MapTileComponent);
+
+                MapTileComponent componentData = (MapTileComponent)component;
                 bw.Write((int)componentData.tileType);
                 Serialize(componentData.pos);
             }

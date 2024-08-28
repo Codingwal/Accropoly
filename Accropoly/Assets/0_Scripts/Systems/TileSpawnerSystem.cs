@@ -1,10 +1,8 @@
 using System;
-using System.ComponentModel;
-using System.Linq;
+using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Entities.UniversalDelegates;
 using Unity.Transforms;
 
 [BurstCompile]
@@ -38,12 +36,19 @@ public partial struct TileSpawnerSystem : ISystem
 
                 entityManager.SetComponentData(entity, LocalTransform.FromPosition(2 * x, 1, 2 * y));
 
-                entityManager.AddComponent(entity, new ComponentTypeSet(mapData.tiles[x, y].components.Keys.ToArray()));
-                foreach (var component in mapData.tiles[x, y].components)
-                {
+                List<IComponentData> components = mapData.tiles[x, y].components;
 
-                    SystemAPI.SetComponent(entity, (MapTileComponent)component.Value);
-                    entityManager.SetComponentData()
+                // Add all components specified in the components list at once
+                ComponentType[] componentTypes = new ComponentType[components.Count];
+                for (int i = 0; i < componentTypes.Length; i++) componentTypes[i] = components[i].GetType();
+                entityManager.AddComponent(entity, new ComponentTypeSet(componentTypes));
+
+                // Set the component data 
+                foreach (var component in components)
+                {
+                    Type type = component.GetType();
+
+                    if (type == typeof(MapTileComponent)) SystemAPI.SetComponent(entity, (MapTileComponent)component);
                 }
             }
         }
