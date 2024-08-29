@@ -1054,15 +1054,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   camera: {fileID: 440841232}
-  moveSpeed: 30
+  moveSpeed: 8
   rotationSpeed: 100
   zoomSpeed: 15
   minZoom: -100
-  maxZoom: -10
+  maxZoom: -5
   lookSpeed: 100
   minAngle: 10
   maxAngle: 70
-  sprintSpeedMultiplier: 10
+  sprintSpeedMultiplier: 5
 --- !u!1 &249975455
 GameObject:
   m_ObjectHideFlags: 0
