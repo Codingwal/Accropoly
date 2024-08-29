@@ -3,8 +3,7 @@ using Cinemachine;
 
 public class CameraSystem : MonoBehaviour
 {
-    [SerializeField] private Camera camera;
-    private Vector3 followOffset;
+    [SerializeField] private new Camera camera;
 
     [Header("Movement")]
     [SerializeField] private float moveSpeed;
@@ -57,16 +56,15 @@ public class CameraSystem : MonoBehaviour
 
         transform.SetPositionAndRotation(new(world.cameraSystemPos.x, 0, world.cameraSystemPos.y), world.cameraSystemRotation);
 
-        followOffset.y = world.followOffsetY;
+        camera.transform.localPosition = new(0, 0, world.cameraDistance);
 
-        mapSize = world.map.tiles.GetLength(0) * 30;
-        mapSize = 500;
+        mapSize = world.map.tiles.GetLength(0);
     }
     private void SaveCameraSystem(ref WorldData world)
     {
         world.cameraSystemPos = new(transform.position.x, transform.position.z);
         world.cameraSystemRotation = transform.rotation;
-        world.followOffsetY = followOffset.y;
+        world.cameraDistance = camera.transform.localPosition.z;
     }
 
     private void CheckIfSprinting()
@@ -110,28 +108,6 @@ public class CameraSystem : MonoBehaviour
             zoomChange = -currentSpeedMultiplier * zoomSpeed;
 
         camera.transform.localPosition = new Vector3(0, 0, Mathf.Clamp(camera.transform.localPosition.z + zoomChange, minZoom, maxZoom));
-        // Vector3 zoomDir = followOffset.normalized;
-
-
-        // // Change the followOffset independent of scroll speed, just the direction is important
-        // if (scrollInput > 0)
-        // {
-        //     followOffset -= currentSpeedMultiplier * zoomSpeed * zoomDir;
-        // }
-        // else if (scrollInput < 0)
-        // {
-        //     followOffset += currentSpeedMultiplier * zoomSpeed * zoomDir;
-        // }
-
-        // // Clamp the followOffset
-        // if (followOffset.y > followOffsetMaxY)
-        // {
-        //     followOffset = followOffsetMaxY * zoomDir;
-        // }
-        // else if (followOffset.y < followOffsetMinY)
-        // {
-        //     followOffset = followOffsetMinY * zoomDir;
-        // }
     }
     private void Look()
     {

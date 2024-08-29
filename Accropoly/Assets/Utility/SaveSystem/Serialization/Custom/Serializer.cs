@@ -7,7 +7,7 @@ public partial class Serializer
         bw.Write(data.playTime);
         Serialize(data.cameraSystemPos);
         Serialize(data.cameraSystemRotation);
-        bw.Write(data.followOffsetY);
+        bw.Write(data.cameraDistance);
         bw.Write(data.balance);
         Serialize(data.population);
         Serialize(data.map);

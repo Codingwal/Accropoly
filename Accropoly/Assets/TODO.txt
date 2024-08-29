@@ -5,3 +5,4 @@
 
 FUTURE:
 - Add namespaces (?)
+- Change energy symbol color depending on renewability of the energy production

@@ -10,7 +10,7 @@ public partial class Deserializer
         data.playTime = br.ReadSingle();
         data.cameraSystemPos = Deserialize(data.cameraSystemPos);
         data.cameraSystemRotation = Deserialize(data.cameraSystemRotation);
-        data.followOffsetY = br.ReadSingle();
+        data.cameraDistance = br.ReadSingle();
         data.balance = br.ReadSingle();
         data.population = Deserialize(data.population);
         data.map = Deserialize(data.map);

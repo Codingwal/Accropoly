@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Unity.Mathematics;
-using UnityEngine;
 
 [System.Serializable]
 public struct WorldData
@@ -11,7 +10,7 @@ public struct WorldData
     // Camera system
     public float2 cameraSystemPos;
     public quaternion cameraSystemRotation;
-    public float followOffsetY;
+    public float cameraDistance;
 
     // Economy system
     public float balance;
@@ -27,8 +26,8 @@ public struct WorldData
         playTime = 0;
 
         cameraSystemPos = new();
-        cameraSystemRotation = Quaternion.identity;
-        followOffsetY = 100;
+        cameraSystemRotation = quaternion.identity;
+        cameraDistance = 30;
 
         balance = 10000;
 
