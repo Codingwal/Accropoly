@@ -16,7 +16,6 @@ public partial struct TileSpawnerSystem : ISystem
         state.RequireForUpdate<RunGameTag>();
     }
 
-    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         state.Enabled = false;
