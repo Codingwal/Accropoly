@@ -1,5 +1,7 @@
+using System;
 using Unity.Entities;
 using Unity.Mathematics;
+using UnityEngine;
 
 public partial class Deserializer
 {
@@ -30,18 +32,22 @@ public partial class Deserializer
     }
     public Tile Deserialize(Tile data)
     {
-        int count = br.Read();
+        int count = br.ReadInt32();
         data.components = new(count);
         for (int i = 0; i < count; i++)
         {
-            Components type = (Components)br.Read();
+            Components type = (Components)br.ReadInt32();
             if (type == Components.MapTileComponent)
             {
-                data.components[i] = new MapTileComponent()
+                data.components.Add(new MapTileComponent()
                 {
-                    tileType = (TileType)br.Read(),
+                    tileType = (TileType)br.ReadInt32(),
                     pos = Deserialize(new float2())
-                };
+                });
+            }
+            else
+            {
+                Debug.LogError("Invalid Components type");
             }
         }
         return data;
