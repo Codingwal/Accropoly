@@ -14,8 +14,8 @@ public class CameraSystem : MonoBehaviour
 
     [Header("Zooming")]
     [SerializeField] private float zoomSpeed;
-    [SerializeField] private float minZoom;
-    [SerializeField] private float maxZoom;
+    [SerializeField] private float minDistance;
+    [SerializeField] private float maxDistance;
 
     [Header("Looking")]
     [SerializeField] private float lookSpeed;
@@ -107,7 +107,7 @@ public class CameraSystem : MonoBehaviour
         else if (scrollInput < 0)
             zoomChange = -currentSpeedMultiplier * zoomSpeed;
 
-        camera.transform.localPosition = new Vector3(0, 0, Mathf.Clamp(camera.transform.localPosition.z + zoomChange, minZoom, maxZoom));
+        camera.transform.localPosition = new Vector3(0, 0, Mathf.Clamp(camera.transform.localPosition.z + zoomChange, -maxDistance, -minDistance));
     }
     private void Look()
     {
