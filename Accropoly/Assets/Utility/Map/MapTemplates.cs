@@ -2,60 +2,39 @@ using System.Collections.Generic;
 
 public static class MapTemplates
 {
-    private static readonly Tile p = new(TileType.Plains, 0);
-    private static readonly Tile f = new(TileType.Forest, 0);
-    public static Serializable2DArray<Tile> defaultMap = new(5, 5)
+    public static Tile[,] PlainsMap
     {
-        array2D = new ArrayWrapper<Tile>[]
+        get
+        {
+            Tile[,] tiles = new Tile[10, 10];
+            for (int x = 0; x < tiles.GetLength(0); x++)
             {
-                new ArrayWrapper<Tile>(10){ array = new Tile[] { p, p, p, f, p, p, p, f, p, p} },
-                new ArrayWrapper<Tile>(10){ array = new Tile[] { p, f, f, p, p, f, p, f, f, p} },
-                new ArrayWrapper<Tile>(10){ array = new Tile[] { p, p, f, p, f, f, f, f, p, p} },
-                new ArrayWrapper<Tile>(10){ array = new Tile[] { p, p, f, p, p, p, f, f, p, p} },
-                new ArrayWrapper<Tile>(10){ array = new Tile[] { p, p, p, p, p, p, f, f, f, f} },
-                new ArrayWrapper<Tile>(10){ array = new Tile[] { p, p, p, p, p, f, p, p, p, p} },
-                new ArrayWrapper<Tile>(10){ array = new Tile[] { p, f, p, p, p, f, p, p, f, p} },
-                new ArrayWrapper<Tile>(10){ array = new Tile[] { p, p, f, p, f, f, p, p, p, p} },
-                new ArrayWrapper<Tile>(10){ array = new Tile[] { p, p, p, f, p, p, f, p, p, p} },
-                new ArrayWrapper<Tile>(10){ array = new Tile[] { p, p, p, p, f, p, p, p, p, p} },
+                for (int y = 0; y < tiles.GetLength(1); y++)
+                {
+                    tiles[x, y] = new(new MapTileComponent(x, y, TileType.Plains));
+                }
             }
-    };
-    public static Serializable2DArray<Tile> plainsMap = new(5, 5)
-    {
-        array2D = new ArrayWrapper<Tile>[]
-        {
-                new ArrayWrapper<Tile>(10){ array = new Tile[] { p, p, p, p, p, p, p, p, p, p} },
-                new ArrayWrapper<Tile>(10){ array = new Tile[] { p, p, p, p, p, p, p, p, p, p} },
-                new ArrayWrapper<Tile>(10){ array = new Tile[] { p, p, p, p, p, p, p, p, p, p} },
-                new ArrayWrapper<Tile>(10){ array = new Tile[] { p, p, p, p, p, p, p, p, p, p} },
-                new ArrayWrapper<Tile>(10){ array = new Tile[] { p, p, p, p, p, p, p, p, p, p} },
-                new ArrayWrapper<Tile>(10){ array = new Tile[] { p, p, p, p, p, p, p, p, p, p} },
-                new ArrayWrapper<Tile>(10){ array = new Tile[] { p, p, p, p, p, p, p, p, p, p} },
-                new ArrayWrapper<Tile>(10){ array = new Tile[] { p, p, p, p, p, p, p, p, p, p} },
-                new ArrayWrapper<Tile>(10){ array = new Tile[] { p, p, p, p, p, p, p, p, p, p} },
-                new ArrayWrapper<Tile>(10){ array = new Tile[] { p, p, p, p, p, p, p, p, p, p} }
+            return tiles;
         }
-    };
-    public static Serializable2DArray<Tile> forestMap = new(5, 5)
+    }
+    public static Tile[,] ForestMap
     {
-        array2D = new ArrayWrapper<Tile>[]
+        get
         {
-                new ArrayWrapper<Tile>(10){ array = new Tile[] { f, f, f, f, f, f, f, f, f, f} },
-                new ArrayWrapper<Tile>(10){ array = new Tile[] { f, f, f, f, f, f, f, f, f, f} },
-                new ArrayWrapper<Tile>(10){ array = new Tile[] { f, f, f, f, f, f, f, f, f, f} },
-                new ArrayWrapper<Tile>(10){ array = new Tile[] { f, f, f, f, f, f, f, f, f, f} },
-                new ArrayWrapper<Tile>(10){ array = new Tile[] { f, f, f, f, f, f, f, f, f, f} },
-                new ArrayWrapper<Tile>(10){ array = new Tile[] { f, f, f, f, f, f, f, f, f, f} },
-                new ArrayWrapper<Tile>(10){ array = new Tile[] { f, f, f, f, f, f, f, f, f, f} },
-                new ArrayWrapper<Tile>(10){ array = new Tile[] { f, f, f, f, f, f, f, f, f, f} },
-                new ArrayWrapper<Tile>(10){ array = new Tile[] { f, f, f, f, f, f, f, f, f, f} },
-                new ArrayWrapper<Tile>(10){ array = new Tile[] { f, f, f, f, f, f, f, f, f, f} },
+            Tile[,] tiles = new Tile[10, 10];
+            for (int x = 0; x < tiles.GetLength(0); x++)
+            {
+                for (int y = 0; y < tiles.GetLength(1); y++)
+                {
+                    tiles[x, y] = new(new MapTileComponent(x, y, TileType.Forest));
+                }
+            }
+            return tiles;
         }
-    };
-    public static Dictionary<string, Serializable2DArray<Tile>> mapTemplates = new()
+    }
+    public static Dictionary<string, MapData> mapTemplates = new()
     {
-        {"DefaultMap", defaultMap},
-        {"PlainsMap", plainsMap},
-        {"ForestMap", forestMap}
+        {"PlainsMap", new MapData(){tiles = PlainsMap}},
+        {"ForestMap", new MapData(){tiles = ForestMap}}
     };
 }

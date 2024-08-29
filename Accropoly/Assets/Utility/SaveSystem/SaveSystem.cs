@@ -26,7 +26,7 @@ public class SaveSystem : FileHandler
         {
             {"UserData/userdata", UserData.Default},
         };
-        foreach (KeyValuePair<string, Serializable2DArray<Tile>> keyValuePair in MapTemplates.mapTemplates)
+        foreach (KeyValuePair<string, MapData> keyValuePair in MapTemplates.mapTemplates)
         {
             requiredFiles.Add("Templates/" + keyValuePair.Key, (MapData)keyValuePair.Value);
         }

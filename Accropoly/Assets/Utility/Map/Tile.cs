@@ -13,5 +13,5 @@ public struct Tile
 }
 public enum Components
 {
-    MapTileComponent,
+    MapTileComponent = 0,
 }
