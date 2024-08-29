@@ -3,7 +3,7 @@ using Cinemachine;
 
 public class CameraSystem : MonoBehaviour
 {
-    [SerializeField] private CinemachineVirtualCamera cinemachineVirtualCamera;
+    [SerializeField] private Camera camera;
     private Vector3 followOffset;
 
     [Header("Movement")]
@@ -15,10 +15,8 @@ public class CameraSystem : MonoBehaviour
 
     [Header("Zooming")]
     [SerializeField] private float zoomSpeed;
-    [SerializeField] private float followOffsetMinY;
-    [SerializeField] private float followOffsetMaxY;
-    [SerializeField] private float zoomLerpSpeed;
-    CinemachineTransposer cinemachineTransposer;
+    [SerializeField] private float minZoom;
+    [SerializeField] private float maxZoom;
 
     [Header("Looking")]
     [SerializeField] private float lookSpeed;
@@ -32,8 +30,6 @@ public class CameraSystem : MonoBehaviour
     private Controls.InGameActions inGameActions;
     private void Awake()
     {
-        cinemachineTransposer = cinemachineVirtualCamera.GetCinemachineComponent<CinemachineTransposer>();
-        followOffset = cinemachineTransposer.m_FollowOffset;
         inGameActions = InputManager.inGameActions;
     }
     private void OnEnable()
@@ -78,13 +74,9 @@ public class CameraSystem : MonoBehaviour
         bool isSprinting = inGameActions.CameraSprint.IsPressed();
 
         if (isSprinting)
-        {
             currentSpeedMultiplier = sprintSpeedMultiplier;
-        }
         else
-        {
             currentSpeedMultiplier = 1;
-        }
     }
 
     private void MoveCamera()
@@ -109,31 +101,37 @@ public class CameraSystem : MonoBehaviour
     }
     private void ZoomCamera()
     {
-        Vector3 zoomDir = followOffset.normalized;
-
         float scrollInput = inGameActions.CameraScroll.ReadValue<float>();
 
-        // Change the followOffset independent of scroll speed, just the direction is important
+        float zoomChange = 0f;
         if (scrollInput > 0)
-        {
-            followOffset -= currentSpeedMultiplier * zoomSpeed * zoomDir;
-        }
+            zoomChange = currentSpeedMultiplier * zoomSpeed;
         else if (scrollInput < 0)
-        {
-            followOffset += currentSpeedMultiplier * zoomSpeed * zoomDir;
-        }
+            zoomChange = -currentSpeedMultiplier * zoomSpeed;
 
-        // Clamp the followOffset
-        if (followOffset.magnitude > followOffsetMaxY)
-        {
-            followOffset = followOffsetMaxY * zoomDir;
-        }
-        else if (followOffset.magnitude < followOffsetMinY)
-        {
-            followOffset = followOffsetMinY * zoomDir;
-        }
+        camera.transform.localPosition = new Vector3(0, 0, Mathf.Clamp(camera.transform.localPosition.z + zoomChange, minZoom, maxZoom));
+        // Vector3 zoomDir = followOffset.normalized;
 
-        cinemachineTransposer.m_FollowOffset = Vector3.Lerp(cinemachineTransposer.m_FollowOffset, followOffset, Time.deltaTime * zoomLerpSpeed);
+
+        // // Change the followOffset independent of scroll speed, just the direction is important
+        // if (scrollInput > 0)
+        // {
+        //     followOffset -= currentSpeedMultiplier * zoomSpeed * zoomDir;
+        // }
+        // else if (scrollInput < 0)
+        // {
+        //     followOffset += currentSpeedMultiplier * zoomSpeed * zoomDir;
+        // }
+
+        // // Clamp the followOffset
+        // if (followOffset.y > followOffsetMaxY)
+        // {
+        //     followOffset = followOffsetMaxY * zoomDir;
+        // }
+        // else if (followOffset.y < followOffsetMinY)
+        // {
+        //     followOffset = followOffsetMinY * zoomDir;
+        // }
     }
     private void Look()
     {
