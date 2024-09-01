@@ -33,7 +33,7 @@ public partial struct TileSpawnerSystem : ISystem
             {
                 Entity entity = commandBuffer.Instantiate(prefab);
 
-                commandBuffer.SetComponent(entity, LocalTransform.FromPosition(new(x, 1, y)));
+                commandBuffer.SetComponent(entity, LocalTransform.FromPosition(new(x - tiles.GetLength(0) / 2, 1, y - tiles.GetLength(1) / 2)));
 
                 foreach (var component in tiles[x, y].components)
                 {
