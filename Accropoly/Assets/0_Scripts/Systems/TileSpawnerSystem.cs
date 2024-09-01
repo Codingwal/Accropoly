@@ -1,9 +1,9 @@
 using System;
-using System.Collections.Generic;
 using Unity.Burst;
-using Unity.Collections;
 using Unity.Entities;
+using Unity.Jobs;
 using Unity.Transforms;
+using UnityEngine;
 
 [BurstCompile]
 [UpdateInGroup(typeof(InitializationSystemGroup))]
@@ -12,45 +12,53 @@ public partial struct TileSpawnerSystem : ISystem
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<TileSpawnerConfig>();
+        state.RequireForUpdate<TilePrefab>();
         state.RequireForUpdate<RunGameTag>();
     }
 
+    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        state.Enabled = false;
-
-        EntityManager entityManager = state.EntityManager;
-        TileSpawnerConfig config = SystemAPI.GetSingleton<TileSpawnerConfig>();
+        TilePrefab prefab = SystemAPI.GetSingleton<TilePrefab>();
         WorldData worldData = WorldDataManager.worldData;
-        ref MapData mapData = ref worldData.map;
+        var commandBufferSystem = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
 
-        NativeArray<Entity> tiles = entityManager.Instantiate(config.tilePrefab, (int)mapData.tiles.LongLength, Allocator.Temp);
-
-        for (int x = 0; x < mapData.tiles.GetLength(0); x++)
+        InstantiateJob instantiateJob = new()
         {
-            for (int y = 0; y < mapData.tiles.GetLength(0); y++)
+            commandBuffer = commandBufferSystem.CreateCommandBuffer(state.WorldUnmanaged),
+            tiles = worldData.map.tiles,
+            prefab = prefab,
+        };
+
+        state.Dependency = instantiateJob.Schedule(state.Dependency);
+    }
+    [BurstCompile]
+    private partial struct InstantiateJob : IJobEntity
+    {
+        public EntityCommandBuffer commandBuffer;
+        public Tile[,] tiles;
+        public TilePrefab prefab;
+        public void Execute()
+        {
+            for (int x = 0; x < tiles.GetLength(0); x++)
             {
-                Entity entity = tiles[x * mapData.tiles.GetLength(0) + y];
-
-                entityManager.SetComponentData(entity, LocalTransform.FromPosition(2 * x, 1, 2 * y));
-
-                List<IComponentData> components = mapData.tiles[x, y].components;
-
-                // Add all components specified in the components list at once
-                ComponentType[] componentTypes = new ComponentType[components.Count];
-                for (int i = 0; i < componentTypes.Length; i++) componentTypes[i] = components[i].GetType();
-                entityManager.AddComponent(entity, new ComponentTypeSet(componentTypes));
-
-                // Set the component data 
-                foreach (var component in components)
+                for (int y = 0; y < tiles.GetLength(1); y++)
                 {
-                    Type type = component.GetType();
+                    Entity entity = commandBuffer.Instantiate(prefab);
 
-                    if (type == typeof(MapTileComponent)) SystemAPI.SetComponent(entity, (MapTileComponent)component);
+                    commandBuffer.SetComponent(entity, LocalTransform.FromPosition(new(x, 1, y)));
+
+                    foreach (var component in tiles[x, y].components)
+                    {
+                        Type type = component.GetType();
+
+                        commandBuffer.AddComponent(entity, type);
+
+                        if (type == typeof(MapTileComponent)) commandBuffer.SetComponent(entity, (MapTileComponent)component);
+                        else Debug.LogError($"Unexpected type {type.Name}");
+                    }
                 }
             }
         }
-        tiles.Dispose();
     }
 }
