@@ -2,6 +2,7 @@ using System;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Jobs;
+using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
 
@@ -41,7 +42,12 @@ public partial struct TileSpawnerSystem : ISystem
 
                     commandBuffer.AddComponent(entity, type);
 
-                    if (type == typeof(MapTileComponent)) commandBuffer.SetComponent(entity, (MapTileComponent)component);
+                    if (type == typeof(MapTileComponent))
+                    {
+                        commandBuffer.SetComponent(entity, (MapTileComponent)component);
+                        MaterialMeshPair pair = MaterialsAndMeshesHolder.GetMaterialAndMesh(((MapTileComponent)component).tileType);
+                        commandBuffer.SetSharedComponentManaged(entity, new RenderMeshArray(new Material[] { pair.material }, new Mesh[] { pair.mesh }));
+                    }
                     else Debug.LogError($"Unexpected type {type.Name}");
                 }
             }

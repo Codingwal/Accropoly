@@ -1293,6 +1293,59 @@ MonoBehaviour:
   populationText: {fileID: 1458971445}
   electricityText: {fileID: 1479175106}
   averageHappinessText: {fileID: 249975457}
+--- !u!1 &309032821
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 309032823}
+  - component: {fileID: 309032822}
+  m_Layer: 0
+  m_Name: MaterialsAndMeshes
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &309032822
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 309032821}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af4e6fc8024961748b0accd222165c9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  materialsAndMeshes:
+  - key: 0
+    value:
+      material: {fileID: 2100000, guid: 852c34878e0de1f408f2a4566d292cae, type: 2}
+      mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+  - key: 1
+    value:
+      material: {fileID: 2100000, guid: 852c34878e0de1f408f2a4566d292cae, type: 2}
+      mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &309032823
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 309032821}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &440841229
 GameObject:
   m_ObjectHideFlags: 0
@@ -6351,3 +6404,4 @@ SceneRoots:
   - {fileID: 1655882751}
   - {fileID: 1646735746}
   - {fileID: 912740716}
+  - {fileID: 309032823}

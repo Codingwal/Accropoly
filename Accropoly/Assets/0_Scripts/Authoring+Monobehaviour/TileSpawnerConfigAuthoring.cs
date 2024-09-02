@@ -4,9 +4,7 @@ using UnityEngine;
 
 public class TileSpawnerConfigAuthoring : MonoBehaviour
 {
-    public static TileSpawnerConfigAuthoring Instance { get; private set; }
     [SerializeField] private GameObject tilePrefab;
-    [SerializeField] private List<SerializableKeyValuePair<TileType, Mesh>> meshes;
 
     public class Baker : Baker<TileSpawnerConfigAuthoring>
     {
@@ -16,19 +14,6 @@ public class TileSpawnerConfigAuthoring : MonoBehaviour
 
             AddComponent<TilePrefab>(entity, GetEntity(authoring.tilePrefab, TransformUsageFlags.Dynamic));
         }
-    }
-    private void Awake()
-    {
-        if (Instance != null) Debug.LogError("Found multiple instances of TileSpawnerConfigAuthoring");
-        Instance = this;
-    }
-    public static Mesh GetMesh(TileType tileType)
-    {
-        foreach (var pair in Instance.meshes)
-            if (pair.key == tileType)
-                return pair.value;
-        Debug.LogError($"Mesh for tileType {tileType} is missing");
-        return null;
     }
 }
 public struct TilePrefab : IComponentData
@@ -42,4 +27,10 @@ public struct TilePrefab : IComponentData
     {
         return config.tilePrefab;
     }
+}
+[System.Serializable]
+public struct MaterialMeshPair
+{
+    public Material material;
+    public Mesh mesh;
 }
