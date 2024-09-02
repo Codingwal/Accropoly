@@ -1,7 +1,6 @@
 using System;
 using Unity.Burst;
 using Unity.Entities;
-using Unity.Jobs;
 using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
@@ -20,13 +19,12 @@ public partial struct TileSpawnerSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        Debug.Log("Add");
         Entity prefabHolder = SystemAPI.GetSingletonEntity<TilePrefab>();
         TilePrefab prefab = SystemAPI.GetComponent<TilePrefab>(prefabHolder);
         state.EntityManager.RemoveComponent<TilePrefab>(prefabHolder);
 
         WorldData worldData = WorldDataManager.worldData;
-        EntityCommandBuffer commandBuffer = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
+        EntityCommandBuffer commandBuffer = SystemAPI.GetSingleton<EndInitializationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
 
         Tile[,] tiles = worldData.map.tiles;
         for (int x = 0; x < tiles.GetLength(0); x++)

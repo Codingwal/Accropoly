@@ -8,12 +8,12 @@ public partial struct DeleteNewTileTagSystem : ISystem
     private EntityQuery newTileTagQuery;
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<NewTileTag>();
+        state.RequireForUpdate<RunGameTag>();
+        // state.RequireForUpdate<NewTileTag>();
         newTileTagQuery = state.GetEntityQuery(typeof(NewTileTag));
     }
     public void OnUpdate(ref SystemState state)
     {
-        Debug.Log("Remove");
         state.EntityManager.RemoveComponent(newTileTagQuery, typeof(NewTileTag));
 
         // var ecbSystem = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
