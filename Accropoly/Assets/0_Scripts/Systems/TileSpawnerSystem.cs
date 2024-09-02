@@ -20,6 +20,7 @@ public partial struct TileSpawnerSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
+        Debug.Log("Add");
         Entity prefabHolder = SystemAPI.GetSingletonEntity<TilePrefab>();
         TilePrefab prefab = SystemAPI.GetComponent<TilePrefab>(prefabHolder);
         state.EntityManager.RemoveComponent<TilePrefab>(prefabHolder);
@@ -34,7 +35,9 @@ public partial struct TileSpawnerSystem : ISystem
             {
                 Entity entity = commandBuffer.Instantiate(prefab);
 
-                commandBuffer.SetComponent(entity, LocalTransform.FromPosition(new(x - tiles.GetLength(0) / 2, 1, y - tiles.GetLength(1) / 2)));
+                commandBuffer.SetComponent(entity, LocalTransform.FromPosition(new(x - tiles.GetLength(0) / 2, 0, y - tiles.GetLength(1) / 2)));
+
+                commandBuffer.AddComponent(entity, new NewTileTag());
 
                 foreach (var component in tiles[x, y].components)
                 {

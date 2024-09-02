@@ -7,9 +7,8 @@ public class MaterialsAndMeshesHolder : MonoBehaviour
     [SerializeField] private List<SerializableKeyValuePair<TileType, MaterialMeshPair>> materialsAndMeshes = new();
     private void Awake()
     {
-        if (instance != null) Debug.LogError("Found multiple instances of TileSpawnerConfigAuthoring");
+        if (instance != null) Debug.LogError("Found multiple instances of MaterialsAndMeshesHolder");
         instance = this;
-        Debug.Log("Awake");
     }
     public static MaterialMeshPair GetMaterialAndMesh(TileType tileType)
     {
