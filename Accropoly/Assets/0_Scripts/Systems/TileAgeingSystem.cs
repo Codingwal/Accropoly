@@ -1,15 +1,12 @@
 using Unity.Entities;
 using Unity.Transforms;
-using UnityEngine;
 
 public partial struct TileAgingSystem : ISystem
 {
     EntityQuery query;
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<RunGameTag>();
-        // state.RequireAnyForUpdate(state.GetEntityQuery(typeof(AgingTile)), state.GetEntityQuery(typeof(NewTileTag)));
-        // state.RequireForUpdate<NewTileTag>();
+        state.RequireAnyForUpdate(state.GetEntityQuery(typeof(AgingTile)), state.GetEntityQuery(typeof(NewTileTag)));
         query = state.GetEntityQuery(typeof(NewTileTag), ComponentType.Exclude<AgingTile>());
     }
     public void OnUpdate(ref SystemState state)
@@ -53,7 +50,6 @@ public partial struct TileAgingSystem : ISystem
         public TileType newTileType;
         public void Execute(ref AgingTile agingTile, ref LocalTransform localTransform, in Entity entity)
         {
-            // agingTile.age++;
             if (agingTile.age > maxAge)
             {
                 localTransform.Position.y++;
