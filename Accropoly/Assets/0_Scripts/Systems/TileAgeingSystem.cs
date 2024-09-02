@@ -7,25 +7,28 @@ public partial struct TileAgingSystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         state.RequireAnyForUpdate(state.GetEntityQuery(typeof(AgingTile)), state.GetEntityQuery(typeof(NewTileTag)));
+        state.RequireForUpdate<TileAgeingConfig>();
         query = state.GetEntityQuery(typeof(NewTileTag), ComponentType.Exclude<AgingTile>());
     }
     public void OnUpdate(ref SystemState state)
     {
+        TileAgeingConfig config = SystemAPI.GetSingleton<TileAgeingConfig>();
+
         var ecbSystem = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
 
         new TileAgingSetupJob()
         {
             ecb = ecbSystem.CreateCommandBuffer(state.WorldUnmanaged),
-            random = new(100),  // Seed is arbitrary
-            minAge = 0,
-            maxAge = 3000,
+            random = new(config.seed),
+            minAge = config.randomAgeRange.x,
+            maxAge = config.randomAgeRange.y,
         }.Schedule();
 
         new TileAgingJob()
         {
             ecb = ecbSystem.CreateCommandBuffer(state.WorldUnmanaged),
-            maxAge = 5000,
-            newTileType = TileType.Forest,
+            maxAge = config.maxAge,
+            newTileType = config.newTileType,
         }.Schedule();
     }
     private partial struct TileAgingSetupJob : IJobEntity

@@ -132,8 +132,9 @@ GameObject:
   m_Component:
   - component: {fileID: 903553016}
   - component: {fileID: 903553017}
+  - component: {fileID: 903553018}
   m_Layer: 0
-  m_Name: MapHandler
+  m_Name: Authoring
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -167,11 +168,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tilePrefab: {fileID: 8833141692400065624, guid: 0220ee1e56efbf44992718310e25e3f1, type: 3}
-  materialsAndMeshes:
-  - key: 0
-    value:
-      material: {fileID: 2100000, guid: 852c34878e0de1f408f2a4566d292cae, type: 2}
-      mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &903553018
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 903553014}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 220d5f93a282b394e9f143d998b0cf5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  seed: 100
+  randomAgeRange:
+    x: 0
+    y: 3000
+  maxAge: 4000
+  newTileType: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
