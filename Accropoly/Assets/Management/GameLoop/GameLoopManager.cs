@@ -39,7 +39,6 @@ public class GameLoopManager : SingletonPersistant<GameLoopManager>
         {
             return;
         }
-        InputManager.Init();
     }
 }
 public enum GameState

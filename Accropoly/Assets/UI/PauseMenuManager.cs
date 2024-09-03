@@ -21,12 +21,12 @@ public class PauseMenuManager : MonoBehaviour
     private void OnEnable()
     {
         gameLoopManager.GameStateChanged += OnGameStateChanged;
-        InputManager.Escape += OnEscape;
+        // InputManager.Escape += OnEscape;
     }
     private void OnDisable()
     {
         gameLoopManager.GameStateChanged -= OnGameStateChanged;
-        InputManager.Escape -= OnEscape;
+        // InputManager.Escape -= OnEscape;
     }
 
     private void OnEscape()
