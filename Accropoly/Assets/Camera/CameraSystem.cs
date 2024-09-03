@@ -17,6 +17,7 @@ public partial struct CameraSystem : ISystem
     // WorldDataManager.onWorldDataSaving -= SaveCameraSystem;
     // }
     private Entity transformHolder;
+    private JobHandle jobHandle;
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<RunGameTag>();
@@ -27,6 +28,12 @@ public partial struct CameraSystem : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
+        if (!jobHandle.IsCompleted)
+        {
+            Debug.LogError("!!!!!");
+            jobHandle.Complete();
+        }
+
         var config = SystemAPI.GetSingleton<CameraConfig>();
         var inputData = SystemAPI.GetSingleton<InputData>();
         var cameraTransform = SystemAPI.GetSingleton<CameraTransform>();
@@ -44,7 +51,7 @@ public partial struct CameraSystem : ISystem
             Cursor.visible = true;
         }
 
-        new Job
+        jobHandle = new Job
         {
             config = config,
             inputData = inputData,
@@ -72,8 +79,8 @@ public partial struct CameraSystem : ISystem
 
             // Move
 
-            float3 forwardDir = math.rotate(quaternion.EulerXYZ(transform.rot), new(0, 0, 1)); // Calculate forward & right direction using the rotation
-            float3 rightDir = math.rotate(quaternion.EulerXYZ(transform.rot), new(1, 0, 0));
+            float3 forwardDir = math.rotate(quaternion.EulerXYZ(new(0, transform.rot.y, 0)), new(0, 0, 1)); // Calculate forward & right direction using the rotation
+            float3 rightDir = math.rotate(quaternion.EulerXYZ(new(0, transform.rot.y, 0)), new(1, 0, 0));
 
             float3 moveDir = forwardDir * inputData.camera.move.y + rightDir * inputData.camera.move.x; // moveDir is dependent on rotation & input
             transform.pos += currentSpeedMultiplier * config.moveSpeed * deltaTime * moveDir;
@@ -91,12 +98,12 @@ public partial struct CameraSystem : ISystem
 
             float zoomChange = 0f;
             if (scrollInput > 0) // Zoom speed is independent from scrolling speed
-                zoomChange = currentSpeedMultiplier * config.zoomSpeed;
-            else if (scrollInput < 0)
                 zoomChange = -currentSpeedMultiplier * config.zoomSpeed;
+            else if (scrollInput < 0)
+                zoomChange = currentSpeedMultiplier * config.zoomSpeed;
 
             transform.camDist += zoomChange;
-            transform.camDist = math.clamp(transform.camDist, -config.maxDistance, -config.minDistance); // prevents zooming too close / too far
+            transform.camDist = math.clamp(transform.camDist, config.minDistance, config.maxDistance); // prevents zooming too close / too far
 
             // Rotate freely around x- & y-axis
 
