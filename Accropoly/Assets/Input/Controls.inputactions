@@ -320,15 +320,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Ctrl",
-                    "type": "Button",
-                    "id": "4ecf67ce-b982-4c85-9a83-86331ad701aa",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Clear",
                     "type": "Button",
                     "id": "1d785eba-4278-42a9-858e-4b9f40fdd40c",
@@ -476,17 +467,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "Hotkey6",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "0a50f7d0-b2a2-4d25-95c5-6344f7f9d52c",
-                    "path": "<Keyboard>/ctrl",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Ctrl",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

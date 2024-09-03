@@ -1,0 +1,43 @@
+using System.Collections;
+using System.Collections.Generic;
+using Unity.Entities;
+using Unity.Mathematics;
+using UnityEngine;
+
+public struct InputData : IComponentData
+{
+    public CameraInputData camera;
+    public Vector2 mouseMove;
+    public bool shift;
+}
+public struct CameraInputData
+{
+    public float2 move;
+    public bool sprint;
+    public float scroll;
+    public float rotate;
+    public bool look;
+}
+public struct UIInputData : IComponentData, IEnableableComponent
+{
+    public enum Action
+    {
+        Ctrl,
+        Clear,
+        Menu,
+        Escape,
+        Hotkey
+    }
+    public Action action;
+    public int hotkey;
+}
+public struct PlacementInputData : IComponentData, IEnableableComponent
+{
+    public enum Action
+    {
+        Rotate,
+        Place,
+        Cancel
+    }
+    public Action action;
+}
