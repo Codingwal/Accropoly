@@ -1,136 +1,123 @@
+using Unity.Burst;
+using Unity.Collections;
+using Unity.Entities;
+using Unity.Jobs;
+using Unity.Mathematics;
+using Unity.Transforms;
 using UnityEngine;
-using Cinemachine;
 
-public class CameraSystem : MonoBehaviour
+using UIAction = UIInputData.Action;
+
+public partial struct CameraSystem : ISystem
 {
-    [SerializeField] private new Camera camera;
-
-    [Header("Movement")]
-    [SerializeField] private float moveSpeed;
-    private float mapSize;
-
-    [Header("Rotation")]
-    [SerializeField] private float rotationSpeed;
-
-    [Header("Zooming")]
-    [SerializeField] private float zoomSpeed;
-    [SerializeField] private float minDistance;
-    [SerializeField] private float maxDistance;
-
-    [Header("Looking")]
-    [SerializeField] private float lookSpeed;
-    [SerializeField] private float minAngle;
-    [SerializeField] private float maxAngle;
-
-    [Header("Sprinting")]
-    [SerializeField] private float sprintSpeedMultiplier;
-    private float currentSpeedMultiplier;
-
-    private Controls.InGameActions inGameActions;
-    private void Awake()
+    // private void OnEnable()
+    // {
+    // WorldDataManager.onWorldDataLoaded += InitCameraSystem;
+    // WorldDataManager.onWorldDataSaving += SaveCameraSystem;
+    // }
+    // private void OnDisable()
+    // {
+    // WorldDataManager.onWorldDataLoaded -= InitCameraSystem;
+    // WorldDataManager.onWorldDataSaving -= SaveCameraSystem;
+    // }
+    public void OnCreate(ref SystemState state)
     {
-        inGameActions = InputManager.inGameActions;
+        state.RequireForUpdate<RunGameTag>();
     }
-    private void OnEnable()
+    public void OnUpdate(ref SystemState state)
     {
-        WorldDataManager.onWorldDataLoaded += InitCameraSystem;
-        WorldDataManager.onWorldDataSaving += SaveCameraSystem;
-    }
-    private void OnDisable()
-    {
-        WorldDataManager.onWorldDataLoaded -= InitCameraSystem;
-        WorldDataManager.onWorldDataSaving -= SaveCameraSystem;
-    }
-    private void FixedUpdate()
-    {
-        CheckIfSprinting();
-        MoveCamera();
-        RotateCamera();
-        ZoomCamera();
-        Look();
-    }
+        var config = SystemAPI.GetSingleton<CameraConfig>();
 
-    private void InitCameraSystem(ref WorldData world)
-    {
-        Debug.Log("Initializing CameraSystem");
+        var inputData = SystemAPI.GetSingleton<InputData>();
 
-        transform.SetPositionAndRotation(new(world.cameraSystemPos.x, 0, world.cameraSystemPos.y), world.cameraSystemRotation);
-
-        camera.transform.localPosition = new(0, 0, world.cameraDistance);
-
-        mapSize = world.map.tiles.GetLength(0);
-    }
-    private void SaveCameraSystem(ref WorldData world)
-    {
-        world.cameraSystemPos = new(transform.position.x, transform.position.z);
-        world.cameraSystemRotation = transform.rotation;
-        world.cameraDistance = camera.transform.localPosition.z;
-    }
-
-    private void CheckIfSprinting()
-    {
-        bool isSprinting = inGameActions.CameraSprint.IsPressed();
-
-        if (isSprinting)
-            currentSpeedMultiplier = sprintSpeedMultiplier;
-        else
-            currentSpeedMultiplier = 1;
-    }
-
-    private void MoveCamera()
-    {
         // Get the input
-        Vector2 moveDirInput = inGameActions.CameraMovement.ReadValue<Vector2>();
-
-        // Transform it so it depends on object direction
-        Vector3 moveDir = transform.forward * moveDirInput.y + transform.right * moveDirInput.x;
-
-        // Move the camera
-        transform.position += currentSpeedMultiplier * moveSpeed * Time.deltaTime * moveDir;
-
-        // Prevent flying of the map
-        float maxDistance = mapSize / 2;
-        transform.position = new(Mathf.Clamp(transform.position.x, -maxDistance, maxDistance), 0, Mathf.Clamp(transform.position.z, -maxDistance, maxDistance));
-    }
-    private void RotateCamera()
-    {
-        float rotateDirInput = inGameActions.CameraRotation.ReadValue<float>();
-        transform.eulerAngles += new Vector3(0, rotateDirInput * rotationSpeed * currentSpeedMultiplier * Time.deltaTime, 0);
-    }
-    private void ZoomCamera()
-    {
-        float scrollInput = inGameActions.CameraScroll.ReadValue<float>();
-
-        float zoomChange = 0f;
-        if (scrollInput > 0)
-            zoomChange = currentSpeedMultiplier * zoomSpeed;
-        else if (scrollInput < 0)
-            zoomChange = -currentSpeedMultiplier * zoomSpeed;
-
-        camera.transform.localPosition = new Vector3(0, 0, Mathf.Clamp(camera.transform.localPosition.z + zoomChange, -maxDistance, -minDistance));
-    }
-    private void Look()
-    {
-        // If the player isn't in CamerLook mode (middle mousebutton by default), set the cursorMode to free and return
-        if (!inGameActions.CameraLook.IsPressed())
+        new Job
         {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-            return;
-        }
-
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-
-        Vector2 lookInput = inGameActions.MouseMove.ReadValue<Vector2>();
-
-        Vector3 rotation = transform.eulerAngles;
-        rotation += lookSpeed * Time.deltaTime * new Vector3(-lookInput.y, lookInput.x, 0);
-
-        if (rotation.x > 180f)
-            rotation.x -= 360f;
-        rotation.x = Mathf.Clamp(rotation.x, minAngle, maxAngle);
-
-        transform.eulerAngles = rotation;
+            config = config,
+            inputData = inputData,
+            pos = Camera.main.transform.position,
+            rotation = Camera.main.transform.rotation.eulerAngles,
+        }.Schedule();
     }
+
+    [BurstCompile]
+    public partial struct Job : IJob
+    {
+        public CameraConfig config;
+        public InputData inputData;
+        public float deltaTime;
+        public int mapSize;
+
+        public float3 pos;
+        public float3 rotation;
+        public float3 camPos;
+
+        readonly Vector3 Forward => math.rotate(quaternion.EulerXYZ(rotation), new(0, 0, 1));
+        readonly Vector3 Right => math.rotate(quaternion.EulerXYZ(rotation), new(1, 0, 0));
+        public void Execute()
+        {
+            // Set the currSpeedMultiplier to the sprintSpeed if the sprintButton is pressed
+            float currentSpeedMultiplier = inputData.camera.sprint ? config.sprintSpeedMultiplier : 1;
+
+            // Move
+            float3 moveDir = Forward * inputData.camera.move.y + Right * inputData.camera.move.x; // moveDir is dependent on rotation & input
+            pos += currentSpeedMultiplier * config.moveSpeed * deltaTime * moveDir;
+
+            pos.xz = math.clamp(pos.xz, new(-mapSize / 2), new(mapSize / 2)); // Prevent flying away from the map
+
+
+            // Rotate around the y-axis
+            rotation.y += inputData.camera.rotate * config.rotationSpeed * currentSpeedMultiplier * deltaTime;
+
+            // Zoom camera
+            float scrollInput = inputData.camera.scroll;
+
+            float zoomChange = 0f;
+            if (scrollInput > 0) // Zoom speed is independent from scrolling speed
+                zoomChange = currentSpeedMultiplier * config.zoomSpeed;
+            else if (scrollInput < 0)
+                zoomChange = -currentSpeedMultiplier * config.zoomSpeed;
+
+            camPos.z += zoomChange;
+            camPos.z = math.clamp(camPos.z, -config.maxDistance, -config.minDistance); // prevents zooming too close / too far
+
+            // Rotate freely around x- & y-axis
+            if (!inputData.camera.look) // Free the cursor and skip the lookCode if the player isn't in lookMode (middle mousebutton by default)
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
+            else
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+
+                float2 lookInput = inputData.mouseMove;
+
+                rotation.xy += config.lookSpeed * Time.deltaTime * new float2(-lookInput.y, lookInput.x);
+
+                if (rotation.x > 180f)
+                    rotation.x -= 360f;
+                rotation.x = math.clamp(rotation.x, config.minAngle, config.maxAngle);
+            }
+
+        }
+    }
+
+    // private void InitCameraSystem(ref WorldData world)
+    // {
+    //     Debug.Log("Initializing CameraSystem");
+
+    //     transform.SetPositionAndRotation(new(world.cameraSystemPos.x, 0, world.cameraSystemPos.y), world.cameraSystemRotation);
+
+    //     camera.transform.localPosition = new(0, 0, world.cameraDistance);
+
+    //     mapSize = world.map.tiles.GetLength(0);
+    // }
+    // private void SaveCameraSystem(ref WorldData world)
+    // {
+    //     world.cameraSystemPos = new(transform.position.x, transform.position.z);
+    //     world.cameraSystemRotation = transform.rotation;
+    //     world.cameraDistance = camera.transform.localPosition.z;
+    // }
 }
