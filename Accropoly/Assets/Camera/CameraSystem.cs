@@ -24,16 +24,16 @@ public partial struct CameraSystem : ISystem
         state.RequireForUpdate<CameraConfig>();
         state.RequireForUpdate<InputData>();
 
-        transformHolder = state.EntityManager.CreateSingleton<CameraTransform>();
+        transformHolder = state.EntityManager.CreateSingleton(new CameraTransform
+        {
+            pos = new(0, 0, 0),
+            rot = new(30, 0, 0),
+            camDist = 10,
+            cursorLocked = false,
+        });
     }
     public void OnUpdate(ref SystemState state)
     {
-        if (!jobHandle.IsCompleted)
-        {
-            Debug.LogError("!!!!!");
-            jobHandle.Complete();
-        }
-
         var config = SystemAPI.GetSingleton<CameraConfig>();
         var inputData = SystemAPI.GetSingleton<InputData>();
         var cameraTransform = SystemAPI.GetSingleton<CameraTransform>();
@@ -79,11 +79,11 @@ public partial struct CameraSystem : ISystem
 
             // Move
 
-            float3 forwardDir = math.rotate(quaternion.EulerXYZ(new(0, transform.rot.y, 0)), new(0, 0, 1)); // Calculate forward & right direction using the rotation
-            float3 rightDir = math.rotate(quaternion.EulerXYZ(new(0, transform.rot.y, 0)), new(1, 0, 0));
+            float2 forwardDir = math.rotate(quaternion.EulerXYZ(new(0, transform.rot.y, 0)), new(0, 0, 1)).xz; // Calculate forward & right direction using the rotation
+            float2 rightDir = math.rotate(quaternion.EulerXYZ(new(0, transform.rot.y, 0)), new(1, 0, 0)).xz;
 
-            float3 moveDir = forwardDir * inputData.camera.move.y + rightDir * inputData.camera.move.x; // moveDir is dependent on rotation & input
-            transform.pos += currentSpeedMultiplier * config.moveSpeed * deltaTime * moveDir;
+            float2 moveDir = forwardDir * inputData.camera.move.y + rightDir * inputData.camera.move.x; // moveDir is dependent on rotation & input
+            transform.pos.xz += currentSpeedMultiplier * config.moveSpeed * deltaTime * moveDir;
 
             transform.pos.xz = math.clamp(transform.pos.xz, new(-mapSize / 2), new(mapSize / 2)); // Prevent flying away from the map
 

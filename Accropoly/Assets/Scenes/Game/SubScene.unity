@@ -200,11 +200,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 8
-  rotationSpeed: 5
+  rotationSpeed: 100
   zoomSpeed: 15
   minDistance: 5
   maxDistance: 150
-  lookSpeed: 5
+  lookSpeed: 100
   minAngle: 10
   maxAngle: 70
   sprintSpeedMultiplier: 5

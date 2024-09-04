@@ -1,3 +1,7 @@
+- fix camera rotation.x clamping
+- apply CameraTransform to mainCamera after the job has been scheduled (slightly more efficient)
+- investigate garbage colllection lag spikes
+
 - Save components
 
 FUTURE:
