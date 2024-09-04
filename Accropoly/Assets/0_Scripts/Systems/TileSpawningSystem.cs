@@ -1,10 +1,6 @@
 using System;
-using System.Collections.Generic;
 using Unity.Burst;
-using Unity.Collections;
 using Unity.Entities;
-using Unity.Jobs;
-using Unity.Mathematics;
 using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
@@ -17,17 +13,15 @@ public partial struct TileSpawningSystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<TilePrefab>();
-        state.RequireForUpdate<RunGameTag>();
-
-        WorldDataManager.onWorldDataSaving += OnWorldDataSaving;
+        state.RequireForUpdate<LoadGameTag>();
     }
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        Entity prefabHolder = SystemAPI.GetSingletonEntity<TilePrefab>();
-        TilePrefab prefab = SystemAPI.GetComponent<TilePrefab>(prefabHolder);
-        state.EntityManager.RemoveComponent<TilePrefab>(prefabHolder);
+        state.Enabled = false;
+
+        TilePrefab prefab = SystemAPI.GetSingleton<TilePrefab>();
 
         WorldData worldData = WorldDataManager.worldData;
         EntityCommandBuffer commandBuffer = SystemAPI.GetSingleton<EndInitializationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
@@ -57,41 +51,6 @@ public partial struct TileSpawningSystem : ISystem
                     }
                     else Debug.LogError($"Unexpected type {type.Name}");
                 }
-            }
-        }
-    }
-    public void OnWorldDataSaving(ref WorldData worldData)
-    {
-        var job = new Job
-        {
-            entityManager = World.DefaultGameObjectInjectionWorld.EntityManager,
-            tiles = worldData.map.tiles,
-            // typesToIgnore =
-        };
-        job.Schedule();
-
-    }
-    private partial struct Job : IJobEntity
-    {
-        public EntityManager entityManager;
-        public Tile[,] tiles;
-        public HashSet<ComponentType> typesToIgnore;
-        public void Execute(in MapTileComponent mapTileComponent, in Entity entity)
-        {
-            int2 index = mapTileComponent.pos;
-
-            Tile tile = new(mapTileComponent);
-            NativeArray<ComponentType> componentTypes = entityManager.GetChunk(entity).Archetype.GetComponentTypes(Allocator.TempJob);
-
-            foreach (var componentType in componentTypes)
-            {
-                if (typesToIgnore.Contains(componentType)) continue;
-
-                if (componentType == typeof(AgingTile))
-                    tile.components.Add(entityManager.GetComponentData<AgingTile>(entity));
-                else
-                    Debug.LogError($"Component of type {componentType} will not be serialized but also isn't present in {typesToIgnore}");
-
             }
         }
     }

@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Unity.Entities;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -10,6 +11,7 @@ public class WorldDataManager : MonoBehaviour
     private void Start()
     {
         LoadWorldData();
+        World.DefaultGameObjectInjectionWorld.EntityManager.CreateSingleton<LoadGameTag>();
         World.DefaultGameObjectInjectionWorld.EntityManager.CreateSingleton<RunGameTag>();
     }
     private void OnEnable()
@@ -38,12 +40,16 @@ public class WorldDataManager : MonoBehaviour
 
         onWorldDataLoaded?.Invoke(ref worldData);
     }
-    private void SaveWorldData()
+    private async void SaveWorldData()
     {
+
+        var entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+        entityManager.CreateSingleton<SaveGameTag>();
+        Debug.Log("Created tag");
+
+        await Task.Delay(10);
+
         Debug.Log("Saving WorldData");
-
-        onWorldDataSaving?.Invoke(ref worldData);
-
         SaveSystem.Instance.SaveWorldData(worldData);
     }
 }
