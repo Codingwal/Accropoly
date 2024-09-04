@@ -1,19 +1,25 @@
 using System;
+using System.Collections.Generic;
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
+using Unity.Jobs;
+using Unity.Mathematics;
 using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
 
 [BurstCompile]
 [UpdateInGroup(typeof(InitializationSystemGroup))]
-public partial struct TileSpawnerSystem : ISystem
+public partial struct TileSpawningSystem : ISystem
 {
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<TilePrefab>();
         state.RequireForUpdate<RunGameTag>();
+
+        WorldDataManager.onWorldDataSaving += OnWorldDataSaving;
     }
 
     [BurstCompile]
@@ -51,6 +57,41 @@ public partial struct TileSpawnerSystem : ISystem
                     }
                     else Debug.LogError($"Unexpected type {type.Name}");
                 }
+            }
+        }
+    }
+    public void OnWorldDataSaving(ref WorldData worldData)
+    {
+        var job = new Job
+        {
+            entityManager = World.DefaultGameObjectInjectionWorld.EntityManager,
+            tiles = worldData.map.tiles,
+            // typesToIgnore =
+        };
+        job.Schedule();
+
+    }
+    private partial struct Job : IJobEntity
+    {
+        public EntityManager entityManager;
+        public Tile[,] tiles;
+        public HashSet<ComponentType> typesToIgnore;
+        public void Execute(in MapTileComponent mapTileComponent, in Entity entity)
+        {
+            int2 index = mapTileComponent.pos;
+
+            Tile tile = new(mapTileComponent);
+            NativeArray<ComponentType> componentTypes = entityManager.GetChunk(entity).Archetype.GetComponentTypes(Allocator.TempJob);
+
+            foreach (var componentType in componentTypes)
+            {
+                if (typesToIgnore.Contains(componentType)) continue;
+
+                if (componentType == typeof(AgingTile))
+                    tile.components.Add(entityManager.GetComponentData<AgingTile>(entity));
+                else
+                    Debug.LogError($"Component of type {componentType} will not be serialized but also isn't present in {typesToIgnore}");
+
             }
         }
     }

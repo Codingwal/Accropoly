@@ -42,7 +42,7 @@ public partial class Deserializer
                 data.components.Add(new MapTileComponent()
                 {
                     tileType = (TileType)br.ReadInt32(),
-                    pos = Deserialize(new float2())
+                    pos = Deserialize(new int2())
                 });
             }
             else

@@ -4,10 +4,10 @@ using Unity.Mathematics;
 public struct MapTileComponent : IComponentData
 {
     public TileType tileType;
-    public float2 pos;
+    public int2 pos;
     public MapTileComponent(int x, int y, TileType tileType)
     {
-        pos = new float2(x, y);
+        pos = new(x, y);
         this.tileType = tileType;
     }
 }
