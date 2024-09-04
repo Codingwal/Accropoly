@@ -1,3 +1,7 @@
+- reactivate pause menu & scene switching
+    - tileMap is serialized & world reset when the game is quit (notified via tags)
+    - tileMap is deserialized when the game gets started
+    - multiple scenes are unnecessary (?)
 - Save components
 
 FUTURE:
