@@ -38,6 +38,17 @@ public partial struct CameraSystem : ISystem
         var inputData = SystemAPI.GetSingleton<InputData>();
         var cameraTransform = SystemAPI.GetSingleton<CameraTransform>();
 
+        jobHandle = new Job
+        {
+            config = config,
+            inputData = inputData,
+            deltaTime = Time.deltaTime,
+            mapSize = WorldDataManager.worldData.map.tiles.GetLength(0),
+            transform = cameraTransform,
+            transformHolder = transformHolder,
+        }.Schedule();
+
+        // Apply transform values from last job
         Transform transform = Camera.main.transform;
         (transform.position, transform.rotation) = cameraTransform.GetCameraTransform();
         if (cameraTransform.cursorLocked)
@@ -50,16 +61,6 @@ public partial struct CameraSystem : ISystem
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
         }
-
-        jobHandle = new Job
-        {
-            config = config,
-            inputData = inputData,
-            deltaTime = Time.deltaTime,
-            mapSize = WorldDataManager.worldData.map.tiles.GetLength(0),
-            transform = cameraTransform,
-            transformHolder = transformHolder,
-        }.Schedule();
     }
 
     [BurstCompile]
