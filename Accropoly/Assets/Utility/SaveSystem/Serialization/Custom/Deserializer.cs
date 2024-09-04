@@ -46,9 +46,8 @@ public partial class Deserializer
                 });
             }
             else
-            {
-                Debug.LogError("Invalid Components type");
-            }
+                Debug.LogError($"Cannot deserialize component of type {type}");
+
         }
         return data;
     }

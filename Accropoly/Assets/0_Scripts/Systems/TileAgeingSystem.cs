@@ -1,5 +1,6 @@
 using Unity.Entities;
 using Unity.Transforms;
+using UnityEngine;
 
 public partial struct TileAgingSystem : ISystem
 {
@@ -12,6 +13,8 @@ public partial struct TileAgingSystem : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
+        Debug.Log("!");
+
         TileAgeingConfig config = SystemAPI.GetSingleton<TileAgeingConfig>();
 
         var ecbSystem = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();

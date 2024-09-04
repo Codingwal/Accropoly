@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 public partial class Serializer
 {
@@ -37,6 +38,9 @@ public partial class Serializer
                 bw.Write((int)componentData.tileType);
                 Serialize(componentData.pos);
             }
+            else
+                Debug.LogError($"Cannot serialize component of type {type}");
+
         }
     }
     public void Serialize(UserData data)
