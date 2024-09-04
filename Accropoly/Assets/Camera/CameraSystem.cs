@@ -79,8 +79,8 @@ public partial struct CameraSystem : ISystem
 
             // Move
 
-            float2 forwardDir = math.rotate(quaternion.EulerXYZ(new(0, transform.rot.y, 0)), new(0, 0, 1)).xz; // Calculate forward & right direction using the rotation
-            float2 rightDir = math.rotate(quaternion.EulerXYZ(new(0, transform.rot.y, 0)), new(1, 0, 0)).xz;
+            float2 forwardDir = math.rotate(quaternion.EulerXYZ(new(0, transform.rot.y * math.PI / 180, 0)), new(0, 0, 1)).xz; // Calculate forward & right direction using the rotation
+            float2 rightDir = math.rotate(quaternion.EulerXYZ(new(0, transform.rot.y * math.PI / 180, 0)), new(1, 0, 0)).xz;
 
             float2 moveDir = forwardDir * inputData.camera.move.y + rightDir * inputData.camera.move.x; // moveDir is dependent on rotation & input
             transform.pos.xz += currentSpeedMultiplier * config.moveSpeed * deltaTime * moveDir;
