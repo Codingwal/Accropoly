@@ -26,9 +26,10 @@ public class MenuManager : MonoBehaviour
     [Header("Loading screen")]
     [SerializeField] private Scrollbar progressBar;
 
+    private string SelectedWorldName => mapsDropdown.options[mapsDropdown.value].text;
     private void Awake()
     {
-        SceneManagement.LoadingScene += OnLoadingScene;
+        MenuUtility.onLoadingWorld += OnLoadingWorld;
 
         startGameButton.onClick.AddListener(OnStartGame);
         createMapButton.onClick.AddListener(OnCreateMap);
@@ -47,34 +48,27 @@ public class MenuManager : MonoBehaviour
         mainMenu.SetActive(false);
         loadingScreen.SetActive(true);
 
-        SaveSystem.Instance.UpdateWorldName(mapsDropdown.options[mapsDropdown.value].text);
-
-        _ = SceneManagement.LoadScene("Game");  // Discard used to prevent compiler warning
+        MenuUtility.LoadWorld(SelectedWorldName);
     }
     private void OnCreateMap()
     {
-        SaveSystem.Instance.UpdateWorldName(mapNameField.text);
-
-        string mapTemplateName = mapTemplateDropdown.options[mapTemplateDropdown.value].text;
-
-        SaveSystem.Instance.CreateWorld(mapNameField.text, mapTemplateName);
-
+        MenuUtility.CreateWorld(mapNameField.text, SelectedWorldName);
         ReloadUI();
     }
     private void OnDeleteMap()
     {
-        FileHandler.DeleteFile("Saves", mapsDropdown.options[mapsDropdown.value].text);
+        MenuUtility.DeleteWorld(SelectedWorldName);
         ReloadUI();
     }
 
-    private void OnLoadingScene(float progress)
+    private void OnLoadingWorld(float progress)
     {
         progressBar.value = progress;
     }
 
     private void ReloadUI()
     {
-        string[] mapTemplates = FileHandler.ListFiles("Templates");
+        string[] mapTemplates = MenuUtility.GetMapTemplateNames();
         mapTemplateDropdown.options = new();
         foreach (string template in mapTemplates)
         {
@@ -83,7 +77,7 @@ public class MenuManager : MonoBehaviour
         // mapTemplateDropdown.value = 0;
         mapTemplateDropdown.RefreshShownValue();
 
-        string[] maps = FileHandler.ListFiles("Saves");
+        string[] maps = MenuUtility.GetWorldNames();
         mapsDropdown.options = new();
         foreach (string map in maps)
         {
