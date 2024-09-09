@@ -8,6 +8,7 @@ using System;
 [UpdateInGroup(typeof(InitializationSystemGroup))]
 public partial class InputSystem : SystemBase
 {
+    public static InputSystem Instance { get; private set; }
     private Controls inputActions;
     private Entity inputDataHolder;
 
@@ -15,10 +16,13 @@ public partial class InputSystem : SystemBase
 
     protected override void OnCreate()
     {
+        if (Instance != null) Debug.LogError("More than one InputSystem instances");
+        Instance = this;
+
         RequireForUpdate<RunGameTag>();
 
         inputActions = new();
-        inputActions.Enable();
+        inputActions.Disable();
 
         inputDataHolder = EntityManager.CreateEntity(typeof(InputData), typeof(UIInputData), typeof(PlacementInputData));
 
@@ -61,6 +65,8 @@ public partial class InputSystem : SystemBase
         SystemAPI.SetComponentEnabled<PlacementInputData>(inputDataHolder, false);
         SystemAPI.SetComponentEnabled<UIInputData>(inputDataHolder, false);
     }
+    public void EnableInputActions() { inputActions.Enable(); }
+    public void DisableInputActions() { inputActions.Disable(); }
     private void OnPlacementAction(PlacementAction action)
     {
         SystemAPI.SetComponentEnabled<PlacementInputData>(inputDataHolder, true);
@@ -77,5 +83,4 @@ public partial class InputSystem : SystemBase
             hotkey = hotkey
         });
     }
-
 }

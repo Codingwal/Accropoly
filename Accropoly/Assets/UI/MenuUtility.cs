@@ -1,4 +1,5 @@
 using System;
+using Unity.Entities;
 
 public static class MenuUtility
 {
@@ -10,11 +11,24 @@ public static class MenuUtility
         SaveSystem.Instance.UpdateWorldName(worldName);
         SaveSystem.Instance.CreateWorld(worldName, templateName);
     }
-    public static void LoadWorld(string worldName)
+    public static void StartGame(string worldName)
     {
         SaveSystem.Instance.UpdateWorldName(worldName);
 
-        // TODO: Actually load world
+        WorldDataManager.LoadWorldData();
+
+        EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+        entityManager.CreateSingleton<LoadGameTag>();
+        entityManager.CreateSingleton<RunGameTag>();
+
+        InputSystem.Instance.EnableInputActions();
+    }
+    public static void QuitGame()
+    {
+        WorldDataManager.SaveWorldData();
+
+        EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+        entityManager.DestroyEntity(entityManager.CreateEntityQuery(typeof(RunGameTag)));
     }
     public static void DeleteWorld(string mapName)
     {
@@ -32,12 +46,14 @@ public static class MenuUtility
     {
         // TODO: Pause game
 
+        InputSystem.Instance.DisableInputActions();
         pausingGame?.Invoke();
     }
     public static void ContinueGame()
     {
         // TODO: Continue game
-        
+
+        InputSystem.Instance.EnableInputActions();
         continuingGame?.Invoke();
     }
 }

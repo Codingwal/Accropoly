@@ -30,23 +30,22 @@ public class MenuManager : MonoBehaviour
     private void Awake()
     {
         MenuUtility.loadingWorld += OnLoadingWorld;
+        InputSystem.escape += OnEscape;
 
         startGameButton.onClick.AddListener(OnStartGame);
         createMapButton.onClick.AddListener(OnCreateMap);
         deleteMapButton.onClick.AddListener(OnDeleteMap);
 
-        mainMenu.SetActive(true);
-        loadingScreen.SetActive(false);
-
-        mapNameField.text = SaveSystem.Instance.GetWorldName();
-
         continueButton.onClick.AddListener(() => MenuUtility.ContinueGame());
-        toMainMenuButton.onClick.AddListener(() => { }); // TODO: Activate MainMenu
-
+        toMainMenuButton.onClick.AddListener(() => mainMenu.SetActive(true)); // TODO: Activate MainMenu
         MenuUtility.continuingGame += () => pauseMenu.SetActive(false);
         MenuUtility.pausingGame += () => pauseMenu.SetActive(true);
 
-        InputSystem.escape += OnEscape;
+        mainMenu.SetActive(true);
+        loadingScreen.SetActive(false);
+        pauseMenu.SetActive(false);
+
+        mapNameField.text = SaveSystem.Instance.GetWorldName();
 
         ReloadUI();
     }
