@@ -29,7 +29,7 @@ public class MenuManager : MonoBehaviour
     private string SelectedWorldName => mapsDropdown.options[mapsDropdown.value].text;
     private void Awake()
     {
-        MenuUtility.onLoadingWorld += OnLoadingWorld;
+        MenuUtility.loadingWorld += OnLoadingWorld;
 
         startGameButton.onClick.AddListener(OnStartGame);
         createMapButton.onClick.AddListener(OnCreateMap);

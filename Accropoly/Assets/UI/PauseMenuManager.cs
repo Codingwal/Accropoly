@@ -25,7 +25,7 @@ public class PauseMenuManager : MonoBehaviour
     {
         if (pauseMenu.activeSelf) // If the game is paused
             MenuUtility.ContinueGame();
-        else
+        else // If the game is running
             MenuUtility.PauseGame();
     }
     private void OnContinuePressed()
@@ -40,27 +40,10 @@ public class PauseMenuManager : MonoBehaviour
 
     private void OnContinuingGame()
     {
-
+        pauseMenu.SetActive(false);
     }
     private void OnPausingGame()
     {
-
-    }
-    private void OnGameStateChanged(GameState newGameState, GameState oldGameState)
-    {
-        if (pauseMenu == null)
-        {
-            pauseMenu = GameObject.Find("PauseMenu");
-        }
-        switch (newGameState)
-        {
-            case GameState.InGame:
-                pauseMenu.SetActive(false);
-                break;
-            case GameState.PauseMenu:
-                pauseMenu.SetActive(true);
-                break;
-        }
-
+        pauseMenu.SetActive(true);
     }
 }
