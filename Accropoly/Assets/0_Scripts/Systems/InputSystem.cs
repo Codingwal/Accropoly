@@ -3,12 +3,16 @@ using UnityEngine;
 
 using UIAction = UIInputData.Action;
 using PlacementAction = PlacementInputData.Action;
+using System;
 
 [UpdateInGroup(typeof(InitializationSystemGroup))]
 public partial class InputSystem : SystemBase
 {
     private Controls inputActions;
     private Entity inputDataHolder;
+
+    public static Action escape;
+
     protected override void OnCreate()
     {
         RequireForUpdate<RunGameTag>();
@@ -64,6 +68,8 @@ public partial class InputSystem : SystemBase
     }
     private void OnUIAction(UIAction action, int hotkey = -1)
     {
+        if (action == UIAction.Escape) escape?.Invoke();
+
         SystemAPI.SetComponentEnabled<UIInputData>(inputDataHolder, true);
         SystemAPI.SetComponent(inputDataHolder, new UIInputData
         {

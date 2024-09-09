@@ -10,31 +10,23 @@ public class PauseMenuManager : MonoBehaviour
     [SerializeField] private Button toMainMenuButton;
     [SerializeField] private Button continueButton;
 
-    private GameLoopManager gameLoopManager;
     private void Awake()
     {
-        gameLoopManager = GameLoopManager.Instance;
-
         continueButton.onClick.AddListener(OnContinuePressed);
         toMainMenuButton.onClick.AddListener(OnToMainMenuPressed);
 
         MenuUtility.continuingGame += OnContinuingGame;
         MenuUtility.pausingGame += OnPausingGame;
 
-        InputManager.Escape += OnEscape;
+        InputSystem.escape += OnEscape;
 
     }
     private void OnEscape()
     {
-        switch (gameLoopManager.GameState)
-        {
-            case GameState.PauseMenu:
-                MenuUtility.ContinueGame();
-                break;
-            case GameState.InGame:
-                MenuUtility.PauseGame();
-                break;
-        }
+        if (pauseMenu.activeSelf) // If the game is paused
+            MenuUtility.ContinueGame();
+        else
+            MenuUtility.PauseGame();
     }
     private void OnContinuePressed()
     {
