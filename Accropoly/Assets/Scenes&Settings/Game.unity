@@ -3877,7 +3877,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   timeSpeed: 1
   invoiceInterval: 0
+  nextInvoiceTime: 0
   playTime: 0
+  _gameState: 0
 --- !u!114 &1028602575
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5144,155 +5146,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1603497207}
   m_CullTransparentMesh: 1
---- !u!1 &1646735741
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1646735746}
-  - component: {fileID: 1646735742}
-  - component: {fileID: 1646735747}
-  - component: {fileID: 1646735745}
-  - component: {fileID: 1646735744}
-  - component: {fileID: 1646735743}
-  m_Layer: 5
-  m_Name: Canvas
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1646735742
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1646735741}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 685662e6ccee4ae43bcce6e5b212ee32, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pauseMenu: {fileID: 478922668}
-  toMainMenuButton: {fileID: 714258930}
-  continueButton: {fileID: 936010600}
---- !u!114 &1646735743
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1646735741}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IgnoreReversedGraphics: 1
-  m_BlockingObjects: 0
-  m_BlockingMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
---- !u!114 &1646735744
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1646735741}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_UiScaleMode: 1
-  m_ReferencePixelsPerUnit: 100
-  m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
-  m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
-  m_PhysicalUnit: 3
-  m_FallbackScreenDPI: 96
-  m_DefaultSpriteDPI: 96
-  m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
---- !u!223 &1646735745
-Canvas:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1646735741}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_RenderMode: 0
-  m_Camera: {fileID: 0}
-  m_PlaneDistance: 100
-  m_PixelPerfect: 0
-  m_ReceivesEvents: 1
-  m_OverrideSorting: 0
-  m_OverridePixelPerfect: 0
-  m_SortingBucketNormalizedSize: 0
-  m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 25
-  m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: 0
-  m_SortingOrder: 0
-  m_TargetDisplay: 0
---- !u!224 &1646735746
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1646735741}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0, y: 0, z: 0}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0, y: 0}
---- !u!114 &1646735747
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1646735741}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4df33c5a7323b4b4bbcffa147df27a96, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mainMenuButton: {fileID: 445120538}
-  mainMenu: {fileID: 1385950432}
-  streetMenuButton: {fileID: 2041826359}
-  buildingsMenuButton: {fileID: 56803799}
-  clearButton: {fileID: 1397449336}
-  streetMenu: {fileID: 834668981}
-  forestButton: {fileID: 564216929}
-  streetButton: {fileID: 753272518}
-  streetCornerButton: {fileID: 936019808}
-  streetTJunctionButton: {fileID: 1983906208}
-  streetJunctionButton: {fileID: 1912153831}
-  emptyButton1: {fileID: 1774165066}
-  buildingsMenu: {fileID: 1451563168}
-  houseButton: {fileID: 194944649}
-  skyscraperButton: {fileID: 214578237}
-  officeBuildingButton: {fileID: 1603497209}
-  solarpanelButton: {fileID: 108266199}
-  coalPowerPlantButton: {fileID: 903358040}
-  emptyButton2: {fileID: 1350282157}
 --- !u!1 &1655882747
 GameObject:
   m_ObjectHideFlags: 0
@@ -9259,10 +9112,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8883262286894814873}
+  - component: {fileID: 6846612835593499401}
+  - component: {fileID: 8883262286894814875}
+  - component: {fileID: 8883262286894814874}
   - component: {fileID: 696549981957115063}
   - component: {fileID: 3108241531145312190}
   - component: {fileID: 5178375774601133957}
-  - component: {fileID: 6846612835593499401}
   m_Layer: 5
   m_Name: Menu
   m_TagString: Untagged
@@ -10111,6 +9966,52 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &8883262286894814874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6125566830286027636}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 685662e6ccee4ae43bcce6e5b212ee32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pauseMenu: {fileID: 478922668}
+  toMainMenuButton: {fileID: 714258930}
+  continueButton: {fileID: 936010600}
+--- !u!114 &8883262286894814875
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6125566830286027636}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4df33c5a7323b4b4bbcffa147df27a96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainMenuButton: {fileID: 445120538}
+  mainMenu: {fileID: 1385950432}
+  streetMenuButton: {fileID: 2041826359}
+  buildingsMenuButton: {fileID: 56803799}
+  clearButton: {fileID: 1397449336}
+  streetMenu: {fileID: 834668981}
+  forestButton: {fileID: 564216929}
+  streetButton: {fileID: 753272518}
+  streetCornerButton: {fileID: 936019808}
+  streetTJunctionButton: {fileID: 1983906208}
+  streetJunctionButton: {fileID: 1912153831}
+  emptyButton1: {fileID: 1774165066}
+  buildingsMenu: {fileID: 1451563168}
+  houseButton: {fileID: 194944649}
+  skyscraperButton: {fileID: 214578237}
+  officeBuildingButton: {fileID: 1603497209}
+  solarpanelButton: {fileID: 108266199}
+  coalPowerPlantButton: {fileID: 903358040}
+  emptyButton2: {fileID: 1350282157}
 --- !u!114 &8889384408449512967
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10514,4 +10415,3 @@ SceneRoots:
   - {fileID: 912740716}
   - {fileID: 1249248937}
   - {fileID: 8883262286894814873}
-  - {fileID: 1646735746}
