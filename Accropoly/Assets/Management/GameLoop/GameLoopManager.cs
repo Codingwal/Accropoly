@@ -1,7 +1,5 @@
 using System;
-using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public delegate void RefAction<T>(ref T obj);
 public class GameLoopManager : SingletonPersistant<GameLoopManager>

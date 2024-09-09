@@ -2,7 +2,9 @@ using System;
 
 public static class MenuUtility
 {
-    public static Action<float> onLoadingWorld; // TODO: call every frame while world is loading
+    public static Action<float> loadingWorld; // TODO: call every frame while world is loading
+    public static Action continuingGame;
+    public static Action pausingGame;
     public static void CreateWorld(string worldName, string templateName)
     {
         SaveSystem.Instance.UpdateWorldName(worldName);
@@ -25,5 +27,17 @@ public static class MenuUtility
     public static string[] GetWorldNames()
     {
         return FileHandler.ListFiles("Saves");
+    }
+    public static void PauseGame()
+    {
+        // TODO: Pause game
+
+        pausingGame?.Invoke();
+    }
+    public static void ContinueGame()
+    {
+        // TODO: Continue game
+        
+        continuingGame?.Invoke();
     }
 }

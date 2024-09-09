@@ -17,40 +17,43 @@ public class PauseMenuManager : MonoBehaviour
 
         continueButton.onClick.AddListener(OnContinuePressed);
         toMainMenuButton.onClick.AddListener(OnToMainMenuPressed);
-    }
-    private void OnEnable()
-    {
-        gameLoopManager.GameStateChanged += OnGameStateChanged;
-        // InputManager.Escape += OnEscape;
-    }
-    private void OnDisable()
-    {
-        gameLoopManager.GameStateChanged -= OnGameStateChanged;
-        // InputManager.Escape -= OnEscape;
-    }
 
+        MenuUtility.continuingGame += OnContinuingGame;
+        MenuUtility.pausingGame += OnPausingGame;
+
+        InputManager.Escape += OnEscape;
+
+    }
     private void OnEscape()
     {
         switch (gameLoopManager.GameState)
         {
             case GameState.PauseMenu:
-                gameLoopManager.GameState = GameState.InGame;
+                MenuUtility.ContinueGame();
                 break;
             case GameState.InGame:
-                gameLoopManager.GameState = GameState.PauseMenu;
+                MenuUtility.PauseGame();
                 break;
         }
     }
     private void OnContinuePressed()
     {
-        gameLoopManager.GameState = GameState.InGame;
+        MenuUtility.ContinueGame();
     }
 
     private void OnToMainMenuPressed()
     {
-        _ = SceneManagement.LoadScene("Menu");  // Discard used to prevent compiler warning
+        // TODO: Activate MainMenu
     }
 
+    private void OnContinuingGame()
+    {
+
+    }
+    private void OnPausingGame()
+    {
+
+    }
     private void OnGameStateChanged(GameState newGameState, GameState oldGameState)
     {
         if (pauseMenu == null)
