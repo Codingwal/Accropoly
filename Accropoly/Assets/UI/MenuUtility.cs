@@ -17,10 +17,6 @@ public static class MenuUtility
 
         WorldDataManager.LoadWorldData();
 
-        EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-        entityManager.CreateSingleton<LoadGameTag>();
-        entityManager.CreateSingleton<RunGameTag>();
-
         InputSystem.Instance.EnableInputActions();
     }
     public static void QuitGame()

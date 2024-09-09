@@ -16,7 +16,7 @@ public partial class InputSystem : SystemBase
 
     protected override void OnCreate()
     {
-        if (Instance != null) Debug.LogError("More than one InputSystem instances");
+        if (Instance != null) Debug.LogWarning("More than one InputSystem instances");
         Instance = this;
 
         RequireForUpdate<RunGameTag>();

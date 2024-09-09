@@ -55,7 +55,7 @@ public class MenuManager : MonoBehaviour
         mainMenu.SetActive(false);
         loadingScreen.SetActive(true);
 
-        MenuUtility.LoadWorld(SelectedWorldName);
+        MenuUtility.StartGame(SelectedWorldName);
     }
     private void OnCreateMap()
     {
