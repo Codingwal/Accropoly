@@ -9114,7 +9114,6 @@ GameObject:
   - component: {fileID: 8883262286894814873}
   - component: {fileID: 6846612835593499401}
   - component: {fileID: 8883262286894814875}
-  - component: {fileID: 8883262286894814874}
   - component: {fileID: 696549981957115063}
   - component: {fileID: 3108241531145312190}
   - component: {fileID: 5178375774601133957}
@@ -9391,6 +9390,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainMenu: {fileID: 4473015999300077155}
+  pauseMenu: {fileID: 478922668}
   loadingScreen: {fileID: 6042549488258861025}
   startGameButton: {fileID: 5847237730594157916}
   createMapButton: {fileID: 154871669300532841}
@@ -9399,6 +9399,8 @@ MonoBehaviour:
   deleteMapButton: {fileID: 1537402697176731092}
   mapsDropdown: {fileID: 2717653482389253383}
   progressBar: {fileID: 4243904727017477645}
+  toMainMenuButton: {fileID: 714258930}
+  continueButton: {fileID: 936010600}
 --- !u!114 &6914632537779251491
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9966,21 +9968,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &8883262286894814874
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6125566830286027636}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 685662e6ccee4ae43bcce6e5b212ee32, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pauseMenu: {fileID: 478922668}
-  toMainMenuButton: {fileID: 714258930}
-  continueButton: {fileID: 936010600}
 --- !u!114 &8883262286894814875
 MonoBehaviour:
   m_ObjectHideFlags: 0
