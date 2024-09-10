@@ -8,7 +8,6 @@ using System;
 [UpdateInGroup(typeof(InitializationSystemGroup))]
 public partial class InputSystem : SystemBase
 {
-    public static InputSystem Instance { get; private set; }
     private Controls inputActions;
     private Entity inputDataHolder;
 
@@ -16,9 +15,6 @@ public partial class InputSystem : SystemBase
 
     protected override void OnCreate()
     {
-        if (Instance != null) Debug.LogWarning("More than one InputSystem instances");
-        Instance = this;
-
         RequireForUpdate<RunGameTag>();
 
         inputActions = new();

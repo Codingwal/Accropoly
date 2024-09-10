@@ -17,7 +17,7 @@ public static class MenuUtility
 
         WorldDataSystem.LoadWorldData();
 
-        InputSystem.Instance.EnableInputActions();
+        World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<InputSystem>().EnableInputActions();
     }
     public static void QuitGame()
     {
@@ -42,14 +42,14 @@ public static class MenuUtility
     {
         // TODO: Pause game
 
-        InputSystem.Instance.DisableInputActions();
+        World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<InputSystem>().DisableInputActions();
         pausingGame?.Invoke();
     }
     public static void ContinueGame()
     {
         // TODO: Continue game
 
-        InputSystem.Instance.EnableInputActions();
+        World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<InputSystem>().EnableInputActions();
         continuingGame?.Invoke();
     }
 }
