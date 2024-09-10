@@ -1,7 +1,7 @@
 using Unity.Entities;
 using UnityEngine;
 
-[UpdateInGroup(typeof(LateSimulationSystemGroup))]
+[UpdateInGroup(typeof(PresentationSystemGroup), OrderLast = true)]
 public partial struct WorldDataManager : ISystem
 {
     public static WorldData worldData;
@@ -15,6 +15,7 @@ public partial struct WorldDataManager : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
+        Debug.LogWarning("Deleting");
         state.EntityManager.RemoveComponent(loadGameTagQuery, typeof(LoadGameTag));
 
         if (saveGameTagQuery.CalculateEntityCount() != 0)

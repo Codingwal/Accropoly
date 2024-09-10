@@ -19,8 +19,6 @@ public partial struct TileSpawningSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        state.Enabled = false;
-
         TilePrefab prefab = SystemAPI.GetSingleton<TilePrefab>();
 
         WorldData worldData = WorldDataManager.worldData;

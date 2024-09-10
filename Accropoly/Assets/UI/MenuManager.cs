@@ -27,6 +27,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private Button continueButton;
 
     private string SelectedWorldName => mapsDropdown.options[mapsDropdown.value].text;
+    private string SelectedMapTemplateName => mapTemplateDropdown.options[mapTemplateDropdown.value].text;
     private void Awake()
     {
         MenuUtility.loadingWorld += OnLoadingWorld;
@@ -53,13 +54,13 @@ public class MenuManager : MonoBehaviour
     private void OnStartGame()
     {
         mainMenu.SetActive(false);
-        loadingScreen.SetActive(true);
+        // loadingScreen.SetActive(true);
 
         MenuUtility.StartGame(SelectedWorldName);
     }
     private void OnCreateMap()
     {
-        MenuUtility.CreateWorld(mapNameField.text, SelectedWorldName);
+        MenuUtility.CreateWorld(mapNameField.text, SelectedMapTemplateName);
         ReloadUI();
     }
     private void OnDeleteMap()
