@@ -15,13 +15,13 @@ public static class MenuUtility
     {
         SaveSystem.Instance.UpdateWorldName(worldName);
 
-        WorldDataManager.LoadWorldData();
+        WorldDataSystem.LoadWorldData();
 
         InputSystem.Instance.EnableInputActions();
     }
     public static void QuitGame()
     {
-        WorldDataManager.SaveWorldData();
+        WorldDataSystem.SaveWorldData();
 
         EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
         entityManager.DestroyEntity(entityManager.CreateEntityQuery(typeof(RunGameTag)));

@@ -3,7 +3,7 @@ using Unity.Entities;
 using UnityEngine;
 
 [UpdateInGroup(typeof(LateSimulationSystemGroup), OrderLast = true)]
-public partial struct WorldDataManager : ISystem
+public partial struct WorldDataSystem : ISystem
 {
     public static WorldData worldData;
     private EntityQuery loadGameTagQuery;

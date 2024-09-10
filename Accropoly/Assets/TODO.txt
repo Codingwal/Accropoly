@@ -1,7 +1,4 @@
-- Destroy RunGameTag
-- Destroy LoadGameTag (?)
-- Make WorldDataManager a System (to delete tags) (?)
-- Finish StartGame() & QuitGame() functions
+- Finish  QuitGame() functions
 - GetOrCreateSystem instead of singleton
 
 - reactivate pause menu & scene switching

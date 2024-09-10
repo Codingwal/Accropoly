@@ -30,7 +30,7 @@ public partial struct TileSavingSystem : ISystem
         JobHandle jobHandle = new Job
         {
             entityManager = state.EntityManager,
-            tiles = WorldDataManager.worldData.map.tiles,
+            tiles = WorldDataSystem.worldData.map.tiles,
             typesToIgnore = typesToIgnoreSet,
         }.ScheduleParallel(state.Dependency);
 

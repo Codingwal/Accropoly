@@ -43,7 +43,7 @@ public partial struct CameraSystem : ISystem
             config = config,
             inputData = inputData,
             deltaTime = Time.deltaTime,
-            mapSize = WorldDataManager.worldData.map.tiles.GetLength(0),
+            mapSize = WorldDataSystem.worldData.map.tiles.GetLength(0),
             transform = cameraTransform,
             transformHolder = transformHolder,
         }.Schedule();

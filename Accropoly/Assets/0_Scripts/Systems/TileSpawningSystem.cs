@@ -21,7 +21,7 @@ public partial struct TileSpawningSystem : ISystem
     {
         TilePrefab prefab = SystemAPI.GetSingleton<TilePrefab>();
 
-        WorldData worldData = WorldDataManager.worldData;
+        WorldData worldData = WorldDataSystem.worldData;
         EntityCommandBuffer commandBuffer = SystemAPI.GetSingleton<EndInitializationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
 
         Tile[,] tiles = worldData.map.tiles;
