@@ -2,6 +2,7 @@
 - Destroy LoadGameTag (?)
 - Make WorldDataManager a System (to delete tags) (?)
 - Finish StartGame() & QuitGame() functions
+- GetOrCreateSystem instead of singleton
 
 - reactivate pause menu & scene switching
     - tileMap is serialized & world reset when the game is quit (notified via tags)

@@ -45,8 +45,6 @@ public partial class InputSystem : SystemBase
     }
     protected override void OnUpdate()
     {
-        Debug.Log("!");
-
         // Update InputData
         var inGameActions = inputActions.InGame;
         SystemAPI.SetComponent(inputDataHolder, new InputData

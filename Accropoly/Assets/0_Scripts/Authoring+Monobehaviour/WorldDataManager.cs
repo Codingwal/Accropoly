@@ -1,7 +1,8 @@
+using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
 
-[UpdateInGroup(typeof(PresentationSystemGroup), OrderLast = true)]
+[UpdateInGroup(typeof(LateSimulationSystemGroup), OrderLast = true)]
 public partial struct WorldDataManager : ISystem
 {
     public static WorldData worldData;
@@ -15,7 +16,6 @@ public partial struct WorldDataManager : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
-        Debug.LogWarning("Deleting");
         state.EntityManager.RemoveComponent(loadGameTagQuery, typeof(LoadGameTag));
 
         if (saveGameTagQuery.CalculateEntityCount() != 0)
@@ -24,7 +24,7 @@ public partial struct WorldDataManager : ISystem
             SaveSystem.Instance.SaveWorldData(worldData);
         }
 
-        state.EntityManager.RemoveComponent(loadGameTagQuery, typeof(SaveGameTag));
+        state.EntityManager.RemoveComponent(saveGameTagQuery, typeof(SaveGameTag));
     }
     public static void LoadWorldData()
     {
@@ -32,14 +32,25 @@ public partial struct WorldDataManager : ISystem
 
         worldData = SaveSystem.Instance.GetWorldData();
 
-        var entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-        entityManager.CreateSingleton<LoadGameTag>();
-        entityManager.CreateSingleton<RunGameTag>();
+        CreateTag<LoadGameTag>();
+        CreateTag<RunGameTag>();
     }
     public static void SaveWorldData()
     {
-        var entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-        entityManager.CreateSingleton<SaveGameTag>();
-        Debug.Log("Created tag");
+        CreateTag<SaveGameTag>();
+    }
+    private static void CreateTag<T>()
+    {
+        EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+
+        EntityQueryBuilder queryDesc = new EntityQueryBuilder(Allocator.Temp)
+                                            .WithAll<BeginInitializationEntityCommandBufferSystem.Singleton>()
+                                            .WithOptions(EntityQueryOptions.IncludeSystems);
+        EntityQuery query = entityManager.CreateEntityQuery(queryDesc);
+
+        EntityCommandBuffer ecb = query.GetSingleton<BeginInitializationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(entityManager.WorldUnmanaged);
+
+        var entity = ecb.CreateEntity();
+        ecb.AddComponent(entity, typeof(T));
     }
 }
