@@ -1,15 +1,12 @@
 using Unity.Entities;
 using Unity.Transforms;
-using UnityEngine;
 
 public partial struct TileAgingSystem : ISystem
 {
-    EntityQuery query;
     public void OnCreate(ref SystemState state)
     {
-        state.RequireAnyForUpdate(state.GetEntityQuery(typeof(AgingTile)), state.GetEntityQuery(typeof(NewTileTag)));
+        state.RequireForUpdate<AgingTile>();
         state.RequireForUpdate<TileAgeingConfig>();
-        query = state.GetEntityQuery(typeof(NewTileTag), ComponentType.Exclude<AgingTile>());
     }
     public void OnUpdate(ref SystemState state)
     {

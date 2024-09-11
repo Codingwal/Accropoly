@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -28,6 +27,8 @@ public partial struct TileSavingSystem : ISystem
 
         foreach ((RefRO<MapTileComponent> mapTileComponent, Entity entity) in SystemAPI.Query<RefRO<MapTileComponent>>().WithEntityAccess())
         {
+            Debug.Log("!");
+            
             int2 index = mapTileComponent.ValueRO.pos;
 
             Tile tile = new(mapTileComponent.ValueRO);
@@ -38,12 +39,17 @@ public partial struct TileSavingSystem : ISystem
                 if (typesToIgnore.Contains(componentType) || componentType == typeof(MapTileComponent)) continue;
 
                 if (componentType == typeof(AgingTile))
+                {
                     tile.components.Add(state.EntityManager.GetComponentData<AgingTile>(entity));
+                    Debug.LogWarning("!");
+                }
                 else
                     Debug.LogError($"Component of type {componentType} will not be serialized but also isn't present in {typesToIgnore}");
 
             }
             WorldDataSystem.worldData.map.tiles[index.x, index.y] = tile;
+
+            componentTypes.Dispose();
         }
     }
 }

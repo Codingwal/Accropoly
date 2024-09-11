@@ -10,7 +10,7 @@ public struct Tile
     {
         this.components = components.ToList();
     }
-    public T GetComponent<T>() where T : IComponentData
+    public readonly T GetComponent<T>() where T : IComponentData
     {
         foreach (var component in components)
             if (component.GetType() == typeof(T))
@@ -19,8 +19,8 @@ public struct Tile
         return default;
     }
 }
-public enum Components
+public enum Components : int
 {
     MapTileComponent = 0,
-    AgingTile = 1,
+    AgingTile = -1,
 }

@@ -80,8 +80,6 @@ public class MenuManager : MonoBehaviour
     }
     private void OnEscape()
     {
-        Debug.Log("!");
-
         if (pauseMenu.activeSelf) // If the game is paused
             MenuUtility.ContinueGame();
         else // If the game is running
