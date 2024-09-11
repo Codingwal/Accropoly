@@ -26,6 +26,8 @@ public partial class Serializer
     }
     public void Serialize(Tile data)
     {
+        if (data.components == null) throw new("Failed to serialize tile because Tile.components is null");
+
         bw.Write(data.components.Count);
         foreach (var component in data.components)
         {

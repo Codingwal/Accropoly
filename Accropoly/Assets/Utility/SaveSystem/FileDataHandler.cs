@@ -30,12 +30,13 @@ public class FileHandler
         try
         {
             serializer.Serialize((dynamic)obj);
+            fs.Close();
         }
         catch (Exception e)
         {
+            fs.Close();
             throw new($"Failed to serialize object of type '{obj.GetType()}' with the following error message:\n{e.Message}");
         }
-        fs.Close();
     }
     public static T LoadObject<T>(string directory, string name) where T : new()
     {

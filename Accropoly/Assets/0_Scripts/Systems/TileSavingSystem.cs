@@ -25,13 +25,18 @@ public partial struct TileSavingSystem : ISystem
         foreach (var type in typesToIgnore)
             typesToIgnoreSet.Add(type);
 
-        foreach ((RefRO<MapTileComponent> mapTileComponent, Entity entity) in SystemAPI.Query<RefRO<MapTileComponent>>().WithEntityAccess())
-        {
-            Debug.Log("!");
-            
-            int2 index = mapTileComponent.ValueRO.pos;
+        var query = state.GetEntityQuery(typeof(MapTileComponent));
+        Debug.Log(query.CalculateEntityCount());
 
-            Tile tile = new(mapTileComponent.ValueRO);
+        WorldDataSystem.worldData.map.tiles = new Tile[WorldDataSystem.worldData.map.tiles.GetLength(0), WorldDataSystem.worldData.map.tiles.GetLength(1)];
+
+        int i = 0;
+        foreach ((MapTileComponent mapTileComponent, Entity entity) in SystemAPI.Query<MapTileComponent>().WithEntityAccess())
+        {
+            int2 index = mapTileComponent.pos;
+            Debug.Assert(WorldDataSystem.worldData.map.tiles[index.x, index.y].components == null, $"{index}");
+
+            Tile tile = new(mapTileComponent);
             NativeArray<ComponentType> componentTypes = state.EntityManager.GetChunk(entity).Archetype.GetComponentTypes(Allocator.TempJob);
 
             foreach (var componentType in componentTypes)
@@ -41,7 +46,7 @@ public partial struct TileSavingSystem : ISystem
                 if (componentType == typeof(AgingTile))
                 {
                     tile.components.Add(state.EntityManager.GetComponentData<AgingTile>(entity));
-                    Debug.LogWarning("!");
+                    i++;
                 }
                 else
                     Debug.LogError($"Component of type {componentType} will not be serialized but also isn't present in {typesToIgnore}");
@@ -50,6 +55,8 @@ public partial struct TileSavingSystem : ISystem
             WorldDataSystem.worldData.map.tiles[index.x, index.y] = tile;
 
             componentTypes.Dispose();
+
         }
+        // Debug.Log(i + ", " + tiles.GetLength(0) * tiles.GetLength(1));
     }
 }

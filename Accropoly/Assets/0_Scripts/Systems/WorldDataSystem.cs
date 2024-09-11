@@ -22,6 +22,8 @@ public partial struct WorldDataSystem : ISystem
         {
             Debug.Log("Saving WorldData");
             SaveSystem.Instance.SaveWorldData(worldData);
+
+            state.EntityManager.DestroyEntity(state.GetEntityQuery(typeof(MapTileComponent)));
         }
 
         state.EntityManager.RemoveComponent(saveGameTagQuery, typeof(SaveGameTag));
