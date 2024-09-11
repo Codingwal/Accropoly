@@ -28,7 +28,7 @@ public class SaveSystem : FileHandler
         };
         foreach (KeyValuePair<string, MapData> keyValuePair in MapTemplates.mapTemplates)
         {
-            requiredFiles.Add("Templates/" + keyValuePair.Key, (MapData)keyValuePair.Value);
+            requiredFiles.Add("Templates/" + keyValuePair.Key, keyValuePair.Value);
         }
         InitFileSystem(requiredDirectories, requiredFiles);
     }

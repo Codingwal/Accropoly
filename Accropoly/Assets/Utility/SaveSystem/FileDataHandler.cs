@@ -46,6 +46,7 @@ public class FileHandler
     }
     public static void InitFileSystem(string[] requiredDirectories, Dictionary<string, object> requiredFiles)
     {
+#if false
         foreach (string directory in requiredDirectories)
         {
             if (!Directory.Exists($"{Application.persistentDataPath}/data/{directory}/"))
@@ -60,5 +61,15 @@ public class FileHandler
                 SaveObject("", fileDataPair.Key, fileDataPair.Value);
             }
         }
+#else
+        foreach (string directory in requiredDirectories)
+        {
+            Directory.CreateDirectory($"{Application.persistentDataPath}/data/{directory}/");
+        }
+        foreach (var fileDataPair in requiredFiles)
+        {
+            SaveObject("", fileDataPair.Key, fileDataPair.Value);
+        }
+#endif
     }
 }
