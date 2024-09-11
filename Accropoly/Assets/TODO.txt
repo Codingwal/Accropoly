@@ -1,5 +1,6 @@
-- Finish  QuitGame() functions
-- GetOrCreateSystem instead of singleton
+- Don't disable Escape input action
+- Finish ContinueGame(), PauseGame() & QuitGame() functions
+
 
 - reactivate pause menu & scene switching
     - tileMap is serialized & world reset when the game is quit (notified via tags)
