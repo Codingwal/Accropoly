@@ -13,7 +13,6 @@ public partial struct TileSavingSystem : ISystem
     {
         state.RequireForUpdate<SaveGameTag>();
     }
-    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         state.Enabled = false;
@@ -27,38 +26,24 @@ public partial struct TileSavingSystem : ISystem
         foreach (var type in typesToIgnore)
             typesToIgnoreSet.Add(type);
 
-        JobHandle jobHandle = new Job
+        foreach ((RefRO<MapTileComponent> mapTileComponent, Entity entity) in SystemAPI.Query<RefRO<MapTileComponent>>().WithEntityAccess())
         {
-            entityManager = state.EntityManager,
-            tiles = WorldDataSystem.worldData.map.tiles,
-            typesToIgnore = typesToIgnoreSet,
-        }.ScheduleParallel(state.Dependency);
+            int2 index = mapTileComponent.ValueRO.pos;
 
-        jobHandle.Complete();
-    }
-    private partial struct Job : IJobEntity
-    {
-        public EntityManager entityManager;
-        public Tile[,] tiles;
-        public HashSet<ComponentType> typesToIgnore;
-        public void Execute(in MapTileComponent mapTileComponent, in Entity entity)
-        {
-            int2 index = mapTileComponent.pos;
-
-            Tile tile = new(mapTileComponent);
-            NativeArray<ComponentType> componentTypes = entityManager.GetChunk(entity).Archetype.GetComponentTypes(Allocator.TempJob);
+            Tile tile = new(mapTileComponent.ValueRO);
+            NativeArray<ComponentType> componentTypes = state.EntityManager.GetChunk(entity).Archetype.GetComponentTypes(Allocator.TempJob);
 
             foreach (var componentType in componentTypes)
             {
                 if (typesToIgnore.Contains(componentType) || componentType == typeof(MapTileComponent)) continue;
 
                 if (componentType == typeof(AgingTile))
-                    tile.components.Add(entityManager.GetComponentData<AgingTile>(entity));
+                    tile.components.Add(state.EntityManager.GetComponentData<AgingTile>(entity));
                 else
                     Debug.LogError($"Component of type {componentType} will not be serialized but also isn't present in {typesToIgnore}");
 
             }
-            tiles[index.x, index.y] = tile;
+            WorldDataSystem.worldData.map.tiles[index.x, index.y] = tile;
         }
     }
 }
