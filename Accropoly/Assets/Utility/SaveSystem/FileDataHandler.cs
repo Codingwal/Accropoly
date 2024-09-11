@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -25,7 +26,15 @@ public class FileHandler
 
         FileStream fs = File.Create(dataPath);
         Serializer serializer = new(new(fs));
-        serializer.Serialize((dynamic)obj);
+
+        try
+        {
+            serializer.Serialize((dynamic)obj);
+        }
+        catch (Exception e)
+        {
+            throw new($"Failed to serialize object of type '{obj.GetType()}' with the following error message:\n{e.Message}");
+        }
         fs.Close();
     }
     public static T LoadObject<T>(string directory, string name) where T : new()
@@ -34,7 +43,15 @@ public class FileHandler
 
         FileStream fs = File.Open(dataPath, FileMode.Open);
         Deserializer deserializer = new(new(fs));
-        T data = deserializer.Deserialize((dynamic)new T());
+        T data;
+        try
+        {
+            data = deserializer.Deserialize((dynamic)new T());
+        }
+        catch (Exception e)
+        {
+            throw new($"Failed to deserialize object of type '{typeof(T)}' with the following error message:\n{e.Message}");
+        }
         fs.Close();
         return data;
     }

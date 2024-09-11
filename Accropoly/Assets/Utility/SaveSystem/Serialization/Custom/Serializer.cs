@@ -39,7 +39,7 @@ public partial class Serializer
                 Serialize(componentData.pos);
             }
             else
-                Debug.LogError($"Cannot serialize component of type {type}");
+                throw new($"Cannot serialize component of type {type}");
 
         }
     }
