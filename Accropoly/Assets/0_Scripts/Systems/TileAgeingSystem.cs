@@ -17,35 +17,12 @@ public partial struct TileAgingSystem : ISystem
 
         var ecbSystem = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
 
-        new TileAgingSetupJob()
-        {
-            ecb = ecbSystem.CreateCommandBuffer(state.WorldUnmanaged),
-            random = new(config.seed),
-            minAge = config.randomAgeRange.x,
-            maxAge = config.randomAgeRange.y,
-        }.Schedule();
-
         new TileAgingJob()
         {
             ecb = ecbSystem.CreateCommandBuffer(state.WorldUnmanaged),
             maxAge = config.maxAge,
             newTileType = config.newTileType,
         }.Schedule();
-    }
-    private partial struct TileAgingSetupJob : IJobEntity
-    {
-        public EntityCommandBuffer ecb;
-        public Unity.Mathematics.Random random;
-        public int minAge;
-        public int maxAge;
-        public void Execute(NewTileTag tag, in Entity entity)
-        {
-            ecb.AddComponent(entity, typeof(AgingTile));
-            ecb.SetComponent(entity, new AgingTile
-            {
-                age = random.NextInt(minAge, maxAge)
-            });
-        }
     }
     private partial struct TileAgingJob : IJobEntity
     {

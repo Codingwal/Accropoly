@@ -1,6 +1,7 @@
 - Don't disable Escape input action
 - Finish ContinueGame(), PauseGame() & QuitGame() functions
 - Delete CreateMapTemplate.cs
+- improve regenerateFoldersAndFiles option
 
 
 - reactivate pause menu & scene switching

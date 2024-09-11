@@ -63,7 +63,7 @@ public class FileHandler
     }
     public static void InitFileSystem(string[] requiredDirectories, Dictionary<string, object> requiredFiles)
     {
-#if true // use true normally, false only if the whole directory structure including all requiredFiles should be reset
+#if false // use true normally, false only if the whole directory structure including all requiredFiles should be reset
         foreach (string directory in requiredDirectories)
         {
             if (!Directory.Exists($"{Application.persistentDataPath}/data/{directory}/"))
