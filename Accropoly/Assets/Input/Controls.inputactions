@@ -302,15 +302,6 @@
             "id": "adb67511-4bb6-495e-8ef5-fea1bd906034",
             "actions": [
                 {
-                    "name": "Escape",
-                    "type": "Button",
-                    "id": "f8ad0456-55c1-447d-84cd-6994aa99c56a",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Menu",
                     "type": "Button",
                     "id": "123fe9f2-c13b-4db8-953f-d1aa8c4d444e",
@@ -393,17 +384,6 @@
                 }
             ],
             "bindings": [
-                {
-                    "name": "",
-                    "id": "a8e8ebbe-abb6-4257-80a2-0a47962ab2f3",
-                    "path": "<Keyboard>/escape",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Escape",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
                 {
                     "name": "",
                     "id": "2b4edb86-417b-4b1e-a152-b404fda3ffae",
@@ -500,6 +480,34 @@
                     "processors": "",
                     "groups": "",
                     "action": "Clear",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Menu",
+            "id": "81e66229-fbff-4142-ba6c-240b197b57df",
+            "actions": [
+                {
+                    "name": "Escape",
+                    "type": "Button",
+                    "id": "52d71861-3c54-4c47-83c8-cc75059aa9b1",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "ade32847-0281-4f98-97d7-bfb584cfab4c",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Escape",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

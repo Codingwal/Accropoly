@@ -18,7 +18,7 @@ public partial class InputSystem : SystemBase
         RequireForUpdate<RunGameTag>();
 
         inputActions = new();
-        inputActions.Disable();
+        DisableInputActions();
 
         inputDataHolder = EntityManager.CreateEntity(typeof(InputData), typeof(UIInputData), typeof(PlacementInputData));
 
@@ -28,7 +28,6 @@ public partial class InputSystem : SystemBase
         inputActions.InGame.Rotate.performed += (ctx) => OnPlacementAction(PlacementAction.Rotate);
         inputActions.InGame.Place.performed += (ctx) => OnPlacementAction(PlacementAction.Place);
         inputActions.InGame.Cancel.performed += (ctx) => OnPlacementAction(PlacementAction.Cancel);
-        inputActions.UI.Escape.performed += (ctx) => OnUIAction(UIAction.Escape); ;
         inputActions.UI.Menu.performed += (ctx) => OnUIAction(UIAction.Menu); ;
         inputActions.UI.Clear.performed += (ctx) => OnUIAction(UIAction.Clear); ;
         inputActions.UI.Hotkey1.performed += (ctx) => OnUIAction(UIAction.Hotkey, 1); ;
@@ -38,6 +37,7 @@ public partial class InputSystem : SystemBase
         inputActions.UI.Hotkey5.performed += (ctx) => OnUIAction(UIAction.Hotkey, 5); ;
         inputActions.UI.Hotkey6.performed += (ctx) => OnUIAction(UIAction.Hotkey, 6); ;
         inputActions.UI.Hotkey7.performed += (ctx) => OnUIAction(UIAction.Hotkey, 7); ;
+        inputActions.Menu.Escape.performed += (ctx) => OnUIAction(UIAction.Escape); ;
     }
     protected override void OnUpdate()
     {
@@ -63,6 +63,11 @@ public partial class InputSystem : SystemBase
     }
     public void EnableInputActions() { inputActions.Enable(); }
     public void DisableInputActions() { inputActions.Disable(); }
+    public void EnableGameplayInputActions() { inputActions.InGame.Enable(); inputActions.UI.Enable(); }
+    public void DisableGameplayInputActions() { inputActions.InGame.Disable(); inputActions.UI.Disable(); }
+    public void EnableMenuInputActions() { inputActions.Menu.Enable(); }
+    public void DisableMenuInputActions() { inputActions.Menu.Disable(); }
+
     private void OnPlacementAction(PlacementAction action)
     {
         SystemAPI.SetComponentEnabled<PlacementInputData>(inputDataHolder, true);

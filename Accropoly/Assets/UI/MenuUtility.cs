@@ -17,7 +17,7 @@ public static class MenuUtility
 
         WorldDataSystem.LoadWorldData();
 
-        World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<InputSystem>().EnableInputActions();
+        GetInputSystem().EnableInputActions();
     }
     public static void QuitGame()
     {
@@ -25,6 +25,8 @@ public static class MenuUtility
 
         EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
         entityManager.DestroyEntity(entityManager.CreateEntityQuery(typeof(RunGameTag)));
+
+        GetInputSystem().DisableMenuInputActions();
     }
     public static void DeleteWorld(string mapName)
     {
@@ -42,14 +44,18 @@ public static class MenuUtility
     {
         // TODO: Pause game
 
-        World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<InputSystem>().DisableInputActions();
+        GetInputSystem().DisableGameplayInputActions();
         pausingGame?.Invoke();
     }
     public static void ContinueGame()
     {
         // TODO: Continue game
 
-        World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<InputSystem>().EnableInputActions();
+        GetInputSystem().EnableGameplayInputActions();
         continuingGame?.Invoke();
+    }
+    private static InputSystem GetInputSystem()
+    {
+        return World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<InputSystem>();
     }
 }
