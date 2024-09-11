@@ -38,6 +38,13 @@ public partial class Serializer
                 bw.Write((int)componentData.tileType);
                 Serialize(componentData.pos);
             }
+            else if (type == typeof(AgingTile))
+            {
+                bw.Write((int)Components.AgingTile);
+
+                AgingTile componentData = (AgingTile)component;
+                bw.Write(componentData.age);
+            }
             else
                 throw new($"Cannot serialize component of type {type}");
 

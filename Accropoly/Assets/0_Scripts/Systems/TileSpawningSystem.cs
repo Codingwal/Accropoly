@@ -47,6 +47,7 @@ public partial struct TileSpawningSystem : ISystem
                         MaterialMeshPair pair = MaterialsAndMeshesHolder.GetMaterialAndMesh(((MapTileComponent)component).tileType);
                         commandBuffer.SetSharedComponentManaged(entity, new RenderMeshArray(new Material[] { pair.material }, new Mesh[] { pair.mesh }));
                     }
+                    else if (type == typeof(AgingTile)) commandBuffer.SetComponent(entity, (AgingTile)component);
                     else Debug.LogError($"Unexpected type {type.Name}");
                 }
             }

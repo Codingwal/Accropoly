@@ -25,6 +25,7 @@ public static class MenuUtility
 
         EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
         entityManager.DestroyEntity(entityManager.CreateEntityQuery(typeof(RunGameTag)));
+        entityManager.DestroyEntity(entityManager.CreateEntityQuery(typeof(MapTileComponent)));
 
         GetInputSystem().DisableMenuInputActions();
     }

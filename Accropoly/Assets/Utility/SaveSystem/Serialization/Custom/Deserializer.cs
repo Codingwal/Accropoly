@@ -45,6 +45,13 @@ public partial class Deserializer
                     pos = Deserialize(new int2())
                 });
             }
+            else if (type == Components.AgingTile)
+            {
+                data.components.Add(new AgingTile()
+                {
+                    age = br.ReadInt32()
+                });
+            }
             else
                 throw new($"Cannot deserialize component of type {type}");
 
