@@ -38,7 +38,12 @@ public class MenuManager : MonoBehaviour
         deleteMapButton.onClick.AddListener(OnDeleteMap);
 
         continueButton.onClick.AddListener(() => MenuUtility.ContinueGame());
-        toMainMenuButton.onClick.AddListener(() => { MenuUtility.QuitGame(); mainMenu.SetActive(true); });
+        toMainMenuButton.onClick.AddListener(() =>
+        {
+            MenuUtility.QuitGame();
+            mainMenu.SetActive(true);
+            pauseMenu.SetActive(false);
+        });
         MenuUtility.continuingGame += () => pauseMenu.SetActive(false);
         MenuUtility.pausingGame += () => pauseMenu.SetActive(true);
 
