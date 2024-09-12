@@ -1,6 +1,5 @@
 using Unity.Entities;
 using Unity.Mathematics;
-
 public struct MapTileComponent : IComponentData
 {
     public TileType tileType;

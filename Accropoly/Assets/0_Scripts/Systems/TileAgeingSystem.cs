@@ -1,5 +1,7 @@
 using Unity.Entities;
+using Unity.Rendering;
 using Unity.Transforms;
+using UnityEngine;
 
 public partial struct TileAgingSystem : ISystem
 {
@@ -26,11 +28,13 @@ public partial struct TileAgingSystem : ISystem
         public EntityCommandBuffer ecb;
         public int maxAge;
         public TileType newTileType;
-        public void Execute(ref AgingTile agingTile, ref LocalTransform localTransform, in Entity entity)
+        public void Execute(ref AgingTile agingTile, ref MapTileComponent mapTileComponent, in Entity entity)
         {
             if (agingTile.age > maxAge)
             {
-                localTransform.Position.y++;
+                mapTileComponent.tileType = newTileType;
+                MaterialsAndMeshesHolder.UpdateMeshAndMaterial(entity, mapTileComponent.tileType);
+
                 ecb.RemoveComponent<AgingTile>(entity);
             }
             else agingTile.age++;
