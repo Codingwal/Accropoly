@@ -14,8 +14,6 @@ public partial struct TileSavingSystem : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
-        Debug.Log("Saving tiles");
-
         var tilePrefab = SystemAPI.GetSingleton<TilePrefab>();
         NativeArray<ComponentType> typesToIgnore = state.EntityManager.GetChunk(tilePrefab.tilePrefab).Archetype.GetComponentTypes();
 
@@ -48,7 +46,6 @@ public partial struct TileSavingSystem : ISystem
             WorldDataSystem.worldData.map.tiles[index.x, index.y] = tile;
 
             componentTypes.Dispose();
-
         }
     }
 }

@@ -8,10 +8,12 @@ public partial struct WorldDataSystem : ISystem
     public static WorldData worldData;
     private EntityQuery loadGameTagQuery;
     private EntityQuery saveGameTagQuery;
+    private EntityQuery mapTileQuery;
     public void OnCreate(ref SystemState state)
     {
         loadGameTagQuery = state.GetEntityQuery(typeof(LoadGameTag));
         saveGameTagQuery = state.GetEntityQuery(typeof(SaveGameTag));
+        mapTileQuery = state.GetEntityQuery(typeof(MapTileComponent));
         state.RequireAnyForUpdate(loadGameTagQuery, saveGameTagQuery);
     }
     public void OnUpdate(ref SystemState state)
@@ -23,7 +25,7 @@ public partial struct WorldDataSystem : ISystem
             Debug.Log("Saving WorldData");
             SaveSystem.Instance.SaveWorldData(worldData);
 
-            state.EntityManager.DestroyEntity(state.GetEntityQuery(typeof(MapTileComponent)));
+            state.EntityManager.DestroyEntity(mapTileQuery);
         }
 
         state.EntityManager.RemoveComponent(saveGameTagQuery, typeof(SaveGameTag));
