@@ -14,8 +14,6 @@ public partial struct TileSavingSystem : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
-        state.Enabled = false;
-
         Debug.Log("Saving tiles");
 
         var tilePrefab = SystemAPI.GetSingleton<TilePrefab>();
@@ -25,12 +23,8 @@ public partial struct TileSavingSystem : ISystem
         foreach (var type in typesToIgnore)
             typesToIgnoreSet.Add(type);
 
-        var query = state.GetEntityQuery(typeof(MapTileComponent));
-        Debug.Log(query.CalculateEntityCount());
-
         WorldDataSystem.worldData.map.tiles = new Tile[WorldDataSystem.worldData.map.tiles.GetLength(0), WorldDataSystem.worldData.map.tiles.GetLength(1)];
 
-        int i = 0;
         foreach ((MapTileComponent mapTileComponent, Entity entity) in SystemAPI.Query<MapTileComponent>().WithEntityAccess())
         {
             int2 index = mapTileComponent.pos;
@@ -46,7 +40,6 @@ public partial struct TileSavingSystem : ISystem
                 if (componentType == typeof(AgingTile))
                 {
                     tile.components.Add(state.EntityManager.GetComponentData<AgingTile>(entity));
-                    i++;
                 }
                 else
                     Debug.LogError($"Component of type {componentType} will not be serialized but also isn't present in {typesToIgnore}");
@@ -57,6 +50,5 @@ public partial struct TileSavingSystem : ISystem
             componentTypes.Dispose();
 
         }
-        // Debug.Log(i + ", " + tiles.GetLength(0) * tiles.GetLength(1));
     }
 }
