@@ -32,8 +32,9 @@ public partial struct BuildingSystem : ISystem
 
             if (placementInputData.action == PlacementAction.Rotate)
             {
+                Debug.Log("!");
                 tileToPlace.Rotate(90);
-                localTransform.RotateY(math.radians(90));
+                localTransform = localTransform.RotateY(math.radians(90));
             }
             else if (placementInputData.action == PlacementAction.Cancel)
             {
@@ -45,7 +46,6 @@ public partial struct BuildingSystem : ISystem
                 // Place tileToPlace
             }
         }
-        state.EntityManager.SetComponentData(entity, localTransform);
 
         // Update position
 
