@@ -8,6 +8,7 @@ public struct InputData : IComponentData
 {
     public CameraInputData camera;
     public Vector2 mouseMove;
+    public Vector2 mousePos;
     public bool shift;
 }
 public struct CameraInputData

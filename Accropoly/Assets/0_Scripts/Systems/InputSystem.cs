@@ -54,6 +54,7 @@ public partial class InputSystem : SystemBase
                 look = inGameActions.CameraLook.IsPressed(),
             },
             mouseMove = inGameActions.MouseMove.ReadValue<Vector2>(),
+            mousePos = inGameActions.MousePos.ReadValue<Vector2>(),
             shift = inGameActions.Shift.IsPressed(),
         });
 

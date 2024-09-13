@@ -116,6 +116,15 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""processors"": ""NormalizeVector2"",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""MousePos"",
+                    ""type"": ""Value"",
+                    ""id"": ""91cdaad4-b6f2-46f5-8c0d-b49137201576"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -314,6 +323,17 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""MouseMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fe8371a1-3dcd-41cc-8b01-f2fb9593cbe9"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MousePos"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -550,6 +570,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         m_InGame_Place = m_InGame.FindAction("Place", throwIfNotFound: true);
         m_InGame_CameraLook = m_InGame.FindAction("CameraLook", throwIfNotFound: true);
         m_InGame_MouseMove = m_InGame.FindAction("MouseMove", throwIfNotFound: true);
+        m_InGame_MousePos = m_InGame.FindAction("MousePos", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Menu = m_UI.FindAction("Menu", throwIfNotFound: true);
@@ -635,6 +656,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     private readonly InputAction m_InGame_Place;
     private readonly InputAction m_InGame_CameraLook;
     private readonly InputAction m_InGame_MouseMove;
+    private readonly InputAction m_InGame_MousePos;
     public struct InGameActions
     {
         private @Controls m_Wrapper;
@@ -649,6 +671,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         public InputAction @Place => m_Wrapper.m_InGame_Place;
         public InputAction @CameraLook => m_Wrapper.m_InGame_CameraLook;
         public InputAction @MouseMove => m_Wrapper.m_InGame_MouseMove;
+        public InputAction @MousePos => m_Wrapper.m_InGame_MousePos;
         public InputActionMap Get() { return m_Wrapper.m_InGame; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -688,6 +711,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @MouseMove.started += instance.OnMouseMove;
             @MouseMove.performed += instance.OnMouseMove;
             @MouseMove.canceled += instance.OnMouseMove;
+            @MousePos.started += instance.OnMousePos;
+            @MousePos.performed += instance.OnMousePos;
+            @MousePos.canceled += instance.OnMousePos;
         }
 
         private void UnregisterCallbacks(IInGameActions instance)
@@ -722,6 +748,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @MouseMove.started -= instance.OnMouseMove;
             @MouseMove.performed -= instance.OnMouseMove;
             @MouseMove.canceled -= instance.OnMouseMove;
+            @MousePos.started -= instance.OnMousePos;
+            @MousePos.performed -= instance.OnMousePos;
+            @MousePos.canceled -= instance.OnMousePos;
         }
 
         public void RemoveCallbacks(IInGameActions instance)
@@ -907,6 +936,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         void OnPlace(InputAction.CallbackContext context);
         void OnCameraLook(InputAction.CallbackContext context);
         void OnMouseMove(InputAction.CallbackContext context);
+        void OnMousePos(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
