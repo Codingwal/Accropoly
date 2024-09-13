@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.Entities.UniversalDelegates;
 using UnityEngine;
 
 public class SaveSystem : FileHandler
@@ -30,7 +31,11 @@ public class SaveSystem : FileHandler
         {
             requiredFiles.Add("Templates/" + keyValuePair.Key, keyValuePair.Value);
         }
-        InitFileSystem(requiredDirectories, requiredFiles);
+
+        InitFileSystem(requiredDirectories, requiredFiles, SaveSystemConfig.OverwriteFiles);
+
+        if (SaveSystemConfig.DeleteSaves)
+            DeleteDirectoryContent("Saves");
     }
     public WorldData GetWorldData(string worldName) { return LoadObject<WorldData>("Saves", worldName); }
     public WorldData GetWorldData() { return GetWorldData(GetWorldName()); }

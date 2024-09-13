@@ -1,6 +1,4 @@
-- Fix too many InputSystems bug
 - Add GetNeighbourEntity utility
-- improve regenerateFoldersAndFiles option
 - remake BuildingSystem
 
 FUTURE:

@@ -62,9 +62,17 @@ public class FileHandler
 
         File.Delete(filePath);
     }
-    public static void InitFileSystem(string[] requiredDirectories, Dictionary<string, object> requiredFiles)
+    public static void DeleteDirectoryContent(string directory)
     {
-#if false // use true normally, false only if the whole directory structure including all requiredFiles should be reset
+        DirectoryInfo baseDir = new DirectoryInfo($"{Application.persistentDataPath}/data/{directory}");
+
+        foreach (FileInfo file in baseDir.GetFiles())
+            file.Delete();
+        foreach (DirectoryInfo dir in baseDir.GetDirectories())
+            dir.Delete(true);
+    }
+    public static void InitFileSystem(string[] requiredDirectories, Dictionary<string, object> requiredFiles, bool overwriteFiles)
+    {
         foreach (string directory in requiredDirectories)
         {
             if (!Directory.Exists($"{Application.persistentDataPath}/data/{directory}/"))
@@ -74,20 +82,10 @@ public class FileHandler
         }
         foreach (var fileDataPair in requiredFiles)
         {
-            if (!File.Exists($"{Application.persistentDataPath}/data/{fileDataPair.Key}.bin"))
+            if (overwriteFiles || !File.Exists($"{Application.persistentDataPath}/data/{fileDataPair.Key}.bin"))
             {
                 SaveObject("", fileDataPair.Key, fileDataPair.Value);
             }
         }
-#else
-        foreach (string directory in requiredDirectories)
-        {
-            Directory.CreateDirectory($"{Application.persistentDataPath}/data/{directory}/");
-        }
-        foreach (var fileDataPair in requiredFiles)
-        {
-            SaveObject("", fileDataPair.Key, fileDataPair.Value);
-        }
-#endif
     }
 }
