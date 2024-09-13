@@ -49,7 +49,7 @@ public partial class Deserializer
             {
                 data.components.Add(new AgingTile()
                 {
-                    age = br.ReadInt32()
+                    age = br.ReadSingle()
                 });
             }
             else

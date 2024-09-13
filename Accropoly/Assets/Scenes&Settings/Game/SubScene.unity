@@ -184,8 +184,8 @@ MonoBehaviour:
   seed: 100
   randomAgeRange:
     x: 0
-    y: 3000
-  maxAge: 4000
+    y: 10
+  maxAge: 20
   newTileType: 1
 --- !u!114 &903553019
 MonoBehaviour:

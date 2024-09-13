@@ -30,6 +30,6 @@ public struct TileAgeingConfig : IComponentData
 {
     public uint seed;
     public int2 randomAgeRange;
-    public int maxAge;
+    public float maxAge;
     public TileType newTileType;
 }

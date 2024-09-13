@@ -28,7 +28,7 @@ public static class MapTemplates
                 for (int y = 0; y < tiles.GetLength(1); y++)
                 {
                     tiles[x, y] = new(new MapTileComponent(x, y, TileType.Plains));
-                    tiles[x, y].components.Add(new AgingTile() { age = random.NextInt(0, 3000) });
+                    tiles[x, y].components.Add(new AgingTile() { age = random.NextFloat(0, 10) });
                 }
             }
             return tiles;

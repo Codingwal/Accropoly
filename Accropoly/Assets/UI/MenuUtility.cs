@@ -1,5 +1,6 @@
 using System;
 using Unity.Entities;
+using UnityEngine;
 
 public static class MenuUtility
 {
@@ -42,15 +43,13 @@ public static class MenuUtility
     }
     public static void PauseGame()
     {
-        // TODO: Pause game
-
+        Time.timeScale = 0;
         GetInputSystem().DisableGameplayInputActions();
         pausingGame?.Invoke();
     }
     public static void ContinueGame()
     {
-        // TODO: Continue game
-
+        Time.timeScale = 1;
         GetInputSystem().EnableGameplayInputActions();
         continuingGame?.Invoke();
     }

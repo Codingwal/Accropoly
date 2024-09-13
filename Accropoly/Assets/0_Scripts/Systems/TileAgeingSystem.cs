@@ -1,6 +1,4 @@
 using Unity.Entities;
-using Unity.Rendering;
-using Unity.Transforms;
 using UnityEngine;
 
 public partial struct TileAgingSystem : ISystem
@@ -12,6 +10,8 @@ public partial struct TileAgingSystem : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
+        if (Time.timeScale == 0) return;
+
         TileAgeingConfig config = SystemAPI.GetSingleton<TileAgeingConfig>();
 
         var ecbSystem = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
@@ -19,6 +19,7 @@ public partial struct TileAgingSystem : ISystem
         new TileAgingJob()
         {
             ecb = ecbSystem.CreateCommandBuffer(state.WorldUnmanaged),
+            deltaTime = Time.deltaTime,
             maxAge = config.maxAge,
             newTileType = config.newTileType,
         }.Schedule();
@@ -26,10 +27,13 @@ public partial struct TileAgingSystem : ISystem
     private partial struct TileAgingJob : IJobEntity
     {
         public EntityCommandBuffer ecb;
-        public int maxAge;
+        public float deltaTime;
+        public float maxAge;
         public TileType newTileType;
         public void Execute(ref AgingTile agingTile, ref MapTileComponent mapTileComponent, in Entity entity)
         {
+            agingTile.age += deltaTime;
+
             if (agingTile.age > maxAge)
             {
                 mapTileComponent.tileType = newTileType;
@@ -37,7 +41,6 @@ public partial struct TileAgingSystem : ISystem
 
                 ecb.RemoveComponent<AgingTile>(entity);
             }
-            else agingTile.age++;
         }
     }
 }
