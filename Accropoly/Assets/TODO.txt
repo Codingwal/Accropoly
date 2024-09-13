@@ -1,6 +1,5 @@
 - Fix too many InputSystems bug
 - Add GetNeighbourEntity utility
-- Delete CreateMapTemplate.cs
 - improve regenerateFoldersAndFiles option
 
 FUTURE:
