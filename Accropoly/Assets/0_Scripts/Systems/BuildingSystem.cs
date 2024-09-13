@@ -60,7 +60,7 @@ public partial struct BuildingSystem : ISystem
         };
         state.EntityManager.SetComponentEnabled<MaterialMeshInfo>(entity, true); // Show the tileToPlace entity if the user points on the tileMap
 
-        localTransform.Position.xz = math.round((((float3)info.point).xz + 1) / 2) * 2 - 1; // Align the position to the tileGrid
+        localTransform.Position.xz = math.round(((float3)info.point).xz / 2) * 2; // Align the position to the tileGrid
         localTransform.Position.y = 0.5f; // Important for tile visibility
 
         state.EntityManager.SetComponentData(entity, localTransform);
