@@ -1,3 +1,4 @@
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Rendering;
@@ -22,19 +23,20 @@ public partial struct BuildingSystem : ISystem
 
         var config = SystemAPI.GetSingleton<BuildingSystemConfig>();
 
-        bool placementInput = placementInputDataQuery.CalculateEntityCount() != 0;
         var tileToPlace = SystemAPI.GetSingleton<TileToPlace>();
 
-        if (placementInput)
+        if (placementInputDataQuery.CalculateEntityCount() != 0)
         {
-            var placementInputData = placementInputDataQuery.GetSingleton<PlacementInputData>(); // TODO: Can't use GetSingleton
+            var placementInputData = state.EntityManager.GetComponentData<PlacementInputData>(SystemAPI.GetSingletonEntity<InputData>());
+
             if (placementInputData.action == PlacementAction.Rotate)
             {
                 // Rotate tileToPlace
             }
             else if (placementInputData.action == PlacementAction.Cancel)
             {
-                // Cancel placing process
+                state.EntityManager.DestroyEntity(entity);
+                return;
             }
             else if (placementInputData.action == PlacementAction.Place)
             {
