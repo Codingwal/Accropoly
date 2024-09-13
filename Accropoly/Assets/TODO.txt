@@ -1,5 +1,6 @@
-- store worldData as managed component instead of static field (?)
 - remake BuildingSystem
+- store worldData as managed component instead of static field (?)
+- delete RunGameTag on pausing (?)
 
 FUTURE:
 - Add namespaces (?)
