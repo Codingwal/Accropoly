@@ -1,21 +1,31 @@
 using Unity.Entities;
+using Unity.Transforms;
 using UnityEngine;
 using PlacementAction = PlacementInputData.Action;
 public partial struct BuildingSystem : ISystem
 {
     EntityQuery placementInputDataQuery;
+    Entity entity;
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<RunGameTag>();
         // state.RequireForUpdate<TileToPlace>();
 
         placementInputDataQuery = state.GetEntityQuery(typeof(PlacementInputData));
+
+        entity.Index = -1;
     }
     public void OnUpdate(ref SystemState state)
     {
         if (Time.timeScale == 0) return;
 
-        bool placementInput = placementInputDataQuery.CalculateEntityCount() != 0;
+        if (entity.Index == -1)
+        {
+            var prefab = SystemAPI.GetSingleton<TilePrefab>();
+            entity = state.EntityManager.Instantiate(prefab);
+        }
+
+        // bool placementInput = placementInputDataQuery.CalculateEntityCount() != 0;
         // var tileToPlace = SystemAPI.GetSingleton<TileToPlace>();
 
         // if (placementInput)
@@ -42,7 +52,7 @@ public partial struct BuildingSystem : ISystem
         Ray ray = Camera.main.ScreenPointToRay(inputData.mousePos);
 
         if (Physics.Raycast(ray, out RaycastHit info, 1000))
-            Debug.Log(info.point);
+            state.EntityManager.SetComponentData(entity, LocalTransform.FromPosition(info.point));
     }
 }
 
