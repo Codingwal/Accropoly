@@ -80,7 +80,7 @@ public class MenuManager : MonoBehaviour
             else // If the game is running
                 MenuUtility.PauseGame();
         else if (inputData.action == UIAction.Clear)
-            MenuUtility.PlaceTile(TileType.Plains);
+            MenuUtility.PlaceTile(TileType.Forest);
     }
     private void ReloadUI()
     {

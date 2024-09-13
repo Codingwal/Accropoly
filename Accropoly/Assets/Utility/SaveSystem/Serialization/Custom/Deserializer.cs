@@ -1,7 +1,4 @@
-using System;
-using Unity.Entities;
 using Unity.Mathematics;
-using UnityEngine;
 
 public partial class Deserializer
 {
@@ -42,7 +39,8 @@ public partial class Deserializer
                 data.components.Add(new MapTileComponent()
                 {
                     tileType = (TileType)br.ReadInt32(),
-                    pos = Deserialize(new int2())
+                    pos = Deserialize(new int2()),
+                    rotation = br.ReadInt32()
                 });
             }
             else if (type == Components.AgingTile)

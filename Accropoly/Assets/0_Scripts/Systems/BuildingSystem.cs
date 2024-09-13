@@ -1,9 +1,9 @@
-using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
+
 using PlacementAction = PlacementInputData.Action;
 public partial struct BuildingSystem : ISystem
 {
@@ -23,7 +23,8 @@ public partial struct BuildingSystem : ISystem
 
         var config = SystemAPI.GetSingleton<BuildingSystemConfig>();
 
-        var tileToPlace = SystemAPI.GetSingleton<TileToPlace>();
+        var localTransform = state.EntityManager.GetComponentData<LocalTransform>(entity);
+        var tileToPlace = state.EntityManager.GetComponentData<TileToPlace>(entity);
 
         if (placementInputDataQuery.CalculateEntityCount() != 0)
         {
@@ -31,7 +32,8 @@ public partial struct BuildingSystem : ISystem
 
             if (placementInputData.action == PlacementAction.Rotate)
             {
-                // Rotate tileToPlace
+                tileToPlace.Rotate(90);
+                localTransform.RotateY(math.radians(90));
             }
             else if (placementInputData.action == PlacementAction.Cancel)
             {
@@ -43,6 +45,7 @@ public partial struct BuildingSystem : ISystem
                 // Place tileToPlace
             }
         }
+        state.EntityManager.SetComponentData(entity, localTransform);
 
         // Update position
 
@@ -57,10 +60,11 @@ public partial struct BuildingSystem : ISystem
         };
         state.EntityManager.SetComponentEnabled<MaterialMeshInfo>(entity, true); // Show the tileToPlace entity if the user points on the tileMap
 
-        var transform = LocalTransform.FromPosition(info.point);
-        transform.Position.xz = math.round((transform.Position.xz + 1) / 2) * 2 - 1; // Align the position to the tileGrid
-        transform.Position.y = 0.5f; // Important for tile visibility
-        state.EntityManager.SetComponentData(entity, transform);
+        localTransform.Position.xz = math.round((((float3)info.point).xz + 1) / 2) * 2 - 1; // Align the position to the tileGrid
+        localTransform.Position.y = 0.5f; // Important for tile visibility
+
+        state.EntityManager.SetComponentData(entity, localTransform);
+        state.EntityManager.SetComponentData(entity, tileToPlace);
     }
     public static void StartPlacementProcess(TileType tileType)
     {
@@ -77,4 +81,3 @@ public partial struct BuildingSystem : ISystem
         MaterialsAndMeshesHolder.UpdateMeshAndMaterial(entity, tileType); // Set mesh & material according to the specified tileType
     }
 }
-

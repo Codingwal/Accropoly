@@ -4,10 +4,18 @@ public struct MapTileComponent : IComponentData
 {
     public TileType tileType;
     public int2 pos;
-    public MapTileComponent(int x, int y, TileType tileType)
+    public int rotation;
+    public MapTileComponent(int x, int y, TileType tileType, int rotation)
     {
         pos = new(x, y);
         this.tileType = tileType;
+        this.rotation = rotation;
+    }
+    public void Rotate(int degrees)
+    {
+        rotation += degrees;
+        if (rotation > 180)
+            rotation -= 360;
     }
 }
 public enum TileType
