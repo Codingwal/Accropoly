@@ -32,9 +32,14 @@ public class MaterialsAndMeshesHolder : MonoBehaviour
     public static MaterialMeshPair GetMaterialAndMesh(TileType tileType)
     {
         if (instance == null) Debug.LogError("Instance == null");
+
         foreach (var pair in instance.materialsAndMeshes)
             if (pair.key == tileType)
+            {
+                Debug.Assert(pair.value.material != null, $"Material for tileType {tileType} is null");
+                Debug.Assert(pair.value.mesh != null, $"Mesh for tileType {tileType} is null");
                 return pair.value;
+            }
         Debug.LogError($"Material & Mesh for tileType {tileType} is missing");
         return default;
     }

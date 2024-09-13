@@ -26,6 +26,7 @@ public class MenuManager : MonoBehaviour
     private string SelectedMapTemplateName => mapTemplateDropdown.options[mapTemplateDropdown.value].text;
     private void Awake()
     {
+        //
         InputSystem.escape += OnEscape;
 
         startGameButton.onClick.AddListener(OnStartGame);

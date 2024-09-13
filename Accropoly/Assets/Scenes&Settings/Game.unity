@@ -1383,7 +1383,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   overwriteFiles: 0
-  deleteSaves: 1
+  deleteSaves: 0
 --- !u!1 &440841229
 GameObject:
   m_ObjectHideFlags: 0

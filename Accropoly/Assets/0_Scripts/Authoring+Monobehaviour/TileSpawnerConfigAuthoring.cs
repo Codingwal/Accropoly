@@ -10,6 +10,8 @@ public class TileSpawnerConfigAuthoring : MonoBehaviour
     {
         public override void Bake(TileSpawnerConfigAuthoring authoring)
         {
+            Debug.Assert(authoring.tilePrefab != null, "tilePrefab is null");
+
             Entity entity = GetEntity(TransformUsageFlags.None);
 
             AddComponent<TilePrefab>(entity, GetEntity(authoring.tilePrefab, TransformUsageFlags.Dynamic));
