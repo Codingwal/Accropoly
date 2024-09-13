@@ -75,7 +75,7 @@ public partial struct CameraSystem : ISystem
             float2 moveDir = forwardDir * inputData.camera.move.y + rightDir * inputData.camera.move.x; // moveDir is dependent on rotation & input
             transform.pos.xz += currentSpeedMultiplier * config.moveSpeed * deltaTime * moveDir;
 
-            transform.pos.xz = math.clamp(transform.pos.xz, new(-mapSize / 2), new(mapSize / 2)); // Prevent flying away from the map
+            transform.pos.xz = math.clamp(transform.pos.xz, -1, mapSize * 2 + 1); // Prevent flying away from the map
 
 
             // Rotate around the y-axis

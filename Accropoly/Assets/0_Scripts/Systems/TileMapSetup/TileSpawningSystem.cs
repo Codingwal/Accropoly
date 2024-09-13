@@ -38,7 +38,7 @@ public partial struct TileSpawningSystem : ISystem
             {
                 Entity entity = state.EntityManager.Instantiate(prefab); // Entity needs to be created on main thread so that a valid value is stored in the buffer 
 
-                ecb.SetComponent(entity, LocalTransform.FromPosition(new(2 * x - tiles.GetLength(0) / 4, 0, 2 * y - tiles.GetLength(1) / 4)));
+                ecb.SetComponent(entity, LocalTransform.FromPosition(new(2 * x, 0, 2 * y)));
 
                 ecb.AddComponent(entity, new NewTileTag());
 
@@ -60,7 +60,5 @@ public partial struct TileSpawningSystem : ISystem
                 buffer.Add(entity);
             }
         }
-        // ecb.Playback(state.EntityManager);
-        // ecb.Dispose();
     }
 }

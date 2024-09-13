@@ -42,7 +42,7 @@ public partial struct BuildingSystem : ISystem
             }
             else if (placementInputData.action == PlacementAction.Place)
             {
-                int2 pos = (int2)localTransform.Position.xz / 4 + (int)math.sqrt(TileGridUtility.GetEntityGrid().Length) / 2;
+                int2 pos = (int2)localTransform.Position.xz / 2;
                 Entity oldTile = TileGridUtility.GetTile(pos);
                 TileType newTileType = tileToPlace.tileType;
 
