@@ -2,6 +2,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+using UIAction = UIInputData.Action;
+
 public class MenuManager : MonoBehaviour
 {
     [Header("Menus")]
@@ -26,7 +28,7 @@ public class MenuManager : MonoBehaviour
     private string SelectedMapTemplateName => mapTemplateDropdown.options[mapTemplateDropdown.value].text;
     private void Awake()
     {
-        InputSystem.escape += OnEscape;
+        InputSystem.uiInput += OnUIInput;
 
         startGameButton.onClick.AddListener(OnStartGame);
         createMapButton.onClick.AddListener(OnCreateMap);
@@ -51,7 +53,7 @@ public class MenuManager : MonoBehaviour
     }
     private void OnDisable()
     {
-        InputSystem.escape -= OnEscape;
+        InputSystem.uiInput -= OnUIInput;
     }
 
     private void OnStartGame()
@@ -70,12 +72,15 @@ public class MenuManager : MonoBehaviour
         MenuUtility.DeleteWorld(SelectedWorldName);
         ReloadUI();
     }
-    private void OnEscape()
+    private void OnUIInput(UIInputData inputData)
     {
-        if (pauseMenu.activeSelf) // If the game is paused
-            MenuUtility.ContinueGame();
-        else // If the game is running
-            MenuUtility.PauseGame();
+        if (inputData.action == UIAction.Escape)
+            if (pauseMenu.activeSelf) // If the game is paused
+                MenuUtility.ContinueGame();
+            else // If the game is running
+                MenuUtility.PauseGame();
+        else if (inputData.action == UIAction.Clear)
+            MenuUtility.PlaceTile(TileType.Plains);
     }
     private void ReloadUI()
     {

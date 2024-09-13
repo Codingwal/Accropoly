@@ -11,7 +11,7 @@ public partial class InputSystem : SystemBase
     private Controls inputActions;
     private Entity inputDataHolder;
 
-    public static Action escape;
+    public static Action<UIInputData> uiInput;
 
     protected override void OnCreate()
     {
@@ -76,13 +76,15 @@ public partial class InputSystem : SystemBase
     }
     private void OnUIAction(UIAction action, int hotkey = -1)
     {
-        if (action == UIAction.Escape) escape?.Invoke();
-
-        SystemAPI.SetComponentEnabled<UIInputData>(inputDataHolder, true);
-        SystemAPI.SetComponent(inputDataHolder, new UIInputData
+        var inputData = new UIInputData
         {
             action = action,
             hotkey = hotkey
-        });
+        };
+        
+        uiInput?.Invoke(inputData);
+
+        SystemAPI.SetComponentEnabled<UIInputData>(inputDataHolder, true);
+        SystemAPI.SetComponent(inputDataHolder, inputData);
     }
 }

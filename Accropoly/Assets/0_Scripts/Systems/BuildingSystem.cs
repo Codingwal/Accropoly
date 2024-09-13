@@ -57,7 +57,7 @@ public partial struct BuildingSystem : ISystem
 
         var transform = LocalTransform.FromPosition(info.point);
         transform.Position.xz = math.round((transform.Position.xz + 1) / 2) * 2 - 1; // Align the position to the tileGrid
-        transform.Scale = 2;
+        transform.Position.y = 0.5f; // Important for tile visibility
         state.EntityManager.SetComponentData(entity, transform);
     }
     public static void StartPlacementProcess(TileType tileType)
