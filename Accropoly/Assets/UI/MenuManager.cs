@@ -53,7 +53,6 @@ public class MenuManager : MonoBehaviour
     private void OnStartGame()
     {
         mainMenu.SetActive(false);
-        // loadingScreen.SetActive(true);
 
         MenuUtility.StartGame(SelectedWorldName);
     }
@@ -82,7 +81,7 @@ public class MenuManager : MonoBehaviour
         {
             mapTemplateDropdown.options.Add(new(template));
         }
-        // mapTemplateDropdown.value = 0;
+        mapTemplateDropdown.value = 0;
         mapTemplateDropdown.RefreshShownValue();
 
         string[] maps = MenuUtility.GetWorldNames();
@@ -91,7 +90,7 @@ public class MenuManager : MonoBehaviour
         {
             mapsDropdown.options.Add(new(map));
         }
-        // mapsDropdown.value = 0;
-        mapTemplateDropdown.RefreshShownValue();
+        mapsDropdown.value = 0;
+        mapsDropdown.RefreshShownValue();
     }
 }
