@@ -6,18 +6,7 @@ using UnityEngine;
 
 public partial struct CameraSystem : ISystem
 {
-    // private void OnEnable()
-    // {
-    // WorldDataManager.onWorldDataLoaded += InitCameraSystem;
-    // WorldDataManager.onWorldDataSaving += SaveCameraSystem;
-    // }
-    // private void OnDisable()
-    // {
-    // WorldDataManager.onWorldDataLoaded -= InitCameraSystem;
-    // WorldDataManager.onWorldDataSaving -= SaveCameraSystem;
-    // }
     private Entity transformHolder;
-    private JobHandle jobHandle;
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<RunGameTag>();
@@ -38,7 +27,7 @@ public partial struct CameraSystem : ISystem
         var inputData = SystemAPI.GetSingleton<InputData>();
         var cameraTransform = SystemAPI.GetSingleton<CameraTransform>();
 
-        jobHandle = new Job
+        new Job
         {
             config = config,
             inputData = inputData,

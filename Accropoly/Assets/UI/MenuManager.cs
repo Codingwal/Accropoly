@@ -7,7 +7,6 @@ public class MenuManager : MonoBehaviour
     [Header("Menus")]
     [SerializeField] private GameObject mainMenu;
     [SerializeField] private GameObject pauseMenu;
-    [SerializeField] private GameObject loadingScreen;
 
 
     [Header("Main menu")]
@@ -18,9 +17,6 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private Button deleteMapButton;
     [SerializeField] private TMP_Dropdown mapsDropdown;
 
-    [Header("Loading screen")]
-    [SerializeField] private Scrollbar progressBar;
-
 
     [Header("Pause menu")]
     [SerializeField] private Button toMainMenuButton;
@@ -30,7 +26,6 @@ public class MenuManager : MonoBehaviour
     private string SelectedMapTemplateName => mapTemplateDropdown.options[mapTemplateDropdown.value].text;
     private void Awake()
     {
-        MenuUtility.loadingWorld += OnLoadingWorld;
         InputSystem.escape += OnEscape;
 
         startGameButton.onClick.AddListener(OnStartGame);
@@ -48,7 +43,6 @@ public class MenuManager : MonoBehaviour
         MenuUtility.pausingGame += () => pauseMenu.SetActive(true);
 
         mainMenu.SetActive(true);
-        loadingScreen.SetActive(false);
         pauseMenu.SetActive(false);
 
         mapNameField.text = SaveSystem.Instance.GetWorldName();
@@ -72,11 +66,6 @@ public class MenuManager : MonoBehaviour
     {
         MenuUtility.DeleteWorld(SelectedWorldName);
         ReloadUI();
-    }
-
-    private void OnLoadingWorld(float progress)
-    {
-        progressBar.value = progress;
     }
     private void OnEscape()
     {

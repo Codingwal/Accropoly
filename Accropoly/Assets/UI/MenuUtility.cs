@@ -4,7 +4,6 @@ using UnityEngine;
 
 public static class MenuUtility
 {
-    public static Action<float> loadingWorld; // TODO: call every frame while world is loading
     public static Action continuingGame;
     public static Action pausingGame;
     public static void CreateWorld(string worldName, string templateName)
