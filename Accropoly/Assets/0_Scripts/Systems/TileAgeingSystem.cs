@@ -12,11 +12,6 @@ public partial struct TileAgingSystem : ISystem
     {
         if (Time.timeScale == 0) return;
 
-        Entity e = MapTileComponent.GetTile(new(5, 5));
-        Debug.LogWarning(e);
-        var mapTileComponent = state.EntityManager.GetComponentData<MapTileComponent>(e);
-        Debug.Log(mapTileComponent.pos);
-
         TileAgeingConfig config = SystemAPI.GetSingleton<TileAgeingConfig>();
 
         var ecbSystem = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
