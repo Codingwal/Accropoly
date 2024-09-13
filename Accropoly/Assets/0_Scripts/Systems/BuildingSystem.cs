@@ -6,67 +6,73 @@ using UnityEngine;
 using PlacementAction = PlacementInputData.Action;
 public partial struct BuildingSystem : ISystem
 {
-    EntityQuery placementInputDataQuery;
-    Entity entity;
+    private EntityQuery placementInputDataQuery;
+    private static Entity entity;
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<RunGameTag>();
-        // state.RequireForUpdate<TileToPlace>();
+        state.RequireForUpdate<TileToPlace>();
         state.RequireForUpdate<BuildingSystemConfig>();
 
         placementInputDataQuery = state.GetEntityQuery(typeof(PlacementInputData));
-
-        entity.Index = -1;
     }
     public void OnUpdate(ref SystemState state)
     {
-        if (Time.timeScale == 0) return;
+        if (Time.timeScale == 0) return; // Return if the game is paused
 
         var config = SystemAPI.GetSingleton<BuildingSystemConfig>();
 
-        if (entity.Index == -1)
+        bool placementInput = placementInputDataQuery.CalculateEntityCount() != 0;
+        var tileToPlace = SystemAPI.GetSingleton<TileToPlace>();
+
+        if (placementInput)
         {
-            var prefab = SystemAPI.GetSingleton<TilePrefab>();
-            entity = state.EntityManager.Instantiate(prefab);
+            var placementInputData = placementInputDataQuery.GetSingleton<PlacementInputData>(); // TODO: Can't use GetSingleton
+            if (placementInputData.action == PlacementAction.Rotate)
+            {
+                // Rotate tileToPlace
+            }
+            else if (placementInputData.action == PlacementAction.Cancel)
+            {
+                // Cancel placing process
+            }
+            else if (placementInputData.action == PlacementAction.Place)
+            {
+                // Place tileToPlace
+            }
         }
 
-        // bool placementInput = placementInputDataQuery.CalculateEntityCount() != 0;
-        // var tileToPlace = SystemAPI.GetSingleton<TileToPlace>();
-
-        // if (placementInput)
-        // {
-        //     var placementInputData = placementInputDataQuery.GetSingleton<PlacementInputData>(); // TODO: Can't use GetSingleton
-        //     if (placementInputData.action == PlacementAction.Rotate)
-        //     {
-        //         // Rotate tileToPlace
-        //     }
-        //     else if (placementInputData.action == PlacementAction.Cancel)
-        //     {
-        //         // Cancel placing process
-        //     }
-        //     else if (placementInputData.action == PlacementAction.Place)
-        //     {
-        //         // Place tileToPlace
-        //     }
-        // }
+        // Update position
 
         var inputData = SystemAPI.GetSingleton<InputData>();
 
-        // Shoot ray, update tileToPlace pos
-
         Ray ray = Camera.main.ScreenPointToRay(inputData.mousePos);
 
-        if (!Physics.Raycast(ray, out RaycastHit info, 1000, config.mouseRayLayer))
+        if (!Physics.Raycast(ray, out RaycastHit info, 1000, config.mouseRayLayer)) // Cast ray to detect where on the map the user points
         {
-            state.EntityManager.SetComponentEnabled<MaterialMeshInfo>(entity, false);
+            state.EntityManager.SetComponentEnabled<MaterialMeshInfo>(entity, false); // Hide the tileToPlace entity if the user doesn't point on the tileMap
             return;
         };
-        state.EntityManager.SetComponentEnabled<MaterialMeshInfo>(entity, true);
+        state.EntityManager.SetComponentEnabled<MaterialMeshInfo>(entity, true); // Show the tileToPlace entity if the user points on the tileMap
 
         var transform = LocalTransform.FromPosition(info.point);
-        transform.Position.xz = math.round((transform.Position.xz + 1) / 2) * 2 - 1;
+        transform.Position.xz = math.round((transform.Position.xz + 1) / 2) * 2 - 1; // Align the position to the tileGrid
         transform.Scale = 2;
         state.EntityManager.SetComponentData(entity, transform);
+    }
+    public static void StartPlacementProcess(TileType tileType)
+    {
+        EntityManager em = World.DefaultGameObjectInjectionWorld.EntityManager;
+
+        if (em.CreateEntityQuery(typeof(TileToPlace)).CalculateEntityCount() != 0) return; // Return if there already is a PlacementProcess
+
+        var prefab = em.CreateEntityQuery(typeof(TilePrefab)).GetSingleton<TilePrefab>(); // Get the tilePrefab
+        entity = em.Instantiate(prefab);
+        em.AddComponentData(entity, new TileToPlace
+        {
+            tileType = tileType,
+        });
+        MaterialsAndMeshesHolder.UpdateMeshAndMaterial(entity, tileType); // Set mesh & material according to the specified tileType
     }
 }
 

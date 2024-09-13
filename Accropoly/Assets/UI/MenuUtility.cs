@@ -17,7 +17,7 @@ public static class MenuUtility
 
         WorldDataSystem.LoadWorldData();
 
-        GetInputSystem().EnableInputActions();
+        InputSystem.EnableInputActions();
 
         ContinueGame();
     }
@@ -28,7 +28,7 @@ public static class MenuUtility
         EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
         entityManager.DestroyEntity(entityManager.CreateEntityQuery(typeof(RunGameTag)));
 
-        GetInputSystem().DisableMenuInputActions();
+        InputSystem.DisableMenuInputActions();
     }
     public static void DeleteWorld(string mapName)
     {
@@ -45,17 +45,18 @@ public static class MenuUtility
     public static void PauseGame()
     {
         Time.timeScale = 0;
-        GetInputSystem().DisableGameplayInputActions();
+        InputSystem.DisableGameplayInputActions();
         pausingGame?.Invoke();
     }
     public static void ContinueGame()
     {
         Time.timeScale = 1;
-        GetInputSystem().EnableGameplayInputActions();
+        InputSystem.EnableGameplayInputActions();
         continuingGame?.Invoke();
     }
-    private static InputSystem GetInputSystem()
+    public static void PlaceTile(TileType tileType)
     {
-        return World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<InputSystem>();
+        BuildingSystem.StartPlacementProcess(tileType);
     }
+    private static InputSystem InputSystem => World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<InputSystem>();
 }
