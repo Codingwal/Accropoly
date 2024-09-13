@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.Serialization;
 using UnityEngine;
 
 [Serializable]
@@ -10,6 +9,10 @@ public class ArrayWrapper<T>
     public ArrayWrapper(int size)
     {
         array = new T[size];
+    }
+    public ArrayWrapper(T[] array)
+    {
+        this.array = array;
     }
 
     public T this[int index]
@@ -31,6 +34,14 @@ public class ArrayWrapper<T>
     public bool Contains(T obj)
     {
         return Array.Exists(array, x => obj.Equals(x));
+    }
+    public static implicit operator T[](ArrayWrapper<T> array)
+    {
+        return array.array;
+    }
+    public static implicit operator ArrayWrapper<T>(T[] array)
+    {
+        return new(array);
     }
 }
 

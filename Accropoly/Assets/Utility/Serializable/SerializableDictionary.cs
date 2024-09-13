@@ -39,7 +39,7 @@ public class SerializableDictionary<TKey, TValue> : IEnumerable<SerializableKeyV
 
     public IEnumerator<SerializableKeyValuePair<TKey, TValue>> GetEnumerator()
     {
-        return (IEnumerator<SerializableKeyValuePair<TKey, TValue>>)new Enumerator(dictionary);
+        return new SerializableDictionaryEnumerator<TKey, TValue>(dictionary);
     }
 
     IEnumerator IEnumerable.GetEnumerator()
@@ -57,26 +57,32 @@ public class SerializableDictionary<TKey, TValue> : IEnumerable<SerializableKeyV
         }
         return newDict;
     }
-    public class Enumerator : IEnumerator
-    {
-        private List<SerializableKeyValuePair<TKey, TValue>> dict;
-        private int index = -1;
-        public object Current => dict[index];
-        public Enumerator(List<SerializableKeyValuePair<TKey, TValue>> dict)
-        {
-            this.dict = dict;
-        }
-        public bool MoveNext()
-        {
-            index++;
-            return index < dict.Count;
-        }
+}
+public class SerializableDictionaryEnumerator<TKey, TValue> : IEnumerator<SerializableKeyValuePair<TKey, TValue>>
+{
+    private List<SerializableKeyValuePair<TKey, TValue>> dict;
+    private int index = -1;
 
-        public void Reset()
-        {
-            index = -1;
-        }
+    SerializableKeyValuePair<TKey, TValue> IEnumerator<SerializableKeyValuePair<TKey, TValue>>.Current => dict[index];
+
+    object IEnumerator.Current => dict[index];
+
+    public SerializableDictionaryEnumerator(List<SerializableKeyValuePair<TKey, TValue>> dict)
+    {
+        this.dict = dict;
     }
+    public bool MoveNext()
+    {
+        index++;
+        return index < dict.Count;
+    }
+
+    public void Reset()
+    {
+        index = -1;
+    }
+
+    public void Dispose() { }
 }
 
 [Serializable]
