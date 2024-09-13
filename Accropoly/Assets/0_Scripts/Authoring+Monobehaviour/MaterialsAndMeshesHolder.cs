@@ -20,7 +20,8 @@ public class MaterialsAndMeshesHolder : MonoBehaviour
         EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
         foreach (var (entity, materialMeshPair) in entitiesToUpdate)
         {
-            // if (!entityManager.Exists(entity)) continue;
+            if (!entityManager.Exists(entity)) continue;
+
             entityManager.SetSharedComponentManaged(entity, new RenderMeshArray(
                 new Material[] { materialMeshPair.material },
                 new Mesh[] { materialMeshPair.mesh }

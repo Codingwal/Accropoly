@@ -1,9 +1,8 @@
 - Fix too many InputSystems bug
 - Add GetNeighbourEntity utility
 - improve regenerateFoldersAndFiles option
+- remake BuildingSystem
 
 FUTURE:
 - Add namespaces (?)
 - Change energy symbol color depending on renewability of the energy production
-
-RenderMeshArray
