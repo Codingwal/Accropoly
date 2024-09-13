@@ -1,6 +1,6 @@
-- Add GetNeighbourEntity utility
 - store worldData as managed component instead of static field (?)
 - remake BuildingSystem
+- Create TileGrid utility class
 
 FUTURE:
 - Add namespaces (?)
