@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.Entities.UniversalDelegates;
 using UnityEngine;
 
 public class SaveSystem : FileHandler
@@ -31,6 +30,9 @@ public class SaveSystem : FileHandler
         {
             requiredFiles.Add("Templates/" + keyValuePair.Key, keyValuePair.Value);
         }
+
+        if (SaveSystemConfig.DeleteTemplates)
+            DeleteDirectoryContent("Templates");
 
         InitFileSystem(requiredDirectories, requiredFiles, SaveSystemConfig.OverwriteFiles);
 

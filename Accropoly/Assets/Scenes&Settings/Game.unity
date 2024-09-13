@@ -1382,8 +1382,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dac6bb29a4fd2bd41a0057e6eb2fccd8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  overwriteFiles: 0
-  deleteSaves: 0
+  overwriteFiles: 1
+  deleteTemplates: 1
+  deleteSaves: 1
 --- !u!1 &440841229
 GameObject:
   m_ObjectHideFlags: 0

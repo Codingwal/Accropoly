@@ -1,13 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Unity.Entities.UniversalDelegates;
 using UnityEngine;
 
 public class FileHandler
 {
+    protected static readonly string baseDir = Application.persistentDataPath + "/data/";
     public static string[] ListFiles(string directory)
     {
-        string dataPath = $"{Application.persistentDataPath}/data/{directory}/";
+        string dataPath = $"{baseDir}{directory}/";
 
         string[] files = Directory.GetFiles(dataPath);
 
@@ -22,7 +24,7 @@ public class FileHandler
     }
     public static void SaveObject<T>(string directory, string name, T obj)
     {
-        string dataPath = $"{Application.persistentDataPath}/data/{directory}/{name}.bin";
+        string dataPath = $"{baseDir}{directory}/{name}.bin";
 
         FileStream fs = File.Create(dataPath);
         Serializer serializer = new(new(fs));
@@ -40,7 +42,7 @@ public class FileHandler
     }
     public static T LoadObject<T>(string directory, string name) where T : new()
     {
-        string dataPath = $"{Application.persistentDataPath}/data/{directory}/{name}.bin";
+        string dataPath = $"{baseDir}{directory}/{name}.bin";
 
         FileStream fs = File.Open(dataPath, FileMode.Open);
         Deserializer deserializer = new(new(fs));
@@ -58,31 +60,35 @@ public class FileHandler
     }
     public static void DeleteFile(string directory, string name)
     {
-        string filePath = $"{Application.persistentDataPath}/data/{directory}/{name}.bin";
+        string filePath = $"{baseDir}{directory}/{name}.bin";
 
         File.Delete(filePath);
     }
     public static void DeleteDirectoryContent(string directory)
     {
-        DirectoryInfo baseDir = new DirectoryInfo($"{Application.persistentDataPath}/data/{directory}");
+        if (!Directory.Exists($"{baseDir}{directory}")) return;
 
-        foreach (FileInfo file in baseDir.GetFiles())
+        DirectoryInfo dir = new($"{baseDir}{directory}");
+
+        foreach (FileInfo file in dir.GetFiles())
+        {
             file.Delete();
-        foreach (DirectoryInfo dir in baseDir.GetDirectories())
-            dir.Delete(true);
+        }
+        foreach (DirectoryInfo subDir in dir.GetDirectories())
+            subDir.Delete(true);
     }
     public static void InitFileSystem(string[] requiredDirectories, Dictionary<string, object> requiredFiles, bool overwriteFiles)
     {
         foreach (string directory in requiredDirectories)
         {
-            if (!Directory.Exists($"{Application.persistentDataPath}/data/{directory}/"))
+            if (!Directory.Exists($"{baseDir}{directory}/"))
             {
-                Directory.CreateDirectory($"{Application.persistentDataPath}/data/{directory}/");
+                Directory.CreateDirectory($"{baseDir}{directory}/");
             }
         }
         foreach (var fileDataPair in requiredFiles)
         {
-            if (overwriteFiles || !File.Exists($"{Application.persistentDataPath}/data/{fileDataPair.Key}.bin"))
+            if (overwriteFiles || !File.Exists($"{baseDir}{fileDataPair.Key}.bin"))
             {
                 SaveObject("", fileDataPair.Key, fileDataPair.Value);
             }
