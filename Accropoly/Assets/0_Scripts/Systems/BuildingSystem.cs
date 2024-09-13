@@ -1,4 +1,6 @@
 using Unity.Entities;
+using Unity.Mathematics;
+using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
 using PlacementAction = PlacementInputData.Action;
@@ -10,6 +12,7 @@ public partial struct BuildingSystem : ISystem
     {
         state.RequireForUpdate<RunGameTag>();
         // state.RequireForUpdate<TileToPlace>();
+        state.RequireForUpdate<BuildingSystemConfig>();
 
         placementInputDataQuery = state.GetEntityQuery(typeof(PlacementInputData));
 
@@ -18,6 +21,8 @@ public partial struct BuildingSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         if (Time.timeScale == 0) return;
+
+        var config = SystemAPI.GetSingleton<BuildingSystemConfig>();
 
         if (entity.Index == -1)
         {
@@ -51,8 +56,17 @@ public partial struct BuildingSystem : ISystem
 
         Ray ray = Camera.main.ScreenPointToRay(inputData.mousePos);
 
-        if (Physics.Raycast(ray, out RaycastHit info, 1000))
-            state.EntityManager.SetComponentData(entity, LocalTransform.FromPosition(info.point));
+        if (!Physics.Raycast(ray, out RaycastHit info, 1000, config.mouseRayLayer))
+        {
+            state.EntityManager.SetComponentEnabled<MaterialMeshInfo>(entity, false);
+            return;
+        };
+        state.EntityManager.SetComponentEnabled<MaterialMeshInfo>(entity, true);
+
+        var transform = LocalTransform.FromPosition(info.point);
+        transform.Position.xz = math.round((transform.Position.xz + 1) / 2) * 2 - 1;
+        transform.Scale = 2;
+        state.EntityManager.SetComponentData(entity, transform);
     }
 }
 
