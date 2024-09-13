@@ -32,7 +32,6 @@ public partial struct BuildingSystem : ISystem
 
             if (placementInputData.action == PlacementAction.Rotate)
             {
-                Debug.Log("!");
                 tileToPlace.Rotate(90);
                 localTransform = localTransform.RotateY(math.radians(90));
             }
@@ -43,7 +42,13 @@ public partial struct BuildingSystem : ISystem
             }
             else if (placementInputData.action == PlacementAction.Place)
             {
-                // Place tileToPlace
+                int2 pos = (int2)localTransform.Position.xz / 4 + (int)math.sqrt(TileGridUtility.GetEntityGrid().Length) / 2;
+                Entity oldTile = TileGridUtility.GetTile(pos);
+                TileType newTileType = tileToPlace.tileType;
+
+                EntityArchetype archetype = state.EntityManager.CreateArchetype(TileTypeToArchetype(newTileType));
+                state.EntityManager.SetArchetype(oldTile, archetype);
+                state.EntityManager.SetComponentData(oldTile, new MapTileComponent(pos.x, pos.y, newTileType, tileToPlace.rotation));
             }
         }
 
@@ -65,6 +70,18 @@ public partial struct BuildingSystem : ISystem
 
         state.EntityManager.SetComponentData(entity, localTransform);
         state.EntityManager.SetComponentData(entity, tileToPlace);
+    }
+    private static ComponentType[] TileTypeToArchetype(TileType tileType)
+    {
+        switch (tileType)
+        {
+            case TileType.Plains:
+                return new ComponentType[] { typeof(MapTileComponent), typeof(AgingTile) };
+            case TileType.Forest:
+                return new ComponentType[] { typeof(MapTileComponent) };
+            default:
+                throw new();
+        }
     }
     public static void StartPlacementProcess(TileType tileType)
     {
