@@ -18,6 +18,8 @@ public static class MenuUtility
         WorldDataSystem.LoadWorldData();
 
         GetInputSystem().EnableInputActions();
+
+        ContinueGame();
     }
     public static void QuitGame()
     {
