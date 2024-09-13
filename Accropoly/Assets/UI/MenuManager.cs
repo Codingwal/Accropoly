@@ -49,6 +49,10 @@ public class MenuManager : MonoBehaviour
 
         ReloadUI();
     }
+    private void OnDisable()
+    {
+        InputSystem.escape -= OnEscape;
+    }
 
     private void OnStartGame()
     {
