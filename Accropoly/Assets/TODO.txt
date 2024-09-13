@@ -1,4 +1,5 @@
 - Add GetNeighbourEntity utility
+- store worldData as managed component instead of static field (?)
 - remake BuildingSystem
 
 FUTURE:

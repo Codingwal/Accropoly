@@ -22,34 +22,42 @@ public partial struct TileSpawningSystem : ISystem
         TilePrefab prefab = SystemAPI.GetSingleton<TilePrefab>();
 
         WorldData worldData = WorldDataSystem.worldData;
-        EntityCommandBuffer commandBuffer = SystemAPI.GetSingleton<EndInitializationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
+        EntityCommandBuffer ecb = SystemAPI.GetSingleton<EndInitializationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
+
+        DynamicBuffer<EntityBufferElement> buffer;
+        {
+            Entity entity = state.EntityManager.CreateEntity();
+            state.EntityManager.AddComponent<EntityGridHolder>(entity);
+            buffer = state.EntityManager.AddBuffer<EntityBufferElement>(entity);
+        }
 
         Tile[,] tiles = worldData.map.tiles;
         for (int x = 0; x < tiles.GetLength(0); x++)
         {
             for (int y = 0; y < tiles.GetLength(1); y++)
             {
-                Entity entity = commandBuffer.Instantiate(prefab);
+                Entity entity = ecb.Instantiate(prefab);
 
-                commandBuffer.SetComponent(entity, LocalTransform.FromPosition(new(x - tiles.GetLength(0) / 2, 0, y - tiles.GetLength(1) / 2)));
+                ecb.SetComponent(entity, LocalTransform.FromPosition(new(x - tiles.GetLength(0) / 2, 0, y - tiles.GetLength(1) / 2)));
 
-                commandBuffer.AddComponent(entity, new NewTileTag());
+                ecb.AddComponent(entity, new NewTileTag());
 
                 foreach (var component in tiles[x, y].components)
                 {
                     Type type = component.GetType();
 
-                    commandBuffer.AddComponent(entity, type);
+                    ecb.AddComponent(entity, type);
 
                     if (type == typeof(MapTileComponent))
                     {
-                        commandBuffer.SetComponent(entity, (MapTileComponent)component);
+                        ecb.SetComponent(entity, (MapTileComponent)component);
                         MaterialMeshPair pair = MaterialsAndMeshesHolder.GetMaterialAndMesh(((MapTileComponent)component).tileType);
-                        commandBuffer.SetSharedComponentManaged(entity, new RenderMeshArray(new Material[] { pair.material }, new Mesh[] { pair.mesh }));
+                        ecb.SetSharedComponentManaged(entity, new RenderMeshArray(new Material[] { pair.material }, new Mesh[] { pair.mesh }));
                     }
-                    else if (type == typeof(AgingTile)) commandBuffer.SetComponent(entity, (AgingTile)component);
+                    else if (type == typeof(AgingTile)) ecb.SetComponent(entity, (AgingTile)component);
                     else Debug.LogError($"Unexpected type {type.Name}");
                 }
+                buffer.Add(entity);
             }
         }
     }
