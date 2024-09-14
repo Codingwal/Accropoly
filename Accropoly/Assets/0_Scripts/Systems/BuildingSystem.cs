@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Rendering;
@@ -49,6 +51,7 @@ public partial struct BuildingSystem : ISystem
                 EntityArchetype archetype = state.EntityManager.CreateArchetype(TileTypeToArchetype(newTileType));
                 state.EntityManager.SetArchetype(oldTile, archetype);
                 state.EntityManager.SetComponentData(oldTile, new MapTileComponent(pos.x, pos.y, newTileType, tileToPlace.rotation));
+                MaterialsAndMeshesHolder.UpdateMeshAndMaterial(oldTile, newTileType);
             }
         }
 
@@ -73,15 +76,24 @@ public partial struct BuildingSystem : ISystem
     }
     private static ComponentType[] TileTypeToArchetype(TileType tileType)
     {
-        switch (tileType)
+        EntityManager em = World.DefaultGameObjectInjectionWorld.EntityManager;
+        Entity prefab = em.CreateEntityQuery(typeof(TilePrefab)).GetSingleton<TilePrefab>(); // Get the tilePrefab
+
+        List<ComponentType> componentTypes = tileType switch
         {
-            case TileType.Plains:
-                return new ComponentType[] { typeof(MapTileComponent), typeof(AgingTile) };
-            case TileType.Forest:
-                return new ComponentType[] { typeof(MapTileComponent) };
-            default:
-                throw new();
-        }
+            TileType.Plains => new() { typeof(AgingTile) },
+            TileType.Forest => new() { },
+            _ => throw new(),
+        };
+        componentTypes.Add(typeof(MapTileComponent));
+
+
+        NativeArray<ComponentType> prefabComponentTypes = em.GetChunk(prefab).Archetype.GetComponentTypes(Allocator.Temp);
+        foreach (var e in prefabComponentTypes)
+            componentTypes.Add(e);
+        prefabComponentTypes.Dispose();
+
+        return componentTypes.ToArray();
     }
     public static void StartPlacementProcess(TileType tileType)
     {

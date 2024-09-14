@@ -47,5 +47,7 @@ public partial struct TileSavingSystem : ISystem
 
             componentTypes.Dispose();
         }
+
+        state.EntityManager.DestroyEntity(SystemAPI.GetSingletonEntity<EntityGridHolder>());
     }
 }
