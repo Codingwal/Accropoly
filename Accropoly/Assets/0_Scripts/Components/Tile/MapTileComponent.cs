@@ -18,26 +18,28 @@ public struct MapTileComponent : IComponentData
             rotation -= 360;
     }
 }
+// Explicit values for compatability with other versions (new TileTypes just get a higher value)
 public enum TileType
 {
     // Naturally generated
-    Plains,
-    Forest,
+    Plains = 0,
+    Sapling = 1,
+    Forest = 2,
 
     // Streets
-    Street,
-    StreetCorner,
-    StreetTJunction,
-    StreetJunction,
+    Street = 3,
+    StreetCorner = 4,
+    StreetTJunction = 5,
+    StreetJunction = 6,
 
     // Houses
-    House,
-    Skyscraper,
+    House = 7,
+    Skyscraper = 8,
 
     // Energy production
-    SolarPanel,
-    CoalPowerPlant,
+    SolarPanel = 9,
+    CoalPowerPlant = 10,
 
     // Workplace
-    OfficeBuilding
+    OfficeBuilding = 11
 }

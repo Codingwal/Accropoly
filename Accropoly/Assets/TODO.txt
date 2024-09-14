@@ -1,7 +1,6 @@
-- remake BuildingSystem
 - store worldData as managed component instead of static field (?)
 - delete RunGameTag on pausing (?)
-- fix camera barrier too small bug
+- add version to saves
 
 FUTURE:
 - Add namespaces (?)
