@@ -1,6 +1,7 @@
 - store worldData as managed component instead of static field (?)
 - delete RunGameTag on pausing (?)
 - add version to saves
+- delete cinemachine package
 
 FUTURE:
 - Add namespaces (?)
