@@ -29,6 +29,7 @@ public partial struct CameraSystem : ISystem
 
         new Job
         {
+            entityManager = World.DefaultGameObjectInjectionWorld.EntityManager,
             config = config,
             inputData = inputData,
             deltaTime = Time.deltaTime,
@@ -55,6 +56,7 @@ public partial struct CameraSystem : ISystem
     [BurstCompile]
     public partial struct Job : IJob
     {
+        public EntityManager entityManager;
         public CameraConfig config;
         public InputData inputData;
         public float deltaTime;
@@ -114,7 +116,7 @@ public partial struct CameraSystem : ISystem
                 transform.rot.x = math.clamp(transform.rot.x, config.minAngle, config.maxAngle);
             }
 
-            World.DefaultGameObjectInjectionWorld.EntityManager.SetComponentData(transformHolder, transform);
+            entityManager.SetComponentData(transformHolder, transform);
         }
     }
 

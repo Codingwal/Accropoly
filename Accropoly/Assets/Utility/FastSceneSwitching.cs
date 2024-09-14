@@ -4,6 +4,7 @@
 // </copyright>
 // --------------------------------
 
+#if UNITY_EDITOR
 using System.IO;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -62,3 +63,4 @@ public class SceneSwitchWindow : EditorWindow
         EditorGUILayout.EndVertical();
     }
 }
+#endif

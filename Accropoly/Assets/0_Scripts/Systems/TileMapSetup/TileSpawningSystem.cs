@@ -17,7 +17,6 @@ public partial struct TileSpawningSystem : ISystem
         state.RequireForUpdate<LoadGameTag>();
     }
 
-    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         TilePrefab prefab = SystemAPI.GetSingleton<TilePrefab>();
