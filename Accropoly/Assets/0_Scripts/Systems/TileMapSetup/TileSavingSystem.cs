@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Entities.UniversalDelegates;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -23,6 +24,7 @@ public partial struct TileSavingSystem : ISystem
 
         WorldDataSystem.worldData.map.tiles = new Tile[WorldDataSystem.worldData.map.tiles.GetLength(0), WorldDataSystem.worldData.map.tiles.GetLength(1)];
 
+        int serializedTilesCount = 0;
         foreach ((MapTileComponent mapTileComponent, Entity entity) in SystemAPI.Query<MapTileComponent>().WithEntityAccess())
         {
             int2 index = mapTileComponent.pos;
@@ -46,7 +48,12 @@ public partial struct TileSavingSystem : ISystem
             WorldDataSystem.worldData.map.tiles[index.x, index.y] = tile;
 
             componentTypes.Dispose();
+
+            serializedTilesCount++;
         }
+
+        if (serializedTilesCount < WorldDataSystem.worldData.map.tiles.Length)
+            throw new($"Too few tiles found (Found {serializedTilesCount}, expected {WorldDataSystem.worldData.map.tiles.Length})");
 
         state.EntityManager.DestroyEntity(SystemAPI.GetSingletonEntity<EntityGridHolder>());
     }

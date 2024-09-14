@@ -89,8 +89,10 @@ public partial struct BuildingSystem : ISystem
 
 
         NativeArray<ComponentType> prefabComponentTypes = em.GetChunk(prefab).Archetype.GetComponentTypes(Allocator.Temp);
-        foreach (var e in prefabComponentTypes)
-            componentTypes.Add(e);
+        foreach (var componentType in prefabComponentTypes)
+            if (!(componentType == typeof(Prefab) || componentType == typeof(LinkedEntityGroup))) // Remove prefab components
+                componentTypes.Add(componentType);
+
         prefabComponentTypes.Dispose();
 
         return componentTypes.ToArray();
