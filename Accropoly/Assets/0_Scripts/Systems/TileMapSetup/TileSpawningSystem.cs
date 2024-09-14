@@ -1,6 +1,7 @@
 using System;
 using Unity.Burst;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
@@ -38,8 +39,6 @@ public partial struct TileSpawningSystem : ISystem
             {
                 Entity entity = state.EntityManager.Instantiate(prefab); // Entity needs to be created on main thread so that a valid value is stored in the buffer 
 
-                ecb.SetComponent(entity, LocalTransform.FromPosition(new(2 * x, 0, 2 * y)));
-
                 ecb.AddComponent(entity, new NewTileTag());
 
                 foreach (var component in tiles[x, y].components)
@@ -51,8 +50,14 @@ public partial struct TileSpawningSystem : ISystem
                     if (type == typeof(MapTileComponent))
                     {
                         ecb.SetComponent(entity, (MapTileComponent)component);
+
+                        // Update mesh using MapTileComponent.tileType
                         MaterialMeshPair pair = MaterialsAndMeshesHolder.GetMaterialAndMesh(((MapTileComponent)component).tileType);
                         ecb.SetSharedComponentManaged(entity, new RenderMeshArray(new Material[] { pair.material }, new Mesh[] { pair.mesh }));
+
+                        // Update rotation and position using MapTileComponent.rotation and x, y
+                        quaternion rotation = quaternion.EulerXYZ(0, math.radians(((MapTileComponent)component).rotation), 0);
+                        ecb.SetComponent(entity, LocalTransform.FromPositionRotation(2 * new float3(x, 0, y), rotation));
                     }
                     else if (type == typeof(AgingTile)) ecb.SetComponent(entity, (AgingTile)component);
                     else Debug.LogError($"Unexpected type {type.Name}");

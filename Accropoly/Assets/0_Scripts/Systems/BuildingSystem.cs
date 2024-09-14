@@ -51,6 +51,11 @@ public partial struct BuildingSystem : ISystem
                 EntityArchetype archetype = state.EntityManager.CreateArchetype(TileTypeToArchetype(newTileType));
                 state.EntityManager.SetArchetype(oldTile, archetype);
                 state.EntityManager.SetComponentData(oldTile, new MapTileComponent(pos.x, pos.y, newTileType, tileToPlace.rotation));
+
+                var transform = state.EntityManager.GetComponentData<LocalTransform>(oldTile);
+                transform.Rotation = quaternion.EulerXYZ(0, math.radians(tileToPlace.rotation), 0);
+                state.EntityManager.SetComponentData(oldTile, transform);
+
                 MaterialsAndMeshesHolder.UpdateMeshAndMaterial(oldTile, newTileType);
             }
         }
