@@ -36,7 +36,7 @@ public partial struct CameraSystem : ISystem
             mapSize = WorldDataSystem.worldData.map.tiles.GetLength(0),
             transform = cameraTransform,
             transformHolder = transformHolder,
-        }.Schedule();
+        }.Run();
 
         // Apply transform values from last job
         Transform transform = Camera.main.transform;
