@@ -93,9 +93,10 @@ public partial struct BuildingSystem : ISystem
         // Add components according to tileType
         List<ComponentType> componentTypes = tileType switch
         {
-            TileType.Plains => new() { typeof(AgingTile) },
+            TileType.Plains => new() { },
+            TileType.Sapling => new() { typeof(AgingTile) },
             TileType.Forest => new() { },
-            _ => throw new(),
+            _ => throw new($"Missing componentTypes for tileType {tileType}"),
         };
 
         componentTypes.Add(typeof(MapTileComponent)); // All tiles have the MapTileComponent

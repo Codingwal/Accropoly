@@ -187,7 +187,7 @@ MonoBehaviour:
     x: 0
     y: 10
   maxAge: 20
-  newTileType: 1
+  newTileType: 2
 --- !u!114 &903553019
 MonoBehaviour:
   m_ObjectHideFlags: 0
