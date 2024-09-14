@@ -7,6 +7,7 @@ using Unity.Transforms;
 using UnityEngine;
 
 using PlacementAction = PlacementInputData.Action;
+[UpdateInGroup(typeof(InitializationSystemGroup))]
 public partial struct BuildingSystem : ISystem
 {
     private EntityQuery placementInputDataQuery;
@@ -14,7 +15,7 @@ public partial struct BuildingSystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<RunGameTag>();
-        state.RequireForUpdate<TileToPlace>();
+        state.RequireForUpdate<TileToPlace>(); // Update only if there is a PlacementProcess running (The process is started by the menu)
         state.RequireForUpdate<BuildingSystemConfig>();
 
         placementInputDataQuery = state.GetEntityQuery(typeof(PlacementInputData));
@@ -28,8 +29,9 @@ public partial struct BuildingSystem : ISystem
         var localTransform = state.EntityManager.GetComponentData<LocalTransform>(entity);
         var tileToPlace = state.EntityManager.GetComponentData<TileToPlace>(entity);
 
-        if (placementInputDataQuery.CalculateEntityCount() != 0)
+        if (placementInputDataQuery.CalculateEntityCount() != 0) // If there is placementInput (can't use singleton functions bc of IEnableableComponent)
         {
+            // The PlacementInputData is attached to the same entity as the singleton InputData
             var placementInputData = state.EntityManager.GetComponentData<PlacementInputData>(SystemAPI.GetSingletonEntity<InputData>());
 
             if (placementInputData.action == PlacementAction.Rotate)
@@ -48,15 +50,18 @@ public partial struct BuildingSystem : ISystem
                 Entity oldTile = TileGridUtility.GetTile(pos);
                 TileType newTileType = tileToPlace.tileType;
 
+                // Set the archetype to the archetype of the newTileType
                 EntityArchetype archetype = state.EntityManager.CreateArchetype(TileTypeToArchetype(newTileType));
                 state.EntityManager.SetArchetype(oldTile, archetype);
+
                 state.EntityManager.SetComponentData(oldTile, new MapTileComponent(pos.x, pos.y, newTileType, tileToPlace.rotation));
 
+                // Set the transform rotation according to the rotation of tileToPlace
                 var transform = state.EntityManager.GetComponentData<LocalTransform>(oldTile);
                 transform.Rotation = quaternion.EulerXYZ(0, math.radians(tileToPlace.rotation), 0);
                 state.EntityManager.SetComponentData(oldTile, transform);
 
-                MaterialsAndMeshesHolder.UpdateMeshAndMaterial(oldTile, newTileType);
+                MaterialsAndMeshesHolder.UpdateMeshAndMaterial(oldTile, newTileType); // Update the mesh according to the newTileType 
             }
         }
 
@@ -76,6 +81,7 @@ public partial struct BuildingSystem : ISystem
         localTransform.Position.xz = math.round(((float3)info.point).xz / 2) * 2; // Align the position to the tileGrid
         localTransform.Position.y = 0.5f; // Important for tile visibility
 
+        // Update the components
         state.EntityManager.SetComponentData(entity, localTransform);
         state.EntityManager.SetComponentData(entity, tileToPlace);
     }
@@ -84,20 +90,22 @@ public partial struct BuildingSystem : ISystem
         EntityManager em = World.DefaultGameObjectInjectionWorld.EntityManager;
         Entity prefab = em.CreateEntityQuery(typeof(TilePrefab)).GetSingleton<TilePrefab>(); // Get the tilePrefab
 
+        // Add components according to tileType
         List<ComponentType> componentTypes = tileType switch
         {
             TileType.Plains => new() { typeof(AgingTile) },
             TileType.Forest => new() { },
             _ => throw new(),
         };
-        componentTypes.Add(typeof(MapTileComponent));
 
+        componentTypes.Add(typeof(MapTileComponent)); // All tiles have the MapTileComponent
+        componentTypes.Add(typeof(NewTileTag)); // This will be removed after one frame, used for initialization
 
+        // Add all components of the prefab (Transform & Rendering components)
         NativeArray<ComponentType> prefabComponentTypes = em.GetChunk(prefab).Archetype.GetComponentTypes(Allocator.Temp);
         foreach (var componentType in prefabComponentTypes)
-            if (!(componentType == typeof(Prefab) || componentType == typeof(LinkedEntityGroup))) // Remove prefab components
+            if (!(componentType == typeof(Prefab) || componentType == typeof(LinkedEntityGroup))) // Remove prefab components (for example, 'Prefab' exludes the entity from all queries)
                 componentTypes.Add(componentType);
-
         prefabComponentTypes.Dispose();
 
         return componentTypes.ToArray();
