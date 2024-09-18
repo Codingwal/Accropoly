@@ -59,6 +59,8 @@ public partial struct TileSpawningSystem : ISystem
                         ecb.SetComponent(entity, LocalTransform.FromPositionRotation(2 * new float3(x, 0, y), rotation));
                     }
                     else if (type == typeof(AgingTile)) ecb.SetComponent(entity, (AgingTile)component);
+                    else if (type == typeof(ElectricityProducer)) ecb.SetComponent(entity, (ElectricityProducer)component);
+                    else if (type == typeof(ElectricityConsumer)) ecb.SetComponent(entity, (ElectricityConsumer)component);
                     else Debug.LogError($"Unexpected type {type.Name}");
                 }
                 buffer.Add(entity);

@@ -50,6 +50,20 @@ public partial class Deserializer
                     age = br.ReadSingle()
                 });
             }
+            else if (type == Components.ElectricityProducer)
+            {
+                data.components.Add(new ElectricityProducer()
+                {
+                    electricityProduction = br.ReadSingle()
+                });
+            }
+            else if (type == Components.ElectricityConsumer)
+            {
+                data.components.Add(new ElectricityConsumer()
+                {
+                    electricityConsumption = br.ReadSingle()
+                });
+            }
             else
                 throw new($"Cannot deserialize component of type {type}");
 

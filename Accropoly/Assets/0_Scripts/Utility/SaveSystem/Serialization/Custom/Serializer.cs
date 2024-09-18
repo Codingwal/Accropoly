@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 
 public partial class Serializer
 {
@@ -47,6 +46,20 @@ public partial class Serializer
 
                 AgingTile componentData = (AgingTile)component;
                 bw.Write(componentData.age);
+            }
+            else if (type == typeof(ElectricityProducer))
+            {
+                bw.Write((int)Components.ElectricityProducer);
+
+                ElectricityProducer componentData = (ElectricityProducer)component;
+                bw.Write(componentData.electricityProduction);
+            }
+            else if (type == typeof(ElectricityConsumer))
+            {
+                bw.Write((int)Components.ElectricityConsumer);
+
+                ElectricityConsumer componentData = (ElectricityConsumer)component;
+                bw.Write(componentData.electricityConsumption);
             }
             else
                 throw new($"Cannot serialize component of type {type}");

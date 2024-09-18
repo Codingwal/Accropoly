@@ -12,6 +12,7 @@ public static class MapTemplates
                 for (int y = 0; y < tiles.GetLength(1); y++)
                 {
                     tiles[x, y] = new(new MapTileComponent(x, y, TileType.Plains, 0));
+                    tiles[x, y].components.Add(new ElectricityProducer { electricityProduction = 10 });
                 }
             }
             return tiles;

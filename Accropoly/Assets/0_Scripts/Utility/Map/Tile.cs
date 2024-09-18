@@ -22,5 +22,7 @@ public struct Tile
 public enum Components : int
 {
     MapTileComponent = 0,
-    AgingTile = -1,
+    AgingTile = 1,
+    ElectricityProducer = 2,
+    ElectricityConsumer = 3
 }
