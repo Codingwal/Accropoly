@@ -1,71 +1,52 @@
-using Unity.Burst;
-using Unity.Collections;
 using Unity.Entities;
-using Unity.Entities.UniversalDelegates;
 using UnityEngine;
 
-public partial struct ElectricitySystem : ISystem
+public partial class ElectricitySystem : SystemBase
 {
     private float totalProduction;
     private float totalConsumption;
-    public void OnCreate(ref SystemState state)
+    protected override void OnCreate()
     {
-        state.RequireForUpdate<RunGameTag>();
+        RequireForUpdate<RunGameTag>();
     }
-    public void OnUpdate(ref SystemState state)
+    protected override void OnUpdate()
     {
-        foreach (var (producer, _) in SystemAPI.Query<RefRO<ElectricityProducer>, NewTileTag>())
-            totalProduction += producer.ValueRO.production;
-
-        foreach (var (producer, _) in SystemAPI.Query<RefRO<ElectricityProducer>, NewTileTag>())
-            totalProduction += producer.ValueRO.production;
-        // Update electricity production
+        Debug.Log($"{totalConsumption}/{totalProduction}");
+        Entities.WithAll<ActiveTileTag>().WithAny<NewTileTag, UpdatedElectricityTag>().ForEach((in ElectricityProducer producer) =>
         {
-            NativeArray<ElectricityProducer> updatedProducers = SystemAPI.QueryBuilder()
-                .WithAll<ElectricityProducer, ActiveTileTag>() // Tile needs to be an active producer
-                .WithAny<UpdatedElectricityTag, NewTileTag>().Build() // The tile must have been created or updated (prevents unnecessary calculations)
-                .ToComponentDataArray<ElectricityProducer>(Allocator.Temp);
-            foreach (var producer in updatedProducers)
-            {
-                totalProduction += producer.production - producer.previousProduction;
-            }
-            updatedProducers.Dispose();
-        }
+            totalProduction += producer.production - producer.previousProduction;
+        }).WithoutBurst().Run();
 
-        // Update electricity consumption
+        Entities.WithAll<ActiveTileTag>().WithAny<NewTileTag, UpdatedElectricityTag>().ForEach((in ElectricityConsumer consumer) =>
         {
-            NativeArray<ElectricityConsumer> updatedConsumers = SystemAPI.QueryBuilder()
-                .WithAll<ElectricityConsumer, ActiveTileTag>() // Tile needs to be an active consumer
-                .WithAny<UpdatedElectricityTag, NewTileTag>().Build() // The tile must have been created or updated (prevents unnecessary calculations)
-                .ToComponentDataArray<ElectricityConsumer>(Allocator.Temp);
-            foreach (var consumer in updatedConsumers)
-            {
-                totalConsumption += consumer.consumption - consumer.previousConsumption;
-            }
-            updatedConsumers.Dispose();
-        }
+            totalConsumption += consumer.consumption - consumer.previousConsumption;
+        }).WithoutBurst().Run();
 
         // Update enabled state of consumers
         if (totalConsumption > totalProduction) // If there is a lack of electricity...
         {
             // Disable consumers until there no longer is a lack of electricity
-            foreach (var (consumer, _, entity) in SystemAPI.Query<RefRO<ElectricityConsumer>, ActiveTileTag>().WithEntityAccess())
+            bool enoughElectricity = false;
+            Entities.WithAll<ActiveTileTag>().ForEach((Entity entity, in ElectricityConsumer consumer) =>
             {
-                SystemAPI.SetComponentEnabled<ActiveTileTag>(entity, false); // Disable the building
-                totalConsumption -= consumer.ValueRO.consumption;
+                if (enoughElectricity) return; // If there isn't a lack of electricity anymore, there's nothing more to do
 
-                if (!(totalConsumption > totalProduction)) break; // If there isn't a lack of electricity anymore, there's nothing more to do
-            }
+                SystemAPI.SetComponentEnabled<HasElectricityTag>(entity, false); // Disable the tile
+                totalConsumption -= consumer.consumption;
+
+                if (!(totalConsumption > totalProduction)) enoughElectricity = true;
+            }).WithoutBurst().Run();
         }
-        else if (totalConsumption < totalProduction) // If there is more electricty than required...
+        else if (totalConsumption < totalProduction) // If there is more electricity than required...
         {
-            // TODO: This is wrong! (tiles disabled for other reasons will be reactivated by this code)
-
-            NativeArray<ElectricityConsumer> disabledConsumers = SystemAPI.QueryBuilder()
-                .WithAll<ElectricityConsumer>().WithNone<ActiveTileTag>().Build() // Tile needs to be an inactive consumer
-                .ToComponentDataArray<ElectricityConsumer>(Allocator.Temp);
-
-            foreach (var consumer in )
+            Entities.WithNone<HasElectricityTag>().ForEach((Entity entity, in ElectricityConsumer consumer) =>
+            {
+                if (totalConsumption + consumer.consumption < totalProduction) // If it can be enabled without creating a lack of enelectricity
+                {
+                    totalConsumption += consumer.consumption;
+                    SystemAPI.SetComponentEnabled<HasElectricityTag>(entity, true); // Reenable the tile
+                }
+            }).WithoutBurst().Run();
         }
     }
 }
