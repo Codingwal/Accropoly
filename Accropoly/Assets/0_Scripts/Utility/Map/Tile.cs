@@ -6,9 +6,11 @@ using UnityEngine;
 public struct Tile
 {
     public List<IComponentData> components;
+    public List<ComponentType> tags;
     public Tile(params IComponentData[] components)
     {
         this.components = components.ToList();
+        tags = new();
     }
     public readonly T GetComponent<T>() where T : IComponentData
     {

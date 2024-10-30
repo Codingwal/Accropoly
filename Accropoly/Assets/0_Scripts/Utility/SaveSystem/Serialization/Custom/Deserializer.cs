@@ -54,14 +54,14 @@ public partial class Deserializer
             {
                 data.components.Add(new ElectricityProducer()
                 {
-                    electricityProduction = br.ReadSingle()
+                    production = br.ReadSingle()
                 });
             }
             else if (type == Components.ElectricityConsumer)
             {
                 data.components.Add(new ElectricityConsumer()
                 {
-                    electricityConsumption = br.ReadSingle()
+                    consumption = br.ReadSingle()
                 });
             }
             else

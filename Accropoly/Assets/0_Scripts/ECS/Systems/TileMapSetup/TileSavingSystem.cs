@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Entities.UniversalDelegates;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -37,10 +36,19 @@ public partial struct TileSavingSystem : ISystem
             {
                 if (typesToIgnore.Contains(componentType) || componentType == typeof(MapTileComponent)) continue;
 
-                if (componentType == typeof(AgingTile))
+                if (componentType.IsZeroSized)
                 {
-                    tile.components.Add(state.EntityManager.GetComponentData<AgingTile>(entity));
+                    if (componentType.IsEnableable)
+                        tile.tags.Add(componentType);
+                    else
+                        tile.tags.Add(componentType);
                 }
+                else if (componentType == typeof(AgingTile))
+                    tile.components.Add(state.EntityManager.GetComponentData<AgingTile>(entity));
+                else if (componentType == typeof(ElectricityProducer))
+                    tile.components.Add(state.EntityManager.GetComponentData<ElectricityProducer>(entity));
+                else if (componentType == typeof(ElectricityConsumer))
+                    tile.components.Add(state.EntityManager.GetComponentData<ElectricityConsumer>(entity));
                 else
                     Debug.LogError($"Component of type {componentType} will not be serialized but also isn't present in {typesToIgnore}");
 

@@ -52,14 +52,18 @@ public partial class Serializer
                 bw.Write((int)Components.ElectricityProducer);
 
                 ElectricityProducer componentData = (ElectricityProducer)component;
-                bw.Write(componentData.electricityProduction);
+                bw.Write(componentData.production);
             }
             else if (type == typeof(ElectricityConsumer))
             {
                 bw.Write((int)Components.ElectricityConsumer);
 
                 ElectricityConsumer componentData = (ElectricityConsumer)component;
-                bw.Write(componentData.electricityConsumption);
+                bw.Write(componentData.consumption);
+            }
+            else if (type == typeof(HasElectricityTag))
+            {
+                
             }
             else
                 throw new($"Cannot serialize component of type {type}");
