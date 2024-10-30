@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
@@ -34,21 +35,34 @@ public partial struct TileSavingSystem : ISystem
 
             foreach (var componentType in componentTypes)
             {
+                // Ignore all prefab types (rendering & transform) and the mapTileComponent (which has already been saved)
                 if (typesToIgnore.Contains(componentType) || componentType == typeof(MapTileComponent)) continue;
 
-                if (componentType.IsZeroSized)
+                // Local method to simplify code
+                EntityManager entityManager = state.EntityManager;
+                void AddComponentData<T>() where T : unmanaged, IComponentData
+                {
+                    // If the component is enableable, check if it is enabled. Else set it to true 
+                    bool isEnabled = !componentType.IsEnableable || entityManager.IsComponentEnabled(entity, componentType);
+                    tile.components.Add((entityManager.GetComponentData<T>(entity), isEnabled));
+                }
+
+                if (componentType.IsZeroSized) // Tag components
                 {
                     if (componentType.IsEnableable)
-                        tile.tags.Add(componentType);
+                    {
+                        bool isComponentEnabled = state.EntityManager.IsComponentEnabled(entity, componentType);
+                        tile.tags.Add((componentType, isComponentEnabled));
+                    }
                     else
-                        tile.tags.Add(componentType);
+                        tile.tags.Add((componentType, true));
                 }
                 else if (componentType == typeof(AgingTile))
-                    tile.components.Add(state.EntityManager.GetComponentData<AgingTile>(entity));
+                    AddComponentData<AgingTile>();
                 else if (componentType == typeof(ElectricityProducer))
-                    tile.components.Add(state.EntityManager.GetComponentData<ElectricityProducer>(entity));
+                    AddComponentData<ElectricityProducer>();
                 else if (componentType == typeof(ElectricityConsumer))
-                    tile.components.Add(state.EntityManager.GetComponentData<ElectricityConsumer>(entity));
+                    AddComponentData<ElectricityConsumer>();
                 else
                     Debug.LogError($"Component of type {componentType} will not be serialized but also isn't present in {typesToIgnore}");
 

@@ -1,3 +1,4 @@
+using Unity.Entities;
 using Unity.Mathematics;
 
 public partial class Deserializer
@@ -31,42 +32,48 @@ public partial class Deserializer
     {
         int count = br.ReadInt32();
         data.components = new(count);
+
+        // For each component...
         for (int i = 0; i < count; i++)
         {
+            bool isEnabled = br.ReadBoolean();
+            IComponentData component;
+
             Components type = (Components)br.ReadInt32();
             if (type == Components.MapTileComponent)
             {
-                data.components.Add(new MapTileComponent()
+                component = new MapTileComponent()
                 {
                     tileType = (TileType)br.ReadInt32(),
                     pos = Deserialize(new int2()),
                     rotation = br.ReadInt32()
-                });
+                };
             }
             else if (type == Components.AgingTile)
             {
-                data.components.Add(new AgingTile()
+                component = new AgingTile()
                 {
                     age = br.ReadSingle()
-                });
+                };
             }
             else if (type == Components.ElectricityProducer)
             {
-                data.components.Add(new ElectricityProducer()
+                component = new ElectricityProducer()
                 {
                     production = br.ReadSingle()
-                });
+                };
             }
             else if (type == Components.ElectricityConsumer)
             {
-                data.components.Add(new ElectricityConsumer()
+                component = new ElectricityConsumer()
                 {
                     consumption = br.ReadSingle()
-                });
+                };
             }
             else
                 throw new($"Cannot deserialize component of type {type}");
 
+            data.components.Add((component, isEnabled));
         }
         return data;
     }

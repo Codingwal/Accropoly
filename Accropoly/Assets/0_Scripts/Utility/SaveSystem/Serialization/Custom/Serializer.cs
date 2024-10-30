@@ -28,8 +28,9 @@ public partial class Serializer
         if (data.components == null) throw new("Failed to serialize tile because Tile.components is null");
 
         bw.Write(data.components.Count);
-        foreach (var component in data.components)
+        foreach (var (component, isEnabled) in data.components)
         {
+            bw.Write(isEnabled);
             Type type = component.GetType();
             if (type == typeof(MapTileComponent))
             {
@@ -63,7 +64,7 @@ public partial class Serializer
             }
             else if (type == typeof(HasElectricityTag))
             {
-                
+
             }
             else
                 throw new($"Cannot serialize component of type {type}");
