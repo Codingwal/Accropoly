@@ -51,7 +51,7 @@ public partial struct BuildingSystem : ISystem
                 TileType newTileType = tileToPlace.tileType;
 
                 // Set the archetype to the archetype of the newTileType
-                TileTypeToComponents.UpdateEntity(oldTile, newTileType, pos, tileToPlace.rotation);
+                TilePlacingUtility.UpdateEntity(oldTile, newTileType, pos, tileToPlace.rotation);
 
                 // Set the transform rotation according to the rotation of tileToPlace
                 var transform = state.EntityManager.GetComponentData<LocalTransform>(oldTile);

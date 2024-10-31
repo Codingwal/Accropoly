@@ -5,7 +5,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 
-public static class TileTypeToComponents
+public static class TilePlacingUtility
 {
     public static List<(IComponentData, bool)> GetComponents(TileType tileType, int2 pos, int rotation)
     {
@@ -44,6 +44,7 @@ public static class TileTypeToComponents
         EntityArchetype archetype = em.CreateArchetype(componentTypes.ToArray());
         em.SetArchetype(tile, archetype);
 
+        // Local helper function
         void SetComponentData<T>(IComponentData component, bool enabled) where T : unmanaged, IComponentData
         {
             em.SetComponentData<T>(tile, (T)component);
@@ -51,6 +52,7 @@ public static class TileTypeToComponents
                 em.SetComponentEnabled(tile, typeof(T), enabled);
         }
 
+        // Set values for all components
         foreach (var (component, enabled) in components)
         {
             Type type = component.GetType();
