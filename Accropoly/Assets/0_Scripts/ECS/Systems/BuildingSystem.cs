@@ -90,16 +90,9 @@ public partial struct BuildingSystem : ISystem
         EntityManager em = World.DefaultGameObjectInjectionWorld.EntityManager;
         Entity prefab = em.CreateEntityQuery(typeof(TilePrefab)).GetSingleton<TilePrefab>(); // Get the tilePrefab
 
-        // Add components according to tileType
-        List<ComponentType> componentTypes = tileType switch
-        {
-            TileType.Plains => new() { },
-            TileType.Sapling => new() { typeof(AgingTile) },
-            TileType.Forest => new() { },
-            _ => throw new($"Missing componentTypes for tileType {tileType}"),
-        };
+        // Add components according to tileType (includes MapTileComponent & ActiveTileTag)
+        List<ComponentType> componentTypes = TileTypeToComponents.GetComponents(tileType);
 
-        componentTypes.Add(typeof(MapTileComponent)); // All tiles have the MapTileComponent
         componentTypes.Add(typeof(NewTileTag)); // This will be removed after one frame, used for initialization
 
         // Add all components of the prefab (Transform & Rendering components)
