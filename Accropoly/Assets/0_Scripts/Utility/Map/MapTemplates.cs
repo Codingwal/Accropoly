@@ -13,6 +13,7 @@ public static class MapTemplates
                 {
                     tiles[x, y] = new(new MapTileComponent(x, y, TileType.Plains, 0));
                     tiles[x, y].components.Add((new ElectricityProducer { production = 10 }, true));
+                    tiles[x, y].tags.Add((typeof(ActiveTileTag), true));
                 }
             }
             return tiles;

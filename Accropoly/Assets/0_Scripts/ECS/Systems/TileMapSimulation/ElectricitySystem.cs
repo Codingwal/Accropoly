@@ -34,14 +34,14 @@ public partial class ElectricitySystem : SystemBase
                 SystemAPI.SetComponentEnabled<HasElectricityTag>(entity, false); // Disable the tile
                 totalConsumption -= consumer.consumption;
 
-                if (!(totalConsumption > totalProduction)) enoughElectricity = true;
+                if (totalConsumption <= totalProduction) enoughElectricity = true;
             }).WithoutBurst().Run();
         }
         else if (totalConsumption < totalProduction) // If there is more electricity than required...
         {
             Entities.WithNone<HasElectricityTag>().ForEach((Entity entity, in ElectricityConsumer consumer) =>
             {
-                if (totalConsumption + consumer.consumption < totalProduction) // If it can be enabled without creating a lack of enelectricity
+                if (totalConsumption + consumer.consumption < totalProduction) // If it can be enabled without creating a lack of electricity
                 {
                     totalConsumption += consumer.consumption;
                     SystemAPI.SetComponentEnabled<HasElectricityTag>(entity, true); // Reenable the tile

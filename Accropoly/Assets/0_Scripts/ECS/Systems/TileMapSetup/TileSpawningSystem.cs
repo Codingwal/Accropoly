@@ -42,8 +42,6 @@ public partial struct TileSpawningSystem : ISystem
 
                 ecb.AddComponent(entity, new NewTileTag());
 
-                Debug.Log("1");
-
                 foreach ((IComponentData, bool) component in tiles[x, y].components)
                 {
                     Type type = component.Item1.GetType();
@@ -85,8 +83,6 @@ public partial struct TileSpawningSystem : ISystem
                     if (tag.Item1.IsEnableable)
                         ecb.SetComponentEnabled(entity, tag.Item1, tag.Item2);
                 }
-
-                Debug.Log("1");
             }
         }
     }
