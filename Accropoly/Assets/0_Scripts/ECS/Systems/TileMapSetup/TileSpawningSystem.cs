@@ -43,7 +43,7 @@ public partial struct TileSpawningSystem : ISystem
 
                 ecb.AddComponent(entity, new NewTileTag());
 
-                TilePlacingUtility.UpdateEntity(entity, tiles[x, y].components);
+                TilePlacingUtility.UpdateEntity(entity, tiles[x, y].components, ecb);
 
                 foreach (var tag in tiles[x, y].tags)
                 {

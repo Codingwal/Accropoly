@@ -21,7 +21,7 @@ public static class TilePlacingUtility
         components.Add((new NewTileTag(), true));
         return components;
     }
-    public static void UpdateEntity(Entity tile, List<(IComponentData, bool)> components)
+    public static void UpdateEntity(Entity tile, List<(IComponentData, bool)> components, EntityCommandBuffer ecb)
     {
         EntityManager em = World.DefaultGameObjectInjectionWorld.EntityManager;
 
@@ -44,9 +44,9 @@ public static class TilePlacingUtility
         // Local helper function
         void SetComponentData<T>(IComponentData component, bool enabled) where T : unmanaged, IComponentData
         {
-            em.SetComponentData<T>(tile, (T)component);
+            ecb.SetComponent<T>(tile, (T)component);
             if (component is IEnableableComponent)
-                em.SetComponentEnabled(tile, typeof(T), enabled);
+                ecb.SetComponentEnabled(tile, typeof(T), enabled);
         }
 
         // Set values for all components
@@ -55,7 +55,7 @@ public static class TilePlacingUtility
             Type type = component.GetType();
             if (new ComponentType(type).IsZeroSized) // Handle tag components
             {
-                if (new ComponentType(type).IsEnableable) em.SetComponentEnabled(tile, type, enabled);
+                if (new ComponentType(type).IsEnableable) ecb.SetComponentEnabled(tile, type, enabled);
             }
             else if (type == typeof(MapTileComponent)) SetComponentData<MapTileComponent>(component, enabled);
             else if (type == typeof(AgingTile)) SetComponentData<AgingTile>(component, enabled);
