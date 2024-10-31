@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Entities.UniversalDelegates;
@@ -42,40 +43,7 @@ public partial struct TileSpawningSystem : ISystem
 
                 ecb.AddComponent(entity, new NewTileTag());
 
-                foreach ((IComponentData, bool) component in tiles[x, y].components)
-                {
-                    Type type = component.Item1.GetType();
-
-                    ecb.AddComponent(entity, type);
-
-                    // Local method to simplify code
-                    EntityManager entityManager = state.EntityManager;
-                    void AddComponent<T>() where T : unmanaged, IComponentData
-                    {
-                        ecb.SetComponent(entity, (T)component.Item1);
-
-                        // If the component is enableable, set the enabled state according to the stored value
-                        if ((T)component.Item1 is IEnableableComponent)
-                            ecb.SetComponentEnabled(entity, typeof(T), component.Item2);
-                    }
-
-                    if (type == typeof(MapTileComponent))
-                    {
-                        ecb.SetComponent(entity, (MapTileComponent)component.Item1);
-
-                        // Update mesh using MapTileComponent.tileType
-                        MaterialMeshPair pair = MaterialsAndMeshesHolder.GetMaterialAndMesh(((MapTileComponent)component.Item1).tileType);
-                        ecb.SetSharedComponentManaged(entity, new RenderMeshArray(new Material[] { pair.material }, new Mesh[] { pair.mesh }));
-
-                        // Update rotation and position using MapTileComponent.rotation and x, y
-                        quaternion rotation = quaternion.EulerXYZ(0, math.radians(((MapTileComponent)component.Item1).rotation), 0);
-                        ecb.SetComponent(entity, LocalTransform.FromPositionRotation(2 * new float3(x, 0, y), rotation));
-                    }
-                    else if (type == typeof(AgingTile)) AddComponent<AgingTile>();
-                    else if (type == typeof(ElectricityProducer)) AddComponent<ElectricityProducer>();
-                    else if (type == typeof(ElectricityConsumer)) AddComponent<ElectricityConsumer>();
-                    else Debug.LogError($"Unexpected type {type.Name}");
-                }
+                TilePlacingUtility.UpdateEntity(entity, tiles[x, y].components);
 
                 foreach (var tag in tiles[x, y].tags)
                 {

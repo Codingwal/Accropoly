@@ -21,12 +21,9 @@ public static class TilePlacingUtility
         components.Add((new NewTileTag(), true));
         return components;
     }
-    public static void UpdateEntity(Entity tile, TileType tileType, int2 pos, int rotation)
+    public static void UpdateEntity(Entity tile, List<(IComponentData, bool)> components)
     {
         EntityManager em = World.DefaultGameObjectInjectionWorld.EntityManager;
-
-        // Add components according to tileType
-        List<(IComponentData, bool)> components = GetComponents(tileType, pos, rotation);
 
         // Get all componentTypes from the components list
         List<ComponentType> componentTypes = new();
