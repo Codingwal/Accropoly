@@ -1,6 +1,6 @@
 - store worldData as managed component instead of static field (?)
 - delete RunGameTag on pausing (?)
-- MapTemplates.cs should use BuildingSystem.cs
+- dont run electricity system every frame
 
 FUTURE:
 - Add namespaces (?)

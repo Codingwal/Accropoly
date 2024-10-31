@@ -51,10 +51,7 @@ public partial struct BuildingSystem : ISystem
                 TileType newTileType = tileToPlace.tileType;
 
                 // Set the archetype to the archetype of the newTileType
-                EntityArchetype archetype = state.EntityManager.CreateArchetype(TileTypeToArchetype(newTileType));
-                state.EntityManager.SetArchetype(oldTile, archetype);
-
-                state.EntityManager.SetComponentData(oldTile, new MapTileComponent(pos.x, pos.y, newTileType, tileToPlace.rotation));
+                TileTypeToComponents.UpdateEntity(oldTile, newTileType, pos, tileToPlace.rotation);
 
                 // Set the transform rotation according to the rotation of tileToPlace
                 var transform = state.EntityManager.GetComponentData<LocalTransform>(oldTile);
@@ -84,25 +81,6 @@ public partial struct BuildingSystem : ISystem
         // Update the components
         state.EntityManager.SetComponentData(entity, localTransform);
         state.EntityManager.SetComponentData(entity, tileToPlace);
-    }
-    private static ComponentType[] TileTypeToArchetype(TileType tileType)
-    {
-        EntityManager em = World.DefaultGameObjectInjectionWorld.EntityManager;
-        Entity prefab = em.CreateEntityQuery(typeof(TilePrefab)).GetSingleton<TilePrefab>(); // Get the tilePrefab
-
-        // Add components according to tileType (includes MapTileComponent & ActiveTileTag)
-        List<ComponentType> componentTypes = TileTypeToComponents.GetComponents(tileType);
-
-        componentTypes.Add(typeof(NewTileTag)); // This will be removed after one frame, used for initialization
-
-        // Add all components of the prefab (Transform & Rendering components)
-        NativeArray<ComponentType> prefabComponentTypes = em.GetChunk(prefab).Archetype.GetComponentTypes(Allocator.Temp);
-        foreach (var componentType in prefabComponentTypes)
-            if (!(componentType == typeof(Prefab) || componentType == typeof(LinkedEntityGroup))) // Remove prefab components (for example, 'Prefab' exludes the entity from all queries)
-                componentTypes.Add(componentType);
-        prefabComponentTypes.Dispose();
-
-        return componentTypes.ToArray();
     }
     public static void StartPlacementProcess(TileType tileType)
     {
