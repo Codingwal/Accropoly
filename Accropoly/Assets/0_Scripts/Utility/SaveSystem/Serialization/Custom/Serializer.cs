@@ -1,4 +1,6 @@
 using System;
+using Unity.Entities;
+using Unity.Entities.UniversalDelegates;
 
 public partial class Serializer
 {
@@ -69,6 +71,12 @@ public partial class Serializer
             else
                 throw new($"Cannot serialize component of type {type}");
 
+        }
+        bw.Write(data.tags.Count);
+        foreach (var (tagType, enabled) in data.tags)
+        {
+            bw.Write(enabled);
+            bw.Write(TypeManager.GetTypeInfo(tagType.TypeIndex).StableTypeHash);
         }
     }
     public void Serialize(UserData data)

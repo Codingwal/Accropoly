@@ -75,6 +75,15 @@ public partial class Deserializer
 
             data.components.Add((component, isEnabled));
         }
+        count = br.ReadInt32();
+        data.tags = new(count);
+        for (int i = 0; i < count; i++)
+        {
+            bool enabled = br.ReadBoolean();
+            ulong hash = br.ReadUInt64(); // ReadUlong
+
+            data.tags.Add((TypeManager.GetType(TypeManager.GetTypeIndexFromStableTypeHash(hash)), enabled));
+        }
         return data;
     }
     public UserData Deserialize(UserData data)
