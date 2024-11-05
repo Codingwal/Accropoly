@@ -16,6 +16,10 @@ public static class TilePlacingUtility
             TileType.Forest => new() { },
             TileType.House => new() { (new ElectricityConsumer { consumption = 2 }, true), (new HasElectricityTag(), false) },
             TileType.SolarPanel => new() { (new ElectricityProducer { production = 10 }, true) },
+            TileType.Street => new() { },
+            TileType.StreetCorner => new() { },
+            TileType.StreetTJunction => new() { },
+            TileType.StreetJunction => new() { },
             _ => throw new($"Missing componentTypes for tileType {tileType}")
         };
         components.Add((new MapTileComponent { tileType = tileType, pos = pos, rotation = rotation }, true));

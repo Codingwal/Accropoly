@@ -88,10 +88,10 @@ public class MenuManager : MonoBehaviour
                 1 => TileType.Sapling,
                 2 => TileType.House,
                 3 => TileType.SolarPanel,
-                4 => TileType.Sapling,
-                5 => TileType.Sapling,
-                6 => TileType.Sapling,
-                7 => TileType.Sapling,
+                4 => TileType.Street,
+                5 => TileType.StreetCorner,
+                6 => TileType.StreetTJunction,
+                7 => TileType.StreetJunction,
                 _ => throw new()
             });
         }
