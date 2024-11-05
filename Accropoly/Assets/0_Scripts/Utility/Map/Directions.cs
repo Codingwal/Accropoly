@@ -3,43 +3,45 @@ using Unity.Mathematics;
 public struct Direction
 {
     public Directions direction;
-    public readonly int2 DirectionVec => ToDirVec(direction);
+    public readonly int2 DirectionVec => direction switch
+    {
+        Directions.North => new(0, 1),
+        Directions.East => new(1, 0),
+        Directions.South => new(0, -1),
+        Directions.West => new(-1, 0),
+        _ => throw new($"Invalid direction {direction}"),
+    };
+
+    public Direction(Directions direction) { this.direction = direction; }
     public Direction(int2 directionVec)
     {
-        direction = FromDirVec(directionVec);
-    }
-    public static int2 ToDirVec(Directions direction)
-    {
-        return direction switch
-        {
-            Directions.North => new(0, 1),
-            Directions.East => new(1, 0),
-            Directions.South => new(0, -1),
-            Directions.West => new(-1, 0),
-            _ => throw new($"Invalid direction {direction}"),
-        };
-    }
-    public static Directions FromDirVec(int2 directionVec)
-    {
-        if (directionVec.Equals(new(1, 0))) return Directions.North;
-        else if (directionVec.Equals(new(0, 1))) return Directions.East;
-        else if (directionVec.Equals(new(-1, 0))) return Directions.South;
-        else if (directionVec.Equals(new(0, -1))) return Directions.West;
+        if (directionVec.Equals(new(1, 0))) direction = Directions.North;
+        else if (directionVec.Equals(new(0, 1))) direction = Directions.East;
+        else if (directionVec.Equals(new(-1, 0))) direction = Directions.South;
+        else if (directionVec.Equals(new(0, -1))) direction = Directions.West;
         else throw new($"Invalid direction vector {directionVec}");
     }
-    public static uint ToUint(Directions direction)
+
+    public readonly Direction Rotate(uint rotation) { return (Directions)(((uint)direction + rotation) % 4); }
+    public readonly Direction Flip() { return (Directions)(((uint)direction + 2) % 4); }
+
+    public static implicit operator Directions(Direction direction) { return direction.direction; }
+    public static implicit operator Direction(Directions direction) { return new(direction); }
+    public static explicit operator uint(Direction direction)
     {
         uint val = (uint)direction;
         if (val > 3) throw new($"Invalid direction {direction}");
         return val;
     }
-    public static Directions Rotate(Directions direction, uint rotation)
+    public static explicit operator Direction(uint direction)
     {
-        return (Directions)(((uint)direction + rotation) % 4);
+        if (direction > 3) throw new($"Invalid direction {direction}");
+        return (Direction)direction;
     }
-    public static Directions Flip(Directions direction)
+
+    public static Direction[] GetDirections()
     {
-        return (Directions)(((uint)direction + 2) % 4);
+        return new Direction[] { Directions.North, Directions.East, Directions.South, Directions.West, };
     }
 }
 public enum Directions
