@@ -3,6 +3,13 @@ using Unity.Mathematics;
 
 public static class TileGridUtility
 {
+    public static DynamicBuffer<EntityBufferElement> CreateEntityGridBuffer()
+    {
+        var em = World.DefaultGameObjectInjectionWorld.EntityManager;
+        Entity entity = em.CreateEntity();
+        em.AddComponent<EntityGridHolder>(entity);
+        return em.AddBuffer<EntityBufferElement>(entity);
+    }
     public static DynamicBuffer<EntityBufferElement> GetEntityGrid()
     {
         var em = World.DefaultGameObjectInjectionWorld.EntityManager;
