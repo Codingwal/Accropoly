@@ -64,19 +64,11 @@ public partial class Serializer
                 ElectricityConsumer componentData = (ElectricityConsumer)component;
                 bw.Write(componentData.consumption);
             }
-            else if (type == typeof(HasElectricityTag))
-            {
-
-            }
+            else if (type == typeof(HasElectricityTag)) bw.Write((int)Components.HasElectricityTag);
+            else if (type == typeof(ActiveTileTag)) bw.Write((int)Components.ActiveTileTag);
             else
                 throw new($"Cannot serialize component of type {type}");
 
-        }
-        bw.Write(data.tags.Count);
-        foreach (var (tagType, enabled) in data.tags)
-        {
-            bw.Write(enabled);
-            bw.Write(TypeManager.GetTypeInfo(tagType.TypeIndex).StableTypeHash);
         }
     }
     public void Serialize(UserData data)

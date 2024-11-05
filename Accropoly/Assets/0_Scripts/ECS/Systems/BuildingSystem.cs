@@ -52,6 +52,7 @@ public partial struct BuildingSystem : ISystem
 
                 // Set the archetype to the archetype of the newTileType
                 var components = TilePlacingUtility.GetComponents(newTileType, pos, tileToPlace.rotation);
+                components.Add((new NewTileTag(), true));
 
                 EntityCommandBuffer ecb = new(Allocator.Temp);
                 TilePlacingUtility.UpdateEntity(oldTile, components, ecb);

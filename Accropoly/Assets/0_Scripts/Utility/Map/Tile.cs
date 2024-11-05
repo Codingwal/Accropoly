@@ -5,13 +5,11 @@ using UnityEngine;
 public struct Tile
 {
     public List<(IComponentData, bool)> components;
-    public List<(ComponentType, bool)> tags;
     public Tile(params IComponentData[] _components)
     {
         components = new(_components.Length);
         foreach (var component in _components)
             components.Add((component, true));
-        tags = new();
     }
     public readonly T GetComponent<T>() where T : IComponentData
     {
@@ -24,8 +22,13 @@ public struct Tile
 }
 public enum Components : int
 {
+    // Components
     MapTileComponent = 0,
     AgingTile = 1,
     ElectricityProducer = 2,
-    ElectricityConsumer = 3
+    ElectricityConsumer = 3,
+
+    // Tags
+    HasElectricityTag = 4,
+    ActiveTileTag = 5,
 }

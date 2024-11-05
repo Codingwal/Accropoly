@@ -51,15 +51,7 @@ public partial struct TileSpawningSystem : ISystem
 
                 // Set mesh using MapTileComponent.tileType
                 MaterialMeshPair pair = MaterialsAndMeshesHolder.GetMaterialAndMesh(mapTileComponent.tileType);
-                ecb.SetSharedComponentManaged(entity, new RenderMeshArray(new Material[] { pair.material }, new Mesh[] { pair.mesh }));
-
-                // Add tag components to tile
-                foreach (var tag in tiles[x, y].tags)
-                {
-                    ecb.AddComponent(entity, tag.Item1);
-                    if (tag.Item1.IsEnableable)
-                        ecb.SetComponentEnabled(entity, tag.Item1, tag.Item2);
-                }
+                ecb.SetSharedComponentManaged(entity, new RenderMeshArray(new Material[] { pair.material }, new Mesh[] { pair.mesh })); 
 
                 // Store the entity in a buffer for future access
                 TileGridUtility.GetEntityGrid().Add(entity);

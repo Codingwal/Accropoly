@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
-using Unity.Entities.UniversalDelegates;
 using UnityEngine;
 
 public class FileHandler
@@ -15,9 +13,9 @@ public class FileHandler
 
         for (int i = 0; i < files.Length; i++)
         {
+            // Get the fileName, without path & fileType
             int startPoint = files[i].LastIndexOf("/") + 1;
             int endPoint = files[i].IndexOf(".");
-
             files[i] = files[i][startPoint..endPoint];
         }
         return files;
@@ -29,7 +27,6 @@ public class FileHandler
         FileStream fs = File.Create(dataPath);
         Serializer serializer = new(new(fs));
 
-
         serializer.Serialize((dynamic)obj);
         fs.Close();
     }
@@ -39,8 +36,10 @@ public class FileHandler
 
         FileStream fs = File.Open(dataPath, FileMode.Open);
         Deserializer deserializer = new(new(fs));
+
         T data = deserializer.Deserialize((dynamic)new T());
         fs.Close();
+
         return data;
     }
     public static void DeleteFile(string directory, string name)

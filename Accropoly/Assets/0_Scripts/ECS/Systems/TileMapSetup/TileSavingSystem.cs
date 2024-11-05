@@ -46,23 +46,19 @@ public partial struct TileSavingSystem : ISystem
                     bool isEnabled = !componentType.IsEnableable || entityManager.IsComponentEnabled(entity, componentType);
                     tile.components.Add((entityManager.GetComponentData<T>(entity), isEnabled));
                 }
-
-                if (componentType.IsZeroSized) // Tag components
+                void AddTagComponent<T>() where T : unmanaged, IComponentData
                 {
-                    if (componentType.IsEnableable)
-                    {
-                        bool isComponentEnabled = state.EntityManager.IsComponentEnabled(entity, componentType);
-                        tile.tags.Add((componentType, isComponentEnabled));
-                    }
-                    else
-                        tile.tags.Add((componentType, true));
+                    bool isEnabled = !componentType.IsEnableable || entityManager.IsComponentEnabled(entity, componentType);
+                    tile.components.Add((new T(), isEnabled));
                 }
-                else if (componentType == typeof(AgingTile))
-                    AddComponentData<AgingTile>();
-                else if (componentType == typeof(ElectricityProducer))
-                    AddComponentData<ElectricityProducer>();
-                else if (componentType == typeof(ElectricityConsumer))
-                    AddComponentData<ElectricityConsumer>();
+
+                if (componentType == typeof(AgingTile)) AddComponentData<AgingTile>();
+                else if (componentType == typeof(ElectricityProducer)) AddComponentData<ElectricityProducer>();
+                else if (componentType == typeof(ElectricityConsumer)) AddComponentData<ElectricityConsumer>();
+
+                else if (componentType == typeof(HasElectricityTag)) AddTagComponent<HasElectricityTag>();
+                else if (componentType == typeof(ActiveTileTag)) AddTagComponent<ActiveTileTag>();
+
                 else
                     Debug.LogError($"Component of type {componentType} will not be serialized but also isn't present in {typesToIgnore}");
 
