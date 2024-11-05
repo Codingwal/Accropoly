@@ -46,23 +46,26 @@ public partial struct BuildingSystem : ISystem
             }
             else if (placementInputData.action == PlacementAction.Place)
             {
+                EntityCommandBuffer ecb = new(Allocator.Temp);
+
                 int2 pos = (int2)localTransform.Position.xz / 2;
-                Entity oldTile = TileGridUtility.GetTile(pos);
                 TileType newTileType = tileToPlace.tileType;
 
-                // Set the archetype to the archetype of the newTileType
-                var components = TilePlacingUtility.GetComponents(newTileType, pos, tileToPlace.rotation);
+                Entity oldTile = TileGridUtility.GetTile(pos);
+                ecb.DestroyEntity(oldTile);
 
-                EntityCommandBuffer ecb = new();
-                TilePlacingUtility.UpdateEntity(oldTile, components, ecb);
+                var components = TilePlacingUtility.GetComponents(newTileType, pos, tileToPlace.rotation);
+                Entity newTile = TilePlacingUtility.CreateTile(components, ecb);
+
                 ecb.Playback(state.EntityManager);
+                ecb.Dispose();
 
                 // Set the transform rotation according to the rotation of tileToPlace
-                var transform = state.EntityManager.GetComponentData<LocalTransform>(oldTile);
+                var transform = state.EntityManager.GetComponentData<LocalTransform>(newTile);
                 transform.Rotation = quaternion.EulerXYZ(0, math.radians(tileToPlace.rotation), 0);
-                state.EntityManager.SetComponentData(oldTile, transform);
+                state.EntityManager.SetComponentData(newTile, transform);
 
-                MaterialsAndMeshesHolder.UpdateMeshAndMaterial(oldTile, newTileType); // Update the mesh according to the newTileType 
+                MaterialsAndMeshesHolder.UpdateMeshAndMaterial(newTile, newTileType); // Update the mesh according to the newTileType 
             }
         }
 

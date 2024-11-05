@@ -21,8 +21,10 @@ public static class TilePlacingUtility
         components.Add((new NewTileTag(), true));
         return components;
     }
-    public static void UpdateEntity(Entity tile, List<(IComponentData, bool)> components, EntityCommandBuffer ecb)
+    public static Entity CreateTile(List<(IComponentData, bool)> components, EntityCommandBuffer ecb)
     {
+        Debug.Log("!");
+
         EntityManager em = World.DefaultGameObjectInjectionWorld.EntityManager;
 
         // Get all componentTypes from the components list
@@ -34,12 +36,13 @@ public static class TilePlacingUtility
         Entity prefab = em.CreateEntityQuery(typeof(TilePrefab)).GetSingleton<TilePrefab>(); // Get the tilePrefab
         NativeArray<ComponentType> prefabComponentTypes = em.GetChunk(prefab).Archetype.GetComponentTypes(Allocator.Temp);
         foreach (var componentType in prefabComponentTypes)
-            if (!(componentType == typeof(Prefab) || componentType == typeof(LinkedEntityGroup))) // Remove prefab components (for example, 'Prefab' exludes the entity from all queries)
+            if (!(componentType == typeof(Prefab) || componentType == typeof(LinkedEntityGroup))) // Skip prefab components (for example, 'Prefab' exludes the entity from all queries)
                 componentTypes.Add(componentType);
         prefabComponentTypes.Dispose();
 
         EntityArchetype archetype = em.CreateArchetype(componentTypes.ToArray());
-        em.SetArchetype(tile, archetype);
+        Entity tile = em.CreateEntity(archetype);
+        Debug.Log("Created tile: " + componentTypes.Count);
 
         // Local helper function
         void SetComponentData<T>(IComponentData component, bool enabled) where T : unmanaged, IComponentData
@@ -63,5 +66,7 @@ public static class TilePlacingUtility
             else if (type == typeof(ElectricityConsumer)) SetComponentData<ElectricityConsumer>(component, enabled);
             else Debug.LogError($"Unexpected type {type.Name}");
         }
+
+        return tile;
     }
 }
