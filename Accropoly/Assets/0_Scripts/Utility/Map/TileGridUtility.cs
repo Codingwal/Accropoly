@@ -30,7 +30,7 @@ public static class TileGridUtility
     {
         var buffer = GetEntityGrid();
         int index = GetIndex(pos, buffer.Length);
-        if (index > buffer.Length)
+        if (index > buffer.Length || index < 0)
         {
             entityExists = false;
             return new();
