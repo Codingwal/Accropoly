@@ -1349,16 +1349,16 @@ MonoBehaviour:
   materialsAndMeshes:
   - key: 0
     value:
-      material: {fileID: 2100000, guid: 6f517d761d62b704dbc6c85bf27499fa, type: 2}
-      mesh: {fileID: 4300000, guid: ea519c5ad29c1824ba317cd388ea4990, type: 2}
+      material: {fileID: 2100000, guid: 3073eac1b2a21a940b527138e5d098cf, type: 2}
+      mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
   - key: 1
     value:
-      material: {fileID: 2100000, guid: a84c95b706565dd4e9ec224aaa04f619, type: 2}
-      mesh: {fileID: 4300000, guid: 33b0e646b34dae94dba995045ca044fa, type: 2}
+      material: {fileID: 2100000, guid: f598a97874ed44d43a45c44337a93800, type: 2}
+      mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
   - key: 2
     value:
-      material: {fileID: 2100000, guid: a6cdd36bd4217e74eaa1601f99125050, type: 2}
-      mesh: {fileID: 4300000, guid: 27dc0d0dd0c9bdc41b2dbd74285488f9, type: 2}
+      material: {fileID: 2100000, guid: 619c470d0460d1a42870a72f825534d6, type: 2}
+      mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
 --- !u!4 &309032823
 Transform:
   m_ObjectHideFlags: 0
