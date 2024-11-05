@@ -38,7 +38,12 @@ public partial struct TileSpawningSystem : ISystem
         {
             for (int y = 0; y < tiles.GetLength(1); y++)
             {
-                Entity entity = TilePlacingUtility.CreateTile(tiles[x, y].components, ecb);
+                Entity entity = state.EntityManager.Instantiate(prefab); // Entity needs to be created on main thread so that a valid value is stored in the buffer 
+                buffer.Add(entity);
+
+                ecb.AddComponent(entity, new NewTileTag());
+
+                TilePlacingUtility.UpdateEntity(entity, tiles[x, y].components, ecb);
 
                 foreach (var tag in tiles[x, y].tags)
                 {
@@ -46,8 +51,6 @@ public partial struct TileSpawningSystem : ISystem
                     if (tag.Item1.IsEnableable)
                         ecb.SetComponentEnabled(entity, tag.Item1, tag.Item2);
                 }
-
-                buffer.Add(entity);
             }
         }
     }
