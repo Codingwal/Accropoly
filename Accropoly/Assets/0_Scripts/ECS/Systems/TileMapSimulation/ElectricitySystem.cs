@@ -3,8 +3,6 @@ using UnityEngine;
 
 public partial class ElectricitySystem : SystemBase
 {
-    // private float totalProduction;
-    // private float totalConsumption;
     protected override void OnCreate()
     {
         RequireForUpdate<RunGameTag>();
@@ -26,6 +24,8 @@ public partial class ElectricitySystem : SystemBase
             totalConsumption += canEnable ? consumer.consumption : 0; // Only add to the production if the consumer can be enabled
             SystemAPI.SetComponentEnabled<HasElectricityTag>(entity, canEnable);
         }).Run();
+
+        // Debug.Log($"{totalConsumption}/{totalProduction}");
     }
 }
 
