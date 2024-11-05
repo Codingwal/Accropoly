@@ -11,12 +11,8 @@ public partial class ElectricitySystem : SystemBase
     protected override void OnUpdate()
     {
         // Only run this function every 50 frames
-        if (frame < 50)
-        {
-            frame++;
-            return;
-        }
-        frame = 0;
+        frame++;
+        if (frame % 50 != 0) return;
 
         // Calculate the current production
         float totalProduction = 0;
