@@ -86,8 +86,8 @@ public class MenuManager : MonoBehaviour
             MenuUtility.PlaceTile(inputData.hotkey switch
             {
                 1 => TileType.Sapling,
-                2 => TileType.Sapling,
-                3 => TileType.Sapling,
+                2 => TileType.House,
+                3 => TileType.SolarPanel,
                 4 => TileType.Sapling,
                 5 => TileType.Sapling,
                 6 => TileType.Sapling,

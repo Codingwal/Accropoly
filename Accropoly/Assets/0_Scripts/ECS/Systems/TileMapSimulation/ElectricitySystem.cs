@@ -34,7 +34,7 @@ public partial class ElectricitySystem : SystemBase
             SystemAPI.SetComponentEnabled<HasElectricityTag>(entity, canEnable);
         }).Run();
 
-        // Debug.Log($"{totalConsumption}/{totalProduction}");
+        Debug.Log($"{totalConsumption}/{totalProduction}");
     }
 }
 

@@ -1359,6 +1359,14 @@ MonoBehaviour:
     value:
       material: {fileID: 2100000, guid: 619c470d0460d1a42870a72f825534d6, type: 2}
       mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
+  - key: 7
+    value:
+      material: {fileID: 2100000, guid: 94afdbc655b32e74b9a7a2555ea998a0, type: 2}
+      mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
+  - key: 9
+    value:
+      material: {fileID: 2100000, guid: e064d54b67228d043ae598404b205470, type: 2}
+      mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
 --- !u!4 &309032823
 Transform:
   m_ObjectHideFlags: 0

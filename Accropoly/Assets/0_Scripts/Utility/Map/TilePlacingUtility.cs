@@ -11,10 +11,12 @@ public static class TilePlacingUtility
     {
         List<(IComponentData, bool)> components = tileType switch
         {
-            TileType.Plains => new() { (new ElectricityProducer { production = 10 }, true) },
+            TileType.Plains => new() { },
             TileType.Sapling => new() { (new AgingTile { age = UnityEngine.Random.Range(0f, 10f) }, true) },
             TileType.Forest => new() { },
-            _ => throw new($"Missing componentTypes for tileType {tileType}"),
+            TileType.House => new() { (new ElectricityConsumer { consumption = 2 }, true) },
+            TileType.SolarPanel => new() { (new ElectricityProducer { production = 10 }, true) },
+            _ => throw new($"Missing componentTypes for tileType {tileType}")
         };
         components.Add((new MapTileComponent { tileType = tileType, pos = pos, rotation = rotation }, true));
         components.Add((new ActiveTileTag(), true));
