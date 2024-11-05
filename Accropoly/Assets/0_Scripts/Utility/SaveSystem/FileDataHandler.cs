@@ -29,16 +29,9 @@ public class FileHandler
         FileStream fs = File.Create(dataPath);
         Serializer serializer = new(new(fs));
 
-        try
-        {
-            serializer.Serialize((dynamic)obj);
-            fs.Close();
-        }
-        catch (Exception e)
-        {
-            fs.Close();
-            throw new($"Failed to serialize object of type '{obj.GetType()}' with the following error message:\n{e.Message}");
-        }
+
+        serializer.Serialize((dynamic)obj);
+        fs.Close();
     }
     public static T LoadObject<T>(string directory, string name) where T : new()
     {
@@ -46,15 +39,7 @@ public class FileHandler
 
         FileStream fs = File.Open(dataPath, FileMode.Open);
         Deserializer deserializer = new(new(fs));
-        T data;
-        try
-        {
-            data = deserializer.Deserialize((dynamic)new T());
-        }
-        catch (Exception e)
-        {
-            throw new($"Failed to deserialize object of type '{typeof(T)}' with the following error message:\n{e.Message}");
-        }
+        T data = deserializer.Deserialize((dynamic)new T());
         fs.Close();
         return data;
     }
