@@ -22,8 +22,21 @@ public static class TileGridUtility
     }
     public static Entity GetTile(int2 pos)
     {
+        Entity entity = TryGetTile(pos, out bool entityExists);
+        if (!entityExists) throw new($"Invalid position {pos}");
+        return entity;
+    }
+    public static Entity TryGetTile(int2 pos, out bool entityExists)
+    {
         var buffer = GetEntityGrid();
-        return buffer[GetIndex(pos, buffer.Length)];
+        int index = GetIndex(pos, buffer.Length);
+        if (index > buffer.Length)
+        {
+            entityExists = false;
+            return new();
+        }
+        entityExists = true;
+        return buffer[index];
     }
     public static Entity[] GetNeighbourTiles(int2 pos)
     {
