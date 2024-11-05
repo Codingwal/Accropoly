@@ -31,8 +31,8 @@ public partial class ElectricitySystem : SystemBase
         {
             bool canEnable = totalConsumption + consumer.consumption <= totalProduction;
             totalConsumption += canEnable ? consumer.consumption : 0; // Only add to the production if the consumer can be enabled
-            SystemAPI.SetComponentEnabled<HasElectricityTag>(entity, canEnable);
         }).Run();
+            EntityManager.SetComponentEnabled<HasElectricityTag>(entity, canEnable);
 
         Debug.Log($"{totalConsumption}/{totalProduction}");
     }

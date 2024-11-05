@@ -14,7 +14,7 @@ public static class TilePlacingUtility
             TileType.Plains => new() { },
             TileType.Sapling => new() { (new AgingTile { age = UnityEngine.Random.Range(0f, 10f) }, true) },
             TileType.Forest => new() { },
-            TileType.House => new() { (new ElectricityConsumer { consumption = 2 }, true) },
+            TileType.House => new() { (new ElectricityConsumer { consumption = 2 }, true), (new HasElectricityTag(), false) },
             TileType.SolarPanel => new() { (new ElectricityProducer { production = 10 }, true) },
             _ => throw new($"Missing componentTypes for tileType {tileType}")
         };
