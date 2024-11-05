@@ -1,3 +1,4 @@
+- Imrpove MapTemplates
 - store worldData as managed component instead of static field (?)
 - delete RunGameTag on pausing (?)
 - dont run electricity system every frame

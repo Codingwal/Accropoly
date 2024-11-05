@@ -12,7 +12,7 @@ public static class TilePlacingUtility
         List<(IComponentData, bool)> components = tileType switch
         {
             TileType.Plains => new() { },
-            TileType.Sapling => new() { (new AgingTile { age = new Unity.Mathematics.Random(1).NextFloat(0, 10) }, true) },
+            TileType.Sapling => new() { (new AgingTile { age = UnityEngine.Random.Range(0f, 10f) }, true) },
             TileType.Forest => new() { },
             _ => throw new($"Missing componentTypes for tileType {tileType}"),
         };
