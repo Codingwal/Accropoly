@@ -20,6 +20,7 @@ https://www.freecodecamp.org/news/how-to-write-better-git-commit-messages/
     - perf: performance improvements
     - build: changes that affect the build system or external dependencies
     - revert: reverts a previous commit
+    - ressource: new or updated ressources (images, fonts, ...)
 ### Example
 #### docs: add commit convention to README.md
 This ensures that commit messages are consistent and helpful
