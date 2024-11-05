@@ -71,9 +71,9 @@ public partial class Deserializer
                 };
             }
             else if (type == Components.HasElectricityTag) component = new HasElectricityTag();
+            else if (type == Components.IsConnectedTag) component = new IsConnectedTag();
             else if (type == Components.ActiveTileTag) component = new ActiveTileTag();
-            else
-                throw new($"Cannot deserialize component of type {type}");
+            else throw new($"Cannot deserialize component of type {type}");
 
             data.components.Add((component, isEnabled));
         }

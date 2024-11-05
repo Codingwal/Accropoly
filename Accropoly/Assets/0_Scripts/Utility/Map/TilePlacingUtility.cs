@@ -14,11 +14,11 @@ public static class TilePlacingUtility
             TileType.Plains => new() { },
             TileType.Sapling => new() { (new AgingTile { age = UnityEngine.Random.Range(0f, 10f) }, true) },
             TileType.Forest => new() { },
-            TileType.House => new() { (new ElectricityConsumer { consumption = 2 }, true), (new HasElectricityTag(), false) },
+            TileType.House => new() { (new ElectricityConsumer { consumption = 2 }, true), (new HasElectricityTag(), false), (new IsConnectedTag(), false) },
             TileType.SolarPanel => new() { (new ElectricityProducer { production = 10 }, true) },
-            TileType.Street => new() { },
-            TileType.StreetCorner => new() { },
-            TileType.StreetTJunction => new() { },
+            TileType.Street => new() { (new BuildingConnector(Directions.East, Directions.West), true) },
+            TileType.StreetCorner => new() { (new BuildingConnector(Directions.East, Directions.South), true) },
+            TileType.StreetTJunction => new() { (new BuildingConnector(Directions.East), true) },
             TileType.StreetJunction => new() { },
             _ => throw new($"Missing componentTypes for tileType {tileType}")
         };
@@ -66,6 +66,7 @@ public static class TilePlacingUtility
             else if (type == typeof(AgingTile)) SetComponentData<AgingTile>(component, enabled);
             else if (type == typeof(ElectricityProducer)) SetComponentData<ElectricityProducer>(component, enabled);
             else if (type == typeof(ElectricityConsumer)) SetComponentData<ElectricityConsumer>(component, enabled);
+            else if (type == typeof(BuildingConnector)) SetComponentData<BuildingConnector>(component, enabled);
             else Debug.LogError($"Unexpected type {type.Name}");
         }
     }

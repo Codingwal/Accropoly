@@ -29,19 +29,19 @@ public struct Direction
     public static implicit operator Direction(Directions direction) { return new(direction); }
     public static explicit operator uint(Direction direction)
     {
-        uint val = (uint)direction;
+        uint val = (uint)direction.direction;
         if (val > 3) throw new($"Invalid direction {direction}");
         return val;
     }
     public static explicit operator Direction(uint direction)
     {
         if (direction > 3) throw new($"Invalid direction {direction}");
-        return (Direction)direction;
+        return (Direction)(Directions)direction;
     }
 
     public static Direction[] GetDirections()
     {
-        return new Direction[] { Directions.North, Directions.East, Directions.South, Directions.West, };
+        return new Direction[] { Directions.North, Directions.East, Directions.South, Directions.West };
     }
 }
 public enum Directions

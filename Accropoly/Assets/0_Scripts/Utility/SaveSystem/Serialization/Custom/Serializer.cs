@@ -65,6 +65,7 @@ public partial class Serializer
                 bw.Write(componentData.consumption);
             }
             else if (type == typeof(HasElectricityTag)) bw.Write((int)Components.HasElectricityTag);
+            else if (type == typeof(IsConnectedTag)) bw.Write((int)Components.IsConnectedTag);
             else if (type == typeof(ActiveTileTag)) bw.Write((int)Components.ActiveTileTag);
             else
                 throw new($"Cannot serialize component of type {type}");
