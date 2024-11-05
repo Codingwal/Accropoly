@@ -10,8 +10,8 @@ public partial class ElectricitySystem : SystemBase
     }
     protected override void OnUpdate()
     {
-        // Only run this function every 10 frames
-        if (frame < 10)
+        // Only run this function every 50 frames
+        if (frame < 50)
         {
             frame++;
             return;
@@ -27,14 +27,17 @@ public partial class ElectricitySystem : SystemBase
 
         // Enable as many consumers as possible
         float totalConsumption = 0;
+        float maxConsumption = 0;
         Entities.WithAll<ActiveTileTag>().ForEach((Entity entity, in ElectricityConsumer consumer) =>
         {
             bool canEnable = totalConsumption + consumer.consumption <= totalProduction;
             totalConsumption += canEnable ? consumer.consumption : 0; // Only add to the production if the consumer can be enabled
-        }).Run();
             EntityManager.SetComponentEnabled<HasElectricityTag>(entity, canEnable);
 
-        Debug.Log($"{totalConsumption}/{totalProduction}");
+            maxConsumption += consumer.consumption; // Only for imformative purposes
+        }).WithoutBurst().Run();
+
+        Debug.Log($"{maxConsumption}/{totalProduction}");
     }
 }
 
