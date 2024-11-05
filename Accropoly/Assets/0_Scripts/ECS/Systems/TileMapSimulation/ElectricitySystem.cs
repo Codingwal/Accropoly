@@ -3,12 +3,21 @@ using UnityEngine;
 
 public partial class ElectricitySystem : SystemBase
 {
+    private uint frame;
     protected override void OnCreate()
     {
         RequireForUpdate<RunGameTag>();
     }
     protected override void OnUpdate()
     {
+        // Only run this function every 10 frames
+        if (frame < 10)
+        {
+            frame++;
+            return;
+        }
+        frame = 0;
+
         // Calculate the current production
         float totalProduction = 0;
         Entities.WithAll<ActiveTileTag>().ForEach((in ElectricityProducer producer) =>

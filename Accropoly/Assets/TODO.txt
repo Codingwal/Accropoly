@@ -1,7 +1,6 @@
 - store worldData as managed component instead of static field (?)
 - delete RunGameTag on pausing (?)
-- dont run electricity system every frame
+- Add namespaces (?)
 
 FUTURE:
-- Add namespaces (?)
 - Change energy symbol color depending on renewability of the energy production
