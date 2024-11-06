@@ -46,12 +46,12 @@ public partial struct TileSpawningSystem : ISystem
                         mapTileComponent = (MapTileComponent)component;
 
                 // Set LocalTransform of the new tile using the MapTileComponent data
-                quaternion rotation = quaternion.EulerXYZ(0, math.radians(mapTileComponent.rotation), 0);
+                quaternion rotation = quaternion.EulerXYZ(0, math.radians((uint)mapTileComponent.rotation * 90), 0);
                 ecb.SetComponent(entity, LocalTransform.FromPositionRotation(2 * new float3(x, 0, y), rotation));
 
                 // Set mesh using MapTileComponent.tileType
                 MaterialMeshPair pair = MaterialsAndMeshesHolder.GetMaterialAndMesh(mapTileComponent.tileType);
-                ecb.SetSharedComponentManaged(entity, new RenderMeshArray(new Material[] { pair.material }, new Mesh[] { pair.mesh })); 
+                ecb.SetSharedComponentManaged(entity, new RenderMeshArray(new Material[] { pair.material }, new Mesh[] { pair.mesh }));
 
                 // Store the entity in a buffer for future access
                 TileGridUtility.GetEntityGrid().Add(entity);

@@ -11,9 +11,9 @@ public unsafe struct BuildingConnector : IComponentData
             connectableSides[(uint)direction] = true;
         }
     }
-    public bool CanConnect(Direction direction, int rotation)
+    public bool CanConnect(Direction direction, Direction rotation)
     {
-        return connectableSides[(uint)direction.Rotate(-rotation)];
+        return connectableSides[(uint)direction.Rotate(-(int)(uint)rotation)];
     }
     public int Serialize()
     {

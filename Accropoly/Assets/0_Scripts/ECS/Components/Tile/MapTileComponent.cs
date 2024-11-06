@@ -4,18 +4,12 @@ public struct MapTileComponent : IComponentData
 {
     public TileType tileType;
     public int2 pos;
-    public int rotation;
-    public MapTileComponent(int x, int y, TileType tileType, int rotation)
+    public Direction rotation;
+    public MapTileComponent(int x, int y, TileType tileType, Direction rotation)
     {
         pos = new(x, y);
         this.tileType = tileType;
         this.rotation = rotation;
-    }
-    public void Rotate(int degrees)
-    {
-        rotation += degrees;
-        if (rotation > 180)
-            rotation -= 360;
     }
 }
 // Explicit values for compatability with other versions (new TileTypes just get a higher value)

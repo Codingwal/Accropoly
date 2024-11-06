@@ -7,7 +7,7 @@ using UnityEngine;
 
 public static class TilePlacingUtility
 {
-    public static List<(IComponentData, bool)> GetComponents(TileType tileType, int2 pos, int rotation)
+    public static List<(IComponentData, bool)> GetComponents(TileType tileType, int2 pos, Direction rotation)
     {
         List<(IComponentData, bool)> components = tileType switch
         {

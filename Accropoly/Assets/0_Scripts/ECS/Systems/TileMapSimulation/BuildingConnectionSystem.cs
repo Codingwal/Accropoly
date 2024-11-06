@@ -21,8 +21,7 @@ public partial class BuildingConnectionSystem : SystemBase
                 if (!EntityManager.HasComponent<BuildingConnector>(neighbour)) continue;
 
                 var buildingConnector = EntityManager.GetComponentData<BuildingConnector>(neighbour);
-                int neighbourRotation = EntityManager.GetComponentData<MapTileComponent>(neighbour).rotation / 90 % 4;
-                Debug.Log(neighbourRotation);
+                Direction neighbourRotation = EntityManager.GetComponentData<MapTileComponent>(neighbour).rotation;
 
                 if (buildingConnector.CanConnect(direction.Flip(), neighbourRotation))
                 {

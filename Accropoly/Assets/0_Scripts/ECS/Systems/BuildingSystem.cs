@@ -36,7 +36,7 @@ public partial struct BuildingSystem : ISystem
 
             if (placementInputData.action == PlacementAction.Rotate)
             {
-                tileToPlace.Rotate(90);
+                tileToPlace.rotation = tileToPlace.rotation.Rotate(1);
                 localTransform = localTransform.RotateY(math.radians(90));
             }
             else if (placementInputData.action == PlacementAction.Cancel)
@@ -61,7 +61,7 @@ public partial struct BuildingSystem : ISystem
 
                 // Set the transform rotation according to the rotation of tileToPlace
                 var transform = state.EntityManager.GetComponentData<LocalTransform>(oldTile);
-                transform.Rotation = quaternion.EulerXYZ(0, math.radians(tileToPlace.rotation), 0);
+                transform.Rotation = quaternion.EulerXYZ(0, tileToPlace.rotation.ToRadians(), 0);
                 state.EntityManager.SetComponentData(oldTile, transform);
 
                 MaterialsAndMeshesHolder.UpdateMeshAndMaterial(oldTile, newTileType); // Update the mesh according to the newTileType 

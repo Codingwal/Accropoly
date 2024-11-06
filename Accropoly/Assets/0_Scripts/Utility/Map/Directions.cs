@@ -24,6 +24,7 @@ public struct Direction
 
     public readonly Direction Rotate(int rotation) { return (Directions)(((uint)direction + rotation + 4) % 4); } // +4 to prevent negative values
     public readonly Direction Flip() { return (Directions)(((uint)direction + 2 + 4) % 4); } // +4 to prevent negative values
+    public readonly float ToRadians() { return math.radians((uint)direction * 90); }
 
     public static implicit operator Directions(Direction direction) { return direction.direction; }
     public static implicit operator Direction(Directions direction) { return new(direction); }

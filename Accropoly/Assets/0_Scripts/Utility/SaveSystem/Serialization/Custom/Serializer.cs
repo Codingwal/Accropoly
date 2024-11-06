@@ -39,7 +39,7 @@ public partial class Serializer
                 MapTileComponent componentData = (MapTileComponent)component;
                 bw.Write((int)componentData.tileType);
                 Serialize(componentData.pos);
-                Serialize(componentData.rotation);
+                bw.Write((uint)componentData.rotation);
             }
             else if (type == typeof(AgingTile))
             {

@@ -45,7 +45,7 @@ public partial class Deserializer
                 {
                     tileType = (TileType)br.ReadInt32(),
                     pos = Deserialize(new int2()),
-                    rotation = br.ReadInt32()
+                    rotation = (Direction)br.ReadUInt32()
                 },
                 Components.AgingTile => new AgingTile()
                 {
