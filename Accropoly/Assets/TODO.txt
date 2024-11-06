@@ -1,4 +1,4 @@
-- HabitatInitializationSystem equivalent for e-consumers
+- add population serialization
 - rename TileAgeingSystem & AgingTile
 
 - create school/work system

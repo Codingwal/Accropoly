@@ -1,4 +1,6 @@
 using Unity.Entities;
+using Unity.Mathematics;
+using Unity.Transforms;
 using UnityEngine;
 
 public partial class ImmigrationSystem : SystemBase
@@ -16,7 +18,7 @@ public partial class ImmigrationSystem : SystemBase
         // Foreach active habitat with space
         Entities.WithAll<ActiveTileTag, HasSpaceTag>().ForEach((Entity habitatEntity, ref Habitat habitat, in MapTileComponent habitatTile) =>
         {
-            if (Random.Range(0f, 1f) <= immigrationProbability * SystemAPI.Time.DeltaTime) // Multiply with delta time bc immigrationProbability is per second, not per frame
+            if (UnityEngine.Random.Range(0f, 1f) <= immigrationProbability * SystemAPI.Time.DeltaTime) // Multiply with delta time bc immigrationProbability is per second, not per frame
             {
                 Debug.Log("New person!");
 
@@ -30,6 +32,10 @@ public partial class ImmigrationSystem : SystemBase
                     homeTile = habitatTile.pos,
                     age = 0,
                 });
+
+                float offset = (habitat.totalSpace - habitat.freeSpace - 2.5f) * 0.2f;
+                float3 pos = new(2 * habitatTile.pos.x + offset, 0.5f, 2 * habitatTile.pos.y);
+                EntityManager.SetComponentData(entity, LocalTransform.FromPositionRotationScale(pos, quaternion.identity, 0.1f));
             }
         }).WithoutBurst().WithStructuralChanges().Run();
     }
