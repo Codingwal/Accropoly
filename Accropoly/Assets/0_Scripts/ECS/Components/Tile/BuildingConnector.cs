@@ -17,15 +17,12 @@ public unsafe struct BuildingConnector : IComponentData
     }
     public int Serialize()
     {
-        Debug.Assert(sizeof(bool) * 4 == sizeof(int));
+        Debug.Assert(sizeof(bool) * 4 == sizeof(int)); // Assert that bool[4] and int are of the same size
 
-        Print();
-
+        // Convert bool[4] to int, this type conversion is only possible with pointers
         fixed (bool* ptr = connectableSides)
         {
-            int val = *(int*)ptr;
-            Debug.Log($"-> {val}");
-            return val;
+            return *(int*)ptr;
         }
     }
     public void Print()
@@ -34,14 +31,13 @@ public unsafe struct BuildingConnector : IComponentData
     }
     public static BuildingConnector Deserialize(int serializedData)
     {
-        Debug.Assert(sizeof(bool) * 4 == sizeof(int));
+        Debug.Assert(sizeof(bool) * 4 == sizeof(int)); // Assert that bool[4] and int are of the same size
 
         BuildingConnector buildingConnector = new();
+
+        // Convert int to bool[4], this type conversion is only possible with pointers
         int* ptr = (int*)buildingConnector.connectableSides;
         *ptr = serializedData;
-
-        Debug.Log($"{serializedData} ->");
-        buildingConnector.Print();
 
         return buildingConnector;
     }
