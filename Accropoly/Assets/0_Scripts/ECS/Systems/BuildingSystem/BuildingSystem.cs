@@ -1,8 +1,6 @@
-using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
 
@@ -16,15 +14,12 @@ public partial struct BuildingSystem : ISystem
     {
         state.RequireForUpdate<RunGameTag>();
         state.RequireForUpdate<TileToPlace>(); // Update only if there is a PlacementProcess running (The process is started by the menu)
-        state.RequireForUpdate<BuildingSystemConfig>();
 
         placementInputDataQuery = state.GetEntityQuery(typeof(PlacementInputData));
     }
     public void OnUpdate(ref SystemState state)
     {
         if (Time.timeScale == 0) return; // Return if the game is paused
-
-        var config = SystemAPI.GetSingleton<BuildingSystemConfig>();
 
         var localTransform = state.EntityManager.GetComponentData<LocalTransform>(entity);
         var tileToPlace = state.EntityManager.GetComponentData<TileToPlace>(entity);
@@ -37,7 +32,8 @@ public partial struct BuildingSystem : ISystem
             if (placementInputData.action == PlacementAction.Rotate)
             {
                 tileToPlace.rotation = tileToPlace.rotation.Rotate(1);
-                localTransform = localTransform.RotateY(math.radians(90));
+                state.EntityManager.SetComponentData(entity, tileToPlace);
+                state.EntityManager.SetComponentData(entity, localTransform.RotateY(math.radians(90)));
             }
             else if (placementInputData.action == PlacementAction.Cancel)
             {
@@ -67,26 +63,6 @@ public partial struct BuildingSystem : ISystem
                 MaterialsAndMeshesHolder.UpdateMeshAndMaterial(oldTile, newTileType); // Update the mesh according to the newTileType 
             }
         }
-
-        // Update position
-
-        var inputData = SystemAPI.GetSingleton<InputData>();
-
-        Ray ray = Camera.main.ScreenPointToRay(inputData.mousePos);
-
-        if (!Physics.Raycast(ray, out RaycastHit info, 1000, config.mouseRayLayer)) // Cast ray to detect where on the map the user points
-        {
-            state.EntityManager.SetComponentEnabled<MaterialMeshInfo>(entity, false); // Hide the tileToPlace entity if the user doesn't point on the tileMap
-            return;
-        };
-        state.EntityManager.SetComponentEnabled<MaterialMeshInfo>(entity, true); // Show the tileToPlace entity if the user points on the tileMap
-
-        localTransform.Position.xz = math.round(((float3)info.point).xz / 2) * 2; // Align the position to the tileGrid
-        localTransform.Position.y = 0.5f; // Important for tile visibility
-
-        // Update the components
-        state.EntityManager.SetComponentData(entity, localTransform);
-        state.EntityManager.SetComponentData(entity, tileToPlace);
     }
     public static void StartPlacementProcess(TileType tileType)
     {
