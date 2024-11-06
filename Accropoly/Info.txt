@@ -1,0 +1,17 @@
+System order:
+
+[InitializationSystemGroup]             
+DeleteNewTileTagSystem
+InputSystem
+TileSpawningSystem
+
+{Input events}
+
+[SimulationSystemGroup]
+BuildingSystem
+{TileMapSimulationSystems}
+{PopulationSimulationSystems}
+HabitatInitializationSystem
+
+[LateSimulationSystemGroup]
+WorldDataSystem
