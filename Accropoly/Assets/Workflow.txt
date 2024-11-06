@@ -16,3 +16,6 @@ CREATE TILE (2D):
 ENTITYSCENE IMPORT ERROR:
 - Edit/Preferences/Entities -> Clear entity cache
 - Click on subscene, reimport
+
+IMPORTANT:
+- Never use BinaryReader.Read(), use BinaryReader.ReadInt32()

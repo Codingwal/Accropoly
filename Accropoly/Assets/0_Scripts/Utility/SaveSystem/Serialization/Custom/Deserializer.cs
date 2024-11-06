@@ -57,8 +57,8 @@ public partial class Deserializer
                 },
                 Components.Habitat => new Habitat()
                 {
-                    totalSpace = br.Read(),
-                    freeSpace = br.Read()
+                    totalSpace = br.ReadInt32(),
+                    freeSpace = br.ReadInt32()
                 },
 
                 Components.HasElectricityTag => new HasElectricityTag(),
