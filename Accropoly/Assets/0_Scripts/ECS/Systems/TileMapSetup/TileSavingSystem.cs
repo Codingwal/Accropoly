@@ -21,6 +21,7 @@ public partial struct TileSavingSystem : ISystem
         HashSet<ComponentType> typesToIgnoreSet = new();
         foreach (var type in typesToIgnore)
             typesToIgnoreSet.Add(type);
+        typesToIgnoreSet.Add(typeof(HasSpaceTag));
         typesToIgnore.Dispose();
 
         WorldDataSystem.worldData.map.tiles = new Tile[WorldDataSystem.worldData.map.tiles.GetLength(0), WorldDataSystem.worldData.map.tiles.GetLength(1)];
