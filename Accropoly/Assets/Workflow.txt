@@ -4,7 +4,6 @@ CREATE TILE (TAG-)COMPONENT:
 - Add to TileSavingSystem                           0_Scripts\ECS\Systems\TileMapSetup\TileSavingSystem.cs
 - Add to Serializer                                 0_Scripts\Utility\SaveSystem\Serialization\Custom\Serializer.cs
 - Add to Deserializer                               0_Scripts\Utility\SaveSystem\Serialization\Custom\Deserializer.cs
-- Add to TilePlacingUtility (bottom)                0_Scripts\Utility\Map\TilePlacingUtility.cs
 
 CREATE TILE (2D):
 - Import png
