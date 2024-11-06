@@ -8,5 +8,4 @@ public struct ElectricityConsumer : IComponentData
 {
     public float consumption;
 }
-public struct UpdatedElectricityTag : IComponentData { }
 public struct HasElectricityTag : IComponentData, IEnableableComponent { }
