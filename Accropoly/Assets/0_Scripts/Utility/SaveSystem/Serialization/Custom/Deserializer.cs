@@ -39,44 +39,34 @@ public partial class Deserializer
             IComponentData component;
 
             Components type = (Components)br.ReadInt32();
-            if (type == Components.MapTileComponent)
+            component = type switch
             {
-                component = new MapTileComponent()
+                Components.MapTileComponent => new MapTileComponent()
                 {
                     tileType = (TileType)br.ReadInt32(),
                     pos = Deserialize(new int2()),
                     rotation = br.ReadInt32()
-                };
-            }
-            else if (type == Components.AgingTile)
-            {
-                component = new AgingTile()
+                },
+                Components.AgingTile => new AgingTile()
                 {
                     age = br.ReadSingle()
-                };
-            }
-            else if (type == Components.ElectricityProducer)
-            {
-                component = new ElectricityProducer()
+                },
+                Components.ElectricityProducer => new ElectricityProducer()
                 {
                     production = br.ReadSingle()
-                };
-            }
-            else if (type == Components.ElectricityConsumer)
-            {
-                component = new ElectricityConsumer()
+                },
+                Components.ElectricityConsumer => new ElectricityConsumer()
                 {
                     consumption = br.ReadSingle()
-                };
-            }
-            else if (type == Components.BuildingConnector)
-            {
-                component = BuildingConnector.Deserialize(br.ReadInt32());
-            }
-            else if (type == Components.HasElectricityTag) component = new HasElectricityTag();
-            else if (type == Components.IsConnectedTag) component = new IsConnectedTag();
-            else if (type == Components.ActiveTileTag) component = new ActiveTileTag();
-            else throw new($"Cannot deserialize component of type {type}");
+                },
+                Components.BuildingConnector => BuildingConnector.Deserialize(br.ReadInt32()),
+
+                Components.HasElectricityTag => new HasElectricityTag(),
+                Components.IsConnectedTag => new IsConnectedTag(),
+                Components.ActiveTileTag => new ActiveTileTag(),
+
+                _ => throw new($"Cannot deserialize component of type {type}")
+            };
 
             data.components.Add((component, isEnabled));
         }
