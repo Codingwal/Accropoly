@@ -32,7 +32,6 @@ public partial struct ImmigrationSystem : ISystem
         public EntityCommandBuffer ecb;
         public Random rnd;
         public float deltaTime;
-        [BurstCompile]
         public void Execute(Entity habitatEntity, ref Habitat habitat, in MapTileComponent habitatTile)
         {
             if (rnd.NextFloat() <= immigrationProbability * deltaTime) // Multiply with delta time bc immigrationProbability is per second, not per frame

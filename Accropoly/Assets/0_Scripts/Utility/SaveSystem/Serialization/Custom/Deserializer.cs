@@ -55,6 +55,11 @@ public partial class Deserializer
                 {
                     pollution = br.ReadSingle()
                 },
+                Components.Habitat => new Habitat()
+                {
+                    totalSpace = br.Read(),
+                    freeSpace = br.Read()
+                },
 
                 Components.HasElectricityTag => new HasElectricityTag(),
                 Components.IsConnectedTag => new IsConnectedTag(),

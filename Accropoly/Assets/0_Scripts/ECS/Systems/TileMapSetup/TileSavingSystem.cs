@@ -57,6 +57,7 @@ public partial struct TileSavingSystem : ISystem
                 else if (componentType == typeof(ElectricityConsumer)) AddComponentData<ElectricityConsumer>();
                 else if (componentType == typeof(BuildingConnector)) AddComponentData<BuildingConnector>();
                 else if (componentType == typeof(Polluter)) AddComponentData<Polluter>();
+                else if (componentType == typeof(Habitat)) AddComponentData<Habitat>();
 
                 else if (componentType == typeof(HasElectricityTag)) AddTagComponent<HasElectricityTag>();
                 else if (componentType == typeof(IsConnectedTag)) AddTagComponent<IsConnectedTag>();

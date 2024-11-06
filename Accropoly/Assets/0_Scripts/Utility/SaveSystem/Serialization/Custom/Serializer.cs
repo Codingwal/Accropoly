@@ -68,6 +68,14 @@ public partial class Serializer
                 Polluter componentData = (Polluter)component;
                 bw.Write(componentData.pollution);
             }
+            else if (type == typeof(Habitat))
+            {
+                bw.Write((int)Components.Habitat);
+
+                Habitat componentData = (Habitat)component;
+                bw.Write(componentData.totalSpace);
+                bw.Write(componentData.freeSpace);
+            }
             else if (type == typeof(HasElectricityTag)) bw.Write((int)Components.HasElectricityTag);
             else if (type == typeof(IsConnectedTag)) bw.Write((int)Components.IsConnectedTag);
             else if (type == typeof(ActiveTileTag)) bw.Write((int)Components.ActiveTileTag);
