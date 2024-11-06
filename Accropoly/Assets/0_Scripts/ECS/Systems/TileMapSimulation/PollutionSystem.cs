@@ -7,7 +7,6 @@ public partial class PollutionSystem : SystemBase
     protected override void OnCreate()
     {
         RequireForUpdate<Polluter>();
-        RequireForUpdate<ElectricityProducer>();
     }
     protected override void OnUpdate()
     {
