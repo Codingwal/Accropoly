@@ -20,6 +20,6 @@ public partial class PollutionSystem : SystemBase
             totalPollution += polluter.pollution;
         }).Run();
 
-        Debug.Log($"Total pollution: {totalPollution}");
+        // Debug.Log($"Total pollution: {totalPollution}");
     }
 }

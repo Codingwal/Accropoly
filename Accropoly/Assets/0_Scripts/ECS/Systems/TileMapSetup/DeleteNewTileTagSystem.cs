@@ -2,6 +2,7 @@ using Unity.Entities;
 
 [UpdateInGroup(typeof(InitializationSystemGroup))]
 [UpdateBefore(typeof(TileSpawningSystem))]
+// [UpdateBefore(typeof(BuildingSystem))]
 public partial struct DeleteNewTileTagSystem : ISystem
 {
     private EntityQuery newTileTagQuery;

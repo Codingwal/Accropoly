@@ -14,8 +14,9 @@ public static class TilePlacingUtility
             TileType.Plains => new() { },
             TileType.Sapling => new() { (new AgingTile { age = UnityEngine.Random.Range(0f, 10f) }, true) },
             TileType.Forest => new() { },
-            TileType.House => new() { (new ElectricityConsumer { consumption = 2 }, true), (new Polluter { pollution = 3 }, true),
-                                      (new HasElectricityTag(), false), (new IsConnectedTag(), false) },
+            TileType.House => new() { (new Habitat{totalSpace = UnityEngine.Random.Range(2, 6)}, true),
+                                      (new ElectricityConsumer { consumption = 2 }, true), (new HasElectricityTag(), false),
+                                      (new Polluter { pollution = 3 }, true), (new IsConnectedTag(), false) },
             TileType.SolarPanel => new() { (new ElectricityProducer { production = 10 }, true), (new Polluter { pollution = 1 }, true) },
             TileType.Street => new() { (new BuildingConnector(Directions.East, Directions.West), true) },
             TileType.StreetCorner => new() { (new BuildingConnector(Directions.East, Directions.South), true) },
@@ -69,6 +70,7 @@ public static class TilePlacingUtility
             else if (type == typeof(ElectricityConsumer)) SetComponentData<ElectricityConsumer>(component, enabled);
             else if (type == typeof(BuildingConnector)) SetComponentData<BuildingConnector>(component, enabled);
             else if (type == typeof(Polluter)) SetComponentData<Polluter>(component, enabled);
+            else if (type == typeof(Habitat)) SetComponentData<Habitat>(component, enabled);
             else Debug.LogError($"Unexpected type {type.Name}");
         }
     }

@@ -36,6 +36,6 @@ public partial class ElectricitySystem : SystemBase
             maxConsumption += consumer.consumption; // Only for informative purposes
         }).WithoutBurst().Run();
 
-        Debug.Log($"Electricity: {maxConsumption}/{totalProduction}");
+        // Debug.Log($"Electricity: {maxConsumption}/{totalProduction}");
     }
 }

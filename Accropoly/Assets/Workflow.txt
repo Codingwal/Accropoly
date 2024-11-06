@@ -12,3 +12,7 @@ CREATE TILE (2D):
 - Add to TileType enum                              0_Scripts\ECS\Components\Tile\MapTileComponent.cs
 - Add to GetComponents() function                   0_Scripts\Utility\Map\TilePlacingUtility.cs
 - Add to the placeable tiles                        0_Scripts\UI\MenuManager.cs
+
+ENTITYSCENE IMPORT ERROR:
+- Edit/Preferences/Entities -> Clear entity cache
+- Click on subscene, reimport

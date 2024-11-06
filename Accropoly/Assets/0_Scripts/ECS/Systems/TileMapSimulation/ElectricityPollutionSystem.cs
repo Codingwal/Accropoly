@@ -21,6 +21,6 @@ public partial class ElectricityPollutionSystem : SystemBase
             totalPollution += polluter.pollution;
         }).Run();
 
-        Debug.Log($"Total electricity production pollution: {totalPollution}");
+        // Debug.Log($"Total electricity production pollution: {totalPollution}");
     }
 }

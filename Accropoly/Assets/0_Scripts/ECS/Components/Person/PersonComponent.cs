@@ -1,9 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Entities;
-using UnityEngine;
+using Unity.Mathematics;
 
 public class PersonComponent : IComponentData
 {
-    public int id;
+    public int2 homeTile;
+    public int age;
 }

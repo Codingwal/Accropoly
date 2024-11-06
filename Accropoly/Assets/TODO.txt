@@ -1,7 +1,9 @@
-- create money system
-- create people
+- HabitatInitializationSystem equivalent for e-consumers
+- rename TileAgeingSystem & AgingTile
+
 - create school/work system
 - create happiness
+- create money system
 
 - look at bookmark
 
