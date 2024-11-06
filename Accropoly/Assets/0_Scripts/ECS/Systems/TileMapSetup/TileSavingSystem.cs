@@ -22,6 +22,7 @@ public partial struct TileSavingSystem : ISystem
         foreach (var type in typesToIgnore)
             typesToIgnoreSet.Add(type);
         typesToIgnoreSet.Add(typeof(HasSpaceTag));
+        typesToIgnoreSet.Add(typeof(HasElectricityTag));
         typesToIgnore.Dispose();
 
         WorldDataSystem.worldData.map.tiles = new Tile[WorldDataSystem.worldData.map.tiles.GetLength(0), WorldDataSystem.worldData.map.tiles.GetLength(1)];

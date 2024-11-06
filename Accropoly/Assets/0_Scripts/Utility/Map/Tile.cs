@@ -33,7 +33,6 @@ public enum Components : int
     Habitat = 9,
 
     // Tags
-    HasElectricityTag = 4,
     IsConnectedTag = 6,
     ActiveTileTag = 5,
     NewTileTag = 10,

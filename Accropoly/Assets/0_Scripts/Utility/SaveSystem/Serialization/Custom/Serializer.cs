@@ -76,7 +76,6 @@ public partial class Serializer
                 bw.Write(componentData.totalSpace);
                 bw.Write(componentData.freeSpace);
             }
-            else if (type == typeof(HasElectricityTag)) bw.Write((int)Components.HasElectricityTag);
             else if (type == typeof(IsConnectedTag)) bw.Write((int)Components.IsConnectedTag);
             else if (type == typeof(ActiveTileTag)) bw.Write((int)Components.ActiveTileTag);
             else if (type == typeof(NewTileTag)) bw.Write((int)Components.NewTileTag);

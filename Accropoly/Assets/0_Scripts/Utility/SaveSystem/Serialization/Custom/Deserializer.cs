@@ -60,8 +60,7 @@ public partial class Deserializer
                     totalSpace = br.ReadInt32(),
                     freeSpace = br.ReadInt32()
                 },
-
-                Components.HasElectricityTag => new HasElectricityTag(),
+                
                 Components.IsConnectedTag => new IsConnectedTag(),
                 Components.ActiveTileTag => new ActiveTileTag(),
                 Components.NewTileTag => new NewTileTag(),
