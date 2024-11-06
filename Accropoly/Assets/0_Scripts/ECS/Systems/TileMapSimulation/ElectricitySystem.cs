@@ -7,6 +7,9 @@ public partial class ElectricitySystem : SystemBase
     protected override void OnCreate()
     {
         RequireForUpdate<RunGameTag>();
+
+        // There must be an active consumer or producer for the system to run
+        RequireAnyForUpdate(GetEntityQuery(typeof(ElectricityProducer), typeof(ActiveTileTag)), GetEntityQuery(typeof(ElectricityConsumer), typeof(ActiveTileTag)));
     }
     protected override void OnUpdate()
     {
