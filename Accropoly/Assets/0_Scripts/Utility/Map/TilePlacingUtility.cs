@@ -15,7 +15,7 @@ public static class TilePlacingUtility
             TileType.Sapling => new() { (new AgingTile { age = UnityEngine.Random.Range(0f, 10f) }, true) },
             TileType.Forest => new() { },
             TileType.House => new() { (new Habitat{totalSpace = UnityEngine.Random.Range(2, 6)}, true),
-                                      (new ElectricityConsumer { consumption = 2 }, true), (new HasElectricityTag(), false),
+                                      (new ElectricityConsumer { consumption = 2 }, true),
                                       (new Polluter { pollution = 3 }, true), (new IsConnectedTag(), false) },
             TileType.SolarPanel => new() { (new ElectricityProducer { production = 10 }, true), (new Polluter { pollution = 1 }, true) },
             TileType.Street => new() { (new BuildingConnector(Directions.East, Directions.West), true) },
