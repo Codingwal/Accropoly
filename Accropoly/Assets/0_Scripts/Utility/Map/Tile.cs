@@ -28,12 +28,12 @@ public enum Components : int
     AgingTile = 1,
     ElectricityProducer = 2,
     ElectricityConsumer = 3,
-    BuildingConnector = 7,
-    Polluter = 8,
-    Habitat = 9,
+    BuildingConnector = 4,
+    Polluter = 5,
+    Habitat = 6,
 
     // Tags
-    IsConnectedTag = 6,
-    ActiveTileTag = 5,
-    NewTileTag = 10,
+    ActiveTileTag = 100,
+    NewTileTag = 101,
+    IsConnectedTag = 102,
 }
