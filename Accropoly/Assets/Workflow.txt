@@ -1,0 +1,13 @@
+CREATE TILE (TAG-)COMPONENT:
+- Create script with component                      0_Scripts\ECS\Components\Tile\
+- Add to Components enum                            0_Scripts\Utility\Map\Tile.cs
+- Add to TileSavingSystem                           0_Scripts\ECS\Systems\TileMapSetup\TileSavingSystem.cs
+- Add to Serializer                                 0_Scripts\Utility\SaveSystem\Serialization\Custom\Serializer.cs
+- Add to Deserializer                               0_Scripts\Utility\SaveSystem\Serialization\Custom\Deserializer.cs
+
+CREATE TILE (2D):
+- Import png
+- Create material (drag image onto a plane)         
+- Add to TileType enum                              0_Scripts\ECS\Components\Tile\MapTileComponent.cs
+- Add to GetComponents() function                   0_Scripts\Utility\Map\TilePlacingUtility.cs
+- Add to the placeable tiles                        0_Scripts\UI\MenuManager.cs
