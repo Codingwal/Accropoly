@@ -1,5 +1,3 @@
-- fix: tileToPlace doesn't get deleted on closing world
-
 - store worldData as managed component instead of static field (?)
 - delete RunGameTag on pausing (?)
 - Add namespaces (?)
