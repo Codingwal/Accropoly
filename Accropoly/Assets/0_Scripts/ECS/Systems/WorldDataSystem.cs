@@ -20,6 +20,7 @@ public partial struct WorldDataSystem : ISystem
     {
         state.EntityManager.RemoveComponent(loadGameTagQuery, typeof(LoadGameTag));
 
+        // TODO: WTF
         if (saveGameTagQuery.CalculateEntityCount() != 0)
         {
             Debug.Log("Saving WorldData");

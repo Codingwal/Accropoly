@@ -6,7 +6,7 @@ public partial class ImmigrationSystem : SystemBase
     private const float immigrationProbability = 0.3f; // 1 = 100%
     protected override void OnCreate()
     {
-
+        RequireForUpdate<TilePrefab>();
     }
     protected override void OnUpdate()
     {
@@ -18,7 +18,7 @@ public partial class ImmigrationSystem : SystemBase
         {
             if (Random.Range(0f, 1f) <= immigrationProbability * SystemAPI.Time.DeltaTime) // Multiply with delta time bc immigrationProbability is per second, not per frame
             {
-                Debug.Log("!");
+                Debug.Log("New person!");
 
                 habitat.freeSpace--;
                 if (habitat.freeSpace == 0) EntityManager.RemoveComponent<HasSpaceTag>(habitatEntity);

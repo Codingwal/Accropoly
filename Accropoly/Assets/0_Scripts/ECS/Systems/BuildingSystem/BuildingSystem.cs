@@ -5,7 +5,7 @@ using Unity.Transforms;
 using UnityEngine;
 
 using PlacementAction = PlacementInputData.Action;
-[UpdateInGroup(typeof(InitializationSystemGroup))]
+[UpdateInGroup(typeof(SimulationSystemGroup), OrderFirst = true)]
 public partial struct BuildingSystem : ISystem
 {
     private EntityQuery placementInputDataQuery;

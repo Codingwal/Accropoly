@@ -81,7 +81,7 @@ public partial class InputSystem : SystemBase
             action = action,
             hotkey = hotkey
         };
-        
+
         uiInput?.Invoke(inputData);
 
         SystemAPI.SetComponentEnabled<UIInputData>(inputDataHolder, true);
