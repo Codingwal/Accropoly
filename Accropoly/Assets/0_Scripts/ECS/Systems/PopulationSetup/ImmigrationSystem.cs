@@ -1,33 +1,48 @@
+using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine;
 
-public partial class ImmigrationSystem : SystemBase
+public partial struct ImmigrationSystem : ISystem
 {
     private const float immigrationProbability = 0.3f; // 1 = 100%
-    protected override void OnCreate()
+    private EntityQuery query;
+    [BurstCompile]
+    public void OnCreate(ref SystemState state)
     {
-        RequireForUpdate<TilePrefab>();
+        state.RequireForUpdate<TilePrefab>();
+        query = state.GetEntityQuery(typeof(Habitat), typeof(MapTileComponent), typeof(ActiveTileTag), typeof(HasSpaceTag));
     }
-    protected override void OnUpdate()
+    [BurstCompile]
+    public void OnUpdate(ref SystemState state)
     {
-        Entity prefab = SystemAPI.GetSingleton<TilePrefab>();
-
-        // TODO: use ecb
         // Foreach active habitat with space
-        Entities.WithAll<ActiveTileTag, HasSpaceTag>().ForEach((Entity habitatEntity, ref Habitat habitat, in MapTileComponent habitatTile) =>
+        new Job()
         {
-            if (UnityEngine.Random.Range(0f, 1f) <= immigrationProbability * SystemAPI.Time.DeltaTime) // Multiply with delta time bc immigrationProbability is per second, not per frame
+            prefab = SystemAPI.GetSingleton<TilePrefab>(),
+            ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged),
+            rnd = new((uint)UnityEngine.Random.Range(1, 1000)),
+            deltaTime = SystemAPI.Time.DeltaTime,
+        }.Schedule(query);
+    }
+    [BurstCompile]
+    private partial struct Job : IJobEntity
+    {
+        public Entity prefab;
+        public EntityCommandBuffer ecb;
+        public Random rnd;
+        public float deltaTime;
+        [BurstCompile]
+        public void Execute(Entity habitatEntity, ref Habitat habitat, in MapTileComponent habitatTile)
+        {
+            if (rnd.NextFloat() <= immigrationProbability * deltaTime) // Multiply with delta time bc immigrationProbability is per second, not per frame
             {
-                Debug.Log("New person!");
-
                 habitat.freeSpace--;
-                if (habitat.freeSpace == 0) EntityManager.RemoveComponent<HasSpaceTag>(habitatEntity);
+                if (habitat.freeSpace == 0) ecb.RemoveComponent<HasSpaceTag>(habitatEntity);
 
                 // Create new inhabitant for this house ("immigrant")
-                Entity entity = EntityManager.Instantiate(prefab);
-                EntityManager.AddComponentData(entity, new PersonComponent
+                Entity entity = ecb.Instantiate(prefab);
+                ecb.AddComponent(entity, new PersonComponent
                 {
                     homeTile = habitatTile.pos,
                     age = 0,
@@ -35,8 +50,8 @@ public partial class ImmigrationSystem : SystemBase
 
                 float offset = (habitat.totalSpace - habitat.freeSpace - 2.5f) * 0.2f;
                 float3 pos = new(2 * habitatTile.pos.x + offset, 0.5f, 2 * habitatTile.pos.y);
-                EntityManager.SetComponentData(entity, LocalTransform.FromPositionRotationScale(pos, quaternion.identity, 0.1f));
+                ecb.SetComponent(entity, LocalTransform.FromPositionRotationScale(pos, quaternion.identity, 0.1f));
             }
-        }).WithoutBurst().WithStructuralChanges().Run();
+        }
     }
 }
