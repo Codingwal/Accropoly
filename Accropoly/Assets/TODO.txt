@@ -1,6 +1,7 @@
 - Deserializer components check can be made to switch statement
 - Add BuildingConnector to serialization
 - BuildingConnectionSystem needs to take rotation into account
+- one rotation system (0,1,2,3 / 0,90,180,270)
 
 - store worldData as managed component instead of static field (?)
 - delete RunGameTag on pausing (?)

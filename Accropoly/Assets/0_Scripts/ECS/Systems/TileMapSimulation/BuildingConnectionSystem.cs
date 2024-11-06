@@ -1,4 +1,5 @@
 using Unity.Entities;
+using UnityEngine;
 
 public partial class BuildingConnectionSystem : SystemBase
 {
@@ -7,7 +8,7 @@ public partial class BuildingConnectionSystem : SystemBase
     {
         // Only run this function every 50 frames
         frame++;
-        if (frame % 500 != 0) return;
+        if (frame % 50 != 1) return;
 
         Entities.WithPresent<IsConnectedTag>().ForEach((Entity entity, in MapTileComponent mapTileComponent) =>
         {
@@ -20,8 +21,10 @@ public partial class BuildingConnectionSystem : SystemBase
                 if (!EntityManager.HasComponent<BuildingConnector>(neighbour)) continue;
 
                 var buildingConnector = EntityManager.GetComponentData<BuildingConnector>(neighbour);
+                int neighbourRotation = EntityManager.GetComponentData<MapTileComponent>(neighbour).rotation / 90 % 4;
+                Debug.Log(neighbourRotation);
 
-                if (buildingConnector.CanConnect(direction.Flip()))
+                if (buildingConnector.CanConnect(direction.Flip(), neighbourRotation))
                 {
                     isConnected = true;
                     break;
