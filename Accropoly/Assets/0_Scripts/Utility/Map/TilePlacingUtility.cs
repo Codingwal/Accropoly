@@ -26,6 +26,7 @@ public static class TilePlacingUtility
         };
         components.Add((new MapTileComponent { tileType = tileType, pos = pos, rotation = rotation }, true));
         components.Add((new ActiveTileTag(), true));
+        components.Add((new NewTileTag(), true));
         return components;
     }
     public static void UpdateEntity(Entity tile, List<(IComponentData, bool)> components, EntityCommandBuffer ecb)

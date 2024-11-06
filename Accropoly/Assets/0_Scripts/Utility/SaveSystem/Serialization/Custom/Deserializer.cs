@@ -64,6 +64,7 @@ public partial class Deserializer
                 Components.HasElectricityTag => new HasElectricityTag(),
                 Components.IsConnectedTag => new IsConnectedTag(),
                 Components.ActiveTileTag => new ActiveTileTag(),
+                Components.NewTileTag => new NewTileTag(),
 
                 _ => throw new($"Cannot deserialize component of type {type}")
             };

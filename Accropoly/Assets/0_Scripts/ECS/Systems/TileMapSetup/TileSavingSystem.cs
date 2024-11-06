@@ -21,6 +21,7 @@ public partial struct TileSavingSystem : ISystem
         HashSet<ComponentType> typesToIgnoreSet = new();
         foreach (var type in typesToIgnore)
             typesToIgnoreSet.Add(type);
+        typesToIgnore.Dispose();
 
         WorldDataSystem.worldData.map.tiles = new Tile[WorldDataSystem.worldData.map.tiles.GetLength(0), WorldDataSystem.worldData.map.tiles.GetLength(1)];
 
@@ -36,7 +37,7 @@ public partial struct TileSavingSystem : ISystem
             foreach (var componentType in componentTypes)
             {
                 // Ignore all prefab types (rendering & transform) and the mapTileComponent (which has already been saved)
-                if (typesToIgnore.Contains(componentType) || componentType == typeof(MapTileComponent)) continue;
+                if (typesToIgnoreSet.Contains(componentType) || componentType == typeof(MapTileComponent)) continue;
 
                 // Local method to simplify code
                 EntityManager entityManager = state.EntityManager;

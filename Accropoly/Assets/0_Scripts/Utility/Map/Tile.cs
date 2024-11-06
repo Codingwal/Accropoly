@@ -36,4 +36,5 @@ public enum Components : int
     HasElectricityTag = 4,
     IsConnectedTag = 6,
     ActiveTileTag = 5,
+    NewTileTag = 10,
 }
