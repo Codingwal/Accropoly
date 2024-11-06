@@ -55,13 +55,14 @@ public partial struct TileSavingSystem : ISystem
                 if (componentType == typeof(AgingTile)) AddComponentData<AgingTile>();
                 else if (componentType == typeof(ElectricityProducer)) AddComponentData<ElectricityProducer>();
                 else if (componentType == typeof(ElectricityConsumer)) AddComponentData<ElectricityConsumer>();
+                else if (componentType == typeof(BuildingConnector)) AddComponentData<BuildingConnector>();
 
                 else if (componentType == typeof(HasElectricityTag)) AddTagComponent<HasElectricityTag>();
                 else if (componentType == typeof(IsConnectedTag)) AddTagComponent<IsConnectedTag>();
                 else if (componentType == typeof(ActiveTileTag)) AddTagComponent<ActiveTileTag>();
 
                 else
-                    Debug.LogError($"Component of type {componentType} will not be serialized but also isn't present in {typesToIgnore}");
+                    Debug.LogError($"Component of type {componentType} will not be serialized but also isn't present in typesToIgnore");
 
             }
             WorldDataSystem.worldData.map.tiles[index.x, index.y] = tile;

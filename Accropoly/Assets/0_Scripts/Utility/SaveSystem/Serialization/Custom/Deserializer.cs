@@ -1,6 +1,5 @@
 using Unity.Entities;
 using Unity.Mathematics;
-
 public partial class Deserializer
 {
     public WorldData Deserialize(WorldData data)
@@ -69,6 +68,10 @@ public partial class Deserializer
                 {
                     consumption = br.ReadSingle()
                 };
+            }
+            else if (type == Components.BuildingConnector)
+            {
+                component = BuildingConnector.Deserialize(br.ReadInt32());
             }
             else if (type == Components.HasElectricityTag) component = new HasElectricityTag();
             else if (type == Components.IsConnectedTag) component = new IsConnectedTag();

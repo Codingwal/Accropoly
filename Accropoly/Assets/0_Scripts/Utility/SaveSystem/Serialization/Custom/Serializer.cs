@@ -1,6 +1,4 @@
 using System;
-using Unity.Entities;
-using Unity.Entities.UniversalDelegates;
 
 public partial class Serializer
 {
@@ -63,6 +61,13 @@ public partial class Serializer
 
                 ElectricityConsumer componentData = (ElectricityConsumer)component;
                 bw.Write(componentData.consumption);
+            }
+            else if (type == typeof(BuildingConnector))
+            {
+                bw.Write((int)Components.BuildingConnector);
+
+                BuildingConnector componentData = (BuildingConnector)component;
+                bw.Write(componentData.Serialize());
             }
             else if (type == typeof(HasElectricityTag)) bw.Write((int)Components.HasElectricityTag);
             else if (type == typeof(IsConnectedTag)) bw.Write((int)Components.IsConnectedTag);
