@@ -67,6 +67,7 @@ public static class TilePlacingUtility
             else if (type == typeof(ElectricityProducer)) SetComponentData<ElectricityProducer>(component, enabled);
             else if (type == typeof(ElectricityConsumer)) SetComponentData<ElectricityConsumer>(component, enabled);
             else if (type == typeof(BuildingConnector)) SetComponentData<BuildingConnector>(component, enabled);
+            else if (type == typeof(Polluter)) SetComponentData<Polluter>(component, enabled);
             else Debug.LogError($"Unexpected type {type.Name}");
         }
     }
