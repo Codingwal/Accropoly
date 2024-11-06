@@ -9,7 +9,6 @@ public partial class Deserializer
         data.cameraSystemRotation = Deserialize(data.cameraSystemRotation);
         data.cameraDistance = br.ReadSingle();
         data.balance = br.ReadSingle();
-        data.population = Deserialize(data.population);
         data.map = Deserialize(data.map);
         return data;
     }
@@ -17,14 +16,6 @@ public partial class Deserializer
     public MapData Deserialize(MapData data)
     {
         data.tiles = Deserialize(data.tiles);
-        return data;
-    }
-    public PersonData Deserialize(PersonData data)
-    {
-        data.position = Deserialize(data.position);
-        data.homeTilePos = Deserialize(data.homeTilePos);
-        data.workplaceTilePos = Deserialize(data.workplaceTilePos);
-        data.hasWorkplace = br.ReadBoolean();
         return data;
     }
     public Tile Deserialize(Tile data)

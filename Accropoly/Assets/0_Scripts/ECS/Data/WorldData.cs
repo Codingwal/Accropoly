@@ -15,9 +15,6 @@ public struct WorldData
     // Economy system
     public float balance;
 
-    // Population system
-    public List<PersonData> population;
-
     // Tilemap system
     public MapData map;
 
@@ -30,8 +27,6 @@ public struct WorldData
         cameraDistance = 30;
 
         balance = 10000;
-
-        population = new();
 
         this.map = map;
     }

@@ -9,19 +9,11 @@ public partial class Serializer
         Serialize(data.cameraSystemRotation);
         bw.Write(data.cameraDistance);
         bw.Write(data.balance);
-        Serialize(data.population);
         Serialize(data.map);
     }
     public void Serialize(MapData data)
     {
         Serialize(data.tiles);
-    }
-    public void Serialize(PersonData data)
-    {
-        Serialize(data.position);
-        Serialize(data.homeTilePos);
-        Serialize(data.workplaceTilePos);
-        bw.Write(data.hasWorkplace);
     }
     public void Serialize(Tile data)
     {
