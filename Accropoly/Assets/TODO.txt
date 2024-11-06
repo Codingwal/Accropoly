@@ -1,6 +1,13 @@
+- create money system
+- create people
+- create school/work system
+- create happiness
+
+- look at bookmark
+
 - store worldData as managed component instead of static field (?)
 - delete RunGameTag on pausing (?)
-- Add namespaces (?)
+- add namespaces (?)
 
 FUTURE:
-- Change energy symbol color depending on renewability of the energy production
+- change energy symbol color depending on renewability of the energy production

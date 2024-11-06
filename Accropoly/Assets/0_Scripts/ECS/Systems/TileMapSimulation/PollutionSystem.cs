@@ -1,7 +1,7 @@
 using Unity.Entities;
 using UnityEngine;
 
-public partial class ElectricityRenewabilitySystem : SystemBase
+public partial class PollutionSystem : SystemBase
 {
     private uint frame;
     protected override void OnCreate()
@@ -13,14 +13,14 @@ public partial class ElectricityRenewabilitySystem : SystemBase
     {
         // Only run this function every 50 frames
         frame++;
-        if (frame % 50 != 2) return;
+        if (frame % 50 != 3) return;
 
         float totalPollution = 0;
-        Entities.WithAll<ActiveTileTag, ElectricityProducer>().ForEach((in Polluter polluter) =>
+        Entities.WithAll<ActiveTileTag>().ForEach((in Polluter polluter) =>
         {
             totalPollution += polluter.pollution;
         }).Run();
 
-        Debug.Log($"Total electricity production pollution: {totalPollution}");
+        Debug.Log($"Total pollution: {totalPollution}");
     }
 }
