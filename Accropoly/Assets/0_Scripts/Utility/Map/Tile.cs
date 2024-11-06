@@ -29,6 +29,7 @@ public enum Components : int
     ElectricityProducer = 2,
     ElectricityConsumer = 3,
     BuildingConnector = 7,
+    Polluter = 8,
 
     // Tags
     HasElectricityTag = 4,

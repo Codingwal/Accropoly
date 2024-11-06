@@ -69,6 +69,13 @@ public partial class Serializer
                 BuildingConnector componentData = (BuildingConnector)component;
                 bw.Write(componentData.Serialize());
             }
+            else if (type == typeof(Polluter))
+            {
+                bw.Write((int)Components.Polluter);
+
+                Polluter componentData = (Polluter)component;
+                bw.Write(componentData.pollution);
+            }
             else if (type == typeof(HasElectricityTag)) bw.Write((int)Components.HasElectricityTag);
             else if (type == typeof(IsConnectedTag)) bw.Write((int)Components.IsConnectedTag);
             else if (type == typeof(ActiveTileTag)) bw.Write((int)Components.ActiveTileTag);

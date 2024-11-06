@@ -60,6 +60,10 @@ public partial class Deserializer
                     consumption = br.ReadSingle()
                 },
                 Components.BuildingConnector => BuildingConnector.Deserialize(br.ReadInt32()),
+                Components.Polluter => new Polluter()
+                {
+                    pollution = br.ReadSingle()
+                },
 
                 Components.HasElectricityTag => new HasElectricityTag(),
                 Components.IsConnectedTag => new IsConnectedTag(),
