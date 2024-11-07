@@ -30,7 +30,7 @@ public partial struct PopulationLoadingSystem : ISystem
         {
             Entity entity = ecb.Instantiate(prefab); // Entity needs to be created on main thread so that a valid value is stored in the buffer
 
-            float3 pos;
+            float3 pos = new();
             foreach (var (component, enabled) in person.components)
             {
                 void AddComponent<T>() where T : unmanaged, IComponentData
@@ -41,9 +41,11 @@ public partial struct PopulationLoadingSystem : ISystem
                 }
 
                 Type type = component.GetType();
-                if (type == typeof(PersonComponent)) AddComponent<PersonComponent>();
+                if (type == typeof(PosComponent)) pos = ((PosComponent)component).pos;
+                else if (type == typeof(PersonComponent)) AddComponent<PersonComponent>();
                 else Debug.LogError($"Unexpected type {type.Name}");
             }
+            ecb.SetComponent(entity, LocalTransform.FromPositionRotationScale(pos, quaternion.identity, 0.1f));
         }
     }
 }

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Transforms;
 using UnityEngine;
 
 public partial struct PopulationSavingSystem : ISystem
@@ -52,6 +53,10 @@ public partial struct PopulationSavingSystem : ISystem
                 else Debug.LogWarning($"Component of type {componentType} will not be serialized but also isn't present in typesToIgnore");
             }
             componentTypes.Dispose();
+
+            // Save the position in a otherwise unused component
+            components.Add((new PosComponent { pos = entityManager.GetComponentData<LocalTransform>(entity).Position }, true));
+
             WorldDataSystem.worldData.population.Add(new() { components = components });
         }
 

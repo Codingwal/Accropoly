@@ -9,7 +9,8 @@ public struct Person
 public enum PersonComponents : int
 {
     // Components
-    PersonComponent = 0,
+    PosComponent = 0,
+    PersonComponent = 1,
 
     // Tags
 }

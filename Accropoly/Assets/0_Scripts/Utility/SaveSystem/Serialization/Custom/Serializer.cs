@@ -26,7 +26,14 @@ public partial class Serializer
         {
             bw.Write(isEnabled);
             Type type = component.GetType();
-            if (type == typeof(PersonComponent))
+            if (type == typeof(PosComponent))
+            {
+                bw.Write((int)PersonComponents.PosComponent);
+                PosComponent componentData = (PosComponent)component;
+
+                Serialize(componentData.pos);
+            }
+            else if (type == typeof(PersonComponent))
             {
                 bw.Write((int)PersonComponents.PersonComponent);
                 PersonComponent componentData = (PersonComponent)component;

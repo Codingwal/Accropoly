@@ -27,6 +27,10 @@ public partial class Deserializer
             PersonComponents type = (PersonComponents)br.ReadInt32();
             component = type switch
             {
+                PersonComponents.PosComponent => new PosComponent()
+                {
+                    pos = Deserialize(new float3()),
+                },
                 PersonComponents.PersonComponent => new PersonComponent()
                 {
                     homeTile = Deserialize(new int2()),
