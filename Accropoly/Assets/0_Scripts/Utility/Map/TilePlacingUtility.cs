@@ -39,7 +39,7 @@ public static class TilePlacingUtility
             componentTypes.Add(component.GetType());
 
         // Add all components of the prefab (Transform & Rendering components)
-        Entity prefab = em.CreateEntityQuery(typeof(TilePrefab)).GetSingleton<TilePrefab>(); // Get the tilePrefab
+        Prefab prefab = em.CreateEntityQuery(typeof(Prefab)).GetSingleton<Prefab>(); // Get the tilePrefab
         NativeArray<ComponentType> prefabComponentTypes = em.GetChunk(prefab).Archetype.GetComponentTypes(Allocator.Temp);
         foreach (var componentType in prefabComponentTypes)
             if (!(componentType == typeof(Prefab) || componentType == typeof(LinkedEntityGroup))) // Remove prefab components (for example, 'Prefab' exludes the entity from all queries)

@@ -69,7 +69,7 @@ public partial struct BuildingSystem : ISystem
 
         if (em.CreateEntityQuery(typeof(TileToPlace)).CalculateEntityCount() != 0) return; // Return if there already is a PlacementProcess
 
-        var prefab = em.CreateEntityQuery(typeof(TilePrefab)).GetSingleton<TilePrefab>(); // Get the tilePrefab
+        var prefab = em.CreateEntityQuery(typeof(Prefab)).GetSingleton<Prefab>(); // Get the tilePrefab
         entity = em.Instantiate(prefab);
         em.AddComponentData(entity, new TileToPlace
         {

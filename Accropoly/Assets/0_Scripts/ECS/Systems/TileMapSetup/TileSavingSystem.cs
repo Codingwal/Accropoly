@@ -15,7 +15,7 @@ public partial struct TileSavingSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         // Ignore all rendering and transform related components
-        var tilePrefab = SystemAPI.GetSingleton<TilePrefab>();
+        var tilePrefab = SystemAPI.GetSingleton<Prefab>();
         NativeArray<ComponentType> typesToIgnore = state.EntityManager.GetChunk(tilePrefab.tilePrefab).Archetype.GetComponentTypes();
 
         // Convert to HashSet for faster search
