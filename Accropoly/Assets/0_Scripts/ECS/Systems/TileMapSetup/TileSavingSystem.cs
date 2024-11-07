@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
@@ -15,23 +14,27 @@ public partial struct TileSavingSystem : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
+        // Ignore all rendering and transform related components
         var tilePrefab = SystemAPI.GetSingleton<TilePrefab>();
         NativeArray<ComponentType> typesToIgnore = state.EntityManager.GetChunk(tilePrefab.tilePrefab).Archetype.GetComponentTypes();
 
+        // Convert to HashSet for faster search
         HashSet<ComponentType> typesToIgnoreSet = new();
         foreach (var type in typesToIgnore)
             typesToIgnoreSet.Add(type);
+        typesToIgnore.Dispose();
+
+        // MapTileComponent gets saved outside of the loop, some tags can be regenerated after loading 
+        typesToIgnoreSet.Add(typeof(MapTileComponent));
         typesToIgnoreSet.Add(typeof(HasSpaceTag));
         typesToIgnoreSet.Add(typeof(HasElectricityTag));
-        typesToIgnore.Dispose();
 
         WorldDataSystem.worldData.map.tiles = new Tile[WorldDataSystem.worldData.map.tiles.GetLength(0), WorldDataSystem.worldData.map.tiles.GetLength(1)];
 
-        int serializedTilesCount = 0;
+        // Foreach tile...
         foreach ((MapTileComponent mapTileComponent, Entity entity) in SystemAPI.Query<MapTileComponent>().WithEntityAccess())
         {
-            int2 index = mapTileComponent.pos;
-            Debug.Assert(WorldDataSystem.worldData.map.tiles[index.x, index.y].components == null, $"{index}");
+            int2 index = mapTileComponent.pos; // needed to determine where in the 2DArray the tile gets stored
 
             Tile tile = new(mapTileComponent);
             NativeArray<ComponentType> componentTypes = state.EntityManager.GetChunk(entity).Archetype.GetComponentTypes(Allocator.TempJob);
@@ -39,7 +42,7 @@ public partial struct TileSavingSystem : ISystem
             foreach (var componentType in componentTypes)
             {
                 // Ignore all prefab types (rendering & transform) and the mapTileComponent (which has already been saved)
-                if (typesToIgnoreSet.Contains(componentType) || componentType == typeof(MapTileComponent)) continue;
+                if (typesToIgnoreSet.Contains(componentType)) continue;
 
                 // Local method to simplify code
                 EntityManager entityManager = state.EntityManager;
@@ -51,6 +54,7 @@ public partial struct TileSavingSystem : ISystem
                 }
                 void AddTagComponent<T>() where T : unmanaged, IComponentData
                 {
+                    // If the component is enableable, check if it is enabled. Else set it to true 
                     bool isEnabled = !componentType.IsEnableable || entityManager.IsComponentEnabled(entity, componentType);
                     tile.components.Add((new T(), isEnabled));
                 }
@@ -66,20 +70,13 @@ public partial struct TileSavingSystem : ISystem
                 else if (componentType == typeof(IsConnectedTag)) AddTagComponent<IsConnectedTag>();
                 else if (componentType == typeof(ActiveTileTag)) AddTagComponent<ActiveTileTag>();
 
-                else
-                    Debug.LogError($"Component of type {componentType} will not be serialized but also isn't present in typesToIgnore");
+                else Debug.LogWarning($"Component of type {componentType} will not be serialized but also isn't present in typesToIgnore");
 
             }
             WorldDataSystem.worldData.map.tiles[index.x, index.y] = tile;
 
             componentTypes.Dispose();
-
-            serializedTilesCount++;
         }
-
-        if (serializedTilesCount < WorldDataSystem.worldData.map.tiles.Length)
-            throw new($"Too few tiles found (Found {serializedTilesCount}, expected {WorldDataSystem.worldData.map.tiles.Length})");
-
         state.EntityManager.DestroyEntity(SystemAPI.GetSingletonEntity<EntityGridHolder>());
     }
 }

@@ -1,5 +1,7 @@
 - add population serialization
 - people can also use AgingTile
+- fix bug: eSystem runs before eSetup -> some entities don't have the hasETag (reproduce by spamming houses)
+- who deletes the tiles??
 
 - create school/work system
 - create happiness
