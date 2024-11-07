@@ -31,6 +31,7 @@ public enum TileComponents : int
     BuildingConnector = 4,
     Polluter = 5,
     Habitat = 6,
+    Employer=7,
 
     // Tags
     ActiveTileTag = 100,

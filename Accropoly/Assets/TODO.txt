@@ -1,6 +1,7 @@
-- aspects (age, homeTile), (eConsumer, hasETag) ??
+- PlainsMap as default, switch to newly created map
 
 - create school/work system
+
 - create happiness
 - create money system
 

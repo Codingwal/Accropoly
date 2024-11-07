@@ -105,6 +105,14 @@ public partial class Serializer
                 bw.Write(componentData.totalSpace);
                 bw.Write(componentData.freeSpace);
             }
+            else if (type == typeof(Employer))
+            {
+                bw.Write((int)TileComponents.Employer);
+
+                Employer componentData = (Employer)component;
+                bw.Write(componentData.totalSpace);
+                bw.Write(componentData.freeSpace);
+            }
             else if (type == typeof(IsConnectedTag)) bw.Write((int)TileComponents.IsConnectedTag);
             else if (type == typeof(ActiveTileTag)) bw.Write((int)TileComponents.ActiveTileTag);
             else if (type == typeof(NewTileTag)) bw.Write((int)TileComponents.NewTileTag);
