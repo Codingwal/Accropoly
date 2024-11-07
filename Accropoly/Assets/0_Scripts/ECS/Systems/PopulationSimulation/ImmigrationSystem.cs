@@ -10,7 +10,7 @@ public partial struct ImmigrationSystem : ISystem
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<Prefab>();
+        state.RequireForUpdate<PrefabEntity>();
         query = state.GetEntityQuery(typeof(Habitat), typeof(MapTileComponent), typeof(ActiveTileTag), typeof(HasSpaceTag));
     }
     [BurstCompile]
@@ -19,7 +19,7 @@ public partial struct ImmigrationSystem : ISystem
         // Foreach active habitat with space
         new Job()
         {
-            prefab = SystemAPI.GetSingleton<Prefab>(),
+            prefab = SystemAPI.GetSingleton<PrefabEntity>(),
             ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged),
             rnd = new((uint)UnityEngine.Random.Range(1, 1000)),
             deltaTime = SystemAPI.Time.DeltaTime,

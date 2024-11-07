@@ -11,13 +11,13 @@ public partial struct TileSpawningSystem : ISystem
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<Prefab>();
+        state.RequireForUpdate<PrefabEntity>();
         state.RequireForUpdate<LoadGameTag>();
     }
 
     public void OnUpdate(ref SystemState state)
     {
-        Prefab prefab = SystemAPI.GetSingleton<Prefab>();
+        var prefab = SystemAPI.GetSingleton<PrefabEntity>();
 
         WorldData worldData = WorldDataSystem.worldData;
         EntityCommandBuffer ecb = SystemAPI.GetSingleton<EndInitializationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);

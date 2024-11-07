@@ -1,6 +1,5 @@
 - fix bug: eSystem runs before eSetup -> some entities don't have the hasETag (reproduce by spamming houses)
 - who deletes the tiles??
-- refactor: rename TilePrefab
 - aspects (age, homeTile), (eConsumer, hasETag) ??
 
 - create school/work system

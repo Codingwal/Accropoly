@@ -13,14 +13,14 @@ public partial struct PopulationLoadingSystem : ISystem
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<Prefab>();
+        state.RequireForUpdate<PrefabEntity>();
         state.RequireForUpdate<LoadGameTag>();
     }
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        Entity prefab = SystemAPI.GetSingleton<Prefab>();
+        Entity prefab = SystemAPI.GetSingleton<PrefabEntity>();
 
         WorldData worldData = WorldDataSystem.worldData;
         EntityCommandBuffer ecb = SystemAPI.GetSingleton<EndInitializationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);

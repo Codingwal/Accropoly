@@ -13,20 +13,20 @@ public class TileSpawnerConfigAuthoring : MonoBehaviour
 
             Entity entity = GetEntity(TransformUsageFlags.None);
 
-            AddComponent<Prefab>(entity, GetEntity(authoring.prefab, TransformUsageFlags.Dynamic));
+            AddComponent<PrefabEntity>(entity, GetEntity(authoring.prefab, TransformUsageFlags.Dynamic));
         }
     }
 }
-public struct Prefab : IComponentData
+public struct PrefabEntity : IComponentData
 {
-    public Entity tilePrefab;
-    public static implicit operator Prefab(Entity entity)
+    public Entity prefab;
+    public static implicit operator PrefabEntity(Entity entity)
     {
-        return new Prefab { tilePrefab = entity };
+        return new PrefabEntity { prefab = entity };
     }
-    public static implicit operator Entity(Prefab config)
+    public static implicit operator Entity(PrefabEntity config)
     {
-        return config.tilePrefab;
+        return config.prefab;
     }
 }
 [System.Serializable]

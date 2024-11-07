@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -39,8 +40,9 @@ public static class TilePlacingUtility
             componentTypes.Add(component.GetType());
 
         // Add all components of the prefab (Transform & Rendering components)
-        Prefab prefab = em.CreateEntityQuery(typeof(Prefab)).GetSingleton<Prefab>(); // Get the tilePrefab
+        var prefab = em.CreateEntityQuery(typeof(PrefabEntity)).GetSingleton<PrefabEntity>(); // Get the tilePrefab
         NativeArray<ComponentType> prefabComponentTypes = em.GetChunk(prefab).Archetype.GetComponentTypes(Allocator.Temp);
+
         foreach (var componentType in prefabComponentTypes)
             if (!(componentType == typeof(Prefab) || componentType == typeof(LinkedEntityGroup))) // Remove prefab components (for example, 'Prefab' exludes the entity from all queries)
                 componentTypes.Add(componentType);
