@@ -7,12 +7,10 @@ using UnityEngine;
 
 public partial struct PopulationSavingSystem : ISystem
 {
-    private EntityQuery populationQuery;
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<SaveGameTag>();
-        populationQuery = state.GetEntityQuery(typeof(PersonComponent));
     }
     public void OnUpdate(ref SystemState state)
     {
@@ -59,7 +57,5 @@ public partial struct PopulationSavingSystem : ISystem
 
             WorldDataSystem.worldData.population.Add(new() { components = components });
         }
-
-        state.EntityManager.DestroyEntity(populationQuery);
     }
 }

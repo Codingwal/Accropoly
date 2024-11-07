@@ -8,12 +8,14 @@ public partial struct WorldDataSystem : ISystem
     public static WorldData worldData;
     private EntityQuery loadGameTagQuery;
     private EntityQuery saveGameTagQuery;
-    private EntityQuery mapTileQuery;
+    private EntityQuery tileMapQuery;
+    private EntityQuery populationQuery;
     public void OnCreate(ref SystemState state)
     {
         loadGameTagQuery = state.GetEntityQuery(typeof(LoadGameTag));
         saveGameTagQuery = state.GetEntityQuery(typeof(SaveGameTag));
-        mapTileQuery = state.GetEntityQuery(typeof(MapTileComponent));
+        tileMapQuery = state.GetEntityQuery(typeof(MapTileComponent));
+        populationQuery = state.GetEntityQuery(typeof(PersonComponent));
         state.RequireAnyForUpdate(loadGameTagQuery, saveGameTagQuery);
     }
     public void OnUpdate(ref SystemState state)
@@ -25,8 +27,9 @@ public partial struct WorldDataSystem : ISystem
             Debug.Log("Saving WorldData");
             SaveSystem.Instance.SaveWorldData(worldData);
 
-            // Destroy the tag and all tiles
-            state.EntityManager.DestroyEntity(mapTileQuery);
+            // Destroy the tag, all people and all tiles
+            state.EntityManager.DestroyEntity(tileMapQuery);
+            state.EntityManager.DestroyEntity(populationQuery);
             state.EntityManager.DestroyEntity(saveGameTagQuery);
         }
         // If the game is being loaded
