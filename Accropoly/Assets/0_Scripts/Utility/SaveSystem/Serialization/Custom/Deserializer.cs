@@ -9,10 +9,35 @@ public partial class Deserializer
         data.cameraSystemRotation = Deserialize(data.cameraSystemRotation);
         data.cameraDistance = br.ReadSingle();
         data.balance = br.ReadSingle();
+        data.population = Deserialize(data.population);
         data.map = Deserialize(data.map);
         return data;
     }
+    public Person Deserialize(Person data)
+    {
+        int count = br.ReadInt32();
+        data.components = new(count);
 
+        // For each component...
+        for (int i = 0; i < count; i++)
+        {
+            bool isEnabled = br.ReadBoolean();
+            IComponentData component;
+
+            PersonComponents type = (PersonComponents)br.ReadInt32();
+            component = type switch
+            {
+                PersonComponents.PersonComponent => new PersonComponent()
+                {
+                    homeTile = Deserialize(new int2()),
+                    age = br.ReadInt32(),
+                },
+                _ => throw new($"Cannot deserialize component of type {type}")
+            };
+            data.components.Add((component, isEnabled));
+        }
+        return data;
+    }
     public MapData Deserialize(MapData data)
     {
         data.tiles = Deserialize(data.tiles);
@@ -29,41 +54,41 @@ public partial class Deserializer
             bool isEnabled = br.ReadBoolean();
             IComponentData component;
 
-            Components type = (Components)br.ReadInt32();
+            TileComponents type = (TileComponents)br.ReadInt32();
             component = type switch
             {
-                Components.MapTileComponent => new MapTileComponent()
+                TileComponents.MapTileComponent => new MapTileComponent()
                 {
                     tileType = (TileType)br.ReadInt32(),
                     pos = Deserialize(new int2()),
                     rotation = (Direction)br.ReadUInt32()
                 },
-                Components.AgingTile => new AgingTile()
+                TileComponents.AgingTile => new AgingTile()
                 {
                     age = br.ReadSingle()
                 },
-                Components.ElectricityProducer => new ElectricityProducer()
+                TileComponents.ElectricityProducer => new ElectricityProducer()
                 {
                     production = br.ReadSingle()
                 },
-                Components.ElectricityConsumer => new ElectricityConsumer()
+                TileComponents.ElectricityConsumer => new ElectricityConsumer()
                 {
                     consumption = br.ReadSingle()
                 },
-                Components.BuildingConnector => BuildingConnector.Deserialize(br.ReadInt32()),
-                Components.Polluter => new Polluter()
+                TileComponents.BuildingConnector => BuildingConnector.Deserialize(br.ReadInt32()),
+                TileComponents.Polluter => new Polluter()
                 {
                     pollution = br.ReadSingle()
                 },
-                Components.Habitat => new Habitat()
+                TileComponents.Habitat => new Habitat()
                 {
                     totalSpace = br.ReadInt32(),
                     freeSpace = br.ReadInt32()
                 },
-                
-                Components.IsConnectedTag => new IsConnectedTag(),
-                Components.ActiveTileTag => new ActiveTileTag(),
-                Components.NewTileTag => new NewTileTag(),
+
+                TileComponents.IsConnectedTag => new IsConnectedTag(),
+                TileComponents.ActiveTileTag => new ActiveTileTag(),
+                TileComponents.NewTileTag => new NewTileTag(),
 
                 _ => throw new($"Cannot deserialize component of type {type}")
             };

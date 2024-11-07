@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 public partial class Serializer
 {
@@ -9,15 +10,36 @@ public partial class Serializer
         Serialize(data.cameraSystemRotation);
         bw.Write(data.cameraDistance);
         bw.Write(data.balance);
+        Serialize(data.population);
         Serialize(data.map);
     }
     public void Serialize(MapData data)
     {
         Serialize(data.tiles);
     }
+    public void Serialize(Person data)
+    {
+        if (data.components == null) throw new("Failed to serialize tile because Tile.TileComponents is null");
+
+        bw.Write(data.components.Count);
+        foreach (var (component, isEnabled) in data.components)
+        {
+            bw.Write(isEnabled);
+            Type type = component.GetType();
+            if (type == typeof(PersonComponent))
+            {
+                bw.Write((int)PersonComponents.PersonComponent);
+                PersonComponent componentData = (PersonComponent)component;
+
+                Serialize(componentData.homeTile);
+                bw.Write(componentData.age);
+            }
+            else throw new($"Cannot serialize component of type {type}");
+        }
+    }
     public void Serialize(Tile data)
     {
-        if (data.components == null) throw new("Failed to serialize tile because Tile.components is null");
+        if (data.components == null) throw new("Failed to serialize tile because Tile.TileComponents is null");
 
         bw.Write(data.components.Count);
         foreach (var (component, isEnabled) in data.components)
@@ -26,7 +48,7 @@ public partial class Serializer
             Type type = component.GetType();
             if (type == typeof(MapTileComponent))
             {
-                bw.Write((int)Components.MapTileComponent);
+                bw.Write((int)TileComponents.MapTileComponent);
 
                 MapTileComponent componentData = (MapTileComponent)component;
                 bw.Write((int)componentData.tileType);
@@ -35,52 +57,51 @@ public partial class Serializer
             }
             else if (type == typeof(AgingTile))
             {
-                bw.Write((int)Components.AgingTile);
+                bw.Write((int)TileComponents.AgingTile);
 
                 AgingTile componentData = (AgingTile)component;
                 bw.Write(componentData.age);
             }
             else if (type == typeof(ElectricityProducer))
             {
-                bw.Write((int)Components.ElectricityProducer);
+                bw.Write((int)TileComponents.ElectricityProducer);
 
                 ElectricityProducer componentData = (ElectricityProducer)component;
                 bw.Write(componentData.production);
             }
             else if (type == typeof(ElectricityConsumer))
             {
-                bw.Write((int)Components.ElectricityConsumer);
+                bw.Write((int)TileComponents.ElectricityConsumer);
 
                 ElectricityConsumer componentData = (ElectricityConsumer)component;
                 bw.Write(componentData.consumption);
             }
             else if (type == typeof(BuildingConnector))
             {
-                bw.Write((int)Components.BuildingConnector);
+                bw.Write((int)TileComponents.BuildingConnector);
 
                 BuildingConnector componentData = (BuildingConnector)component;
                 bw.Write(componentData.Serialize());
             }
             else if (type == typeof(Polluter))
             {
-                bw.Write((int)Components.Polluter);
+                bw.Write((int)TileComponents.Polluter);
 
                 Polluter componentData = (Polluter)component;
                 bw.Write(componentData.pollution);
             }
             else if (type == typeof(Habitat))
             {
-                bw.Write((int)Components.Habitat);
+                bw.Write((int)TileComponents.Habitat);
 
                 Habitat componentData = (Habitat)component;
                 bw.Write(componentData.totalSpace);
                 bw.Write(componentData.freeSpace);
             }
-            else if (type == typeof(IsConnectedTag)) bw.Write((int)Components.IsConnectedTag);
-            else if (type == typeof(ActiveTileTag)) bw.Write((int)Components.ActiveTileTag);
-            else if (type == typeof(NewTileTag)) bw.Write((int)Components.NewTileTag);
-            else
-                throw new($"Cannot serialize component of type {type}");
+            else if (type == typeof(IsConnectedTag)) bw.Write((int)TileComponents.IsConnectedTag);
+            else if (type == typeof(ActiveTileTag)) bw.Write((int)TileComponents.ActiveTileTag);
+            else if (type == typeof(NewTileTag)) bw.Write((int)TileComponents.NewTileTag);
+            else throw new($"Cannot serialize component of type {type}");
 
         }
     }

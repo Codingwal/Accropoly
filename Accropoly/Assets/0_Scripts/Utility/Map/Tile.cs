@@ -20,8 +20,8 @@ public struct Tile
         return default;
     }
 }
-// Explicit values for compatability with other versions (new TileTypes just get a higher value)
-public enum Components : int
+// Explicit values for compatability with other versions (new TileComponents just get a higher value)
+public enum TileComponents : int
 {
     // Components
     MapTileComponent = 0,

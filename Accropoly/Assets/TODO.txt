@@ -15,3 +15,8 @@
 
 FUTURE:
 - change energy symbol color depending on renewability of the energy production
+
+
+
+- serialize pos, (personComponent / extra component added while saving)
+- aspects (age, homeTile), (eConsumer, hasETag)
