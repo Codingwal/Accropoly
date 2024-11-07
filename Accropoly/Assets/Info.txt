@@ -8,9 +8,9 @@ TileSpawningSystem
 
 [SimulationSystemGroup]
 BuildingSystem
+{ComponentInitializationSystems}
 {TileMapSimulationSystems}
 {PopulationSimulationSystems}
-HabitatInitializationSystem
 
 [LateSimulationSystemGroup]
 WorldDataSystem
