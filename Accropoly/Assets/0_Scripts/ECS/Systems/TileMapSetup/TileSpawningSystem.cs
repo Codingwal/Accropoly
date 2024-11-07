@@ -29,8 +29,9 @@ public partial struct TileSpawningSystem : ISystem
         {
             for (int y = 0; y < tiles.GetLength(1); y++)
             {
-                // TODO: Why do we need to instantiate? CreateEntity should be enough
-                Entity entity = state.EntityManager.Instantiate(prefab); // Entity needs to be created on main thread so that a valid value is stored in the buffer 
+                // Entity needs to be created on main thread so that a valid value is stored in the buffer 
+                // Instantiate not CreateEntity because we need the prefab values copied (rendering stuff, sceneTag, ...)
+                Entity entity = state.EntityManager.Instantiate(prefab);
 
                 // Add all serialized components with their value to the entity
                 TilePlacingUtility.UpdateEntity(entity, tiles[x, y].components, ecb);

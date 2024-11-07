@@ -49,6 +49,7 @@ public static class TilePlacingUtility
                 componentTypes.Add(componentType);
         prefabComponentTypes.Dispose();
 
+        // Moving the archetype keeps values of components that were already present (rendering components, SceneTag, ...)
         EntityArchetype archetype = em.CreateArchetype(componentTypes.ToArray());
         em.SetArchetype(tile, archetype);
 

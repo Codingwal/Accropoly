@@ -1,4 +1,4 @@
-- look at bookmark
+- employement system
 
 - create happiness
 - create money system
@@ -7,4 +7,3 @@
 
 FUTURE:
 - change energy symbol color depending on renewability of the energy production
-
