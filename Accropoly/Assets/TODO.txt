@@ -1,4 +1,5 @@
 - add population serialization
+- people can also use AgingTile
 
 - create school/work system
 - create happiness
