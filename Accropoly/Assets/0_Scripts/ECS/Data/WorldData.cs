@@ -40,19 +40,4 @@ public struct WorldData
 public struct MapData
 {
     public Tile[,] tiles;
-    public static explicit operator MapData(Serializable2DArray<Tile> array)
-    {
-        MapData data = new()
-        {
-            tiles = new Tile[array.GetLength(0), array.GetLength(1)]
-        };
-        for (int x = 0; x < array.GetLength(0); x++)
-        {
-            for (int y = 0; y < array.GetLength(1); y++)
-            {
-                data.tiles[x, y] = array[x, y];
-            }
-        }
-        return data;
-    }
 }
