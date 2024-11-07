@@ -1,15 +1,9 @@
-- PlainsMap as default, switch to newly created map
-
-- create school/work system
+- look at bookmark
 
 - create happiness
 - create money system
 
-- look at bookmark
-
-- store worldData as managed component instead of static field (?)
 - delete RunGameTag on pausing (?)
-- add namespaces (?)
 
 FUTURE:
 - change energy symbol color depending on renewability of the energy production

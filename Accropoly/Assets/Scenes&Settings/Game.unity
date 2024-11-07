@@ -9362,6 +9362,7 @@ MonoBehaviour:
   createMapButton: {fileID: 154871669300532841}
   mapNameField: {fileID: 205332550937950957}
   mapTemplateDropdown: {fileID: 6470903248228046596}
+  defaultTemplate: PlainsMap
   deleteMapButton: {fileID: 1537402697176731092}
   mapsDropdown: {fileID: 2717653482389253383}
   toMainMenuButton: {fileID: 714258930}

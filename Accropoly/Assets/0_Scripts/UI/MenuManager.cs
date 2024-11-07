@@ -16,6 +16,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private Button createMapButton;
     [SerializeField] private TMP_InputField mapNameField;
     [SerializeField] private TMP_Dropdown mapTemplateDropdown;
+    [SerializeField] private string defaultTemplate;
     [SerializeField] private Button deleteMapButton;
     [SerializeField] private TMP_Dropdown mapsDropdown;
 
@@ -66,9 +67,13 @@ public class MenuManager : MonoBehaviour
     {
         MenuUtility.CreateWorld(mapNameField.text, SelectedMapTemplateName);
         ReloadUI();
+
+        // Select the newly created world for convinience
+        mapsDropdown.value = mapsDropdown.options.FindIndex(x => x.text == mapNameField.text);
     }
     private void OnDeleteMap()
     {
+        if (mapsDropdown.options.Count == 0) return;
         MenuUtility.DeleteWorld(SelectedWorldName);
         ReloadUI();
     }
@@ -103,8 +108,10 @@ public class MenuManager : MonoBehaviour
         foreach (string template in mapTemplates)
         {
             mapTemplateDropdown.options.Add(new(template));
+
+            // Plains as default template for convinience
+            if (template == defaultTemplate) mapTemplateDropdown.value = mapTemplateDropdown.options.Count;
         }
-        mapTemplateDropdown.value = 0;
         mapTemplateDropdown.RefreshShownValue();
 
         string[] maps = MenuUtility.GetWorldNames();
