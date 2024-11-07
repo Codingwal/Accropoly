@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
