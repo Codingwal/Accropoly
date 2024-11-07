@@ -18,18 +18,23 @@ public partial struct WorldDataSystem : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
-        state.EntityManager.RemoveComponent(loadGameTagQuery, typeof(LoadGameTag));
-
-        // TODO: WTF
+        // If the game is being saved
         if (saveGameTagQuery.CalculateEntityCount() != 0)
         {
+            // Save the worldData
             Debug.Log("Saving WorldData");
             SaveSystem.Instance.SaveWorldData(worldData);
 
+            // Destroy the tag and all tiles
             state.EntityManager.DestroyEntity(mapTileQuery);
+            state.EntityManager.DestroyEntity(saveGameTagQuery);
         }
-
-        state.EntityManager.RemoveComponent(saveGameTagQuery, typeof(SaveGameTag));
+        // If the game is being loaded
+        if (loadGameTagQuery.CalculateEntityCount() != 0)
+        {
+            // Destroy the tag
+            state.EntityManager.DestroyEntity(loadGameTagQuery);
+        }
     }
     public static void LoadWorldData()
     {

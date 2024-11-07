@@ -1,4 +1,3 @@
-- fix bug: eSystem runs before eSetup -> some entities don't have the hasETag (reproduce by spamming houses)
 - who deletes the tiles??
 - aspects (age, homeTile), (eConsumer, hasETag) ??
 
