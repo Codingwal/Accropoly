@@ -14,11 +14,9 @@ public partial struct TileAgingSystem : ISystem
 
         TileAgeingConfig config = SystemAPI.GetSingleton<TileAgeingConfig>();
 
-        var ecbSystem = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
-
         new TileAgingJob()
         {
-            ecb = ecbSystem.CreateCommandBuffer(state.WorldUnmanaged),
+            ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged),
             deltaTime = Time.deltaTime,
             maxAge = config.maxAge,
             newTileType = config.newTileType,

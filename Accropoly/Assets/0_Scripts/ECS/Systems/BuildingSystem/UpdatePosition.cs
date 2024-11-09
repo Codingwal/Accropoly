@@ -15,6 +15,8 @@ public partial struct UpdatePosition : ISystem
     {
         if (Time.timeScale == 0) return; // Return if the game is paused
 
+        var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
+
         Entity entity = SystemAPI.GetSingletonEntity<TileToPlace>();
         var localTransform = state.EntityManager.GetComponentData<LocalTransform>(entity);
 
@@ -25,15 +27,15 @@ public partial struct UpdatePosition : ISystem
 
         if (!Physics.Raycast(ray, out RaycastHit info, 1000, config.mouseRayLayer)) // Cast ray to detect where on the map the user points
         {
-            state.EntityManager.SetComponentEnabled<MaterialMeshInfo>(entity, false); // Hide the tileToPlace entity if the user doesn't point on the tileMap
+            ecb.SetComponentEnabled<MaterialMeshInfo>(entity, false); // Hide the tileToPlace entity if the user doesn't point on the tileMap
             return;
         };
-        state.EntityManager.SetComponentEnabled<MaterialMeshInfo>(entity, true); // Show the tileToPlace entity if the user points on the tileMap
+        ecb.SetComponentEnabled<MaterialMeshInfo>(entity, true); // Show the tileToPlace entity if the user points on the tileMap
 
         localTransform.Position.xz = math.round(((float3)info.point).xz / 2) * 2; // Align the position to the tileGrid
         localTransform.Position.y = 0.5f; // Important for tile visibility
 
         // Update the components
-        state.EntityManager.SetComponentData(entity, localTransform);
+        ecb.SetComponent(entity, localTransform);
     }
 }

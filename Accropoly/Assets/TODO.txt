@@ -1,6 +1,7 @@
 - simplify ComponentInitialization 
 -> should be done at creation time
 -> init after loading could all be done in one script
+- remove requireforupdate(prefab) statements (?)
 
 - finish Worker component
 
@@ -15,3 +16,5 @@
 
 FUTURE:
 - change energy symbol color depending on renewability of the energy production
+
+var ecb = SystemAPI.GetSingleton<EndCreationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);

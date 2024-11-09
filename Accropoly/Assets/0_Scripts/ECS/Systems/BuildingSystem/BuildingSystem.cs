@@ -1,4 +1,3 @@
-using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -19,6 +18,8 @@ public partial struct BuildingSystem : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
+        var ecb = SystemAPI.GetSingleton<EndCreationECBSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
+
         if (Time.timeScale == 0) return; // Return if the game is paused
 
         var localTransform = state.EntityManager.GetComponentData<LocalTransform>(entity);
@@ -32,12 +33,12 @@ public partial struct BuildingSystem : ISystem
             if (placementInputData.action == PlacementAction.Rotate)
             {
                 tileToPlace.rotation = tileToPlace.rotation.Rotate(1);
-                state.EntityManager.SetComponentData(entity, tileToPlace);
-                state.EntityManager.SetComponentData(entity, localTransform.RotateY(math.radians(90)));
+                ecb.SetComponent(entity, tileToPlace);
+                ecb.SetComponent(entity, localTransform.RotateY(math.radians(90)));
             }
             else if (placementInputData.action == PlacementAction.Cancel)
             {
-                state.EntityManager.DestroyEntity(entity);
+                ecb.DestroyEntity(entity);
                 return;
             }
             else if (placementInputData.action == PlacementAction.Place)
@@ -49,15 +50,12 @@ public partial struct BuildingSystem : ISystem
                 // Set the archetype to the archetype of the newTileType
                 var components = TilePlacingUtility.GetComponents(newTileType, pos, tileToPlace.rotation);
 
-                EntityCommandBuffer ecb = new(Allocator.Temp);
                 TilePlacingUtility.UpdateEntity(oldTile, components, ecb);
-                ecb.Playback(state.EntityManager);
-                ecb.Dispose();
 
                 // Set the transform rotation according to the rotation of tileToPlace
                 var transform = state.EntityManager.GetComponentData<LocalTransform>(oldTile);
                 transform.Rotation = quaternion.EulerXYZ(0, tileToPlace.rotation.ToRadians(), 0);
-                state.EntityManager.SetComponentData(oldTile, transform);
+                ecb.SetComponent(oldTile, transform);
 
                 MaterialsAndMeshesHolder.UpdateMeshAndMaterial(oldTile, newTileType); // Update the mesh according to the newTileType 
             }

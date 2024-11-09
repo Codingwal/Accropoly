@@ -9,19 +9,20 @@ public partial class SearchesSpaceComponentsInitialization : SystemBase
     }
     protected override void OnUpdate()
     {
+        var ecb = SystemAPI.GetSingleton<EndCreationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
         Entities.WithAll<NewPersonTag, Worker>().ForEach((Entity entity) =>
         {
-            EntityManager.SetComponentData(entity, new Worker { employer = new(-1, -1) });
-            EntityManager.AddComponent<SearchesSpaceTag>(entity);
-        }).WithStructuralChanges().Run();
+            ecb.SetComponent(entity, new Worker { employer = new(-1, -1) });
+            ecb.AddComponent<SearchesSpaceTag>(entity);
+        }).Schedule();
 
         if (SystemAPI.HasSingleton<LoadGameTag>())
         {
             Entities.ForEach((Entity entity, in Worker worker) =>
             {
                 if (worker.employer.Equals(new(-1, -1)))
-                    EntityManager.AddComponent(entity, typeof(SearchesSpaceTag));
-            }).WithStructuralChanges().Run();
+                    ecb.AddComponent(entity, typeof(SearchesSpaceTag));
+            }).Schedule();
         }
     }
 }

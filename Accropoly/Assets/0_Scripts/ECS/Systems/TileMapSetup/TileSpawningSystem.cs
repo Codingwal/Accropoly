@@ -20,7 +20,7 @@ public partial struct TileSpawningSystem : ISystem
         var prefab = SystemAPI.GetSingleton<PrefabEntity>();
 
         WorldData worldData = WorldDataSystem.worldData;
-        EntityCommandBuffer ecb = SystemAPI.GetSingleton<EndInitializationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
+        EntityCommandBuffer ecb = SystemAPI.GetSingleton<EndCreationECBSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
 
         TileGridUtility.CreateEntityGridBuffer();
 

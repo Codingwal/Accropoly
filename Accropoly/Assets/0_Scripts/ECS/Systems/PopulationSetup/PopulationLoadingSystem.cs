@@ -19,10 +19,10 @@ public partial struct PopulationLoadingSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
+        var ecb = SystemAPI.GetSingleton<EndCreationECBSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
         Entity prefab = SystemAPI.GetSingleton<PrefabEntity>();
 
         WorldData worldData = WorldDataSystem.worldData;
-        EntityCommandBuffer ecb = SystemAPI.GetSingleton<EndInitializationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
 
         List<Person> population = worldData.population;
         foreach (Person person in population)
