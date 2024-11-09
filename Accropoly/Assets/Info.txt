@@ -1,6 +1,7 @@
 SYSTEM EXECUTION ORDER:
 [InitializationSystemGroup]             
 DeleteNewTileTagSystem
+DeleteNewPersonTagSystem
 InputSystem
 TileSpawningSystem
 

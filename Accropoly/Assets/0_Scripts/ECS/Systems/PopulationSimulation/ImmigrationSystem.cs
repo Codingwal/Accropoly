@@ -42,6 +42,7 @@ public partial struct ImmigrationSystem : ISystem
 
                 // Create new inhabitant for this house ("immigrant")
                 Entity entity = ecb.Instantiate(prefab);
+                ecb.AddComponent(entity, new NewPersonTag());
                 ecb.AddComponent(entity, new PersonComponent
                 {
                     homeTile = habitatTile.pos,

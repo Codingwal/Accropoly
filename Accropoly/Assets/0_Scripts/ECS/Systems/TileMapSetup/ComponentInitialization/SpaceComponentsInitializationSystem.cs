@@ -8,12 +8,12 @@ public partial class SpaceComponentsInitializationSystem : SystemBase
         {
             habitat.freeSpace = habitat.totalSpace;
             EntityManager.AddComponent<HasSpaceTag>(entity);
-        }).WithoutBurst().WithStructuralChanges().Run();
+        }).WithStructuralChanges().Run();
         Entities.WithAll<NewTileTag>().ForEach((Entity entity, ref Employer employer) =>
         {
             employer.freeSpace = employer.totalSpace;
             EntityManager.AddComponent<HasSpaceTag>(entity);
-        }).WithoutBurst().WithStructuralChanges().Run();
+        }).WithStructuralChanges().Run();
 
         if (SystemAPI.HasSingleton<LoadGameTag>())
         {
@@ -21,13 +21,13 @@ public partial class SpaceComponentsInitializationSystem : SystemBase
             {
                 if (habitat.freeSpace > 0)
                     EntityManager.AddComponent<HasSpaceTag>(entity);
-            }).WithoutBurst().WithStructuralChanges().Run();
+            }).WithStructuralChanges().Run();
 
             Entities.ForEach((Entity entity, in Employer employer) =>
             {
                 if (employer.freeSpace > 0)
                     EntityManager.AddComponent<HasSpaceTag>(entity);
-            }).WithoutBurst().WithStructuralChanges().Run();
+            }).WithStructuralChanges().Run();
         }
     }
 }
