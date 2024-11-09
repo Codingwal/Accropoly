@@ -10,6 +10,7 @@ public struct EntityGridHolder : IComponentData { }
 public struct NewTileTag : IComponentData { }
 public partial struct ActiveTileTag : IComponentData, IEnableableComponent { }
 public struct HasSpaceTag : IComponentData { }
+public struct SearchesSpaceTag : IComponentData { }
 
 // Population
 

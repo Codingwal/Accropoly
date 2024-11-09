@@ -1,4 +1,12 @@
+- simplify ComponentInitialization 
+-> should be done at creation time
+-> init after loading could all be done in one script
+
+- finish Worker component
+
 - employement system
+
+- change system execution order (BuildingSystem & ComponentInitialization in InitializationSystemGroup but before InputSystem)
 
 - create happiness
 - create money system
