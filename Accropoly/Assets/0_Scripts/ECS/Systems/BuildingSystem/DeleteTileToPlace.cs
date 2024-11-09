@@ -1,5 +1,6 @@
 using Unity.Entities;
 
+[UpdateInGroup(typeof(CreationSystemGroup))]
 public partial struct DeleteTileToPlace : ISystem
 {
     private EntityQuery tileToPlaceQuery;

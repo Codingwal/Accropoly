@@ -2,7 +2,7 @@ using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
 
-[UpdateInGroup(typeof(LateSimulationSystemGroup), OrderLast = true)]
+[UpdateInGroup(typeof(LateInitializationSystemGroup))]
 public partial struct WorldDataSystem : ISystem
 {
     public static WorldData worldData;

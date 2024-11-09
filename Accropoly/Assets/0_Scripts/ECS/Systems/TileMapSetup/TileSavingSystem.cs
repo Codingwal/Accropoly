@@ -5,6 +5,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 
+[UpdateInGroup(typeof(CreationSystemGroup))]
 public partial struct TileSavingSystem : ISystem
 {
     [BurstCompile]

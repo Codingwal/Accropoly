@@ -5,6 +5,7 @@ using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
 
+[UpdateInGroup(typeof(CreationSystemGroup))]
 public partial struct PopulationSavingSystem : ISystem
 {
     [BurstCompile]

@@ -3,7 +3,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 
-[UpdateAfter(typeof(SpaceComponentsInitializationSystem))]
+[UpdateInGroup(typeof(CreationSystemGroup))]
 public partial struct ImmigrationSystem : ISystem
 {
     private const float immigrationProbability = 0.3f; // 1 = 100%

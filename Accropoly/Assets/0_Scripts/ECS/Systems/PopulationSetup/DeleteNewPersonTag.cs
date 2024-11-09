@@ -1,6 +1,6 @@
 using Unity.Entities;
 
-[UpdateInGroup(typeof(InitializationSystemGroup))]
+[UpdateInGroup(typeof(PreCreationSystemGroup))]
 public partial struct DeleteNewPersonTagSystem : ISystem
 {
     private EntityQuery newTileTagQuery;

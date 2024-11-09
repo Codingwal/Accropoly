@@ -3,9 +3,9 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
-
 using PlacementAction = PlacementInputData.Action;
-[UpdateInGroup(typeof(SimulationSystemGroup), OrderFirst = true)]
+
+[UpdateInGroup(typeof(CreationSystemGroup))]
 public partial struct BuildingSystem : ISystem
 {
     private EntityQuery placementInputDataQuery;

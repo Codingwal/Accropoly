@@ -1,5 +1,6 @@
 using Unity.Entities;
 
+[UpdateInGroup(typeof(ComponentInitializationSystemGroup))]
 public partial class ElectricityConsumerInitializationSystem : SystemBase
 {
     protected override void OnUpdate()

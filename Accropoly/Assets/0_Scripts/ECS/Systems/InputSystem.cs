@@ -5,7 +5,7 @@ using UIAction = UIInputData.Action;
 using PlacementAction = PlacementInputData.Action;
 using System;
 
-[UpdateInGroup(typeof(InitializationSystemGroup))]
+[UpdateInGroup(typeof(LateInitializationSystemGroup))]
 public partial class InputSystem : SystemBase
 {
     private Controls inputActions;

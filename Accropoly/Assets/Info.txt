@@ -1,17 +1,7 @@
 SYSTEM EXECUTION ORDER:
-[InitializationSystemGroup]             
-DeleteNewTileTagSystem
-DeleteNewPersonTagSystem
-InputSystem
-TileSpawningSystem
+Assets\0_Scripts\ECS\SystemGroups.cs
 
-{Input events}
-
-[SimulationSystemGroup]
-BuildingSystem
-{ComponentInitializationSystems}
-{TileMapSimulationSystems}
-{PopulationSimulationSystems}
-
-[LateSimulationSystemGroup]
-WorldDataSystem
+RESSOURCES:
+SYSTEMS:
+https://docs.unity3d.com/Packages/com.unity.entities@1.0/manual/systems-update-order.html
+https://docs.unity3d.com/Packages/com.unity.entities@0.1/manual/system_update_order.html

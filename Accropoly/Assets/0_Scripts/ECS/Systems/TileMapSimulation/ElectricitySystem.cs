@@ -1,6 +1,5 @@
 using Unity.Entities;
 
-[UpdateAfter(typeof(ElectricityConsumerInitializationSystem))]
 public partial class ElectricitySystem : SystemBase
 {
     private uint frame;

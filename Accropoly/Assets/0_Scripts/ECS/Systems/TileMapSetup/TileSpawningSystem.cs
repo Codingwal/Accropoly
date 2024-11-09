@@ -5,7 +5,7 @@ using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
 
-[UpdateInGroup(typeof(InitializationSystemGroup))]
+[UpdateInGroup(typeof(CreationSystemGroup))]
 public partial struct TileSpawningSystem : ISystem
 {
     [BurstCompile]
