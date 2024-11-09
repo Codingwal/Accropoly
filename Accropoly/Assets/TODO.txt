@@ -1,4 +1,5 @@
 - employement system
+- schedule not run (bookmarks!)
 
 - change system execution order (BuildingSystem & ComponentInitialization in InitializationSystemGroup but before InputSystem)
 
@@ -9,5 +10,3 @@
 
 FUTURE:
 - change energy symbol color depending on renewability of the energy production
-
-var ecb = SystemAPI.GetSingleton<EndCreationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
