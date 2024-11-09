@@ -5,7 +5,7 @@ public partial class ElectricityConsumerInitializationSystem : SystemBase
 {
     protected override void OnUpdate()
     {
-        var ecb = SystemAPI.GetSingleton<EndCreationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
+        var ecb = SystemAPI.GetSingleton<EndComponentInitializationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
         Entities.WithAll<NewTileTag, ElectricityConsumer>().ForEach((Entity entity) =>
         {
             ecb.AddComponent<HasElectricityTag>(entity);

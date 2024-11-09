@@ -6,7 +6,7 @@ public partial class SpaceComponentsInitializationSystem : SystemBase
 {
     protected override void OnUpdate()
     {
-        var ecb = SystemAPI.GetSingleton<EndCreationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
+        var ecb = SystemAPI.GetSingleton<EndComponentInitializationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
         Entities.WithAll<NewTileTag>().ForEach((Entity entity, ref Habitat habitat) =>
         {
             habitat.freeSpace = habitat.totalSpace;

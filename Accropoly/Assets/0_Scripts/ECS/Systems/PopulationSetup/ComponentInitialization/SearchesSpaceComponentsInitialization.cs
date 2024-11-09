@@ -9,7 +9,7 @@ public partial class SearchesSpaceComponentsInitialization : SystemBase
     }
     protected override void OnUpdate()
     {
-        var ecb = SystemAPI.GetSingleton<EndCreationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
+        var ecb = SystemAPI.GetSingleton<EndComponentInitializationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
         Entities.WithAll<NewPersonTag, Worker>().ForEach((Entity entity) =>
         {
             ecb.SetComponent(entity, new Worker { employer = new(-1, -1) });
