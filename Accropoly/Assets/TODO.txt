@@ -1,5 +1,9 @@
-- employement system
 - schedule not run (bookmarks!)
+- react to tile destruction (habitat, employer)
+
+- naming consistency:
+    - rename SearchesSpaceComponentsInitialization
+    - decide: Homeless / HomelessTag -> for all tags & components
 
 - change system execution order (BuildingSystem & ComponentInitialization in InitializationSystemGroup but before InputSystem)
 

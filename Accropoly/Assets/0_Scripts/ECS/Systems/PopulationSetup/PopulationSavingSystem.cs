@@ -23,7 +23,8 @@ public partial struct PopulationSavingSystem : ISystem
         HashSet<ComponentType> typesToIgnoreSet = new();
         foreach (var type in typesToIgnore)
             typesToIgnoreSet.Add(type);
-        typesToIgnoreSet.Add(typeof(SearchesSpaceTag));
+        typesToIgnoreSet.Add(typeof(UnemployedTag));
+        typesToIgnoreSet.Add(typeof(Homeless));
         typesToIgnore.Dispose();
 
         WorldDataSystem.worldData.population = new();

@@ -1,13 +1,12 @@
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
-using UnityEngine;
 
 public partial class EmployementSystem : SystemBase
 {
     protected override void OnCreate()
     {
-        RequireForUpdate(GetEntityQuery(typeof(Worker), typeof(SearchesSpaceTag)));
+        RequireForUpdate(GetEntityQuery(typeof(UnemployedTag)));
         RequireForUpdate(GetEntityQuery(typeof(Employer), typeof(HasSpaceTag)));
     }
     protected override void OnUpdate()
@@ -19,7 +18,7 @@ public partial class EmployementSystem : SystemBase
         NativeArray<MapTileComponent> employerMapTileComponents = GetEntityQuery(typeof(Employer), typeof(HasSpaceTag), typeof(MapTileComponent)).ToComponentDataArray<MapTileComponent>(Allocator.TempJob);
         NativeArray<int> index = new(1, Allocator.TempJob);
 
-        Entities.WithAll<SearchesSpaceTag>().ForEach((Entity entity, ref Worker worker) =>
+        Entities.WithAll<UnemployedTag>().ForEach((Entity entity, ref Worker worker) =>
         {
             if (index[0] >= employers.Length) return;
 
@@ -29,7 +28,7 @@ public partial class EmployementSystem : SystemBase
             employers[index[0]] = employer; // Save the updated employer value
             ecb.SetComponent(employerEntities[index[0]], employer); // Save the updated employer value
             worker.employer = employerMapTileComponents[index[0]].pos; // Store the employer position
-            ecb.RemoveComponent<SearchesSpaceTag>(entity); // The worker is no longer searching
+            ecb.RemoveComponent<UnemployedTag>(entity); // The worker is no longer searching
 
             if (employer.freeSpace == 0)
             {

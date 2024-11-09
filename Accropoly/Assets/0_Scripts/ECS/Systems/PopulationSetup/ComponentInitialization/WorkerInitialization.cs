@@ -13,7 +13,7 @@ public partial class SearchesSpaceComponentsInitialization : SystemBase
         Entities.WithAll<NewPersonTag, Worker>().ForEach((Entity entity) =>
         {
             ecb.SetComponent(entity, new Worker { employer = new(-1, -1) });
-            ecb.AddComponent<SearchesSpaceTag>(entity);
+            ecb.AddComponent<UnemployedTag>(entity);
         }).Schedule();
 
         if (SystemAPI.HasSingleton<LoadGameTag>())
@@ -21,7 +21,7 @@ public partial class SearchesSpaceComponentsInitialization : SystemBase
             Entities.ForEach((Entity entity, in Worker worker) =>
             {
                 if (worker.employer.Equals(new(-1, -1)))
-                    ecb.AddComponent(entity, typeof(SearchesSpaceTag));
+                    ecb.AddComponent(entity, typeof(UnemployedTag));
             }).Schedule();
         }
     }

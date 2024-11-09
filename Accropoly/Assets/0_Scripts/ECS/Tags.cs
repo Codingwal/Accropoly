@@ -13,4 +13,4 @@ public struct HasSpaceTag : IComponentData { }
 
 // Population
 public struct NewPersonTag : IComponentData { }
-public struct SearchesSpaceTag : IComponentData { }
+// public struct SearchesSpaceTag : IComponentData { }
