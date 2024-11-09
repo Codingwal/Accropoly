@@ -41,6 +41,13 @@ public partial class Serializer
                 Serialize(componentData.homeTile);
                 bw.Write(componentData.age);
             }
+            else if (type == typeof(Worker))
+            {
+                bw.Write((int)PersonComponents.Worker);
+                Worker componentData = (Worker)component;
+
+                Serialize(componentData.employer);
+            }
             else throw new($"Cannot serialize component of type {type}");
         }
     }

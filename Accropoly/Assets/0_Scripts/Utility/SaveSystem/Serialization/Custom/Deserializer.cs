@@ -36,6 +36,10 @@ public partial class Deserializer
                     homeTile = Deserialize(new int2()),
                     age = br.ReadInt32(),
                 },
+                PersonComponents.Worker => new Worker()
+                {
+                    employer = Deserialize(new int2()),
+                },
                 _ => throw new($"Cannot deserialize component of type {type}")
             };
             data.components.Add((component, isEnabled));

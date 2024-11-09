@@ -23,6 +23,7 @@ public partial struct PopulationSavingSystem : ISystem
         HashSet<ComponentType> typesToIgnoreSet = new();
         foreach (var type in typesToIgnore)
             typesToIgnoreSet.Add(type);
+        typesToIgnoreSet.Add(typeof(SearchesSpaceTag));
         typesToIgnore.Dispose();
 
         WorldDataSystem.worldData.population = new();
@@ -49,6 +50,7 @@ public partial struct PopulationSavingSystem : ISystem
                 }
 
                 if (componentType == typeof(PersonComponent)) AddComponentData<PersonComponent>();
+                else if (componentType == typeof(Worker)) AddComponentData<Worker>();
                 else Debug.LogWarning($"Component of type {componentType} will not be serialized but also isn't present in typesToIgnore");
             }
             componentTypes.Dispose();

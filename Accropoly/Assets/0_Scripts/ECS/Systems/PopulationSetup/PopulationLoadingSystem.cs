@@ -42,6 +42,7 @@ public partial struct PopulationLoadingSystem : ISystem
                 Type type = component.GetType();
                 if (type == typeof(PosComponent)) pos = ((PosComponent)component).pos;
                 else if (type == typeof(PersonComponent)) AddComponent<PersonComponent>();
+                else if (type == typeof(Worker)) AddComponent<Worker>();
                 else Debug.LogError($"Unexpected type {type.Name}");
             }
             ecb.SetComponent(entity, LocalTransform.FromPositionRotationScale(pos, quaternion.identity, 0.1f));
