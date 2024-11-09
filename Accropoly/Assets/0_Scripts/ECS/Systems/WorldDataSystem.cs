@@ -52,18 +52,8 @@ public partial struct WorldDataSystem : ISystem
     {
         CreateTag<SaveGameTag>();
     }
-    private static void CreateTag<T>()
+    private static void CreateTag<T>() where T : unmanaged, IComponentData
     {
-        EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-
-        EntityQueryBuilder queryDesc = new EntityQueryBuilder(Allocator.Temp)
-                                            .WithAll<BeginInitializationEntityCommandBufferSystem.Singleton>()
-                                            .WithOptions(EntityQueryOptions.IncludeSystems);
-        EntityQuery query = entityManager.CreateEntityQuery(queryDesc);
-
-        EntityCommandBuffer ecb = query.GetSingleton<BeginInitializationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(entityManager.WorldUnmanaged);
-
-        var entity = ecb.CreateEntity();
-        ecb.AddComponent(entity, typeof(T));
+        World.DefaultGameObjectInjectionWorld.EntityManager.CreateSingleton<T>();
     }
 }
