@@ -12,7 +12,6 @@ public partial struct PopulationLoadingSystem : ISystem
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<PrefabEntity>();
         state.RequireForUpdate<LoadGameTag>();
     }
 
