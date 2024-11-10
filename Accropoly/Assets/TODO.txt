@@ -1,6 +1,3 @@
-- schedule not run (bookmarks!)
-- react to tile destruction (habitat, employer)
-
 - naming consistency:
     - rename SearchesSpaceComponentsInitialization
     - decide: Homeless / HomelessTag -> for all tags & components
