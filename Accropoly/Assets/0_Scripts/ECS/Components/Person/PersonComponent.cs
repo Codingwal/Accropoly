@@ -6,4 +6,4 @@ public struct PersonComponent : IComponentData
     public int2 homeTile;
     public int age;
 }
-public struct Homeless : IComponentData { }
+public struct HomelessTag : IComponentData { }

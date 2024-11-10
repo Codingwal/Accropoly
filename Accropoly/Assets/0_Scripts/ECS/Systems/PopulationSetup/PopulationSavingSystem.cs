@@ -24,7 +24,7 @@ public partial struct PopulationSavingSystem : ISystem
         foreach (var type in typesToIgnore)
             typesToIgnoreSet.Add(type);
         typesToIgnoreSet.Add(typeof(UnemployedTag));
-        typesToIgnoreSet.Add(typeof(Homeless));
+        typesToIgnoreSet.Add(typeof(HomelessTag));
         typesToIgnore.Dispose();
 
         WorldDataSystem.worldData.population = new();

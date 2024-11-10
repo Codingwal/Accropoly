@@ -1,7 +1,7 @@
 using Unity.Entities;
 
 [UpdateInGroup(typeof(ComponentInitializationSystemGroup))]
-public partial class SearchesSpaceComponentsInitialization : SystemBase
+public partial class WorkerInitializationSystem : SystemBase
 {
     protected override void OnCreate()
     {
