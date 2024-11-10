@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 3103150d1a49dbf4e9dfadcf75314311
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+<<<<<<< HEAD:TileTown/Assets/Environement/TileMap/StreetTile.cs.meta
+  executionOrder: 0
+=======
+  executionOrder: 1350
+>>>>>>> dev:Accropoly/Assets/Environement/TileMap/StreetTile.cs.meta
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
