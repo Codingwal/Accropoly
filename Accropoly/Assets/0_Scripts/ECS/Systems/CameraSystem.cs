@@ -27,17 +27,6 @@ public partial struct CameraSystem : ISystem
         var inputData = SystemAPI.GetSingleton<InputData>();
         var cameraTransform = SystemAPI.GetSingleton<CameraTransform>();
 
-        new Job
-        {
-            entityManager = World.DefaultGameObjectInjectionWorld.EntityManager,
-            config = config,
-            inputData = inputData,
-            deltaTime = Time.deltaTime,
-            mapSize = WorldDataSystem.worldData.map.tiles.GetLength(0),
-            transform = cameraTransform,
-            transformHolder = transformHolder,
-        }.Run();
-
         // Apply transform values from last job
         Transform transform = Camera.main.transform;
         (transform.position, transform.rotation) = cameraTransform.GetCameraTransform();
@@ -51,12 +40,25 @@ public partial struct CameraSystem : ISystem
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
         }
+
+        var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
+
+        state.Dependency = new Job
+        {
+            ecb = ecb,
+            config = config,
+            inputData = inputData,
+            deltaTime = Time.deltaTime,
+            mapSize = WorldDataSystem.worldData.map.tiles.GetLength(0),
+            transform = cameraTransform,
+            transformHolder = transformHolder,
+        }.Schedule(state.Dependency);
     }
 
     [BurstCompile]
     public partial struct Job : IJob
     {
-        public EntityManager entityManager;
+        public EntityCommandBuffer ecb;
         public CameraConfig config;
         public InputData inputData;
         public float deltaTime;
@@ -116,7 +118,7 @@ public partial struct CameraSystem : ISystem
                 transform.rot.x = math.clamp(transform.rot.x, config.minAngle, config.maxAngle);
             }
 
-            entityManager.SetComponentData(transformHolder, transform);
+            ecb.SetComponent(transformHolder, transform);
         }
     }
 

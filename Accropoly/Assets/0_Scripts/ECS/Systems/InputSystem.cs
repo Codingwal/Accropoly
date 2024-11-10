@@ -41,9 +41,10 @@ public partial class InputSystem : SystemBase
     }
     protected override void OnUpdate()
     {
+        var ecb = SystemAPI.GetSingleton<EndLateInitializationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
         // Update InputData
         var inGameActions = inputActions.InGame;
-        SystemAPI.SetComponent(inputDataHolder, new InputData
+        ecb.SetComponent(inputDataHolder, new InputData
         {
             camera = new CameraInputData
             {
@@ -59,8 +60,8 @@ public partial class InputSystem : SystemBase
         });
 
         // Disable input event tags
-        SystemAPI.SetComponentEnabled<PlacementInputData>(inputDataHolder, false);
-        SystemAPI.SetComponentEnabled<UIInputData>(inputDataHolder, false);
+        ecb.SetComponentEnabled<PlacementInputData>(inputDataHolder, false);
+        ecb.SetComponentEnabled<UIInputData>(inputDataHolder, false);
     }
     public void EnableInputActions() { inputActions.Enable(); }
     public void DisableInputActions() { inputActions.Disable(); }

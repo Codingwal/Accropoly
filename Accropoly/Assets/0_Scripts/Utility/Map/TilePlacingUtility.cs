@@ -10,12 +10,13 @@ public static class TilePlacingUtility
 {
     public static List<(IComponentData, bool)> GetComponents(TileType tileType, int2 pos, Direction rotation)
     {
+        System.Random rnd = new();
         List<(IComponentData, bool)> components = tileType switch
         {
             TileType.Plains => new() { },
-            TileType.Sapling => new() { (new AgingTile { age = UnityEngine.Random.Range(0f, 10f) }, true) },
+            TileType.Sapling => new() { (new AgingTile { age = rnd.Next(10) }, true) },
             TileType.Forest => new() { },
-            TileType.House => new() { (new Habitat {totalSpace = UnityEngine.Random.Range(2, 6)}, true),
+            TileType.House => new() { (new Habitat {totalSpace = rnd.Next(2, 6)}, true),
                                       (new ElectricityConsumer { consumption = 2 }, true),
                                       (new Polluter { pollution = 3 }, true), (new IsConnectedTag(), false) },
             TileType.SolarPanel => new() { (new ElectricityProducer { production = 10 }, true), (new Polluter { pollution = 1 }, true),

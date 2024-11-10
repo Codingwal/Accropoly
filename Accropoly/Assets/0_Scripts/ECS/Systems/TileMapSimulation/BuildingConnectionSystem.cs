@@ -9,6 +9,8 @@ public partial class BuildingConnectionSystem : SystemBase
         frame++;
         if (frame % 50 != 1) return;
 
+        var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
+
         Entities.WithPresent<IsConnectedTag>().ForEach((Entity entity, in MapTileComponent mapTileComponent) =>
         {
             bool isConnected = false;
@@ -17,10 +19,10 @@ public partial class BuildingConnectionSystem : SystemBase
                 Entity neighbour = TileGridUtility.TryGetTile(mapTileComponent.pos + direction.DirectionVec, out bool neighbourExists);
 
                 if (!neighbourExists) continue;
-                if (!EntityManager.HasComponent<BuildingConnector>(neighbour)) continue;
+                if (!SystemAPI.HasComponent<BuildingConnector>(neighbour)) continue;
 
-                var buildingConnector = EntityManager.GetComponentData<BuildingConnector>(neighbour);
-                Direction neighbourRotation = EntityManager.GetComponentData<MapTileComponent>(neighbour).rotation;
+                var buildingConnector = SystemAPI.GetComponent<BuildingConnector>(neighbour);
+                Direction neighbourRotation = SystemAPI.GetComponent<MapTileComponent>(neighbour).rotation;
 
                 if (buildingConnector.CanConnect(direction.Flip(), neighbourRotation))
                 {
@@ -28,8 +30,8 @@ public partial class BuildingConnectionSystem : SystemBase
                     break;
                 }
             }
-            EntityManager.SetComponentEnabled<IsConnectedTag>(entity, isConnected);
-        }).WithoutBurst().Run();
+            ecb.SetComponentEnabled<IsConnectedTag>(entity, isConnected);
+        }).WithoutBurst().Schedule();
 
     }
 }
