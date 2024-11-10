@@ -1,4 +1,5 @@
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -21,10 +22,26 @@ public partial class ImmigrationSystem : SystemBase
         var ecb = SystemAPI.GetSingleton<EndCreationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
         Entity prefab = SystemAPI.GetSingleton<PrefabEntity>();
 
+        NativeArray<Entity> homelessEntities = GetEntityQuery(typeof(HomelessTag)).ToEntityArray(Allocator.TempJob);
+        NativeArray<PersonComponent> homelessPersonComponents = GetEntityQuery(typeof(HomelessTag), typeof(PersonComponent)).ToComponentDataArray<PersonComponent>(Allocator.TempJob);
+        NativeArray<int> homelessIndex = new(1, Allocator.TempJob);
+        homelessIndex[0] = 0;
+
         // Foreach active habitat with space
         Entities.WithAll<ActiveTileTag, HasSpaceTag>().ForEach((Entity habitatEntity, ref Habitat habitat, in MapTileComponent habitatTile) =>
         {
-            if (rnd.NextFloat() <= immigrationProbability * deltaTime) // Multiply with delta time bc immigrationProbability is per second, not per frame
+            if (homelessIndex[0] < homelessEntities.Length) // If there is at least one homeless person left
+            {
+                habitat.freeSpace--;
+                if (habitat.freeSpace == 0) ecb.RemoveComponent<HasSpaceTag>(habitatEntity);
+
+                var personComponent = homelessPersonComponents[homelessIndex[0]];
+                var homelessEntity = homelessEntities[homelessIndex[0]];
+                personComponent.homeTile = habitatTile.pos;
+                ecb.SetComponent(homelessEntity, personComponent);
+                ecb.RemoveComponent<HomelessTag>(homelessEntity);
+            }
+            else if (rnd.NextFloat() <= immigrationProbability * deltaTime) // Multiply with delta time bc immigrationProbability is per second, not per frame
             {
                 habitat.freeSpace--;
                 if (habitat.freeSpace == 0) ecb.RemoveComponent<HasSpaceTag>(habitatEntity);
@@ -43,6 +60,6 @@ public partial class ImmigrationSystem : SystemBase
                 float3 pos = new(2 * habitatTile.pos.x + offset, 0.5f, 2 * habitatTile.pos.y);
                 ecb.SetComponent(entity, LocalTransform.FromPositionRotationScale(pos, quaternion.identity, 0.1f));
             }
-        }).Schedule();
+        }).WithDisposeOnCompletion(homelessEntities).WithDisposeOnCompletion(homelessPersonComponents).WithDisposeOnCompletion(homelessIndex).Schedule();
     }
 }
