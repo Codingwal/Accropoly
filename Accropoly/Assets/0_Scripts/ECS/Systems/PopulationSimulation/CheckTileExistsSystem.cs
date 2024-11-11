@@ -22,20 +22,16 @@ public partial class CheckTileExistsSystem : SystemBase
 
         // Get all positions of deleted (replaced) tiles
         NativeArray<int2> newTilesPositions = new(newTilesCount, Allocator.TempJob);
-        int index = 0;
-        var inputDeps = Entities.WithAll<NewTileTag>().ForEach((in MapTileComponent mapTileComponent) =>
+        var inputDeps = Entities.WithAll<NewTileTag>().ForEach((int entityInQueryIndex, in MapTileComponent mapTileComponent) =>
         {
-            newTilesPositions[index] = mapTileComponent.pos;
-            index++;
+            newTilesPositions[entityInQueryIndex] = mapTileComponent.pos;
         }).Schedule(Dependency);
 
         // Get all positions of disabled tiles
         NativeArray<int2> disabledTilesPositions = new(disabledTilesCount, Allocator.TempJob);
-        index = 0;
-        inputDeps = Entities.WithDisabled<ActiveTileTag>().ForEach((in MapTileComponent mapTileComponent) =>
+        inputDeps = Entities.WithDisabled<ActiveTileTag>().ForEach((int entityInQueryIndex, in MapTileComponent mapTileComponent) =>
         {
-            disabledTilesPositions[index] = mapTileComponent.pos;
-            index++;
+            disabledTilesPositions[entityInQueryIndex] = mapTileComponent.pos;
         }).Schedule(inputDeps);
 
 
