@@ -16,7 +16,7 @@ public partial class PersonComponentInitializationSystem : SystemBase
             Entities.ForEach((Entity entity, in PersonComponent person) =>
             {
                 if (person.homeTile.Equals(new(-1, -1)))
-                    ecb.AddComponent(entity, typeof(HomelessTag));
+                    ecb.AddComponent<HomelessTag>(entity);
             }).Schedule();
         }
     }

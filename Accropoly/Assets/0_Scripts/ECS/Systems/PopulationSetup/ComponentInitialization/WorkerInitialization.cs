@@ -21,7 +21,7 @@ public partial class WorkerInitializationSystem : SystemBase
             Entities.ForEach((Entity entity, in Worker worker) =>
             {
                 if (worker.employer.Equals(new(-1, -1)))
-                    ecb.AddComponent(entity, typeof(UnemployedTag));
+                    ecb.AddComponent<UnemployedTag>(entity);
             }).Schedule();
         }
     }
