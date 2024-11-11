@@ -58,4 +58,5 @@ public class SaveSystem : FileHandler
         SaveWorldData(worldName, worldData);
     }
     public void CreateWorld(string worldName, string mapTemplateName) { CreateWorld(worldName, LoadObject<MapData>("Templates", mapTemplateName)); }
+    public void SaveTemplate(MapData templateData, string newTemplateName) { SaveObject("Templates", newTemplateName, templateData); }
 }

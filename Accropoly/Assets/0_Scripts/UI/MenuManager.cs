@@ -17,6 +17,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private TMP_InputField mapNameField;
     [SerializeField] private TMP_Dropdown mapTemplateDropdown;
     [SerializeField] private string defaultTemplate;
+    [SerializeField] private Button createTemplateButton;
     [SerializeField] private Button deleteMapButton;
     [SerializeField] private TMP_Dropdown mapsDropdown;
 
@@ -33,6 +34,7 @@ public class MenuManager : MonoBehaviour
 
         startGameButton.onClick.AddListener(OnStartGame);
         createMapButton.onClick.AddListener(OnCreateMap);
+        createTemplateButton.onClick.AddListener(OnCreateTemplate);
         deleteMapButton.onClick.AddListener(OnDeleteMap);
 
         continueButton.onClick.AddListener(() => MenuUtility.ContinueGame());
@@ -70,6 +72,12 @@ public class MenuManager : MonoBehaviour
 
         // Select the newly created world for convinience
         mapsDropdown.value = mapsDropdown.options.FindIndex(x => x.text == mapNameField.text);
+    }
+    private void OnCreateTemplate()
+    {
+        if (mapsDropdown.options.Count == 0) return;
+        MenuUtility.CreateTemplate(SelectedWorldName, mapNameField.text);
+        ReloadUI();
     }
     private void OnDeleteMap()
     {

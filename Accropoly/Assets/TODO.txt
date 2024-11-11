@@ -1,5 +1,3 @@
-- entityInQueryIndex instead of index
-
 - solution: don't run every frame but prevent people spawning without electricity, ... -> run directly after spawning?
     - also applies for BuildingConnectionSystem
 
