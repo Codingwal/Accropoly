@@ -1,5 +1,4 @@
 using Unity.Entities;
-using UnityEngine;
 using Unity.Collections;
 using Unity.Mathematics;
 
@@ -8,7 +7,7 @@ public partial class CheckEmployerExistsSystem : SystemBase
     private EntityQuery newTilesQuery;
     protected override void OnCreate()
     {
-        RequireForUpdate<PersonComponent>();
+        RequireForUpdate<Worker>();
         newTilesQuery = GetEntityQuery(typeof(NewTileTag));
     }
     protected override void OnUpdate()
