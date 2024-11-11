@@ -1,16 +1,34 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
+using Unity.Entities;
 using UnityEngine;
 
 public class StatisticsDisplay : MonoBehaviour
 {
-    [SerializeField] private TMP_Text balanceText;
     [SerializeField] private TMP_Text populationText;
     [SerializeField] private TMP_Text electricityText;
-    [SerializeField] private TMP_Text averageHappinessText;
 
+    private void Start()
+    {
+        MenuUtility.InitUIInfo();
+    }
+    private void Update()
+    {
+        UIInfo info = MenuUtility.GetUIInfo();
+
+        string electricityConsumptionText = Format(info.maxElectricityConsumption);
+        string electricityProductionText = Format(info.electricityProduction);
+        electricityText.text = $"Electricity: {electricityConsumptionText}/{electricityProductionText}";
+    }
+    private string Format(float value)
+    {
+        return value switch
+        {
+            > 1000000000 => $"{value / 1000000000}mrd",
+            > 1000000 => $"{value / 1000000}mio",
+            > 1000 => $"{value / 1000}k",
+            _ => $"{value}",
+        };
+    }
     /*
     private void Update()
     {

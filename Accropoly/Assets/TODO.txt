@@ -1,5 +1,9 @@
-- solution: don't run every frame but prevent people spawning without electricity, ... -> run directly after spawning?
+- fix very weird Employer bug (SolarPanel)
+
+- find solution: don't run every frame but prevent people spawning without electricity, ... 
     - also applies for BuildingConnectionSystem
+    -> run directly after spawning?
+    -> set default values?
 
 - create happiness
 - create money system

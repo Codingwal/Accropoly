@@ -25,10 +25,10 @@ public partial class UpdateTileActivation : SystemBase
         }).Schedule(Dependency);
 
         // Disable employers without at least one employee
-        Dependency = Entities.ForEach((Entity entity, in Employer employer) =>
-        {
-            if (employer.freeSpace == employer.totalSpace) // If the employer doesn't have employees
-                ecb.SetComponentEnabled<ActiveTileTag>(entity, false);
-        }).Schedule(Dependency);
+        // Dependency = Entities.ForEach((Entity entity, in Employer employer) =>
+        // {
+        //     if (employer.freeSpace == employer.totalSpace) // If the employer doesn't have employees
+        //         ecb.SetComponentEnabled<ActiveTileTag>(entity, false);
+        // }).Schedule(Dependency);
     }
 }

@@ -6,6 +6,14 @@ public static class MenuUtility
 {
     public static Action continuingGame;
     public static Action pausingGame;
+    public static void InitUIInfo()
+    {
+        EntityManager.CreateSingleton<UIInfo>();
+    }
+    public static UIInfo GetUIInfo()
+    {
+        return EntityManager.CreateEntityQuery(typeof(UIInfo)).GetSingleton<UIInfo>();
+    }
     public static void CreateWorld(string worldName, string templateName)
     {
         SaveSystem.Instance.UpdateWorldName(worldName);
@@ -71,5 +79,6 @@ public static class MenuUtility
     {
         Application.Quit();
     }
+    private static EntityManager EntityManager => World.DefaultGameObjectInjectionWorld.EntityManager;
     private static InputSystem InputSystem => World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<InputSystem>();
 }

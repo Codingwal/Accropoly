@@ -1,4 +1,7 @@
+using Unity.Collections;
 using Unity.Entities;
+using Unity.Jobs;
+using UnityEngine;
 
 public partial class ElectricitySystem : SystemBase
 {
@@ -6,9 +9,6 @@ public partial class ElectricitySystem : SystemBase
     protected override void OnCreate()
     {
         RequireForUpdate<RunGameTag>();
-
-        // There must be an active consumer or producer for the system to run
-        RequireAnyForUpdate(GetEntityQuery(typeof(ElectricityProducer), typeof(ActiveTileTag)), GetEntityQuery(typeof(ElectricityConsumer), typeof(ActiveTileTag)));
     }
     protected override void OnUpdate()
     {
@@ -17,24 +17,31 @@ public partial class ElectricitySystem : SystemBase
         if (frame % 50 != 0) return;
 
         // Calculate the current production
-        float totalProduction = 0;
+        NativeArray<float> totalProduction = new(new float[] { 0f }, Allocator.TempJob);
         Entities.WithAll<ActiveTileTag>().ForEach((in ElectricityProducer producer) =>
         {
-            totalProduction += producer.production;
-        }).Run();
+            totalProduction[0] += producer.production;
+        }).Schedule();
+
+        var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
 
         // Enable as many consumers as possible
-        float totalConsumption = 0;
-        float maxConsumption = 0;
+        NativeArray<float> totalConsumption = new(new float[] { 0f }, Allocator.TempJob);
+        NativeArray<float> maxConsumption = new(new float[] { 0f }, Allocator.TempJob);
         Entities.WithAll<ActiveTileTag>().ForEach((Entity entity, in ElectricityConsumer consumer) =>
         {
-            bool canEnable = totalConsumption + consumer.consumption <= totalProduction;
-            totalConsumption += canEnable ? consumer.consumption : 0; // Only add to the production if the consumer can be enabled
-            EntityManager.SetComponentEnabled<HasElectricityTag>(entity, canEnable);
+            bool canEnable = totalConsumption[0] + consumer.consumption <= totalProduction[0];
+            totalConsumption[0] += canEnable ? consumer.consumption : 0; // Only add to the production if the consumer can be enabled
+            ecb.SetComponentEnabled<HasElectricityTag>(entity, canEnable);
 
-            maxConsumption += consumer.consumption; // Only for informative purposes
-        }).WithoutBurst().Run();
+            maxConsumption[0] += consumer.consumption; // Only for informative purposes
+        }).Schedule();
 
-        // Debug.Log($"Electricity: {maxConsumption}/{totalProduction}");
+        Entities.ForEach((ref UIInfo info) =>
+        {
+            info.electricityProduction = totalProduction[0];
+            info.actualElectricityConsumption = totalConsumption[0];
+            info.maxElectricityConsumption = maxConsumption[0];
+        }).WithDisposeOnCompletion(totalProduction).WithDisposeOnCompletion(totalConsumption).WithDisposeOnCompletion(maxConsumption).Schedule();
     }
 }
