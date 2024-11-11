@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -17,7 +16,7 @@ public static class TilePlacingUtility
             TileType.Sapling => new() { (new AgingTile { age = rnd.Next(10) }, true) },
             TileType.Forest => new() { },
             TileType.House => new() { (new Habitat {totalSpace = rnd.Next(2, 6)}, true),
-                                      (new ElectricityConsumer { consumption = 2 }, true),
+                                      (new ElectricityConsumer { consumption = 2, disableIfElectroless = true }, true),
                                       (new Polluter { pollution = 3 }, true), (new IsConnectedTag(), false) },
             TileType.SolarPanel => new() { (new ElectricityProducer { production = 10 }, true), (new Polluter { pollution = 1 }, true),
                                            (new Employer{totalSpace = 1}, true) },

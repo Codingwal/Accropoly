@@ -18,10 +18,11 @@ public partial class UpdateTileActivation : SystemBase
         }).Schedule(Dependency);
 
         // Disable e-consumers without electricity
-        // Dependency = Entities.WithDisabled<HasElectricityTag>().ForEach((Entity entity) =>
-        // {
-        //     ecb.SetComponentEnabled<ActiveTileTag>(entity, false);
-        // }).Schedule(Dependency);
+        Dependency = Entities.WithDisabled<HasElectricityTag>().ForEach((Entity entity, in ElectricityConsumer electricityConsumer) =>
+        {
+            if (electricityConsumer.disableIfElectroless) // Only disable if electricity is strictly required
+                ecb.SetComponentEnabled<ActiveTileTag>(entity, false);
+        }).Schedule(Dependency);
 
         // Disable employers without at least one employee
         Dependency = Entities.ForEach((Entity entity, in Employer employer) =>

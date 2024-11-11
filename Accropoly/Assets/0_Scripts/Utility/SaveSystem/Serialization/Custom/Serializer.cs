@@ -89,6 +89,7 @@ public partial class Serializer
 
                 ElectricityConsumer componentData = (ElectricityConsumer)component;
                 bw.Write(componentData.consumption);
+                bw.Write(componentData.disableIfElectroless);
             }
             else if (type == typeof(BuildingConnector))
             {

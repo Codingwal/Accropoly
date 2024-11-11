@@ -7,5 +7,6 @@ public struct ElectricityProducer : IComponentData
 public struct ElectricityConsumer : IComponentData
 {
     public float consumption;
+    public bool disableIfElectroless;
 }
 public struct HasElectricityTag : IComponentData, IEnableableComponent { }

@@ -1,4 +1,4 @@
-- disable houses if electricity / road is missing
+- add disableIfNoElectricity property to eConsumers
 - create happiness
 - create money system
 
