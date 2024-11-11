@@ -63,5 +63,9 @@ public static class MenuUtility
     {
         BuildingSystem.StartPlacementProcess(tileType);
     }
+    public static void OpenExplorer()
+    {
+        Application.OpenURL(@"file://" + FileHandler.baseDir);
+    }
     private static InputSystem InputSystem => World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<InputSystem>();
 }
