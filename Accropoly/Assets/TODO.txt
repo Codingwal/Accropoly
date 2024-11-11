@@ -1,15 +1,11 @@
-- schedule not run (bookmarks!)
-- react to tile destruction (habitat, employer)
-
-- naming consistency:
-    - rename SearchesSpaceComponentsInitialization
-    - decide: Homeless / HomelessTag -> for all tags & components
-
-- change system execution order (BuildingSystem & ComponentInitialization in InitializationSystemGroup but before InputSystem)
+- solution: don't run every frame but prevent people spawning without electricity, ... -> run directly after spawning?
+    - also applies for BuildingConnectionSystem
 
 - create happiness
 - create money system
 
+- naming consistency:
+    - decide: Homeless / HomelessTag -> for all tags & components
 - delete RunGameTag on pausing (?)
 
 FUTURE:

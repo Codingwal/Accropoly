@@ -34,6 +34,11 @@ public static class MenuUtility
     {
         FileHandler.DeleteFile("Saves", mapName);
     }
+    public static void CreateTemplate(string worldName, string newTemplateName)
+    {
+        WorldData worldData = SaveSystem.Instance.GetWorldData(worldName);
+        SaveSystem.Instance.SaveTemplate(worldData.map, newTemplateName);
+    }
     public static string[] GetMapTemplateNames()
     {
         return FileHandler.ListFiles("Templates");
@@ -57,6 +62,14 @@ public static class MenuUtility
     public static void PlaceTile(TileType tileType)
     {
         BuildingSystem.StartPlacementProcess(tileType);
+    }
+    public static void OpenExplorer()
+    {
+        Application.OpenURL(@"file://" + FileHandler.baseDir);
+    }
+    public static void Quit()
+    {
+        Application.Quit();
     }
     private static InputSystem InputSystem => World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<InputSystem>();
 }

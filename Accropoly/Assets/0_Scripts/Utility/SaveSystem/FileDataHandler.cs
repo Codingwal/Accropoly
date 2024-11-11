@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class FileHandler
 {
-    protected static readonly string baseDir = Application.persistentDataPath + "/data/";
+    public static readonly string baseDir = Application.persistentDataPath + "/data/";
     public static string[] ListFiles(string directory)
     {
         string dataPath = $"{baseDir}{directory}/";

@@ -15,7 +15,6 @@ public partial struct PopulationLoadingSystem : ISystem
         state.RequireForUpdate<LoadGameTag>();
     }
 
-    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         var ecb = SystemAPI.GetSingleton<EndCreationECBSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);

@@ -81,7 +81,8 @@ public partial class Deserializer
                 },
                 TileComponents.ElectricityConsumer => new ElectricityConsumer()
                 {
-                    consumption = br.ReadSingle()
+                    consumption = br.ReadSingle(),
+                    disableIfElectroless = br.ReadBoolean()
                 },
                 TileComponents.BuildingConnector => BuildingConnector.Deserialize(br.ReadInt32()),
                 TileComponents.Polluter => new Polluter()

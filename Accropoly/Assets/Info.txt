@@ -5,3 +5,5 @@ RESSOURCES:
 https://docs.unity3d.com/Packages/com.unity.entities@1.0/manual/systems-update-order.html
 https://docs.unity3d.com/Packages/com.unity.entities@1.0/api/Unity.Entities.EntityCommandBufferSystem.html
 https://docs.unity3d.com/Packages/com.unity.entities@1.0/manual/systems-entity-command-buffers.html
+https://docs.unity3d.com/Packages/com.unity.entities@1.2/manual/common-errors.html
+https://docs.unity3d.com/Packages/com.unity.entities@0.8/api/Unity.Entities.SystemBase.html#Unity_Entities_SystemBase_Entities
