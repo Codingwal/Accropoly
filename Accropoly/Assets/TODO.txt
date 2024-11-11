@@ -1,4 +1,8 @@
-- add disableIfNoElectricity property to eConsumers
+- entityInQueryIndex instead of index
+
+- solution: don't run every frame but prevent people spawning without electricity, ... -> run directly after spawning?
+    - also applies for BuildingConnectionSystem
+
 - create happiness
 - create money system
 
