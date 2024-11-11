@@ -1,33 +1,49 @@
+using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 
 public partial class CheckHabitatExistsSystem : SystemBase
 {
-    private int frame = 0;
+    private EntityQuery newTilesQuery;
     protected override void OnCreate()
     {
         RequireForUpdate<PersonComponent>();
+        newTilesQuery = GetEntityQuery(typeof(NewTileTag));
     }
     protected override void OnUpdate()
     {
-        frame++;
-        if (frame % 50 != 5) return;
+        int newTilesCount = newTilesQuery.CalculateEntityCount();
+
+        if (newTilesCount == 0) return;
+
+        // Get all positions of deleted (replaced) tiles
+        NativeArray<int2> newTilePositions = new(newTilesCount, Allocator.TempJob);
+        int index = 0;
+        Entities.WithAll<NewTileTag>().ForEach((in MapTileComponent mapTileComponent) =>
+        {
+            newTilePositions[index] = mapTileComponent.pos;
+            index++;
+        }).Run();
 
         var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
-        Unity.Mathematics.Random rnd = new((uint)Random.Range(1, 1000));
+        Unity.Mathematics.Random rnd = new((uint)UnityEngine.Random.Range(1, 1000));
 
+        // Iterate over all people. Make them homeless if their home is one of the deleted tiles
         Dependency = Entities.WithNone<HomelessTag>().ForEach((Entity entity, ref PersonComponent person) =>
         {
-            Entity habitatEntity = TileGridUtility.GetTile(person.homeTile);
-            if (!SystemAPI.HasComponent<Habitat>(habitatEntity))
+            int2 homeTilePos = person.homeTile;
+            if (newTilePositions.Contains(homeTilePos))
             {
                 person.homeTile = new(-1);
                 ecb.AddComponent<HomelessTag>(entity);
+
+                // Homeless people are collected at a special position
                 LocalTransform transform = SystemAPI.GetComponent<LocalTransform>(entity);
                 transform.Position = new(-1 + rnd.NextFloat(-0.5f, 0.5f), 0.5f, -1 + rnd.NextFloat(-0.5f, 0.5f));
                 ecb.SetComponent(entity, transform);
             }
-        }).WithoutBurst().Schedule(Dependency);
+        }).WithoutBurst().WithDisposeOnCompletion(newTilePositions).Schedule(Dependency);
     }
 }
