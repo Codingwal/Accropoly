@@ -8,7 +8,7 @@ using Unity.Transforms;
 [UpdateInGroup(typeof(CreationSystemGroup))]
 public partial class ImmigrationSystem : SystemBase
 {
-    private const float immigrationProbability = 0.3f; // 1 = 100%
+    private const float immigrationProbability = 0.1f; // 1 = 100%
     [BurstCompile]
     protected override void OnCreate()
     {
