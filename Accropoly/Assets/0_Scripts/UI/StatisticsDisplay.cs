@@ -18,6 +18,8 @@ public class StatisticsDisplay : MonoBehaviour
         string electricityConsumptionText = Format(info.maxElectricityConsumption);
         string electricityProductionText = Format(info.electricityProduction);
         electricityText.text = $"Electricity: {electricityConsumptionText}/{electricityProductionText}";
+
+        populationText.text = $"Population size: {Format(info.populationSize)}";
     }
     private string Format(float value)
     {
