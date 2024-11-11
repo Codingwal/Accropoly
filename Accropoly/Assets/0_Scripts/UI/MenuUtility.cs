@@ -67,5 +67,9 @@ public static class MenuUtility
     {
         Application.OpenURL(@"file://" + FileHandler.baseDir);
     }
+    public static void Quit()
+    {
+        Application.Quit();
+    }
     private static InputSystem InputSystem => World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<InputSystem>();
 }

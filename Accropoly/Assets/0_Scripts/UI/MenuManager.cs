@@ -21,6 +21,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private Button deleteMapButton;
     [SerializeField] private TMP_Dropdown mapsDropdown;
     [SerializeField] private Button showInExplorerButton;
+    [SerializeField] private Button quitButton;
 
 
     [Header("Pause menu")]
@@ -38,6 +39,7 @@ public class MenuManager : MonoBehaviour
         createTemplateButton.onClick.AddListener(OnCreateTemplate);
         deleteMapButton.onClick.AddListener(OnDeleteMap);
         showInExplorerButton.onClick.AddListener(OnShowInExplorer);
+        quitButton.onClick.AddListener(OnQuit);
 
         continueButton.onClick.AddListener(() => MenuUtility.ContinueGame());
         toMainMenuButton.onClick.AddListener(() =>
@@ -90,6 +92,10 @@ public class MenuManager : MonoBehaviour
     private void OnShowInExplorer()
     {
         MenuUtility.OpenExplorer();
+    }
+    private void OnQuit()
+    {
+        MenuUtility.Quit();
     }
     private void OnUIInput(UIInputData inputData)
     {
