@@ -14,6 +14,17 @@ public static class MenuUtility
     {
         return EntityManager.CreateEntityQuery(typeof(UIInfo)).GetSingleton<UIInfo>();
     }
+    public static GameInfo GetGameInfo()
+    {
+        try
+        {
+            return EntityManager.CreateEntityQuery(typeof(GameInfo)).GetSingleton<GameInfo>();
+        }
+        catch (InvalidOperationException)
+        {
+            return default;
+        }
+    }
     public static void CreateWorld(string worldName, string templateName)
     {
         SaveSystem.Instance.UpdateWorldName(worldName);

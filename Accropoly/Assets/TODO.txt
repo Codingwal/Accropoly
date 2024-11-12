@@ -1,5 +1,7 @@
 - get half of original price (?)
 - save gameinfo
+- prevent player from spawning buildings without money
+- taxes / rent
 
 - naming consistency:
     - decide: Homeless / HomelessTag -> for all tags & components
