@@ -6,6 +6,7 @@ using Unity.Entities.UniversalDelegates;
 public class StatisticsDisplay : MonoBehaviour
 {
     [SerializeField] private TMP_Text populationText;
+    [SerializeField] private TMP_Text happinessText;
     [SerializeField] private TMP_Text unemployedText;
     [SerializeField] private TMP_Text electricityText;
 
@@ -24,8 +25,12 @@ public class StatisticsDisplay : MonoBehaviour
 
         populationText.text = $"Population size: {Format(info.populationSize)}";
 
-        float unemploymentRate = info.unemployedCount / info.populationSize;
+        float averageHappiness = info.happinessSum / info.populationSize; // 0 - 100
+        happinessText.text = (info.populationSize == 0) ? $" Average happiness: -" : $"Average happiness: {math.round(averageHappiness)}%";
+
+        float unemploymentRate = info.unemployedCount / info.populationSize; // 0 - 1
         unemployedText.text = (info.populationSize == 0) ? $" Unemployment rate: -" : $"Unemployment rate: {math.round(unemploymentRate * 100)}%";
+
 
         string electricityConsumptionText = Format(info.maxElectricityConsumption);
         string electricityProductionText = Format(info.electricityProduction);
