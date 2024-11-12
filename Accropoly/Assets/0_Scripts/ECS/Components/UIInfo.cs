@@ -6,9 +6,9 @@ public struct UIInfo : IComponentData
     public float unemployedCount;
 
     public float electricityProduction;
-    public float maxElectricityConsumption;
-    public float actualElectricityConsumption;
+    public float maxElectricityConsumption; // The consumption if there was an infite supply of electricity
+    public float actualElectricityConsumption; // The actual consumption, never bigger than the production
 
     public float pollution;
-    public float pollutionPerElectricity;
+    public float electricityPollution; // The pollution caused by electricity producing tiles
 }
