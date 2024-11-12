@@ -59,6 +59,8 @@ public static class MenuUtility
     {
         Time.timeScale = 0;
         EntityManager.DestroyEntity(EntityManager.CreateEntityQuery(typeof(RunGameTag)));
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         InputSystem.DisableGameplayInputActions();
         pausingGame?.Invoke();
     }
