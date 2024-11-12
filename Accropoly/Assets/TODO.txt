@@ -1,4 +1,5 @@
 - get half of original price (?)
+- save gameinfo
 
 - naming consistency:
     - decide: Homeless / HomelessTag -> for all tags & components
