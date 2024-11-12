@@ -58,12 +58,12 @@ public partial class CheckTileExistsSystem : SystemBase
         JobHandle handle2 = Entities.WithNone<UnemployedTag>().ForEach((Entity entity, ref Worker worker) =>
         {
             int2 employerPos = worker.employer;
-            if (newTilesPositions.Contains(employerPos) || disabledTilesPositions.Contains(employerPos))
+            if (newTilesPositions.Contains(employerPos))
             {
                 worker.employer = new(-1);
                 ecb2.AddComponent<UnemployedTag>(entity);
             }
-        }).WithoutBurst().WithReadOnly(newTilesPositions).WithReadOnly(disabledTilesPositions).Schedule(inputDeps);
+        }).WithoutBurst().WithReadOnly(newTilesPositions).Schedule(inputDeps);
 
         // Dispose NativeArrays after all jobs that use them have been completed
         Dependency = newTilesPositions.Dispose(JobHandle.CombineDependencies(handle1, handle2));

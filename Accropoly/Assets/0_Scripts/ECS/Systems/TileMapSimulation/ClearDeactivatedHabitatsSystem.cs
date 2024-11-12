@@ -1,6 +1,6 @@
 using Unity.Entities;
 
-public partial class ClearDeactivatedSpaceTilesSystem : SystemBase
+public partial class ClearDeactivatedHabitatsSystem : SystemBase
 {
     protected override void OnUpdate()
     {
@@ -8,12 +8,6 @@ public partial class ClearDeactivatedSpaceTilesSystem : SystemBase
         Entities.WithDisabled<ActiveTileTag>().ForEach((Entity entity, ref Habitat habitat) =>
         {
             habitat.freeSpace = habitat.totalSpace;
-            ecb.AddComponent<HasSpaceTag>(entity);
-        }).Schedule();
-
-        Entities.WithDisabled<ActiveTileTag>().ForEach((Entity entity, ref Employer employer) =>
-        {
-            employer.freeSpace = employer.totalSpace;
             ecb.AddComponent<HasSpaceTag>(entity);
         }).Schedule();
     }
