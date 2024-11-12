@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using Unity.Mathematics;
+using Unity.Entities.UniversalDelegates;
 
 public class StatisticsDisplay : MonoBehaviour
 {
@@ -8,13 +9,18 @@ public class StatisticsDisplay : MonoBehaviour
     [SerializeField] private TMP_Text unemployedText;
     [SerializeField] private TMP_Text electricityText;
 
+    private UIInfo previousInfo;
     private void Start()
     {
         MenuUtility.InitUIInfo();
+        previousInfo = new UIInfo { populationSize = -1 }; // Causes update on first frame
     }
     private void Update()
     {
         UIInfo info = MenuUtility.GetUIInfo();
+
+        if (info.Equals(previousInfo)) return;
+        previousInfo = info;
 
         populationText.text = $"Population size: {Format(info.populationSize)}";
 
@@ -24,7 +30,6 @@ public class StatisticsDisplay : MonoBehaviour
         string electricityConsumptionText = Format(info.maxElectricityConsumption);
         string electricityProductionText = Format(info.electricityProduction);
         electricityText.text = $"Electricity: {electricityConsumptionText}/{electricityProductionText}";
-
     }
     private string Format(float value)
     {
