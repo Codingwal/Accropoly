@@ -6,6 +6,7 @@ using UnityEngine;
 public struct UIInfo : IComponentData
 {
     public float populationSize;
+    public float unemployedCount;
 
     public float electricityProduction;
     public float maxElectricityConsumption;

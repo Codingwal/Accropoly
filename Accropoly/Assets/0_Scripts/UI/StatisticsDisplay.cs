@@ -1,10 +1,11 @@
 using TMPro;
-using Unity.Entities;
 using UnityEngine;
+using Unity.Mathematics;
 
 public class StatisticsDisplay : MonoBehaviour
 {
     [SerializeField] private TMP_Text populationText;
+    [SerializeField] private TMP_Text unemployedText;
     [SerializeField] private TMP_Text electricityText;
 
     private void Start()
@@ -15,11 +16,15 @@ public class StatisticsDisplay : MonoBehaviour
     {
         UIInfo info = MenuUtility.GetUIInfo();
 
+        populationText.text = $"Population size: {Format(info.populationSize)}";
+
+        float unemploymentRate = info.unemployedCount / info.populationSize;
+        unemployedText.text = (info.populationSize == 0) ? $" Unemployment rate: -" : $"Unemployment rate: {math.round(unemploymentRate * 100)}%";
+
         string electricityConsumptionText = Format(info.maxElectricityConsumption);
         string electricityProductionText = Format(info.electricityProduction);
         electricityText.text = $"Electricity: {electricityConsumptionText}/{electricityProductionText}";
 
-        populationText.text = $"Population size: {Format(info.populationSize)}";
     }
     private string Format(float value)
     {
@@ -31,48 +36,4 @@ public class StatisticsDisplay : MonoBehaviour
             _ => $"{value}",
         };
     }
-    /*
-    private void Update()
-    {
-        float balance = TownManager.Instance.balance;
-        float population = TownManager.Instance.population.Count;
-        float energyConsumption = TownManager.Instance.EnergyConsumption;
-        float energyProduction = TownManager.Instance.EnergyProduction;
-        float averageHappiness = TownManager.Instance.AverageHappiness;
-
-        balanceText.text = balance switch
-        {
-            > 1000000000 => $"Guthaben: {Math.Round(balance / 1000000000, 2)}mrd",
-            > 1000000 => $"Guthaben: {Math.Round(balance / 1000000, 2)}mio",
-            > 1000 => $"Guthaben: {Math.Round(balance / 1000, 2)}k",
-            _ => $"Guthaben: {Math.Round(balance, 2)}",
-        };
-
-        populationText.text = population switch
-        {
-            > 1000000000 => $"Einwohner: {Math.Round(population / 1000000000, 2)}mrd",
-            > 1000000 => $"Einwohner: {Math.Round(population / 1000000, 2)}mio",
-            > 1000 => $"Einwohner: {Math.Round(population / 1000, 2)}k",
-            _ => $"Einwohner: {Math.Round(population, 2)}",
-        };
-
-        string energyConsumptionText = energyConsumption switch
-        {
-            > 1000000000 => $"{energyConsumption / 1000000000}mrd",
-            > 1000000 => $"{energyConsumption / 1000000}mio",
-            > 1000 => $"{energyConsumption / 1000}k",
-            _ => $"{energyConsumption}",
-        };
-        string energyProductionText = energyProduction switch
-        {
-            > 1000000000 => $"{energyProduction / 1000000000}mrd",
-            > 1000000 => $"{energyProduction / 1000000}mio",
-            > 1000 => $"{energyProduction / 1000}k",
-            _ => $"{energyProduction}",
-        };
-        electricityText.text = $"Energie: {energyProductionText}/{energyConsumptionText}";
-
-        averageHappinessText.text = $"Glücklichkeit: {Math.Round(averageHappiness, 1)}";
-    }
-    */
 }
