@@ -7,7 +7,8 @@ public partial class EmployementSystem : SystemBase
     private EntityQuery employersWithSpaceQuery;
     protected override void OnCreate()
     {
-        RequireForUpdate(GetEntityQuery(typeof(UnemployedTag)));
+        RequireForUpdate<RunGameTag>();
+        RequireForUpdate<UnemployedTag>();
         employersWithSpaceQuery = GetEntityQuery(typeof(Employer), typeof(HasSpaceTag), typeof(MapTileComponent));
         RequireForUpdate(employersWithSpaceQuery);
     }

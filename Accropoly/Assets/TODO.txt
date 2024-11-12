@@ -1,6 +1,5 @@
 - create happiness
 - create money system
-- add RequireForUpdate<RunGameTag>();
 
 - naming consistency:
     - decide: Homeless / HomelessTag -> for all tags & components

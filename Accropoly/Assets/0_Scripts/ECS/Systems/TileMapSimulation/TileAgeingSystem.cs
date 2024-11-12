@@ -5,13 +5,12 @@ public partial struct TileAgingSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
     {
+        state.RequireForUpdate<RunGameTag>();
         state.RequireForUpdate<AgingTile>();
         state.RequireForUpdate<TileAgeingConfig>();
     }
     public void OnUpdate(ref SystemState state)
     {
-        if (Time.timeScale == 0) return;
-
         TileAgeingConfig config = SystemAPI.GetSingleton<TileAgeingConfig>();
 
         new TileAgingJob()

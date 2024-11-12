@@ -46,7 +46,6 @@ public partial struct WorldDataSystem : ISystem
         worldData = SaveSystem.Instance.GetWorldData();
 
         CreateTag<LoadGameTag>();
-        CreateTag<RunGameTag>();
     }
     public static void SaveWorldData()
     {

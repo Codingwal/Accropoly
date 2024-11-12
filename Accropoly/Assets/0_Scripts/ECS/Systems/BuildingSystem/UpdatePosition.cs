@@ -10,11 +10,10 @@ public partial struct UpdatePosition : ISystem
     {
         state.RequireForUpdate<TileToPlace>();
         state.RequireForUpdate<BuildingSystemConfig>();
+        state.RequireForUpdate<RunGameTag>();
     }
     public void OnUpdate(ref SystemState state)
     {
-        if (Time.timeScale == 0) return; // Return if the game is paused
-
         var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
 
         Entity entity = SystemAPI.GetSingletonEntity<TileToPlace>();

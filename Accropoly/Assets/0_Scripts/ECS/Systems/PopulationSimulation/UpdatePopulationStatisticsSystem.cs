@@ -6,6 +6,8 @@ public partial class UpdatePopulationStatisticsSystem : SystemBase
     private EntityQuery unemployedQuery;
     protected override void OnCreate()
     {
+        RequireForUpdate<RunGameTag>();
+
         populationQuery = GetEntityQuery(typeof(PersonComponent));
         unemployedQuery = GetEntityQuery(typeof(UnemployedTag));
     }

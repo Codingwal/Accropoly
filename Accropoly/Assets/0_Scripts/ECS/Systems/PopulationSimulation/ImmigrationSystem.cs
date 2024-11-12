@@ -13,6 +13,7 @@ public partial class ImmigrationSystem : SystemBase
     protected override void OnCreate()
     {
         RequireForUpdate<PrefabEntity>();
+        RequireForUpdate<RunGameTag>();
     }
     [BurstCompile]
     protected override void OnUpdate()

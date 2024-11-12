@@ -58,12 +58,14 @@ public static class MenuUtility
     public static void PauseGame()
     {
         Time.timeScale = 0;
+        EntityManager.DestroyEntity(EntityManager.CreateEntityQuery(typeof(RunGameTag)));
         InputSystem.DisableGameplayInputActions();
         pausingGame?.Invoke();
     }
     public static void ContinueGame()
     {
         Time.timeScale = 1;
+        EntityManager.CreateSingleton<RunGameTag>();
         InputSystem.EnableGameplayInputActions();
         continuingGame?.Invoke();
     }

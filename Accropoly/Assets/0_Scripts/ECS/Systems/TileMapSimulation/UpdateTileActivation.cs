@@ -3,6 +3,10 @@ using Unity.Entities;
 public partial class UpdateTileActivation : SystemBase
 {
     private int frame;
+    protected override void OnCreate()
+    {
+        RequireForUpdate<RunGameTag>();
+    }
     protected override void OnUpdate()
     {
         frame++;

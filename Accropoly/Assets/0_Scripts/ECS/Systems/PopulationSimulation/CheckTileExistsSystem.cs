@@ -10,6 +10,8 @@ public partial class CheckTileExistsSystem : SystemBase
     private EntityQuery disabledTilesQuery;
     protected override void OnCreate()
     {
+        RequireForUpdate<RunGameTag>();
+
         newTilesQuery = GetEntityQuery(typeof(NewTileTag));
         disabledTilesQuery = GetEntityQuery(new EntityQueryDesc { Disabled = new ComponentType[] { typeof(ActiveTileTag) }, All = new ComponentType[] { typeof(MapTileComponent) } });
     }
