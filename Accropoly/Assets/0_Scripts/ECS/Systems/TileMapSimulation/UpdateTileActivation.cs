@@ -2,8 +2,12 @@ using Unity.Entities;
 
 public partial class UpdateTileActivation : SystemBase
 {
+    private int frame;
     protected override void OnUpdate()
     {
+        frame++;
+        if (frame % 50 != 0) return;
+
         var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
 
         Dependency = Entities.WithAll<MapTileComponent>().ForEach((Entity entity) =>

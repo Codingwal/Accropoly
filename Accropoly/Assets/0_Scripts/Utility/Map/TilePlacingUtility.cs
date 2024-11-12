@@ -27,7 +27,7 @@ public static class TilePlacingUtility
             _ => throw new($"Missing componentTypes for tileType {tileType}")
         };
         components.Add((new MapTileComponent { tileType = tileType, pos = pos, rotation = rotation }, true));
-        components.Add((new ActiveTileTag(), true));
+        components.Add((new ActiveTileTag(), false));
         components.Add((new NewTileTag(), true));
         return components;
     }

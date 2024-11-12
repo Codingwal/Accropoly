@@ -1,5 +1,4 @@
 using Unity.Entities;
-using UnityEngine;
 
 [UpdateInGroup(typeof(ComponentInitializationSystemGroup))]
 public partial class SpaceComponentsInitializationSystem : SystemBase
