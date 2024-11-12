@@ -3,7 +3,3 @@
 
 - naming consistency:
     - decide: Homeless / HomelessTag -> for all tags & components
-- delete RunGameTag on pausing (?)
-
-FUTURE:
-- change energy symbol color depending on renewability of the energy production
