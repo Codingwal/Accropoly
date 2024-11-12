@@ -1,4 +1,7 @@
-- create happiness
+- display average happiness
+
+
+
 - create money system
 
 - naming consistency:
