@@ -1,5 +1,3 @@
-
-
 - create money system
 
 - naming consistency:
