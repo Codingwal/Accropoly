@@ -7,7 +7,7 @@ public partial class PollutionSystem : SystemBase
     private uint frame;
     protected override void OnCreate()
     {
-        RequireForUpdate<Polluter>();
+        RequireForUpdate<RunGameTag>();
     }
     protected override void OnUpdate()
     {
