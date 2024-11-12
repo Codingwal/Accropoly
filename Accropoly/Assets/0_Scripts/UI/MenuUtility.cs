@@ -6,6 +6,14 @@ public static class MenuUtility
 {
     public static Action continuingGame;
     public static Action pausingGame;
+    public static void InitUIInfo()
+    {
+        EntityManager.CreateSingleton<UIInfo>();
+    }
+    public static UIInfo GetUIInfo()
+    {
+        return EntityManager.CreateEntityQuery(typeof(UIInfo)).GetSingleton<UIInfo>();
+    }
     public static void CreateWorld(string worldName, string templateName)
     {
         SaveSystem.Instance.UpdateWorldName(worldName);
@@ -50,12 +58,16 @@ public static class MenuUtility
     public static void PauseGame()
     {
         Time.timeScale = 0;
+        EntityManager.DestroyEntity(EntityManager.CreateEntityQuery(typeof(RunGameTag)));
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         InputSystem.DisableGameplayInputActions();
         pausingGame?.Invoke();
     }
     public static void ContinueGame()
     {
         Time.timeScale = 1;
+        EntityManager.CreateSingleton<RunGameTag>();
         InputSystem.EnableGameplayInputActions();
         continuingGame?.Invoke();
     }
@@ -71,5 +83,6 @@ public static class MenuUtility
     {
         Application.Quit();
     }
+    private static EntityManager EntityManager => World.DefaultGameObjectInjectionWorld.EntityManager;
     private static InputSystem InputSystem => World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<InputSystem>();
 }

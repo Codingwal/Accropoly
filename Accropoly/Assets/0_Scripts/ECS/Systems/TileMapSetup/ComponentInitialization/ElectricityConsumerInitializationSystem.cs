@@ -9,6 +9,7 @@ public partial class ElectricityConsumerInitializationSystem : SystemBase
         Entities.WithAll<NewTileTag, ElectricityConsumer>().ForEach((Entity entity) =>
         {
             ecb.AddComponent<HasElectricityTag>(entity);
+            ecb.SetComponentEnabled<HasElectricityTag>(entity, false);
         }).Schedule();
 
         if (SystemAPI.HasSingleton<LoadGameTag>())
@@ -16,6 +17,7 @@ public partial class ElectricityConsumerInitializationSystem : SystemBase
             Entities.WithAll<ElectricityConsumer>().ForEach((Entity entity) =>
             {
                 ecb.AddComponent<HasElectricityTag>(entity);
+                ecb.SetComponentEnabled<HasElectricityTag>(entity, false);
             }).Schedule();
         }
     }

@@ -2,6 +2,7 @@ using Unity.Entities;
 
 public partial class BuildingConnectionSystem : SystemBase
 {
+    private int frame;
     protected override void OnCreate()
     {
         RequireForUpdate<RunGameTag>();
@@ -9,6 +10,10 @@ public partial class BuildingConnectionSystem : SystemBase
     }
     protected override void OnUpdate()
     {
+        // Only run this function every 50 frames
+        frame++;
+        if (frame % 50 != 4) return;
+
         var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
         var buffer = SystemAPI.GetBuffer<EntityBufferElement>(SystemAPI.GetSingletonEntity<EntityGridHolder>());
 

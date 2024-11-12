@@ -20,8 +20,6 @@ public partial struct BuildingSystem : ISystem
     {
         var ecb = SystemAPI.GetSingleton<EndCreationECBSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
 
-        if (Time.timeScale == 0) return; // Return if the game is paused
-
         var localTransform = state.EntityManager.GetComponentData<LocalTransform>(entity);
         var tileToPlace = state.EntityManager.GetComponentData<TileToPlace>(entity);
 
