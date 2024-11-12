@@ -8,6 +8,7 @@ using PlacementAction = PlacementInputData.Action;
 public partial struct BuildingSystem : ISystem
 {
     private EntityQuery placementInputDataQuery;
+    private EntityQuery tilePricesQuery;
     private static Entity entity;
     public void OnCreate(ref SystemState state)
     {
@@ -15,6 +16,7 @@ public partial struct BuildingSystem : ISystem
         state.RequireForUpdate<TileToPlace>(); // Update only if there is a PlacementProcess running (The process is started by the menu)
 
         placementInputDataQuery = state.GetEntityQuery(typeof(PlacementInputData));
+        tilePricesQuery = state.GetEntityQuery(typeof(TilePrices));
     }
     public void OnUpdate(ref SystemState state)
     {
@@ -56,6 +58,13 @@ public partial struct BuildingSystem : ISystem
                 ecb.SetComponent(oldTile, transform);
 
                 MaterialsAndMeshesHolder.UpdateMeshAndMaterial(oldTile, newTileType); // Update the mesh according to the newTileType 
+
+                // Update balance
+                var tilePrices = tilePricesQuery.GetSingleton<TilePrices>();
+                foreach (RefRW<GameInfo> info in SystemAPI.Query<RefRW<GameInfo>>())
+                {
+                    info.ValueRW.balance -= tilePrices.prices[newTileType];
+                }
             }
         }
     }

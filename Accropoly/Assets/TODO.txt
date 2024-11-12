@@ -1,4 +1,4 @@
-- create money system
+- get half of original price (?)
 
 - naming consistency:
     - decide: Homeless / HomelessTag -> for all tags & components

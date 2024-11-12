@@ -44,6 +44,10 @@ public partial struct WorldDataSystem : ISystem
         Debug.Log("Loading WorldData");
 
         worldData = SaveSystem.Instance.GetWorldData();
+        World.DefaultGameObjectInjectionWorld.EntityManager.CreateSingleton(new GameInfo
+        {
+            balance = worldData.balance
+        });
 
         CreateTag<LoadGameTag>();
     }
