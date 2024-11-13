@@ -95,11 +95,11 @@ public partial class Serializer
                 bw.Write(componentData.consumption);
                 bw.Write(componentData.disableIfElectroless);
             }
-            else if (type == typeof(BuildingConnector))
+            else if (type == typeof(ConnectingTile))
             {
-                bw.Write((int)TileComponents.BuildingConnector);
+                bw.Write((int)TileComponents.ConnectingTile);
 
-                BuildingConnector componentData = (BuildingConnector)component;
+                ConnectingTile componentData = (ConnectingTile)component;
                 bw.Write(componentData.Serialize());
             }
             else if (type == typeof(Polluter))

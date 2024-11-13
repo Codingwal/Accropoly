@@ -1,5 +1,3 @@
-- remove different street tiles (-> reduce to 1)
-
 - ConnectingTile / Create BuildingConnector tag, rename BuildingConnector to ConnectingTile and use for both
 - adapt UpdateMeshesAndMaterials 
 - update system

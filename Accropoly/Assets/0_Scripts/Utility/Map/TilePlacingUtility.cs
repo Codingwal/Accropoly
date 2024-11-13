@@ -20,7 +20,7 @@ public static class TilePlacingUtility
                                       (new Polluter { pollution = 3 }, true), (new IsConnectedTag(), false) },
             TileType.SolarPanel => new() { (new ElectricityProducer { production = 10 }, true), (new Polluter { pollution = 1 }, true),
                                            (new Employer{totalSpace = 1}, true) },
-            TileType.Street => new() { (new BuildingConnector(Directions.East, Directions.West), true) },
+            TileType.Street => new() { (new ConnectingTile(Directions.East, Directions.West), true) },
             _ => throw new($"Missing componentTypes for tileType {tileType}")
         };
         components.Add((new MapTileComponent { tileType = tileType, pos = pos, rotation = rotation }, true));
@@ -70,7 +70,7 @@ public static class TilePlacingUtility
             else if (type == typeof(AgingTile)) SetComponentData<AgingTile>(component, enabled);
             else if (type == typeof(ElectricityProducer)) SetComponentData<ElectricityProducer>(component, enabled);
             else if (type == typeof(ElectricityConsumer)) SetComponentData<ElectricityConsumer>(component, enabled);
-            else if (type == typeof(BuildingConnector)) SetComponentData<BuildingConnector>(component, enabled);
+            else if (type == typeof(ConnectingTile)) SetComponentData<ConnectingTile>(component, enabled);
             else if (type == typeof(Polluter)) SetComponentData<Polluter>(component, enabled);
             else if (type == typeof(Habitat)) SetComponentData<Habitat>(component, enabled);
             else if (type == typeof(Employer)) SetComponentData<Employer>(component, enabled);

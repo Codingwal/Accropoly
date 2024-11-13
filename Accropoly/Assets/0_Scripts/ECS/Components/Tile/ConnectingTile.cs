@@ -1,10 +1,10 @@
 using Unity.Entities;
 using UnityEngine;
 
-public unsafe struct BuildingConnector : IComponentData
+public unsafe struct ConnectingTile : IComponentData
 {
     private fixed bool connectableSides[4];
-    public BuildingConnector(params Direction[] connectableDirections)
+    public ConnectingTile(params Direction[] connectableDirections)
     {
         foreach (var direction in connectableDirections)
         {
@@ -29,17 +29,17 @@ public unsafe struct BuildingConnector : IComponentData
     {
         Debug.LogWarning($"{connectableSides[0]}, {connectableSides[1]}, {connectableSides[2]}, {connectableSides[3]}");
     }
-    public static BuildingConnector Deserialize(int serializedData)
+    public static ConnectingTile Deserialize(int serializedData)
     {
         Debug.Assert(sizeof(bool) * 4 == sizeof(int)); // Assert that bool[4] and int are of the same size
 
-        BuildingConnector buildingConnector = new();
+        ConnectingTile data = new();
 
         // Convert int to bool[4], this type conversion is only possible with pointers
-        int* ptr = (int*)buildingConnector.connectableSides;
+        int* ptr = (int*)data.connectableSides;
         *ptr = serializedData;
 
-        return buildingConnector;
+        return data;
     }
 }
 public struct IsConnectedTag : IComponentData, IEnableableComponent { }
