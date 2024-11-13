@@ -73,7 +73,8 @@ public partial struct BuildingSystem : ISystem
 
                     foreach (Direction direction in Direction.GetDirections())
                     {
-                        Entity neighbour = TileGridUtility.GetTile(pos + direction.DirectionVec);
+                        Entity neighbour = TileGridUtility.TryGetTile(pos + direction.DirectionVec, out bool entityExists);
+                        if (!entityExists) continue;
                         if (SystemAPI.HasComponent<ConnectingTile>(neighbour) && SystemAPI.GetComponent<MapTileComponent>(neighbour).tileType == newTileType)
                         {
                             connectingTile.AddDirection(direction);

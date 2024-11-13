@@ -1,7 +1,7 @@
-- errors at edges
 - handle tile deletion
 - improve MaterialsAndMeshesHolder performance using ecb
 - simplify BuildingConnectionSystem
+- change TryGetTile signature (return bool)
 
 - don't save ConnectingTile (can be calculated) (really worth the effort?)
 
