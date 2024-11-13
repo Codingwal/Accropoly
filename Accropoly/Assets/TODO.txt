@@ -1,4 +1,8 @@
 - don't save ConnectingTile (can be calculated) (really worth the effort?)
+    - extract ConnectingTile code
+
+- camera transform isn't actually saved & loaded (reproduce: save world, restart scene, load world)
+- bookmarks
 
 FUTURE:
 - get half of original price (?)

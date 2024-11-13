@@ -53,7 +53,7 @@ public partial class CheckTileExistsSystem : SystemBase
                 transform.Position = new(-1 + rnd.NextFloat(-0.5f, 0.5f), 0.5f, -1 + rnd.NextFloat(-0.5f, 0.5f));
                 ecb1.SetComponent(entity, transform);
             }
-        }).WithoutBurst().WithReadOnly(newTilesPositions).WithReadOnly(disabledTilesPositions).Schedule(inputDeps);
+        }).WithReadOnly(newTilesPositions).WithReadOnly(disabledTilesPositions).Schedule(inputDeps);
 
         // Make them unemployed if their employer is deactivated / has been replaced
         var ecb2 = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
@@ -65,7 +65,7 @@ public partial class CheckTileExistsSystem : SystemBase
                 worker.employer = new(-1);
                 ecb2.AddComponent<UnemployedTag>(entity);
             }
-        }).WithoutBurst().WithReadOnly(newTilesPositions).Schedule(inputDeps);
+        }).WithReadOnly(newTilesPositions).Schedule(inputDeps);
 
         // Dispose NativeArrays after all jobs that use them have been completed
         Dependency = newTilesPositions.Dispose(JobHandle.CombineDependencies(handle1, handle2));
