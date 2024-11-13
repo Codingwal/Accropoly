@@ -66,11 +66,28 @@ public partial struct BuildingSystem : ISystem
                 ecb.SetComponent(oldTile, transform);
 
                 if (!SystemAPI.HasComponent<ConnectingTile>(oldTile))
+                {
                     MaterialsAndMeshesHolder.UpdateMeshAndMaterial(oldTile, newTileType);
+
+                    // Update connecting tile neighbours (there might have been a connection before)
+                    foreach (Direction direction in Direction.GetDirections())
+                    {
+                        Entity neighbour = TileGridUtility.TryGetTile(pos + direction.DirectionVec, out bool entityExists);
+                        if (!entityExists) continue;
+                        if (SystemAPI.HasComponent<ConnectingTile>(neighbour))
+                        {
+                            var neighbourConnectingTile = SystemAPI.GetComponent<ConnectingTile>(neighbour);
+                            neighbourConnectingTile.RemoveDirection(direction.Flip());
+                            ecb.SetComponent(neighbour, neighbourConnectingTile);
+                            MaterialsAndMeshesHolder.UpdateAppearence(neighbour, SystemAPI.GetComponent<MapTileComponent>(neighbour), neighbourConnectingTile, ecb, true);
+                        }
+                    }
+                }
                 else
                 {
                     ConnectingTile connectingTile = new();
 
+                    // Connect with neighbouring connecting tiles of the same tileType and also update them
                     foreach (Direction direction in Direction.GetDirections())
                     {
                         Entity neighbour = TileGridUtility.TryGetTile(pos + direction.DirectionVec, out bool entityExists);
