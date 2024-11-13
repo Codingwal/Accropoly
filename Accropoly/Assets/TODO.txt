@@ -1,10 +1,18 @@
-- Create BuildingConnector tag
 - adapt UpdateMeshesAndMaterials 
 - update system
 
+
 FUTURE:
-
 - get half of original price (?)
-
 - naming consistency:
     - decide: Homeless / HomelessTag -> for all tags & components
+
+
+12
+13
+14
+
+23
+24
+
+34
