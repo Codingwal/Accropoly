@@ -47,6 +47,14 @@ public partial struct BuildingSystem : ISystem
                 Entity oldTile = TileGridUtility.GetTile(pos);
                 TileType newTileType = tileToPlace.tileType;
 
+                // If the tile can be bought, buy it, else, abort
+                float price = SystemAPI.ManagedAPI.GetSingleton<TilePrices>().prices[newTileType];
+                GameInfo info = SystemAPI.GetSingleton<GameInfo>();
+                if (price > info.balance) // If the tile can't be bought, abort
+                    return;
+                info.balance -= price; // Buy the tile
+                SystemAPI.SetSingleton(info); // Save the modified GameInfo
+
                 // Set the archetype to the archetype of the newTileType
                 var components = TilePlacingUtility.GetComponents(newTileType, pos, tileToPlace.rotation);
 
@@ -58,13 +66,6 @@ public partial struct BuildingSystem : ISystem
                 ecb.SetComponent(oldTile, transform);
 
                 MaterialsAndMeshesHolder.UpdateMeshAndMaterial(oldTile, newTileType); // Update the mesh according to the newTileType 
-
-                // Update balance
-                var tilePrices = tilePricesQuery.GetSingleton<TilePrices>();
-                foreach (RefRW<GameInfo> info in SystemAPI.Query<RefRW<GameInfo>>())
-                {
-                    info.ValueRW.balance -= tilePrices.prices[newTileType];
-                }
             }
         }
     }
