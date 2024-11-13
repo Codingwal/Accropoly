@@ -690,9 +690,9 @@ MonoBehaviour:
     - key: 3
       value:
         pairs:
-        - material: {fileID: 2100000, guid: f650585bc8845bc4cb01d088d279fef6, type: 2}
+        - material: {fileID: 2100000, guid: 7d76ead16a17574499d0faf9ba91e2bc, type: 2}
           mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
-        - material: {fileID: 2100000, guid: f650585bc8845bc4cb01d088d279fef6, type: 2}
+        - material: {fileID: 2100000, guid: 032d6e272bb9cbb4aab64d16c756ba83, type: 2}
           mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
         - material: {fileID: 2100000, guid: f650585bc8845bc4cb01d088d279fef6, type: 2}
           mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
