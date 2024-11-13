@@ -1,4 +1,4 @@
-- wrong rotation
+
 
 - errors at edges
 - loading doesn't work

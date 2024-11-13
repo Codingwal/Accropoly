@@ -19,43 +19,70 @@ public unsafe struct ConnectingTile : IComponentData
     {
         connectableSides[(uint)direction] = false;
     }
-    public bool CanConnect(Direction direction, Direction rotation)
+    public readonly bool CanConnect(Direction direction, Direction rotation)
     {
         return connectableSides[(uint)direction.Rotate(-(int)(uint)rotation)];
     }
     ///  <summary>This doesn't contain the full component information! This is only used to select a MeshMaterialPair</summary>
-    public int GetIndex()
+    public readonly int GetIndex()
     {
-        int firstTrueIndex = NextTrueIndex(0);
-        if (firstTrueIndex == -1) return 0; // No connections
-
-        int secondTrueIndex = NextTrueIndex(firstTrueIndex + 1);
-        if (secondTrueIndex == -1) return 1; // 1 connection
-
-        int thirdTrueIndex = NextTrueIndex(secondTrueIndex + 1);
-        if (thirdTrueIndex == -1) // 2 connections
-            return (secondTrueIndex % 2 == firstTrueIndex) ? 2 : 3; // Check if they're adjacent (3 == adjacent)
-
-        int fourthTrueIndex = NextTrueIndex(thirdTrueIndex + 1);
-        if (fourthTrueIndex == -1) return 4; // 3 connections
-        return 5; // 4 connections
+        Direction rotation = GetRotation();
+        ConnectingTile endrotatedRotation = Rotate(-(int)(uint)rotation);
+        if (endrotatedRotation.CountConnectableSides() == 0) return 0;
+        else if (endrotatedRotation.CountConnectableSides() == 1) return 1;
+        else if (endrotatedRotation.CountConnectableSides() == 2) return endrotatedRotation.connectableSides[1] ? 3 : 2;
+        else if (endrotatedRotation.CountConnectableSides() == 3) return 4;
+        else return 5;
     }
-    public Direction GetRotation()
+    public readonly Direction GetRotation()
     {
-        int index = NextTrueIndex(0);
-        if (index == -1) return Directions.North;
-        else return (Direction)(uint)index;
-    }
-    private int NextTrueIndex(int start)
-    {
-        for (int i = start; i < 4; i++)
-            if (connectableSides[i])
+        int connectableSidesCount = CountConnectableSides();
+
+        if (connectableSidesCount == 0 || connectableSidesCount == 4) return Directions.North;
+
+        uint bestRotation = 100;
+        int bestValue = int.MaxValue;
+        for (uint i = 0; i < 4; i++)
+        {
+            ConnectingTile tmp = Rotate(-(int)i);
+            int trueIndex1 = tmp.NextTrueIndex(0);
+            int trueIndex2 = tmp.NextTrueIndex(trueIndex1 + 1);
+            int trueIndex3 = tmp.NextTrueIndex(trueIndex2 + 1);
+
+            int value = trueIndex1 + trueIndex2 + trueIndex3;
+            if (value < bestValue)
             {
-                return i;
+                bestValue = value;
+                bestRotation = i;
             }
+        }
+        return (Direction)bestRotation;
+    }
+    private readonly int NextTrueIndex(int startInclusive)
+    {
+        for (int i = startInclusive; i < 4; i++)
+            if (connectableSides[i])
+                return i;
         return -1;
     }
-    public int Serialize()
+    private readonly ConnectingTile Rotate(int rotation)
+    {
+        ConnectingTile result = new();
+        for (uint i = 0; i < 4; i++)
+        {
+            uint index = (uint)Direction.Rotate((Direction)i, rotation);
+            result.connectableSides[index] = connectableSides[i];
+        }
+        return result;
+    }
+    private readonly int CountConnectableSides()
+    {
+        int count = 0;
+        for (int i = 0; i < 4; i++)
+            if (connectableSides[i]) count++;
+        return count;
+    }
+    public readonly int Serialize()
     {
         Debug.Assert(sizeof(bool) * 4 == sizeof(int)); // Assert that bool[4] and int are of the same size
 
@@ -65,7 +92,7 @@ public unsafe struct ConnectingTile : IComponentData
             return *(int*)ptr;
         }
     }
-    public override string ToString()
+    public readonly override string ToString()
     {
         return $"{connectableSides[0]}, {connectableSides[1]}, {connectableSides[2]}, {connectableSides[3]}";
     }
