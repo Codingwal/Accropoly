@@ -12,4 +12,6 @@ public struct UIInfo : IComponentData
 
     public float pollution;
     public float electricityPollution; // The pollution caused by electricity producing tiles
+
+    public float lastTaxIncome; // The sum of all taxes from the last taxing frame
 }

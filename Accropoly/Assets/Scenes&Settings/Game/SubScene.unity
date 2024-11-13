@@ -296,6 +296,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1407001050}
   - component: {fileID: 1407001051}
+  - component: {fileID: 1407001052}
   m_Layer: 0
   m_Name: PopulationSimulationAuthoring
   m_TagString: Untagged
@@ -336,6 +337,19 @@ MonoBehaviour:
   noElectricity: -10
   employed: 20
   unemployed: -10
+--- !u!114 &1407001052
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1407001049}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fd36387a8464824c82d9c6a8a91bcd3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  taxPerHappiness: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

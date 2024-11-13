@@ -1,5 +1,5 @@
 - get half of original price (?)
-- taxes / rent
+- NewDayTag
 
 - naming consistency:
     - decide: Homeless / HomelessTag -> for all tags & components
