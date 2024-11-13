@@ -23,22 +23,23 @@ public static class TileGridUtility
     /// <remarks>Can't be used in jobs!</remarks>
     public static Entity GetTile(int2 pos)
     {
-        Entity entity = TryGetTile(pos, out bool entityExists);
-        if (!entityExists) throw new($"Invalid position {pos}");
-        return entity;
+        if (TryGetTile(pos, out Entity entity))
+            return entity;
+        else
+            throw new($"Invalid position {pos}");
     }
     /// <remarks>Can't be used in jobs!</remarks>
-    public static Entity TryGetTile(int2 pos, out bool entityExists)
+    public static bool TryGetTile(int2 pos, out Entity entity)
     {
         var buffer = GetEntityGrid();
         int index = GetIndex(pos, buffer.Length);
         if (index >= buffer.Length || index < 0)
         {
-            entityExists = false;
-            return new();
+            entity = default;
+            return false;
         }
-        entityExists = true;
-        return buffer[index];
+        entity = buffer[index];
+        return true;
     }
     public static Entity GetTile(int2 pos, DynamicBuffer<EntityBufferElement> buffer)
     {

@@ -72,8 +72,7 @@ public partial struct BuildingSystem : ISystem
                     // Update connecting tile neighbours (there might have been a connection before)
                     foreach (Direction direction in Direction.GetDirections())
                     {
-                        Entity neighbour = TileGridUtility.TryGetTile(pos + direction.DirectionVec, out bool entityExists);
-                        if (!entityExists) continue;
+                        if (!TileGridUtility.TryGetTile(pos + direction.DirectionVec, out Entity neighbour)) continue;
                         if (SystemAPI.HasComponent<ConnectingTile>(neighbour))
                         {
                             var neighbourConnectingTile = SystemAPI.GetComponent<ConnectingTile>(neighbour);
@@ -90,8 +89,7 @@ public partial struct BuildingSystem : ISystem
                     // Connect with neighbouring connecting tiles of the same tileType and also update them
                     foreach (Direction direction in Direction.GetDirections())
                     {
-                        Entity neighbour = TileGridUtility.TryGetTile(pos + direction.DirectionVec, out bool entityExists);
-                        if (!entityExists) continue;
+                        if (!TileGridUtility.TryGetTile(pos + direction.DirectionVec, out Entity neighbour)) continue;
                         if (SystemAPI.HasComponent<ConnectingTile>(neighbour) && SystemAPI.GetComponent<MapTileComponent>(neighbour).tileType == newTileType)
                         {
                             connectingTile.AddDirection(direction);
