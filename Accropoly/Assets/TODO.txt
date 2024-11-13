@@ -1,5 +1,6 @@
-- adapt UpdateMeshesAndMaterials 
-- update system
+- adapt BuildingSystem
+- improve MaterialsAndMeshesHolder performance using ecb
+- updateSystem
 
 
 FUTURE:

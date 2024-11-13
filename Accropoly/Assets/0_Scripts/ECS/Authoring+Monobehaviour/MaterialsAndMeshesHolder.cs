@@ -42,7 +42,13 @@ public class MaterialsAndMeshesHolder : MonoBehaviour
             Debug.Assert(pair.mesh != null, $"Mesh for tileType {tileType} is null");
             return pair;
         }
-        if (instance.connectingTiles.Contains(tileType)) Debug.LogError($"TileType {tileType} is a connectingTile, not a simpleTile");
+        else if (instance.connectingTiles.TryGetValue(tileType, out var set))
+        {
+            pair = set.pairs[0];
+            Debug.Assert(pair.material != null, $"Material for tileType {tileType} is null");
+            Debug.Assert(pair.mesh != null, $"Mesh for tileType {tileType} is null");
+            return pair;
+        }
         else Debug.LogError($"Material & Mesh for tileType {tileType} is missing");
         return default;
     }
