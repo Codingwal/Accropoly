@@ -40,6 +40,7 @@ public unsafe struct ConnectingTile : IComponentData
 
         if (connectableSidesCount == 0 || connectableSidesCount == 4) return Directions.North;
 
+        // Find the combination with the lowest sum. This basically finds the completely left shifted variant
         uint bestRotation = 100;
         int bestValue = int.MaxValue;
         for (uint i = 0; i < 4; i++)
@@ -56,6 +57,7 @@ public unsafe struct ConnectingTile : IComponentData
                 bestRotation = i;
             }
         }
+        
         return (Direction)bestRotation;
     }
     private readonly int NextTrueIndex(int startInclusive)

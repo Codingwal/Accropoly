@@ -46,8 +46,11 @@ public partial struct TileSpawningSystem : ISystem
                 ecb.SetComponent(entity, LocalTransform.FromPositionRotation(2 * new float3(x, 0, y), rotation));
 
                 // Set mesh using MapTileComponent.tileType
-                MaterialMeshPair pair = MaterialsAndMeshesHolder.GetMaterialAndMesh(mapTileComponent.tileType);
-                ecb.SetSharedComponentManaged(entity, new RenderMeshArray(new Material[] { pair.material }, new Mesh[] { pair.mesh }));
+                if (!SystemAPI.HasComponent<ConnectingTile>(entity))
+                    MaterialsAndMeshesHolder.UpdateMeshAndMaterial(entity, mapTileComponent.tileType);
+                else
+                    MaterialsAndMeshesHolder.UpdateAppearence(entity, mapTileComponent.tileType, SystemAPI.GetComponent<ConnectingTile>(entity), ecb);
+
 
                 // Store the entity in a buffer for future access
                 TileGridUtility.GetEntityGrid().Add(entity);
