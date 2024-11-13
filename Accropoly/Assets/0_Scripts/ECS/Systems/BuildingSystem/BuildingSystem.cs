@@ -82,11 +82,11 @@ public partial struct BuildingSystem : ISystem
                             var neighbourConnectingTile = SystemAPI.GetComponent<ConnectingTile>(neighbour);
                             neighbourConnectingTile.AddDirection(direction.Flip());
                             ecb.SetComponent(neighbour, neighbourConnectingTile);
-                            MaterialsAndMeshesHolder.UpdateAppearence(neighbour, newTileType, neighbourConnectingTile, ecb);
+                            MaterialsAndMeshesHolder.UpdateAppearence(neighbour, SystemAPI.GetComponent<MapTileComponent>(neighbour), neighbourConnectingTile, ecb, true);
                         }
                     }
                     ecb.SetComponent(oldTile, connectingTile);
-                    MaterialsAndMeshesHolder.UpdateAppearence(oldTile, newTileType, connectingTile, ecb);
+                    MaterialsAndMeshesHolder.UpdateAppearence(oldTile, new() { pos = pos, tileType = newTileType }, connectingTile, ecb, true);
                 }
             }
         }

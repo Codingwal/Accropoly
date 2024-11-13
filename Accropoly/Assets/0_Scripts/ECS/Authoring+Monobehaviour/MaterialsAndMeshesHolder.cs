@@ -60,28 +60,29 @@ public class MaterialsAndMeshesHolder : MonoBehaviour
     {
         UpdateMeshAndMaterial(entity, GetMaterialAndMesh(newTileType));
     }
-    public static void UpdateAppearence(Entity entity, TileType tileType, ConnectingTile connectingTile, EntityCommandBuffer ecb)
+    public static void UpdateAppearence(Entity entity, MapTileComponent mapTileComponent, ConnectingTile connectingTile, EntityCommandBuffer ecb, bool updateRotation)
     {
         if (instance == null) Debug.LogError("Instance == null");
+
+        TileType tileType = mapTileComponent.tileType;
 
         if (instance.connectingTiles.TryGetValue(tileType, out var set))
         {
             int index = connectingTile.GetIndex();
             var pair = set.pairs[index];
-            Direction rotation = connectingTile.GetRotation();
 
             // Update visuals
             Debug.Assert(pair.material != null, $"Material for tileType {tileType} is null");
             Debug.Assert(pair.mesh != null, $"Mesh for tileType {tileType} is null");
             UpdateMeshAndMaterial(entity, pair);
 
+            Direction rotation = connectingTile.GetRotation();
             EntityManager em = World.DefaultGameObjectInjectionWorld.EntityManager;
 
+            if (!updateRotation) return;
             // Update rotation in custom component
             // THIS ONLY WORKS IF MAPTILECOMPONENT ONLY HAS THE FOLLOWING PROPERTIES: TILETYPE, POS, ROTATION
-            var mapTileComponent = em.GetComponentData<MapTileComponent>(entity);
             mapTileComponent.rotation = rotation;
-            mapTileComponent.tileType = tileType;
             ecb.SetComponent(entity, mapTileComponent);
 
             // Update actual rotation

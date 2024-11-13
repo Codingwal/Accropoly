@@ -1,6 +1,3 @@
-- loading doesn't work
-
-
 - errors at edges
 - handle tile deletion
 - improve MaterialsAndMeshesHolder performance using ecb

@@ -35,21 +35,26 @@ public partial struct TileSpawningSystem : ISystem
                 // Add all serialized components with their value to the entity
                 TilePlacingUtility.UpdateEntity(entity, tiles[x, y].components, ecb);
 
-                // Get MapTileComponent
+                // Get MapTileComponent and try to get ConnectingTile
                 MapTileComponent mapTileComponent = new();
+                ConnectingTile? connectingTile = null;
                 foreach (var (component, _) in tiles[x, y].components)
+                {
                     if (component.GetType() == typeof(MapTileComponent))
                         mapTileComponent = (MapTileComponent)component;
+                    else if (component.GetType() == typeof(ConnectingTile))
+                        connectingTile = (ConnectingTile)component;
+                }
 
                 // Set LocalTransform of the new tile using the MapTileComponent data
                 quaternion rotation = quaternion.EulerXYZ(0, math.radians((uint)mapTileComponent.rotation * 90), 0);
                 ecb.SetComponent(entity, LocalTransform.FromPositionRotation(2 * new float3(x, 0, y), rotation));
 
                 // Set mesh using MapTileComponent.tileType
-                if (!SystemAPI.HasComponent<ConnectingTile>(entity))
+                if (!connectingTile.HasValue)
                     MaterialsAndMeshesHolder.UpdateMeshAndMaterial(entity, mapTileComponent.tileType);
                 else
-                    MaterialsAndMeshesHolder.UpdateAppearence(entity, mapTileComponent.tileType, SystemAPI.GetComponent<ConnectingTile>(entity), ecb);
+                    MaterialsAndMeshesHolder.UpdateAppearence(entity, mapTileComponent, connectingTile.Value, ecb, false);
 
 
                 // Store the entity in a buffer for future access
