@@ -9,6 +9,7 @@ public class StatisticsDisplay : MonoBehaviour
     [SerializeField] private TMP_Text happinessText;
     [SerializeField] private TMP_Text unemployedText;
     [SerializeField] private TMP_Text electricityText;
+    [SerializeField] private TMP_Text lastTaxIncomeText;
 
     [SerializeField] private TMP_Text timeText;
 
@@ -34,6 +35,8 @@ public class StatisticsDisplay : MonoBehaviour
         string electricityConsumptionText = Format(uiInfo.maxElectricityConsumption);
         string electricityProductionText = Format(uiInfo.electricityProduction);
         electricityText.text = $"Electricity: {electricityConsumptionText}/{electricityProductionText}";
+
+        lastTaxIncomeText.text = $"Last tax income: {uiInfo.lastTaxIncome}";
 
         timeText.text = $"Day {gameInfo.time.day}, {math.floor(gameInfo.time.seconds)}s";
     }
