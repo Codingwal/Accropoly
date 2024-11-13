@@ -65,7 +65,28 @@ public partial struct BuildingSystem : ISystem
                 transform.Rotation = quaternion.EulerXYZ(0, tileToPlace.rotation.ToRadians(), 0);
                 ecb.SetComponent(oldTile, transform);
 
-                MaterialsAndMeshesHolder.UpdateMeshAndMaterial(oldTile, newTileType); // Update the mesh according to the newTileType 
+                if (!SystemAPI.HasComponent<ConnectingTile>(oldTile))
+                    MaterialsAndMeshesHolder.UpdateMeshAndMaterial(oldTile, newTileType);
+                else
+                {
+                    ConnectingTile connectingTile = new();
+
+                    foreach (Direction direction in Direction.GetDirections())
+                    {
+                        Entity neighbour = TileGridUtility.GetTile(pos + direction.DirectionVec);
+                        if (SystemAPI.HasComponent<ConnectingTile>(neighbour) && SystemAPI.GetComponent<MapTileComponent>(neighbour).tileType == newTileType)
+                        {
+                            connectingTile.AddDirection(direction);
+
+                            // Update neighbour
+                            var neighbourConnectingTile = SystemAPI.GetComponent<ConnectingTile>(neighbour);
+                            neighbourConnectingTile.AddDirection(direction.Flip());
+                            ecb.SetComponent(neighbour, neighbourConnectingTile);
+                            MaterialsAndMeshesHolder.UpdateAppearence(neighbour, newTileType, neighbourConnectingTile);
+                        }
+                    }
+                    MaterialsAndMeshesHolder.UpdateAppearence(oldTile, newTileType, connectingTile);
+                }
             }
         }
     }
