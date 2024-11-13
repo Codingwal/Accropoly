@@ -549,7 +549,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &301206978
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6309,6 +6309,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainMenu: {fileID: 4473015999300077155}
   pauseMenu: {fileID: 478922668}
+  statisticsDisplay: {fileID: 301206977}
   startGameButton: {fileID: 5847237730594157916}
   createMapButton: {fileID: 154871669300532841}
   mapNameField: {fileID: 205332550937950957}

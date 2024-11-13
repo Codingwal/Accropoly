@@ -9,6 +9,7 @@ public class MenuManager : MonoBehaviour
     [Header("Menus")]
     [SerializeField] private GameObject mainMenu;
     [SerializeField] private GameObject pauseMenu;
+    [SerializeField] private GameObject statisticsDisplay;
 
 
     [Header("Main menu")]
@@ -48,8 +49,8 @@ public class MenuManager : MonoBehaviour
             mainMenu.SetActive(true);
             pauseMenu.SetActive(false);
         });
-        MenuUtility.continuingGame += () => pauseMenu.SetActive(false);
-        MenuUtility.pausingGame += () => pauseMenu.SetActive(true);
+        MenuUtility.continuingGame += () => { pauseMenu.SetActive(false); statisticsDisplay.SetActive(true); };
+        MenuUtility.pausingGame += () => { pauseMenu.SetActive(true); statisticsDisplay.SetActive(false); };
 
         mainMenu.SetActive(true);
         pauseMenu.SetActive(false);
@@ -99,26 +100,31 @@ public class MenuManager : MonoBehaviour
     }
     private void OnUIInput(UIInputData inputData)
     {
-        if (inputData.action == UIAction.Escape)
-            if (pauseMenu.activeSelf) // If the game is paused
-                MenuUtility.ContinueGame();
-            else // If the game is running
-                MenuUtility.PauseGame();
-        else if (inputData.action == UIAction.Clear)
-            MenuUtility.PlaceTile(TileType.Plains);
-        else if (inputData.action == UIAction.Hotkey)
+        switch (inputData.action)
         {
-            MenuUtility.PlaceTile(inputData.hotkey switch
-            {
-                1 => TileType.Sapling,
-                2 => TileType.House,
-                3 => TileType.SolarPanel,
-                4 => TileType.Street,
-                5 => TileType.StreetCorner,
-                6 => TileType.StreetTJunction,
-                7 => TileType.StreetJunction,
-                _ => throw new()
-            });
+            case UIAction.Escape:
+                if (pauseMenu.activeSelf) // If the game is paused       
+                    MenuUtility.ContinueGame();
+                else // If the game is running         
+                    MenuUtility.PauseGame();
+
+                break;
+            case UIAction.Clear:
+                MenuUtility.PlaceTile(TileType.Plains);
+                break;
+            case UIAction.Hotkey:
+                MenuUtility.PlaceTile(inputData.hotkey switch
+                {
+                    1 => TileType.Sapling,
+                    2 => TileType.House,
+                    3 => TileType.SolarPanel,
+                    4 => TileType.Street,
+                    5 => TileType.StreetCorner,
+                    6 => TileType.StreetTJunction,
+                    7 => TileType.StreetJunction,
+                    _ => throw new()
+                });
+                break;
         }
     }
     private void ReloadUI()
