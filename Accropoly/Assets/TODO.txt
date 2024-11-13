@@ -1,8 +1,7 @@
-adapt BuildingSystem
+- wrong rotation
+
 - errors at edges
 - loading doesn't work
-- wrong rotations
-- neighbour doesn't get updated
 
 - improve MaterialsAndMeshesHolder performance using ecb
 - handle tile deletion
@@ -13,13 +12,3 @@ FUTURE:
 - get half of original price (?)
 - naming consistency:
     - decide: Homeless / HomelessTag -> for all tags & components
-
-
-12
-13
-14
-
-23
-24
-
-34

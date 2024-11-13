@@ -85,6 +85,7 @@ public partial struct BuildingSystem : ISystem
                             MaterialsAndMeshesHolder.UpdateAppearence(neighbour, newTileType, neighbourConnectingTile, ecb);
                         }
                     }
+                    ecb.SetComponent(oldTile, connectingTile);
                     MaterialsAndMeshesHolder.UpdateAppearence(oldTile, newTileType, connectingTile, ecb);
                 }
             }

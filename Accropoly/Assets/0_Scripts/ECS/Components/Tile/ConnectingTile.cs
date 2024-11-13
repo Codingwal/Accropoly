@@ -65,9 +65,9 @@ public unsafe struct ConnectingTile : IComponentData
             return *(int*)ptr;
         }
     }
-    public void Print()
+    public override string ToString()
     {
-        Debug.LogWarning($"{connectableSides[0]}, {connectableSides[1]}, {connectableSides[2]}, {connectableSides[3]}");
+        return $"{connectableSides[0]}, {connectableSides[1]}, {connectableSides[2]}, {connectableSides[3]}";
     }
     public static ConnectingTile Deserialize(int serializedData)
     {

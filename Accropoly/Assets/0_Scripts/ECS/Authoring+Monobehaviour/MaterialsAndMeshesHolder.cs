@@ -89,7 +89,7 @@ public class MaterialsAndMeshesHolder : MonoBehaviour
             localTransform.Rotation = quaternion.EulerXYZ(0, rotation.ToRadians(), 0);
             ecb.SetComponent(entity, localTransform);
 
-            Debug.Log($"{mapTileComponent.pos}: r={rotation.direction}, i={index}");
+            Debug.Log($"{mapTileComponent.pos}: r={rotation.direction}, i={index} ({connectingTile})");
         }
         else if (instance.simpleTiles.Contains(tileType)) Debug.LogError($"TileType {tileType} is a simpleTile, not a connectingTile");
         else Debug.LogError($"Material & Mesh for tileType {tileType} is missing");
