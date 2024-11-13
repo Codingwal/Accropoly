@@ -11,6 +11,7 @@ public struct EntityGridHolder : IComponentData { }
 public struct NewTileTag : IComponentData { }
 public struct ActiveTileTag : IComponentData, IEnableableComponent { }
 public struct HasSpaceTag : IComponentData { }
+public struct BuildingConnectorTag : IComponentData { }
 
 // Population
 public struct NewPersonTag : IComponentData { }

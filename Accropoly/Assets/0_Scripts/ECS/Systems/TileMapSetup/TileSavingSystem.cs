@@ -70,6 +70,7 @@ public partial struct TileSavingSystem : ISystem
 
                 else if (componentType == typeof(IsConnectedTag)) AddTagComponent<IsConnectedTag>();
                 else if (componentType == typeof(ActiveTileTag)) AddTagComponent<ActiveTileTag>();
+                else if (componentType == typeof(BuildingConnectorTag)) AddTagComponent<BuildingConnectorTag>();
 
                 else Debug.LogWarning($"Component of type {componentType} will not be serialized but also isn't present in typesToIgnore");
 

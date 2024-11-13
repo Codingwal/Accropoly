@@ -109,6 +109,7 @@ public partial class Deserializer
                 TileComponents.IsConnectedTag => new IsConnectedTag(),
                 TileComponents.ActiveTileTag => new ActiveTileTag(),
                 TileComponents.NewTileTag => new NewTileTag(),
+                TileComponents.BuildingConnectorTag => new BuildingConnectorTag(),
 
                 _ => throw new($"Cannot deserialize component of type {type}")
             };

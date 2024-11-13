@@ -1,4 +1,4 @@
-- ConnectingTile / Create BuildingConnector tag, rename BuildingConnector to ConnectingTile and use for both
+- Create BuildingConnector tag
 - adapt UpdateMeshesAndMaterials 
 - update system
 

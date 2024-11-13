@@ -37,4 +37,5 @@ public enum TileComponents : int
     ActiveTileTag = 100,
     NewTileTag = 101,
     IsConnectedTag = 102,
+    BuildingConnectorTag = 103,
 }

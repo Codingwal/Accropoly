@@ -128,6 +128,7 @@ public partial class Serializer
             else if (type == typeof(IsConnectedTag)) bw.Write((int)TileComponents.IsConnectedTag);
             else if (type == typeof(ActiveTileTag)) bw.Write((int)TileComponents.ActiveTileTag);
             else if (type == typeof(NewTileTag)) bw.Write((int)TileComponents.NewTileTag);
+            else if (type == typeof(BuildingConnectorTag)) bw.Write((int)TileComponents.BuildingConnectorTag);
             else throw new($"Cannot serialize component of type {type}");
 
         }
