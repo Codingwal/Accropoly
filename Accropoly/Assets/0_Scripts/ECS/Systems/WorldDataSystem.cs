@@ -10,12 +10,14 @@ public partial struct WorldDataSystem : ISystem
     private EntityQuery saveGameTagQuery;
     private EntityQuery tileMapQuery;
     private EntityQuery populationQuery;
+    private EntityQuery gameInfoQuery;
     public void OnCreate(ref SystemState state)
     {
         loadGameTagQuery = state.GetEntityQuery(typeof(LoadGameTag));
         saveGameTagQuery = state.GetEntityQuery(typeof(SaveGameTag));
         tileMapQuery = state.GetEntityQuery(typeof(MapTileComponent));
         populationQuery = state.GetEntityQuery(typeof(PersonComponent));
+        gameInfoQuery = state.GetEntityQuery(typeof(GameInfo));
         state.RequireAnyForUpdate(loadGameTagQuery, saveGameTagQuery);
     }
     public void OnUpdate(ref SystemState state)
@@ -23,6 +25,11 @@ public partial struct WorldDataSystem : ISystem
         // If the game is being saved
         if (saveGameTagQuery.CalculateEntityCount() != 0)
         {
+            // Save GameInfo
+            GameInfo gameInfo = SystemAPI.GetSingleton<GameInfo>();
+            worldData.balance = gameInfo.balance;
+            state.EntityManager.DestroyEntity(gameInfoQuery);
+
             // Save the worldData
             Debug.Log("Saving WorldData");
             SaveSystem.Instance.SaveWorldData(worldData);

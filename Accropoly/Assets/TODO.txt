@@ -1,5 +1,4 @@
 - get half of original price (?)
-- save gameinfo
 - taxes / rent
 
 - naming consistency:
