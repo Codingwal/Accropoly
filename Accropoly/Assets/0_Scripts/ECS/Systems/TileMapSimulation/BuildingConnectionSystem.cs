@@ -25,7 +25,7 @@ public partial class BuildingConnectionSystem : SystemBase
                 Entity neighbour = TileGridUtility.TryGetTile(mapTileComponent.pos + direction.DirectionVec, buffer, out bool neighbourExists);
 
                 if (!neighbourExists) continue;
-                if (!SystemAPI.HasComponent<ConnectingTile>(neighbour)) continue;
+                if (!SystemAPI.HasComponent<BuildingConnectorTag>(neighbour)) continue;
 
                 var buildingConnector = SystemAPI.GetComponent<ConnectingTile>(neighbour);
                 Direction neighbourRotation = SystemAPI.GetComponent<MapTileComponent>(neighbour).rotation;
