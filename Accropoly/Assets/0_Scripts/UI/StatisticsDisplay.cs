@@ -35,7 +35,7 @@ public class StatisticsDisplay : MonoBehaviour
         string electricityProductionText = Format(uiInfo.electricityProduction);
         electricityText.text = $"Electricity: {electricityConsumptionText}/{electricityProductionText}";
 
-        timeText.text = $"Day {gameInfo.time.day}, {math.round(gameInfo.time.seconds)}s";
+        timeText.text = $"Day {gameInfo.time.day}, {math.floor(gameInfo.time.seconds)}s";
     }
     private string Format(float value)
     {
