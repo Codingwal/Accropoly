@@ -5,7 +5,7 @@ public partial class TaxSystem : SystemBase
 {
     protected override void OnCreate()
     {
-        RequireForUpdate<RunGameTag>();
+        RequireForUpdate<NewDayTag>();
         RequireForUpdate<TaxesConfig>();
     }
     protected override void OnUpdate()

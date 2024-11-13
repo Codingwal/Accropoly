@@ -4,6 +4,7 @@ using Unity.Entities;
 public struct RunGameTag : IComponentData { }
 public struct SaveGameTag : IComponentData { }
 public struct LoadGameTag : IComponentData { }
+public struct NewDayTag : IComponentData { }
 public struct EntityGridHolder : IComponentData { }
 
 // Tiles
