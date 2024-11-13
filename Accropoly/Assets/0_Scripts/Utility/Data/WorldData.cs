@@ -5,7 +5,7 @@ using Unity.Mathematics;
 public struct WorldData
 {
     // Time
-    public float playTime;
+    public WorldTime time;
 
     // Camera system
     public float2 cameraSystemPos;
@@ -23,13 +23,13 @@ public struct WorldData
 
     public WorldData(MapData map)
     {
-        playTime = 0;
+        time = new();
 
         cameraSystemPos = new();
         cameraSystemRotation = quaternion.identity;
         cameraDistance = 30;
 
-        balance = 10000;
+        balance = 5000;
 
         population = new();
 
