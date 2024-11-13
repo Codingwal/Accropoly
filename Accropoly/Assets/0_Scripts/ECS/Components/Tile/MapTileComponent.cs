@@ -22,18 +22,10 @@ public enum TileType
 
     // Streets
     Street = 3,
-    StreetCorner = 4,
-    StreetTJunction = 5,
-    StreetJunction = 6,
 
     // Houses
-    House = 7,
-    Skyscraper = 8,
+    House = 4,
 
     // Energy production
-    SolarPanel = 9,
-    CoalPowerPlant = 10,
-
-    // Workplace
-    OfficeBuilding = 11
+    SolarPanel = 5,
 }

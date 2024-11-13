@@ -21,9 +21,6 @@ public static class TilePlacingUtility
             TileType.SolarPanel => new() { (new ElectricityProducer { production = 10 }, true), (new Polluter { pollution = 1 }, true),
                                            (new Employer{totalSpace = 1}, true) },
             TileType.Street => new() { (new BuildingConnector(Directions.East, Directions.West), true) },
-            TileType.StreetCorner => new() { (new BuildingConnector(Directions.East, Directions.South), true) },
-            TileType.StreetTJunction => new() { (new BuildingConnector(Directions.East), true) },
-            TileType.StreetJunction => new() { },
             _ => throw new($"Missing componentTypes for tileType {tileType}")
         };
         components.Add((new MapTileComponent { tileType = tileType, pos = pos, rotation = rotation }, true));

@@ -119,9 +119,6 @@ public class MenuManager : MonoBehaviour
                     2 => TileType.House,
                     3 => TileType.SolarPanel,
                     4 => TileType.Street,
-                    5 => TileType.StreetCorner,
-                    6 => TileType.StreetTJunction,
-                    7 => TileType.StreetJunction,
                     _ => throw new()
                 });
                 break;
