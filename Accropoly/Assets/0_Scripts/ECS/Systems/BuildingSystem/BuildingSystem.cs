@@ -8,6 +8,7 @@ using PlacementAction = PlacementInputData.Action;
 public partial struct BuildingSystem : ISystem
 {
     private EntityQuery placementInputDataQuery;
+    private EntityQuery tilePricesQuery;
     private static Entity entity;
     public void OnCreate(ref SystemState state)
     {
@@ -15,6 +16,7 @@ public partial struct BuildingSystem : ISystem
         state.RequireForUpdate<TileToPlace>(); // Update only if there is a PlacementProcess running (The process is started by the menu)
 
         placementInputDataQuery = state.GetEntityQuery(typeof(PlacementInputData));
+        tilePricesQuery = state.GetEntityQuery(typeof(TilePrices));
     }
     public void OnUpdate(ref SystemState state)
     {
@@ -44,6 +46,14 @@ public partial struct BuildingSystem : ISystem
                 int2 pos = (int2)localTransform.Position.xz / 2;
                 Entity oldTile = TileGridUtility.GetTile(pos);
                 TileType newTileType = tileToPlace.tileType;
+
+                // If the tile can be bought, buy it, else, abort
+                float price = SystemAPI.ManagedAPI.GetSingleton<TilePrices>().prices[newTileType];
+                GameInfo info = SystemAPI.GetSingleton<GameInfo>();
+                if (price > info.balance) // If the tile can't be bought, abort
+                    return;
+                info.balance -= price; // Buy the tile
+                SystemAPI.SetSingleton(info); // Save the modified GameInfo
 
                 // Set the archetype to the archetype of the newTileType
                 var components = TilePlacingUtility.GetComponents(newTileType, pos, tileToPlace.rotation);

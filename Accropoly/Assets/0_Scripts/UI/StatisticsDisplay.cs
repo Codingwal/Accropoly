@@ -1,40 +1,44 @@
 using TMPro;
 using UnityEngine;
 using Unity.Mathematics;
-using Unity.Entities.UniversalDelegates;
 
 public class StatisticsDisplay : MonoBehaviour
 {
+    [SerializeField] private TMP_Text balanceText;
     [SerializeField] private TMP_Text populationText;
     [SerializeField] private TMP_Text happinessText;
     [SerializeField] private TMP_Text unemployedText;
     [SerializeField] private TMP_Text electricityText;
+    [SerializeField] private TMP_Text lastTaxIncomeText;
 
-    private UIInfo previousInfo;
+    [SerializeField] private TMP_Text timeText;
+
     private void Start()
     {
         MenuUtility.InitUIInfo();
-        previousInfo = new UIInfo { populationSize = -1 }; // Causes update on first frame
     }
     private void Update()
     {
-        UIInfo info = MenuUtility.GetUIInfo();
+        UIInfo uiInfo = MenuUtility.GetUIInfo();
+        GameInfo gameInfo = MenuUtility.GetGameInfo();
 
-        if (info.Equals(previousInfo)) return;
-        previousInfo = info;
+        balanceText.text = $"Balance: {Format(gameInfo.balance)}";
 
-        populationText.text = $"Population size: {Format(info.populationSize)}";
+        populationText.text = $"Population size: {Format(uiInfo.populationSize)}";
 
-        float averageHappiness = info.happinessSum / info.populationSize; // 0 - 100
-        happinessText.text = (info.populationSize == 0) ? $" Average happiness: -" : $"Average happiness: {math.round(averageHappiness)}%";
+        float averageHappiness = uiInfo.happinessSum / uiInfo.populationSize; // 0 - 100
+        happinessText.text = (uiInfo.populationSize == 0) ? $" Average happiness: -" : $"Average happiness: {math.round(averageHappiness)}%";
 
-        float unemploymentRate = info.unemployedCount / info.populationSize; // 0 - 1
-        unemployedText.text = (info.populationSize == 0) ? $" Unemployment rate: -" : $"Unemployment rate: {math.round(unemploymentRate * 100)}%";
+        float unemploymentRate = uiInfo.unemployedCount / uiInfo.populationSize; // 0 - 1
+        unemployedText.text = (uiInfo.populationSize == 0) ? $" Unemployment rate: -" : $"Unemployment rate: {math.round(unemploymentRate * 100)}%";
 
-
-        string electricityConsumptionText = Format(info.maxElectricityConsumption);
-        string electricityProductionText = Format(info.electricityProduction);
+        string electricityConsumptionText = Format(uiInfo.maxElectricityConsumption);
+        string electricityProductionText = Format(uiInfo.electricityProduction);
         electricityText.text = $"Electricity: {electricityConsumptionText}/{electricityProductionText}";
+
+        lastTaxIncomeText.text = $"Last tax income: {uiInfo.lastTaxIncome}";
+
+        timeText.text = $"Day {gameInfo.time.day}, {math.floor(gameInfo.time.seconds)}s";
     }
     private string Format(float value)
     {

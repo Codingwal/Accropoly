@@ -12,7 +12,18 @@ public static class MenuUtility
     }
     public static UIInfo GetUIInfo()
     {
-        return EntityManager.CreateEntityQuery(typeof(UIInfo)).GetSingleton<UIInfo>();
+        return GetSingleton<UIInfo>();
+    }
+    public static GameInfo GetGameInfo()
+    {
+        try
+        {
+            return GetSingleton<GameInfo>();
+        }
+        catch (InvalidOperationException)
+        {
+            return default;
+        }
     }
     public static void CreateWorld(string worldName, string templateName)
     {
@@ -82,6 +93,10 @@ public static class MenuUtility
     public static void Quit()
     {
         Application.Quit();
+    }
+    private static T GetSingleton<T>() where T : unmanaged, IComponentData
+    {
+        return EntityManager.CreateEntityQuery(typeof(T)).GetSingleton<T>();
     }
     private static EntityManager EntityManager => World.DefaultGameObjectInjectionWorld.EntityManager;
     private static InputSystem InputSystem => World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<InputSystem>();

@@ -41,7 +41,7 @@ public static class MapTemplates
             {
                 for (int y = 0; y < tiles.GetLength(1); y++)
                 {
-                    tiles[x, y].components = TilePlacingUtility.GetComponents(TileType.Sapling, new(x, y), Directions.North);
+                    tiles[x, y].components = TilePlacingUtility.GetComponents(TileType.Plains, new(x, y), Directions.North);
                 }
             }
             return tiles;
