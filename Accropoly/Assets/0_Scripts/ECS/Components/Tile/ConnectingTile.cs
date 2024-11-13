@@ -8,16 +8,22 @@ public unsafe struct ConnectingTile : IComponentData
     {
         foreach (var direction in connectableDirections)
         {
-            connectableSides[(uint)direction] = true;
+            AddDirection(direction);
         }
+    }
+    public void AddDirection(Direction direction)
+    {
+        connectableSides[(uint)direction] = true;
+    }
+    public void RemoveDirection(Direction direction)
+    {
+        connectableSides[(uint)direction] = false;
     }
     public bool CanConnect(Direction direction, Direction rotation)
     {
         return connectableSides[(uint)direction.Rotate(-(int)(uint)rotation)];
     }
-    /// <summary>
-    ///  This doesn't contain the full component information! This is only used to select a MeshMaterialPair
-    /// </summary>
+    ///  <summary>This doesn't contain the full component information! This is only used to select a MeshMaterialPair</summary>
     public int GetIndex()
     {
         int firstTrueIndex = NextTrueIndex(0);
