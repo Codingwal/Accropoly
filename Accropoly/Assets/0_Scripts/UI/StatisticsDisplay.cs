@@ -10,6 +10,8 @@ public class StatisticsDisplay : MonoBehaviour
     [SerializeField] private TMP_Text unemployedText;
     [SerializeField] private TMP_Text electricityText;
 
+    [SerializeField] private TMP_Text timeText;
+
     private void Start()
     {
         MenuUtility.InitUIInfo();
@@ -29,10 +31,11 @@ public class StatisticsDisplay : MonoBehaviour
         float unemploymentRate = uiInfo.unemployedCount / uiInfo.populationSize; // 0 - 1
         unemployedText.text = (uiInfo.populationSize == 0) ? $" Unemployment rate: -" : $"Unemployment rate: {math.round(unemploymentRate * 100)}%";
 
-
         string electricityConsumptionText = Format(uiInfo.maxElectricityConsumption);
         string electricityProductionText = Format(uiInfo.electricityProduction);
         electricityText.text = $"Electricity: {electricityConsumptionText}/{electricityProductionText}";
+
+        timeText.text = $"Day {gameInfo.time.day}, {math.round(gameInfo.time.seconds)}s";
     }
     private string Format(float value)
     {
