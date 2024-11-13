@@ -1,17 +1,21 @@
 using System;
-using UnityEngine;
 
 public partial class Serializer
 {
     public void Serialize(WorldData data)
     {
-        bw.Write(data.playTime);
+        Serialize(data.time);
         Serialize(data.cameraSystemPos);
         Serialize(data.cameraSystemRotation);
         bw.Write(data.cameraDistance);
         bw.Write(data.balance);
         Serialize(data.population);
         Serialize(data.map);
+    }
+    public void Serialize(WorldTime data)
+    {
+        bw.Write(data.day);
+        bw.Write(data.seconds);
     }
     public void Serialize(MapData data)
     {

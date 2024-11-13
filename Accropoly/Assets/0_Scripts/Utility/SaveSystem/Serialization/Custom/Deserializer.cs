@@ -4,13 +4,19 @@ public partial class Deserializer
 {
     public WorldData Deserialize(WorldData data)
     {
-        data.playTime = br.ReadSingle();
+        data.time = Deserialize(new WorldTime());
         data.cameraSystemPos = Deserialize(data.cameraSystemPos);
         data.cameraSystemRotation = Deserialize(data.cameraSystemRotation);
         data.cameraDistance = br.ReadSingle();
         data.balance = br.ReadSingle();
         data.population = Deserialize(data.population);
         data.map = Deserialize(data.map);
+        return data;
+    }
+    public WorldTime Deserialize(WorldTime data)
+    {
+        data.day = br.ReadInt32();
+        data.seconds = br.ReadSingle();
         return data;
     }
     public Person Deserialize(Person data)

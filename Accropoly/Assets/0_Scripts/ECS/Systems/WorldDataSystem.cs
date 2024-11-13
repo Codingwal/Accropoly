@@ -27,6 +27,7 @@ public partial struct WorldDataSystem : ISystem
             // Save GameInfo
             GameInfo gameInfo = SystemAPI.GetSingleton<GameInfo>();
             worldData.balance = gameInfo.balance;
+            worldData.time = gameInfo.time;
             state.EntityManager.DestroyEntity(gameInfoQuery);
 
             // Save the worldData
@@ -52,7 +53,8 @@ public partial struct WorldDataSystem : ISystem
         worldData = SaveSystem.Instance.GetWorldData();
         World.DefaultGameObjectInjectionWorld.EntityManager.CreateSingleton(new GameInfo
         {
-            balance = worldData.balance
+            balance = worldData.balance,
+            time = worldData.time,
         });
 
         CreateTag<LoadGameTag>();
