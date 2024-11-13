@@ -1,7 +1,13 @@
-- adapt BuildingSystem
-- improve MaterialsAndMeshesHolder performance using ecb
-- updateSystem
+adapt BuildingSystem
+- errors at edges
+- loading doesn't work
+- wrong rotations
+- neighbour doesn't get updated
 
+- improve MaterialsAndMeshesHolder performance using ecb
+- handle tile deletion
+
+- simplify BuildingConnectionSystem
 
 FUTURE:
 - get half of original price (?)

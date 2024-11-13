@@ -60,7 +60,7 @@ public class MaterialsAndMeshesHolder : MonoBehaviour
     {
         UpdateMeshAndMaterial(entity, GetMaterialAndMesh(newTileType));
     }
-    public static void UpdateAppearence(Entity entity, TileType tileType, ConnectingTile connectingTile)
+    public static void UpdateAppearence(Entity entity, TileType tileType, ConnectingTile connectingTile, EntityCommandBuffer ecb)
     {
         if (instance == null) Debug.LogError("Instance == null");
 
@@ -75,17 +75,21 @@ public class MaterialsAndMeshesHolder : MonoBehaviour
             Debug.Assert(pair.mesh != null, $"Mesh for tileType {tileType} is null");
             UpdateMeshAndMaterial(entity, pair);
 
-            EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+            EntityManager em = World.DefaultGameObjectInjectionWorld.EntityManager;
 
             // Update rotation in custom component
-            var mapTileComponent = entityManager.GetComponentData<MapTileComponent>(entity);
+            // THIS ONLY WORKS IF MAPTILECOMPONENT ONLY HAS THE FOLLOWING PROPERTIES: TILETYPE, POS, ROTATION
+            var mapTileComponent = em.GetComponentData<MapTileComponent>(entity);
             mapTileComponent.rotation = rotation;
-            entityManager.SetComponentData(entity, mapTileComponent);
+            mapTileComponent.tileType = tileType;
+            ecb.SetComponent(entity, mapTileComponent);
 
             // Update actual rotation
-            var localTransform = entityManager.GetComponentData<LocalTransform>(entity);
+            var localTransform = em.GetComponentData<LocalTransform>(entity);
             localTransform.Rotation = quaternion.EulerXYZ(0, rotation.ToRadians(), 0);
-            entityManager.SetComponentData(entity, localTransform);
+            ecb.SetComponent(entity, localTransform);
+
+            Debug.Log($"{mapTileComponent.pos}: r={rotation.direction}, i={index}");
         }
         else if (instance.simpleTiles.Contains(tileType)) Debug.LogError($"TileType {tileType} is a simpleTile, not a connectingTile");
         else Debug.LogError($"Material & Mesh for tileType {tileType} is missing");
