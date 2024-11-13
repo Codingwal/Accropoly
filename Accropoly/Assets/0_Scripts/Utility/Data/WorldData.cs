@@ -29,7 +29,7 @@ public struct WorldData
         cameraSystemRotation = quaternion.identity;
         cameraDistance = 30;
 
-        balance = 500;
+        balance = 5000;
 
         population = new();
 
