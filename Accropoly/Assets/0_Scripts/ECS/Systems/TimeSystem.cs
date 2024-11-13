@@ -24,6 +24,7 @@ public partial struct TimeSystem : ISystem
         if (gameInfo.time.seconds > config.secondsPerDay)
         {
             gameInfo.time.seconds -= config.secondsPerDay;
+            gameInfo.time.day++;
             ecb.CreateEntity(state.EntityManager.CreateArchetype(typeof(NewDayTag))); // Create NewDayTag singleton
         }
 
