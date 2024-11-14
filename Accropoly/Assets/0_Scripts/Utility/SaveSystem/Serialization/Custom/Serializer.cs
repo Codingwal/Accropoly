@@ -98,6 +98,8 @@ public partial class Serializer
             else if (type == typeof(ConnectingTile))
             {
                 bw.Write((int)TileComponents.ConnectingTile);
+                ConnectingTile componentData = (ConnectingTile)component;
+                bw.Write((int)componentData.group);
             }
             else if (type == typeof(Polluter))
             {
