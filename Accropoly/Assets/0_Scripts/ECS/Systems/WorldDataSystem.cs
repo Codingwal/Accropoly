@@ -74,7 +74,6 @@ public partial struct WorldDataSystem : ISystem
     }
     public static void LoadWorldData()
     {
-        Debug.Log("!");
         loadGame = true;
     }
     public static void SaveWorldData()

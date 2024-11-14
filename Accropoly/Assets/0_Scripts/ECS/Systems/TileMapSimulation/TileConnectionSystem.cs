@@ -59,18 +59,15 @@ public partial class TileConnectionSystem : SystemBase
             ecb.SetComponent(entity, mapTileComponent);
         }).WithoutBurst().Schedule();
 
-        Debug.Log("1");
         if (SystemAPI.HasSingleton<LoadGameTag>())
         {
-            Debug.Log("!");
             // ConnectingTile can't be passed as a parameter because SystemAPI.GetComponent & SystemAPI.HasComponent are used
             Entities.WithAll<ConnectingTile>().ForEach((Entity entity, ref MapTileComponent mapTileComponent, ref LocalTransform transform) =>
             {
-                Debug.Log("!!!");
                 ConnectingTile connectingTile = SystemAPI.GetComponent<ConnectingTile>(entity);
                 foreach (Direction direction in Direction.GetDirections())
                 {
-                    if (!TileGridUtility.TryGetTile(mapTileComponent.pos + direction.DirectionVec, out Entity neighbour)) continue;
+                    if (!TileGridUtility.TryGetTile(mapTileComponent.pos + direction.DirectionVec, buffer, out Entity neighbour)) continue;
                     if (SystemAPI.HasComponent<ConnectingTile>(neighbour))
                     {
                         var neighbourConnectingTile = SystemAPI.GetComponent<ConnectingTile>(neighbour);
