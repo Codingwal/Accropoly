@@ -15,10 +15,11 @@ public struct MapTileComponent : IComponentData
 // Explicit values for compatability with other versions (new TileTypes just get a higher value)
 public enum TileType
 {
-    // Naturally generated
+    // Natural
     Plains = 0,
     Sapling = 1,
     Forest = 2,
+    Water = 6,
 
     // Streets
     Street = 3,
