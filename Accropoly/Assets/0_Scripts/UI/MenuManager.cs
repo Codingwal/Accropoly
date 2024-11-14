@@ -120,6 +120,7 @@ public class MenuManager : MonoBehaviour
                     3 => TileType.SolarPanel,
                     4 => TileType.Street,
                     5 => TileType.Water,
+                    6 => TileType.Hut,
                     _ => throw new()
                 });
                 break;

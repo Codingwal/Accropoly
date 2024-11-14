@@ -685,6 +685,10 @@ MonoBehaviour:
       value:
         material: {fileID: 2100000, guid: e064d54b67228d043ae598404b205470, type: 2}
         mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
+    - key: 7
+      value:
+        material: {fileID: 2100000, guid: 2f15dd1d9711b1b42961e91c6c0fdc68, type: 2}
+        mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
   connectingTiles:
     dictionary:
     - key: 3

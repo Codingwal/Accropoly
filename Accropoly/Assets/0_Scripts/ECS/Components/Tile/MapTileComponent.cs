@@ -24,8 +24,9 @@ public enum TileType
     // Streets
     Street = 3,
 
-    // Houses
+    // Habitats
     House = 4,
+    Hut = 7,
 
     // Energy production
     SolarPanel = 5,

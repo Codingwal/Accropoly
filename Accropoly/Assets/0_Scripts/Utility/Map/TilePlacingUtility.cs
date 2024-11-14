@@ -22,6 +22,7 @@ public static class TilePlacingUtility
                                            (new Employer{totalSpace = 1}, true) },
             TileType.Street => new() { (new ConnectingTile(ConnectingTileGroup.Street), true), (new BuildingConnectorTag(), true) },
             TileType.Water => new() { (new ConnectingTile(ConnectingTileGroup.Water), true) },
+            TileType.Hut => new() { (new Habitat { totalSpace = rnd.Next(1, 3) }, true) },
             _ => throw new($"Missing componentTypes for tileType {tileType}")
         };
         components.Add((new MapTileComponent { tileType = tileType, pos = pos, rotation = rotation }, true));

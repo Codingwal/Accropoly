@@ -33,8 +33,11 @@ public partial class HappinessSystem : SystemBase
                 else
                 {
                     Entity habitatEntity = TileGridUtility.GetTile(homeTile, buffer);
-                    bool hasElectricity = hasElectricityTagLookup.IsComponentEnabled(habitatEntity);
-                    personComponent.happiness += hasElectricity ? config.hasElectricity : config.noElectricity;
+                    if (hasElectricityTagLookup.HasComponent(habitatEntity))
+                    {
+                        bool hasElectricity = hasElectricityTagLookup.IsComponentEnabled(habitatEntity);
+                        personComponent.happiness += hasElectricity ? config.hasElectricity : config.noElectricity;
+                    }
                 }
             }
 
