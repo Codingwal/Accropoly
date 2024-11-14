@@ -84,31 +84,9 @@ public unsafe struct ConnectingTile : IComponentData
             if (connectableSides[i]) count++;
         return count;
     }
-    public readonly int Serialize()
-    {
-        Debug.Assert(sizeof(bool) * 4 == sizeof(int)); // Assert that bool[4] and int are of the same size
-
-        // Convert bool[4] to int, this type conversion is only possible with pointers
-        fixed (bool* ptr = connectableSides)
-        {
-            return *(int*)ptr;
-        }
-    }
     public readonly override string ToString()
     {
         return $"{connectableSides[0]}, {connectableSides[1]}, {connectableSides[2]}, {connectableSides[3]}";
-    }
-    public static ConnectingTile Deserialize(int serializedData)
-    {
-        Debug.Assert(sizeof(bool) * 4 == sizeof(int)); // Assert that bool[4] and int are of the same size
-
-        ConnectingTile data = new();
-
-        // Convert int to bool[4], this type conversion is only possible with pointers
-        int* ptr = (int*)data.connectableSides;
-        *ptr = serializedData;
-
-        return data;
     }
 }
 public struct IsConnectedTag : IComponentData, IEnableableComponent { }

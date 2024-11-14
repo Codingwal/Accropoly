@@ -60,7 +60,7 @@ public partial class TileConnectionSystem : SystemBase
             ecb.SetComponent(entity, mapTileComponent);
         }).Schedule();
 
-        // Deconnect new tiles with the ConnectingTile component
+        // Disconnect new tiles with the ConnectingTile component
         Entities.WithAll<NewTileTag>().WithNone<ConnectingTile>().ForEach((Entity entity) =>
         {
             MapTileComponent mapTileComponent = SystemAPI.GetComponent<MapTileComponent>(entity);
