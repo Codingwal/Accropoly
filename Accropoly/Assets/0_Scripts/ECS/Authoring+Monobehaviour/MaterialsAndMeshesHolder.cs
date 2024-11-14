@@ -60,11 +60,9 @@ public class MaterialsAndMeshesHolder : MonoBehaviour
     {
         UpdateMeshAndMaterial(entity, GetMaterialAndMesh(newTileType));
     }
-    public static void UpdateAppearence(Entity entity, MapTileComponent mapTileComponent, ConnectingTile connectingTile, EntityCommandBuffer ecb, bool updateRotation)
+    public static void UpdateAppearence(Entity entity, TileType tileType, ConnectingTile connectingTile)
     {
         if (instance == null) Debug.LogError("Instance == null");
-
-        TileType tileType = mapTileComponent.tileType;
 
         if (instance.connectingTiles.TryGetValue(tileType, out var set))
         {
@@ -75,20 +73,6 @@ public class MaterialsAndMeshesHolder : MonoBehaviour
             Debug.Assert(pair.material != null, $"Material for tileType {tileType} is null");
             Debug.Assert(pair.mesh != null, $"Mesh for tileType {tileType} is null");
             UpdateMeshAndMaterial(entity, pair);
-
-            Direction rotation = connectingTile.GetRotation();
-            EntityManager em = World.DefaultGameObjectInjectionWorld.EntityManager;
-
-            if (!updateRotation) return;
-            // Update rotation in custom component
-            // THIS ONLY WORKS IF MAPTILECOMPONENT ONLY HAS THE FOLLOWING PROPERTIES: TILETYPE, POS, ROTATION
-            mapTileComponent.rotation = rotation;
-            ecb.SetComponent(entity, mapTileComponent);
-
-            // Update actual rotation
-            var localTransform = em.GetComponentData<LocalTransform>(entity);
-            localTransform.Rotation = quaternion.EulerXYZ(0, rotation.ToRadians(), 0);
-            ecb.SetComponent(entity, localTransform);
         }
         else if (instance.simpleTiles.Contains(tileType)) Debug.LogError($"TileType {tileType} is a simpleTile, not a connectingTile");
         else Debug.LogError($"Material & Mesh for tileType {tileType} is missing");

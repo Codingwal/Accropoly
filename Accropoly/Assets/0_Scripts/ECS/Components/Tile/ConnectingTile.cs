@@ -13,7 +13,9 @@ public unsafe struct ConnectingTile : IComponentData
     }
     public void AddDirection(Direction direction)
     {
+        Debug.Log(direction);
         connectableSides[(uint)direction] = true;
+        Debug.Log(this);
     }
     public void RemoveDirection(Direction direction)
     {
@@ -57,7 +59,7 @@ public unsafe struct ConnectingTile : IComponentData
                 bestRotation = i;
             }
         }
-        
+
         return (Direction)bestRotation;
     }
     private readonly int NextTrueIndex(int startInclusive)
