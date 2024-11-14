@@ -1,9 +1,11 @@
 using Unity.Entities;
 using UnityEngine;
 
-[UpdateInGroup(typeof(LateInitializationSystemGroup))]
+[UpdateInGroup(typeof(PreCreationSystemGroup))]
 public partial struct WorldDataSystem : ISystem
 {
+    private static bool loadGame;
+    private static bool saveGame;
     public static WorldData worldData;
     private EntityQuery loadGameTagQuery;
     private EntityQuery saveGameTagQuery;
@@ -12,12 +14,14 @@ public partial struct WorldDataSystem : ISystem
     private EntityQuery gameInfoQuery;
     public void OnCreate(ref SystemState state)
     {
+        loadGame = false;
+        saveGame = false;
+
         loadGameTagQuery = state.GetEntityQuery(typeof(LoadGameTag));
         saveGameTagQuery = state.GetEntityQuery(typeof(SaveGameTag));
         tileMapQuery = state.GetEntityQuery(typeof(MapTileComponent));
         populationQuery = state.GetEntityQuery(typeof(PersonComponent));
         gameInfoQuery = state.GetEntityQuery(typeof(GameInfo));
-        state.RequireAnyForUpdate(loadGameTagQuery, saveGameTagQuery);
     }
     public void OnUpdate(ref SystemState state)
     {
@@ -39,32 +43,42 @@ public partial struct WorldDataSystem : ISystem
             state.EntityManager.DestroyEntity(populationQuery);
             state.EntityManager.DestroyEntity(saveGameTagQuery);
         }
-        // If the game is being loaded
+
+        // If the game has been loaded
         if (loadGameTagQuery.CalculateEntityCount() != 0)
         {
-            // Destroy the tag
             state.EntityManager.DestroyEntity(loadGameTagQuery);
+            state.EntityManager.CreateSingleton<RunGameTag>();
+
+        }
+
+        if (loadGame)
+        {
+            loadGame = false;
+
+            Debug.Log("Loading WorldData");
+
+            worldData = SaveSystem.Instance.GetWorldData();
+            World.DefaultGameObjectInjectionWorld.EntityManager.CreateSingleton(new GameInfo
+            {
+                balance = worldData.balance,
+                time = worldData.time,
+            });
+            state.EntityManager.CreateSingleton<LoadGameTag>();
+        }
+        if (saveGame)
+        {
+            saveGame = false;
+            state.EntityManager.CreateSingleton<SaveGameTag>();
         }
     }
     public static void LoadWorldData()
     {
-        Debug.Log("Loading WorldData");
-
-        worldData = SaveSystem.Instance.GetWorldData();
-        World.DefaultGameObjectInjectionWorld.EntityManager.CreateSingleton(new GameInfo
-        {
-            balance = worldData.balance,
-            time = worldData.time,
-        });
-
-        CreateTag<LoadGameTag>();
+        Debug.Log("!");
+        loadGame = true;
     }
     public static void SaveWorldData()
     {
-        CreateTag<SaveGameTag>();
-    }
-    private static void CreateTag<T>() where T : unmanaged, IComponentData
-    {
-        World.DefaultGameObjectInjectionWorld.EntityManager.CreateSingleton<T>();
+        saveGame = true;
     }
 }
