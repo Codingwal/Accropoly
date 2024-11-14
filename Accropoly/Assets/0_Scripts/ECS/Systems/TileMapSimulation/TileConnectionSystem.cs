@@ -14,6 +14,7 @@ public partial class TileConnectionSystem : SystemBase
         var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
         var buffer = SystemAPI.GetBuffer<EntityBufferElement>(SystemAPI.GetSingletonEntity<EntityGridHolder>());
 
+        // Connect new tiles with the ConnectingTile component
         // ConnectingTile, MapTileComponent & LocalTransform can't be passed as parameters because SystemAPI.GetComponent & SystemAPI.HasComponent are used
         Entities.WithAll<NewTileTag, ConnectingTile>().ForEach((Entity entity) =>
         {
@@ -57,7 +58,34 @@ public partial class TileConnectionSystem : SystemBase
             mapTileComponent.rotation = rotation;
             ecb.SetComponent(entity, transform);
             ecb.SetComponent(entity, mapTileComponent);
-        }).WithoutBurst().Schedule();
+        }).Schedule();
+
+        // Deconnect new tiles with the ConnectingTile component
+        Entities.WithAll<NewTileTag>().WithNone<ConnectingTile>().ForEach((Entity entity) =>
+        {
+            MapTileComponent mapTileComponent = SystemAPI.GetComponent<MapTileComponent>(entity);
+
+            foreach (Direction direction in Direction.GetDirections())
+            {
+                if (!TileGridUtility.TryGetTile(mapTileComponent.pos + direction.DirectionVec, buffer, out Entity neighbour)) continue;
+                if (SystemAPI.HasComponent<ConnectingTile>(neighbour))
+                {
+                    var neighbourConnectingTile = SystemAPI.GetComponent<ConnectingTile>(neighbour);
+
+                    // Update neighbour ConnectingTile
+                    neighbourConnectingTile.RemoveDirection(direction.Flip());
+                    ecb.SetComponent(neighbour, neighbourConnectingTile);
+
+                    // Update neighbour material and mesh
+                    MaterialsAndMeshesHolder.UpdateAppearence(neighbour, SystemAPI.GetComponent<MapTileComponent>(neighbour).tileType, neighbourConnectingTile);
+
+                    // Update neighbour rotation
+                    var neighbourTransform = SystemAPI.GetComponent<LocalTransform>(neighbour);
+                    neighbourTransform.Rotation = quaternion.EulerXYZ(0, neighbourConnectingTile.GetRotation().ToRadians(), 0);
+                    ecb.SetComponent(neighbour, neighbourTransform);
+                }
+            }
+        }).Schedule();
 
         if (SystemAPI.HasSingleton<LoadGameTag>())
         {
@@ -74,7 +102,6 @@ public partial class TileConnectionSystem : SystemBase
 
                         // Update self
                         connectingTile.AddDirection(direction);
-                        Debug.Log(connectingTile);
                     }
                 }
                 // Update ConnectingTile

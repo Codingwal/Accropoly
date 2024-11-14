@@ -13,9 +13,7 @@ public unsafe struct ConnectingTile : IComponentData
     }
     public void AddDirection(Direction direction)
     {
-        Debug.Log(direction);
         connectableSides[(uint)direction] = true;
-        Debug.Log(this);
     }
     public void RemoveDirection(Direction direction)
     {
