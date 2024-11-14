@@ -663,43 +663,60 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af4e6fc8024961748b0accd222165c9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  materialsAndMeshes:
-  - key: 0
-    value:
-      material: {fileID: 2100000, guid: 3073eac1b2a21a940b527138e5d098cf, type: 2}
-      mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
-  - key: 1
-    value:
-      material: {fileID: 2100000, guid: f598a97874ed44d43a45c44337a93800, type: 2}
-      mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
-  - key: 2
-    value:
-      material: {fileID: 2100000, guid: 619c470d0460d1a42870a72f825534d6, type: 2}
-      mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
-  - key: 7
-    value:
-      material: {fileID: 2100000, guid: 94afdbc655b32e74b9a7a2555ea998a0, type: 2}
-      mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
-  - key: 9
-    value:
-      material: {fileID: 2100000, guid: e064d54b67228d043ae598404b205470, type: 2}
-      mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
-  - key: 3
-    value:
-      material: {fileID: 2100000, guid: f650585bc8845bc4cb01d088d279fef6, type: 2}
-      mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
-  - key: 4
-    value:
-      material: {fileID: 2100000, guid: 66409db4513ed8d4198099dfea8a8152, type: 2}
-      mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
-  - key: 5
-    value:
-      material: {fileID: 2100000, guid: 30a107f0b4cfe4e4ca998efb2bc7a8d3, type: 2}
-      mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
-  - key: 6
-    value:
-      material: {fileID: 2100000, guid: 452f30cffa965fe4cb6bfaa8c8af8614, type: 2}
-      mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
+  simpleTiles:
+    dictionary:
+    - key: 0
+      value:
+        material: {fileID: 2100000, guid: 3073eac1b2a21a940b527138e5d098cf, type: 2}
+        mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
+    - key: 1
+      value:
+        material: {fileID: 2100000, guid: f598a97874ed44d43a45c44337a93800, type: 2}
+        mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
+    - key: 2
+      value:
+        material: {fileID: 2100000, guid: 619c470d0460d1a42870a72f825534d6, type: 2}
+        mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
+    - key: 4
+      value:
+        material: {fileID: 2100000, guid: 94afdbc655b32e74b9a7a2555ea998a0, type: 2}
+        mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
+    - key: 5
+      value:
+        material: {fileID: 2100000, guid: e064d54b67228d043ae598404b205470, type: 2}
+        mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
+  connectingTiles:
+    dictionary:
+    - key: 3
+      value:
+        pairs:
+        - material: {fileID: 2100000, guid: 57829884fe3a4ba4d9115754b9a63b15, type: 2}
+          mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
+        - material: {fileID: 2100000, guid: 57829884fe3a4ba4d9115754b9a63b15, type: 2}
+          mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
+        - material: {fileID: 2100000, guid: f650585bc8845bc4cb01d088d279fef6, type: 2}
+          mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
+        - material: {fileID: 2100000, guid: 66409db4513ed8d4198099dfea8a8152, type: 2}
+          mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
+        - material: {fileID: 2100000, guid: 30a107f0b4cfe4e4ca998efb2bc7a8d3, type: 2}
+          mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
+        - material: {fileID: 2100000, guid: 452f30cffa965fe4cb6bfaa8c8af8614, type: 2}
+          mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
+    - key: 6
+      value:
+        pairs:
+        - material: {fileID: 2100000, guid: 2872d0b9abe55074a93a4eea1f332b80, type: 2}
+          mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
+        - material: {fileID: 2100000, guid: 78f691387cf54fb4e934077c543762d7, type: 2}
+          mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
+        - material: {fileID: 2100000, guid: c6e919fc29a04d044a6a82fb3d688c01, type: 2}
+          mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
+        - material: {fileID: 2100000, guid: e216b5d14812b3246b07bf070e5154ff, type: 2}
+          mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
+        - material: {fileID: 2100000, guid: f6b79c0b49f67c342a66ad446d677754, type: 2}
+          mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
+        - material: {fileID: 2100000, guid: 2872d0b9abe55074a93a4eea1f332b80, type: 2}
+          mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
 --- !u!4 &309032823
 Transform:
   m_ObjectHideFlags: 0
@@ -728,7 +745,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   overwriteFiles: 1
-  deleteTemplates: 0
+  deleteTemplates: 1
   deleteSaves: 0
 --- !u!1 &440841229
 GameObject:

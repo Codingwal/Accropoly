@@ -28,13 +28,14 @@ public enum TileComponents : int
     AgingTile = 1,
     ElectricityProducer = 2,
     ElectricityConsumer = 3,
-    BuildingConnector = 4,
+    ConnectingTile = 4,
     Polluter = 5,
     Habitat = 6,
-    Employer=7,
+    Employer = 7,
 
     // Tags
     ActiveTileTag = 100,
     NewTileTag = 101,
     IsConnectedTag = 102,
+    BuildingConnectorTag = 103,
 }

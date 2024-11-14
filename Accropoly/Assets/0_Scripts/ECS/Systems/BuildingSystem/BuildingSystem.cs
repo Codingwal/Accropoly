@@ -65,7 +65,8 @@ public partial struct BuildingSystem : ISystem
                 transform.Rotation = quaternion.EulerXYZ(0, tileToPlace.rotation.ToRadians(), 0);
                 ecb.SetComponent(oldTile, transform);
 
-                MaterialsAndMeshesHolder.UpdateMeshAndMaterial(oldTile, newTileType); // Update the mesh according to the newTileType 
+                // Set mesh & material according to the new tileType
+                MaterialsAndMeshesHolder.UpdateMeshAndMaterial(oldTile, newTileType);
             }
         }
     }

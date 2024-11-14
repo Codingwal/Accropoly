@@ -29,9 +29,3 @@ public struct PrefabEntity : IComponentData
         return config.prefab;
     }
 }
-[System.Serializable]
-public struct MaterialMeshPair
-{
-    public Material material;
-    public Mesh mesh;
-}

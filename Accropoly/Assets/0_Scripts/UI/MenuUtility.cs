@@ -38,7 +38,9 @@ public static class MenuUtility
 
         InputSystem.EnableInputActions();
 
-        ContinueGame();
+        Time.timeScale = 1;
+        InputSystem.EnableGameplayInputActions();
+        continuingGame?.Invoke();
     }
     public static void QuitGame()
     {

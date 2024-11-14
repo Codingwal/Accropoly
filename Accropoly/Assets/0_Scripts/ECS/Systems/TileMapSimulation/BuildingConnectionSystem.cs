@@ -22,15 +22,9 @@ public partial class BuildingConnectionSystem : SystemBase
             bool isConnected = false;
             foreach (Direction direction in Direction.GetDirections())
             {
-                Entity neighbour = TileGridUtility.TryGetTile(mapTileComponent.pos + direction.DirectionVec, buffer, out bool neighbourExists);
+                if (!TileGridUtility.TryGetTile(mapTileComponent.pos + direction.DirectionVec, buffer, out Entity neighbour)) continue;
 
-                if (!neighbourExists) continue;
-                if (!SystemAPI.HasComponent<BuildingConnector>(neighbour)) continue;
-
-                var buildingConnector = SystemAPI.GetComponent<BuildingConnector>(neighbour);
-                Direction neighbourRotation = SystemAPI.GetComponent<MapTileComponent>(neighbour).rotation;
-
-                if (buildingConnector.CanConnect(direction.Flip(), neighbourRotation))
+                if (SystemAPI.HasComponent<BuildingConnectorTag>(neighbour))
                 {
                     isConnected = true;
                     break;

@@ -90,7 +90,10 @@ public partial class Deserializer
                     consumption = br.ReadSingle(),
                     disableIfElectroless = br.ReadBoolean()
                 },
-                TileComponents.BuildingConnector => BuildingConnector.Deserialize(br.ReadInt32()),
+                TileComponents.ConnectingTile => new ConnectingTile
+                {
+                    group = (ConnectingTileGroup)br.ReadInt32(),
+                },
                 TileComponents.Polluter => new Polluter()
                 {
                     pollution = br.ReadSingle()
@@ -109,6 +112,7 @@ public partial class Deserializer
                 TileComponents.IsConnectedTag => new IsConnectedTag(),
                 TileComponents.ActiveTileTag => new ActiveTileTag(),
                 TileComponents.NewTileTag => new NewTileTag(),
+                TileComponents.BuildingConnectorTag => new BuildingConnectorTag(),
 
                 _ => throw new($"Cannot deserialize component of type {type}")
             };
