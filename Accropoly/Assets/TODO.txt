@@ -1,8 +1,3 @@
-- update MapTileComponent
-
-- don't save ConnectingTile (can be calculated) (really worth the effort?)
-    - extract ConnectingTile code
-
 - different ConnectingTileGroups (street, water, ...)
 
 - water
@@ -11,3 +6,5 @@
 - get half of original price (?)
 - naming consistency:
     - decide: Homeless / HomelessTag -> for all tags & components
+- switch without right click
+- drag to place multiple tiles
