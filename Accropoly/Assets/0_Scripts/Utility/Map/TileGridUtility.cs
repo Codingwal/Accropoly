@@ -29,9 +29,16 @@ public static class TileGridUtility
             throw new($"Invalid position {pos}");
     }
     /// <remarks>Can't be used in jobs!</remarks>
-    public static bool TryGetTile(int2 pos, out Entity entity)
+    public static Entity GetTile(int2 pos, DynamicBuffer<EntityBufferElement> buffer)
     {
-        var buffer = GetEntityGrid();
+        if (TryGetTile(pos, buffer, out Entity entity))
+            return entity;
+        else
+            throw new($"Invalid position {pos}");
+    }
+    public static bool TryGetTile(int2 pos, out Entity entity) { return TryGetTile(pos, GetEntityGrid(), out entity); }
+    public static bool TryGetTile(int2 pos, DynamicBuffer<EntityBufferElement> buffer, out Entity entity)
+    {
         int index = GetIndex(pos, buffer.Length);
         if (index >= buffer.Length || index < 0)
         {
@@ -40,23 +47,6 @@ public static class TileGridUtility
         }
         entity = buffer[index];
         return true;
-    }
-    public static Entity GetTile(int2 pos, DynamicBuffer<EntityBufferElement> buffer)
-    {
-        Entity entity = TryGetTile(pos, buffer, out bool entityExists);
-        if (!entityExists) throw new($"Invalid position {pos}");
-        return entity;
-    }
-    public static Entity TryGetTile(int2 pos, DynamicBuffer<EntityBufferElement> buffer, out bool entityExists)
-    {
-        int index = GetIndex(pos, buffer.Length);
-        if (index >= buffer.Length || index < 0)
-        {
-            entityExists = false;
-            return new();
-        }
-        entityExists = true;
-        return buffer[index];
     }
     public static Entity[] GetNeighbourTiles(int2 pos)
     {

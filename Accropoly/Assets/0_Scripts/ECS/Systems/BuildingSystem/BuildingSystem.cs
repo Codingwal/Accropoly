@@ -65,45 +65,8 @@ public partial struct BuildingSystem : ISystem
                 transform.Rotation = quaternion.EulerXYZ(0, tileToPlace.rotation.ToRadians(), 0);
                 ecb.SetComponent(oldTile, transform);
 
-                if (!SystemAPI.HasComponent<ConnectingTile>(oldTile))
-                {
-                    MaterialsAndMeshesHolder.UpdateMeshAndMaterial(oldTile, newTileType);
-
-                    // Update connecting tile neighbours (there might have been a connection before)
-                    foreach (Direction direction in Direction.GetDirections())
-                    {
-                        if (!TileGridUtility.TryGetTile(pos + direction.DirectionVec, out Entity neighbour)) continue;
-                        if (SystemAPI.HasComponent<ConnectingTile>(neighbour))
-                        {
-                            var neighbourConnectingTile = SystemAPI.GetComponent<ConnectingTile>(neighbour);
-                            neighbourConnectingTile.RemoveDirection(direction.Flip());
-                            ecb.SetComponent(neighbour, neighbourConnectingTile);
-                            MaterialsAndMeshesHolder.UpdateAppearence(neighbour, SystemAPI.GetComponent<MapTileComponent>(neighbour), neighbourConnectingTile, ecb, true);
-                        }
-                    }
-                }
-                else
-                {
-                    ConnectingTile connectingTile = new();
-
-                    // Connect with neighbouring connecting tiles of the same tileType and also update them
-                    foreach (Direction direction in Direction.GetDirections())
-                    {
-                        if (!TileGridUtility.TryGetTile(pos + direction.DirectionVec, out Entity neighbour)) continue;
-                        if (SystemAPI.HasComponent<ConnectingTile>(neighbour) && SystemAPI.GetComponent<MapTileComponent>(neighbour).tileType == newTileType)
-                        {
-                            connectingTile.AddDirection(direction);
-
-                            // Update neighbour
-                            var neighbourConnectingTile = SystemAPI.GetComponent<ConnectingTile>(neighbour);
-                            neighbourConnectingTile.AddDirection(direction.Flip());
-                            ecb.SetComponent(neighbour, neighbourConnectingTile);
-                            MaterialsAndMeshesHolder.UpdateAppearence(neighbour, SystemAPI.GetComponent<MapTileComponent>(neighbour), neighbourConnectingTile, ecb, true);
-                        }
-                    }
-                    ecb.SetComponent(oldTile, connectingTile);
-                    MaterialsAndMeshesHolder.UpdateAppearence(oldTile, new() { pos = pos, tileType = newTileType }, connectingTile, ecb, true);
-                }
+                // Set mesh & material according to the new tileType
+                MaterialsAndMeshesHolder.UpdateMeshAndMaterial(oldTile, newTileType);
             }
         }
     }
