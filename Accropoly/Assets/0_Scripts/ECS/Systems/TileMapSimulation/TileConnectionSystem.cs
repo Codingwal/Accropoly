@@ -28,12 +28,14 @@ public partial class TileConnectionSystem : SystemBase
                 if (SystemAPI.HasComponent<ConnectingTile>(neighbour))
                 {
                     var neighbourConnectingTile = SystemAPI.GetComponent<ConnectingTile>(neighbour);
-
-                    // Update self
-                    connectingTile.AddDirection(direction);
+                    if (neighbourConnectingTile.group == connectingTile.group)
+                    {
+                        connectingTile.AddDirection(direction);
+                        neighbourConnectingTile.AddDirection(direction.Flip());
+                    }
+                    else neighbourConnectingTile.RemoveDirection(direction.Flip());
 
                     // Update neighbour ConnectingTile
-                    neighbourConnectingTile.AddDirection(direction.Flip());
                     ecb.SetComponent(neighbour, neighbourConnectingTile);
 
                     // Update neighbour material and mesh
@@ -99,6 +101,7 @@ public partial class TileConnectionSystem : SystemBase
                     if (SystemAPI.HasComponent<ConnectingTile>(neighbour))
                     {
                         var neighbourConnectingTile = SystemAPI.GetComponent<ConnectingTile>(neighbour);
+                        if (neighbourConnectingTile.group != connectingTile.group) continue;
 
                         // Update self
                         connectingTile.AddDirection(direction);

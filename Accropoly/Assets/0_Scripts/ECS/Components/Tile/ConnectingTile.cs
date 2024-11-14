@@ -4,8 +4,10 @@ using UnityEngine;
 public unsafe struct ConnectingTile : IComponentData
 {
     private fixed bool connectableSides[4];
-    public ConnectingTile(params Direction[] connectableDirections)
+    public ConnectingTileGroup group;
+    public ConnectingTile(ConnectingTileGroup group, params Direction[] connectableDirections)
     {
+        this.group = group;
         foreach (var direction in connectableDirections)
         {
             AddDirection(direction);
@@ -18,10 +20,6 @@ public unsafe struct ConnectingTile : IComponentData
     public void RemoveDirection(Direction direction)
     {
         connectableSides[(uint)direction] = false;
-    }
-    public readonly bool CanConnect(Direction direction, Direction rotation)
-    {
-        return connectableSides[(uint)direction.Rotate(-(int)(uint)rotation)];
     }
     ///  <summary>This doesn't contain the full component information! This is only used to select a MeshMaterialPair</summary>
     public readonly int GetIndex()
@@ -90,3 +88,8 @@ public unsafe struct ConnectingTile : IComponentData
     }
 }
 public struct IsConnectedTag : IComponentData, IEnableableComponent { }
+public enum ConnectingTileGroup
+{
+    Street,
+    Water,
+}
