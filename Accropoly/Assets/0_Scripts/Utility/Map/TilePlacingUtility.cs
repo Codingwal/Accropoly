@@ -21,7 +21,8 @@ public static class TilePlacingUtility
             TileType.SolarPanel => new() { (new ElectricityProducer { production = 10 }, true), (new Polluter { pollution = 1 }, true),
                                            (new Employer{totalSpace = 1}, true) },
             TileType.Street => new() { (new ConnectingTile(ConnectingTileGroup.Street), true), (new BuildingConnectorTag(), true) },
-            TileType.Water => new() { (new ConnectingTile(ConnectingTileGroup.Water), true) },
+            TileType.Lake => new() { (new ConnectingTile(ConnectingTileGroup.Lake), true) },
+            TileType.River => new() { (new ConnectingTile(ConnectingTileGroup.River), true) },
             TileType.Hut => new() { (new Habitat { totalSpace = rnd.Next(1, 3) }, true) },
             _ => throw new($"Missing componentTypes for tileType {tileType}")
         };
