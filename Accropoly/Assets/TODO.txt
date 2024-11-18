@@ -1,6 +1,7 @@
-- rename files
 - tags
 - systems
+
+- bug: can't place huts
 
 - bug: camera transform isn't actually saved & loaded (reproduce: save world, restart scene, load world)
 - get half of original price (?)
