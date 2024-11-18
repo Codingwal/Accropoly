@@ -91,5 +91,6 @@ public struct IsConnectedTag : IComponentData, IEnableableComponent { }
 public enum ConnectingTileGroup
 {
     Street,
-    Water,
+    Lake,
+    River,
 }

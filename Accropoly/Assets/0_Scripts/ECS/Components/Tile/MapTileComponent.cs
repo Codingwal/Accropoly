@@ -19,14 +19,15 @@ public enum TileType
     Plains = 0,
     Sapling = 1,
     Forest = 2,
-    Water = 6,
+    Lake = 6,
+    River = 7,
 
     // Streets
     Street = 3,
 
     // Habitats
     House = 4,
-    Hut = 7,
+    Hut = 8,
 
     // Energy production
     SolarPanel = 5,
