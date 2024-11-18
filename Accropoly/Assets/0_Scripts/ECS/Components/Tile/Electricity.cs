@@ -12,4 +12,7 @@ namespace Components
         public bool disableIfElectroless;
     }
 }
-public struct HasElectricityTag : IComponentData, IEnableableComponent { }
+namespace Tags
+{
+    public struct HasElectricity : IComponentData, IEnableableComponent { }
+}

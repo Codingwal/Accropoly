@@ -10,4 +10,7 @@ namespace Components
         public int age;
     }
 }
-public struct HomelessTag : IComponentData { }
+namespace Tags
+{
+    public struct Homeless : IComponentData { }
+}

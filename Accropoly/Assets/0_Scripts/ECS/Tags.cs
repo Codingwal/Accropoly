@@ -1,18 +1,21 @@
 using Unity.Entities;
 
-// Singletons
-public struct RunGameTag : IComponentData { }
-public struct SaveGameTag : IComponentData { }
-public struct LoadGameTag : IComponentData { }
-public struct NewDayTag : IComponentData { }
-public struct EntityGridHolder : IComponentData { }
+namespace Tags
+{
+    // Singletons
+    public struct RunGame : IComponentData { }
+    public struct SaveGame : IComponentData { }
+    public struct LoadGame : IComponentData { }
+    public struct NewDay : IComponentData { }
+    public struct EntityGridHolder : IComponentData { }
 
-// Tiles
-public struct NewTileTag : IComponentData { }
-public struct ActiveTileTag : IComponentData, IEnableableComponent { }
-public struct HasSpaceTag : IComponentData { }
-public struct BuildingConnectorTag : IComponentData { }
+    // Tiles
+    public struct NewTile : IComponentData { }
+    public struct ActiveTile : IComponentData, IEnableableComponent { }
+    public struct HasSpace : IComponentData { }
+    public struct BuildingConnector : IComponentData { }
 
-// Population
-public struct NewPersonTag : IComponentData { }
-// public struct SearchesSpaceTag : IComponentData { }
+    // Population
+    public struct NewPerson : IComponentData { }
+    // public struct SearchesSpace : IComponentData { }
+}

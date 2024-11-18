@@ -8,4 +8,7 @@ namespace Components
         public int2 employer;
     }
 }
-public struct UnemployedTag : IComponentData { }
+namespace Tags
+{
+    public struct Unemployed : IComponentData { }
+}
