@@ -1,7 +1,10 @@
 using Unity.Entities;
 
-public struct GameInfo : IComponentData
+namespace Components
 {
-    public float balance;
-    public WorldTime time;
+    public struct GameInfo : IComponentData
+    {
+        public float balance;
+        public WorldTime time;
+    }
 }

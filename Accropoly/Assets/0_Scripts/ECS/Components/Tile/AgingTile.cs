@@ -1,6 +1,9 @@
 using Unity.Entities;
 
-public struct AgingTile : IComponentData
+namespace Components
 {
-    public float age;
+    public struct AgingTile : IComponentData
+    {
+        public float age;
+    }
 }
