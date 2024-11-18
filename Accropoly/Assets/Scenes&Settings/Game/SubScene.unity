@@ -275,18 +275,16 @@ MonoBehaviour:
       value: 5
     - key: 1
       value: 10
-    - key: 7
-      value: 100
     - key: 3
       value: 50
     - key: 4
+      value: 200
+    - key: 8
       value: 50
     - key: 5
       value: 50
-    - key: 6
+    - key: 7
       value: 50
-    - key: 9
-      value: 200
 --- !u!114 &903553022
 MonoBehaviour:
   m_ObjectHideFlags: 0
