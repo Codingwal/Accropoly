@@ -1,5 +1,3 @@
-- TileData
-- TileComponents enum
 - tags
 - systems
 

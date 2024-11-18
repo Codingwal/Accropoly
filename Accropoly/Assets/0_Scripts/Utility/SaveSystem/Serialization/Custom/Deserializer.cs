@@ -39,7 +39,7 @@ public partial class Deserializer
                 {
                     pos = Deserialize(new float3()),
                 },
-                PersonComponents.PersonComponent => new Person()
+                PersonComponents.Person => new Person()
                 {
                     homeTile = Deserialize(new int2()),
                     age = br.ReadInt32(),
@@ -73,7 +73,7 @@ public partial class Deserializer
             TileComponents type = (TileComponents)br.ReadInt32();
             component = type switch
             {
-                TileComponents.MapTileComponent => new Tile()
+                TileComponents.Tile => new Tile()
                 {
                     tileType = (TileType)br.ReadInt32(),
                     pos = Deserialize(new int2()),

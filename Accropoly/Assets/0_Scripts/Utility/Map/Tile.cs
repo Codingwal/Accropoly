@@ -24,7 +24,7 @@ public struct TileData
 public enum TileComponents : int
 {
     // Components
-    MapTileComponent = 0,
+    Tile = 0,
     AgingTile = 1,
     ElectricityProducer = 2,
     ElectricityConsumer = 3,

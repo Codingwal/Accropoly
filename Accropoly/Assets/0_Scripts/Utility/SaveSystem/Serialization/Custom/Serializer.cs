@@ -40,7 +40,7 @@ public partial class Serializer
             }
             else if (type == typeof(Person))
             {
-                bw.Write((int)PersonComponents.PersonComponent);
+                bw.Write((int)PersonComponents.Person);
                 Person componentData = (Person)component;
 
                 Serialize(componentData.homeTile);
@@ -67,7 +67,7 @@ public partial class Serializer
             Type type = component.GetType();
             if (type == typeof(Tile))
             {
-                bw.Write((int)TileComponents.MapTileComponent);
+                bw.Write((int)TileComponents.Tile);
 
                 Tile componentData = (Tile)component;
                 bw.Write((int)componentData.tileType);
