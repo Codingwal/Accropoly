@@ -6,11 +6,11 @@ public partial class TaxSystem : SystemBase
     protected override void OnCreate()
     {
         RequireForUpdate<NewDayTag>();
-        RequireForUpdate<TaxesConfig>();
+        RequireForUpdate<ConfigComponents.Taxes>();
     }
     protected override void OnUpdate()
     {
-        TaxesConfig config = SystemAPI.GetSingleton<TaxesConfig>();
+        var config = SystemAPI.GetSingleton<ConfigComponents.Taxes>();
 
         NativeArray<float> totalTaxIncome = new(1, Allocator.TempJob, NativeArrayOptions.ClearMemory);
         Entities.ForEach((in PersonComponent personComponent) =>

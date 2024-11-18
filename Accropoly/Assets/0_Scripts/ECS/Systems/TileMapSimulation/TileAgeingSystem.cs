@@ -7,11 +7,11 @@ public partial struct TileAgingSystem : ISystem
     {
         state.RequireForUpdate<RunGameTag>();
         state.RequireForUpdate<AgingTile>();
-        state.RequireForUpdate<TileAgeingConfig>();
+        state.RequireForUpdate<ConfigComponents.TileAgeing>();
     }
     public void OnUpdate(ref SystemState state)
     {
-        TileAgeingConfig config = SystemAPI.GetSingleton<TileAgeingConfig>();
+        var config = SystemAPI.GetSingleton<ConfigComponents.TileAgeing>();
 
         new TileAgingJob()
         {

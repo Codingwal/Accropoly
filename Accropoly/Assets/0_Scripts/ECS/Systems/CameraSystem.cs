@@ -10,7 +10,7 @@ public partial struct CameraSystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<RunGameTag>();
-        state.RequireForUpdate<CameraConfig>();
+        state.RequireForUpdate<ConfigComponents.Camera>();
         state.RequireForUpdate<InputData>();
 
         transformHolder = state.EntityManager.CreateSingleton(new CameraTransform
@@ -23,7 +23,7 @@ public partial struct CameraSystem : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
-        var config = SystemAPI.GetSingleton<CameraConfig>();
+        var config = SystemAPI.GetSingleton<ConfigComponents.Camera>();
         var inputData = SystemAPI.GetSingleton<InputData>();
         var cameraTransform = SystemAPI.GetSingleton<CameraTransform>();
 
@@ -59,7 +59,7 @@ public partial struct CameraSystem : ISystem
     public partial struct Job : IJob
     {
         public EntityCommandBuffer ecb;
-        public CameraConfig config;
+        public ConfigComponents.Camera config;
         public InputData inputData;
         public float deltaTime;
         public int mapSize;

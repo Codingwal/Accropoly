@@ -12,7 +12,7 @@ public partial class ImmigrationSystem : SystemBase
     [BurstCompile]
     protected override void OnCreate()
     {
-        RequireForUpdate<PrefabEntity>();
+        RequireForUpdate<ConfigComponents.PrefabEntity>();
         RequireForUpdate<RunGameTag>();
     }
     [BurstCompile]
@@ -21,7 +21,7 @@ public partial class ImmigrationSystem : SystemBase
         Random rnd = new((uint)UnityEngine.Random.Range(1, 1000));
         float deltaTime = SystemAPI.Time.DeltaTime;
         var ecb = SystemAPI.GetSingleton<EndCreationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
-        Entity prefab = SystemAPI.GetSingleton<PrefabEntity>();
+        Entity prefab = SystemAPI.GetSingleton<ConfigComponents.PrefabEntity>();
 
         NativeArray<Entity> homelessEntities = GetEntityQuery(typeof(HomelessTag)).ToEntityArray(Allocator.TempJob);
         NativeArray<PersonComponent> homelessPersonComponents = GetEntityQuery(typeof(HomelessTag), typeof(PersonComponent)).ToComponentDataArray<PersonComponent>(Allocator.TempJob);

@@ -6,14 +6,14 @@ public partial struct TimeSystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<RunGameTag>();
-        state.RequireForUpdate<TimeConfig>();
+        state.RequireForUpdate<ConfigComponents.Time>();
         newDayTagQuery = state.GetEntityQuery(typeof(NewDayTag));
     }
     public void OnUpdate(ref SystemState state)
     {
         state.CompleteDependency(); // Important because TaxSystem writes to GameInfo and GetSingleton doesn't complete dependencies but throws an error
 
-        TimeConfig config = SystemAPI.GetSingleton<TimeConfig>();
+        var config = SystemAPI.GetSingleton<ConfigComponents.Time>();
         var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
 
         ecb.DestroyEntity(newDayTagQuery, EntityQueryCaptureMode.AtRecord); // Delete old tag if present

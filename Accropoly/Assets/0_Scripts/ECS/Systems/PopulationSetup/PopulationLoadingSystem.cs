@@ -18,7 +18,7 @@ public partial struct PopulationLoadingSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         var ecb = SystemAPI.GetSingleton<EndCreationECBSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
-        Entity prefab = SystemAPI.GetSingleton<PrefabEntity>();
+        Entity prefab = SystemAPI.GetSingleton<ConfigComponents.PrefabEntity>();
 
         WorldData worldData = WorldDataSystem.worldData;
 

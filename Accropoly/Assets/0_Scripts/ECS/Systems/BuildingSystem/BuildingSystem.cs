@@ -16,7 +16,7 @@ public partial struct BuildingSystem : ISystem
         state.RequireForUpdate<TileToPlace>(); // Update only if there is a PlacementProcess running (The process is started by the menu)
 
         placementInputDataQuery = state.GetEntityQuery(typeof(PlacementInputData));
-        tilePricesQuery = state.GetEntityQuery(typeof(TilePrices));
+        tilePricesQuery = state.GetEntityQuery(typeof(ConfigComponents.TilePrices));
     }
     public void OnUpdate(ref SystemState state)
     {
@@ -48,7 +48,7 @@ public partial struct BuildingSystem : ISystem
                 TileType newTileType = tileToPlace.tileType;
 
                 // If the tile can be bought, buy it, else, abort
-                float price = SystemAPI.ManagedAPI.GetSingleton<TilePrices>().prices[newTileType];
+                float price = SystemAPI.ManagedAPI.GetSingleton<ConfigComponents.TilePrices>().prices[newTileType];
                 GameInfo info = SystemAPI.GetSingleton<GameInfo>();
                 if (price > info.balance) // If the tile can't be bought, abort
                     return;
@@ -76,7 +76,7 @@ public partial struct BuildingSystem : ISystem
 
         if (em.CreateEntityQuery(typeof(TileToPlace)).CalculateEntityCount() != 0) return; // Return if there already is a PlacementProcess
 
-        var prefab = em.CreateEntityQuery(typeof(PrefabEntity)).GetSingleton<PrefabEntity>(); // Get the tilePrefab
+        var prefab = em.CreateEntityQuery(typeof(ConfigComponents.PrefabEntity)).GetSingleton<ConfigComponents.PrefabEntity>(); // Get the tilePrefab
         entity = em.Instantiate(prefab);
         em.AddComponentData(entity, new TileToPlace
         {

@@ -9,7 +9,7 @@ public partial class HappinessSystem : SystemBase
     protected override void OnCreate()
     {
         RequireForUpdate<RunGameTag>();
-        RequireForUpdate<HappinessConfig>();
+        RequireForUpdate<ConfigComponents.Happiness>();
     }
     protected override void OnUpdate()
     {
@@ -17,7 +17,7 @@ public partial class HappinessSystem : SystemBase
         if (frame % 50 != 0) return;
 
         var buffer = SystemAPI.GetBuffer<EntityBufferElement>(SystemAPI.GetSingletonEntity<EntityGridHolder>());
-        var config = SystemAPI.GetSingleton<HappinessConfig>();
+        var config = SystemAPI.GetSingleton<ConfigComponents.Happiness>();
         var hasElectricityTagLookup = GetComponentLookup<HasElectricityTag>();
 
         NativeArray<float> happinessSum = new NativeArray<float>(1, Allocator.TempJob, NativeArrayOptions.ClearMemory);

@@ -9,7 +9,7 @@ public partial struct UpdatePosition : ISystem
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<TileToPlace>();
-        state.RequireForUpdate<BuildingSystemConfig>();
+        state.RequireForUpdate<ConfigComponents.BuildingSystem>();
         state.RequireForUpdate<RunGameTag>();
     }
     public void OnUpdate(ref SystemState state)
@@ -20,7 +20,7 @@ public partial struct UpdatePosition : ISystem
         var localTransform = state.EntityManager.GetComponentData<LocalTransform>(entity);
 
         var inputData = SystemAPI.GetSingleton<InputData>();
-        var config = SystemAPI.GetSingleton<BuildingSystemConfig>();
+        var config = SystemAPI.GetSingleton<ConfigComponents.BuildingSystem>();
 
         Ray ray = Camera.main.ScreenPointToRay(inputData.mousePos);
 

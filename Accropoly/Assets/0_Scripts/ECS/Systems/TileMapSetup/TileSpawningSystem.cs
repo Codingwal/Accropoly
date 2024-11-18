@@ -16,7 +16,7 @@ public partial struct TileSpawningSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
-        var prefab = SystemAPI.GetSingleton<PrefabEntity>();
+        var prefab = SystemAPI.GetSingleton<ConfigComponents.PrefabEntity>();
 
         WorldData worldData = WorldDataSystem.worldData;
         EntityCommandBuffer ecb = SystemAPI.GetSingleton<EndCreationECBSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
