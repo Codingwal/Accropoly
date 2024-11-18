@@ -1,6 +1,8 @@
+- split rivers & lakes
 - bug: camera transform isn't actually saved & loaded (reproduce: save world, restart scene, load world)
 - get half of original price (?)
 - naming consistency:
     - decide: Homeless / HomelessTag -> for all tags & components
+    - namespaces -> Components.Homeless, System.Happiness, Authoring.BuildingSystem ...
 - switch without right click
 - drag to place multiple tiles
