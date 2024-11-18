@@ -6,7 +6,7 @@ public partial struct TileAgingSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<RunGameTag>();
+        state.RequireForUpdate<Tags.RunGame>();
         state.RequireForUpdate<AgingTile>();
         state.RequireForUpdate<ConfigComponents.TileAgeing>();
     }

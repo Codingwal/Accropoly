@@ -1,12 +1,13 @@
 using Components;
 using Unity.Entities;
+using Tags;
 
 public partial class UpdateTileActivation : SystemBase
 {
     private int frame;
     protected override void OnCreate()
     {
-        RequireForUpdate<RunGameTag>();
+        RequireForUpdate<RunGame>();
     }
     protected override void OnUpdate()
     {
@@ -17,20 +18,20 @@ public partial class UpdateTileActivation : SystemBase
 
         Entities.WithAll<Tile>().ForEach((Entity entity) =>
         {
-            ecb.SetComponentEnabled<ActiveTileTag>(entity, true);
+            ecb.SetComponentEnabled<ActiveTile>(entity, true);
         }).Schedule();
 
         // Disable buildings without connection (street, ...)
-        Entities.WithDisabled<IsConnectedTag>().ForEach((Entity entity) =>
+        Entities.WithDisabled<IsConnected>().ForEach((Entity entity) =>
        {
-           ecb.SetComponentEnabled<ActiveTileTag>(entity, false);
+           ecb.SetComponentEnabled<ActiveTile>(entity, false);
        }).Schedule();
 
         // Disable e-consumers without electricity
-        Entities.WithDisabled<HasElectricityTag>().ForEach((Entity entity, in ElectricityConsumer electricityConsumer) =>
+        Entities.WithDisabled<HasElectricity>().ForEach((Entity entity, in ElectricityConsumer electricityConsumer) =>
        {
            if (electricityConsumer.disableIfElectroless) // Only disable if electricity is strictly required
-               ecb.SetComponentEnabled<ActiveTileTag>(entity, false);
+               ecb.SetComponentEnabled<ActiveTile>(entity, false);
        }).Schedule();
     }
 }

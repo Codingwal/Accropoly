@@ -18,8 +18,8 @@ public partial struct WorldDataSystem : ISystem
         loadGame = false;
         saveGame = false;
 
-        loadGameTagQuery = state.GetEntityQuery(typeof(LoadGameTag));
-        saveGameTagQuery = state.GetEntityQuery(typeof(SaveGameTag));
+        loadGameTagQuery = state.GetEntityQuery(typeof(Tags.LoadGame));
+        saveGameTagQuery = state.GetEntityQuery(typeof(Tags.SaveGame));
         tileMapQuery = state.GetEntityQuery(typeof(Tile));
         populationQuery = state.GetEntityQuery(typeof(Person));
         gameInfoQuery = state.GetEntityQuery(typeof(GameInfo));
@@ -49,7 +49,7 @@ public partial struct WorldDataSystem : ISystem
         if (loadGameTagQuery.CalculateEntityCount() != 0)
         {
             state.EntityManager.DestroyEntity(loadGameTagQuery);
-            state.EntityManager.CreateSingleton<RunGameTag>();
+            state.EntityManager.CreateSingleton<Tags.RunGame>();
 
         }
 
@@ -65,12 +65,12 @@ public partial struct WorldDataSystem : ISystem
                 balance = worldData.balance,
                 time = worldData.time,
             });
-            state.EntityManager.CreateSingleton<LoadGameTag>();
+            state.EntityManager.CreateSingleton<Tags.LoadGame>();
         }
         if (saveGame)
         {
             saveGame = false;
-            state.EntityManager.CreateSingleton<SaveGameTag>();
+            state.EntityManager.CreateSingleton<Tags.SaveGame>();
         }
     }
     public static void LoadWorldData()

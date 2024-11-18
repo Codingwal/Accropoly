@@ -10,7 +10,7 @@ public partial struct CameraSystem : ISystem
     private Entity transformHolder;
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<RunGameTag>();
+        state.RequireForUpdate<Tags.RunGame>();
         state.RequireForUpdate<ConfigComponents.Camera>();
         state.RequireForUpdate<InputData>();
 

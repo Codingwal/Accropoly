@@ -3,13 +3,14 @@ using Unity.Mathematics;
 using Unity.Collections;
 using UnityEngine;
 using Components;
+using Tags;
 
 public partial class HappinessSystem : SystemBase
 {
     private int frame;
     protected override void OnCreate()
     {
-        RequireForUpdate<RunGameTag>();
+        RequireForUpdate<RunGame>();
         RequireForUpdate<ConfigComponents.Happiness>();
     }
     protected override void OnUpdate()
@@ -19,7 +20,7 @@ public partial class HappinessSystem : SystemBase
 
         var buffer = SystemAPI.GetBuffer<EntityBufferElement>(SystemAPI.GetSingletonEntity<EntityGridHolder>());
         var config = SystemAPI.GetSingleton<ConfigComponents.Happiness>();
-        var hasElectricityTagLookup = GetComponentLookup<HasElectricityTag>();
+        var hasElectricityLookup = GetComponentLookup<HasElectricity>();
 
         NativeArray<float> happinessSum = new NativeArray<float>(1, Allocator.TempJob, NativeArrayOptions.ClearMemory);
         Entities.ForEach((Entity entity, ref Person person) =>
@@ -34,9 +35,9 @@ public partial class HappinessSystem : SystemBase
                 else
                 {
                     Entity habitatEntity = TileGridUtility.GetTile(homeTile, buffer);
-                    if (hasElectricityTagLookup.HasComponent(habitatEntity))
+                    if (hasElectricityLookup.HasComponent(habitatEntity))
                     {
-                        bool hasElectricity = hasElectricityTagLookup.IsComponentEnabled(habitatEntity);
+                        bool hasElectricity = hasElectricityLookup.IsComponentEnabled(habitatEntity);
                         person.happiness += hasElectricity ? config.hasElectricity : config.noElectricity;
                     }
                 }
@@ -45,7 +46,7 @@ public partial class HappinessSystem : SystemBase
             // Work factors
             if (SystemAPI.HasComponent<Worker>(entity))
             {
-                bool employed = !SystemAPI.HasComponent<UnemployedTag>(entity);
+                bool employed = !SystemAPI.HasComponent<Unemployed>(entity);
                 person.happiness += employed ? config.employed : config.unemployed;
             }
 

@@ -5,6 +5,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 using Components;
+using Tags;
 
 [UpdateInGroup(typeof(CreationSystemGroup))]
 public partial struct TileSavingSystem : ISystem
@@ -12,7 +13,7 @@ public partial struct TileSavingSystem : ISystem
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<SaveGameTag>();
+        state.RequireForUpdate<SaveGame>();
     }
     public void OnUpdate(ref SystemState state)
     {
@@ -26,10 +27,10 @@ public partial struct TileSavingSystem : ISystem
             typesToIgnoreSet.Add(type);
         typesToIgnore.Dispose();
 
-        // MapTileComponent gets saved outside of the loop, some tags can be regenerated after loading 
+        // MapTileComponent gets saved outside of the loop, some s can be regenerated after loading 
         typesToIgnoreSet.Add(typeof(Tile));
-        typesToIgnoreSet.Add(typeof(HasSpaceTag));
-        typesToIgnoreSet.Add(typeof(HasElectricityTag));
+        typesToIgnoreSet.Add(typeof(HasSpace));
+        typesToIgnoreSet.Add(typeof(HasElectricity));
 
         WorldDataSystem.worldData.map.tiles = new TileData[WorldDataSystem.worldData.map.tiles.GetLength(0), WorldDataSystem.worldData.map.tiles.GetLength(1)];
 
@@ -54,7 +55,7 @@ public partial struct TileSavingSystem : ISystem
                     bool isEnabled = !componentType.IsEnableable || entityManager.IsComponentEnabled(entity, componentType);
                     tile.components.Add((entityManager.GetComponentData<T>(entity), isEnabled));
                 }
-                void AddTagComponent<T>() where T : unmanaged, IComponentData
+                void AddComponent<T>() where T : unmanaged, IComponentData
                 {
                     // If the component is enableable, check if it is enabled. Else set it to true 
                     bool isEnabled = !componentType.IsEnableable || entityManager.IsComponentEnabled(entity, componentType);
@@ -69,9 +70,9 @@ public partial struct TileSavingSystem : ISystem
                 else if (componentType == typeof(Habitat)) AddComponentData<Habitat>();
                 else if (componentType == typeof(Employer)) AddComponentData<Employer>();
 
-                else if (componentType == typeof(IsConnectedTag)) AddTagComponent<IsConnectedTag>();
-                else if (componentType == typeof(ActiveTileTag)) AddTagComponent<ActiveTileTag>();
-                else if (componentType == typeof(BuildingConnectorTag)) AddTagComponent<BuildingConnectorTag>();
+                else if (componentType == typeof(IsConnected)) AddComponent<IsConnected>();
+                else if (componentType == typeof(ActiveTile)) AddComponent<ActiveTile>();
+                else if (componentType == typeof(BuildingConnector)) AddComponent<BuildingConnector>();
 
                 else Debug.LogWarning($"Component of type {componentType} will not be serialized but also isn't present in typesToIgnore");
 

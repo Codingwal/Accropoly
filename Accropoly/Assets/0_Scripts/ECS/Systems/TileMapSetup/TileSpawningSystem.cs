@@ -11,7 +11,7 @@ public partial struct TileSpawningSystem : ISystem
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<LoadGameTag>();
+        state.RequireForUpdate<Tags.LoadGame>();
     }
 
     public void OnUpdate(ref SystemState state)

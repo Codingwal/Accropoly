@@ -5,6 +5,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
+using Tags;
 
 [UpdateInGroup(typeof(CreationSystemGroup))]
 public partial struct PopulationSavingSystem : ISystem
@@ -12,7 +13,7 @@ public partial struct PopulationSavingSystem : ISystem
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<SaveGameTag>();
+        state.RequireForUpdate<SaveGame>();
     }
     public void OnUpdate(ref SystemState state)
     {
@@ -24,8 +25,8 @@ public partial struct PopulationSavingSystem : ISystem
         HashSet<ComponentType> typesToIgnoreSet = new();
         foreach (var type in typesToIgnore)
             typesToIgnoreSet.Add(type);
-        typesToIgnoreSet.Add(typeof(UnemployedTag));
-        typesToIgnoreSet.Add(typeof(HomelessTag));
+        typesToIgnoreSet.Add(typeof(Unemployed));
+        typesToIgnoreSet.Add(typeof(Homeless));
         typesToIgnore.Dispose();
 
         WorldDataSystem.worldData.population = new();
@@ -45,7 +46,7 @@ public partial struct PopulationSavingSystem : ISystem
                     bool isEnabled = !componentType.IsEnableable || entityManager.IsComponentEnabled(entity, componentType);
                     components.Add((entityManager.GetComponentData<T>(entity), isEnabled));
                 }
-                void AddTagComponent<T>() where T : unmanaged, IComponentData
+                void AddComponent<T>() where T : unmanaged, IComponentData
                 {
                     bool isEnabled = !componentType.IsEnableable || entityManager.IsComponentEnabled(entity, componentType);
                     components.Add((new T(), isEnabled));

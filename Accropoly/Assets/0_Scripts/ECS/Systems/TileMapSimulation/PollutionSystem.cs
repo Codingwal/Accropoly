@@ -2,13 +2,14 @@ using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
 using Components;
+using Tags;
 
 public partial class PollutionSystem : SystemBase
 {
     private uint frame;
     protected override void OnCreate()
     {
-        RequireForUpdate<RunGameTag>();
+        RequireForUpdate<RunGame>();
     }
     protected override void OnUpdate()
     {
@@ -19,11 +20,11 @@ public partial class PollutionSystem : SystemBase
         NativeArray<float> totalPollution = new(1, Allocator.TempJob, NativeArrayOptions.ClearMemory);
         NativeArray<float> electricityPollution = new(1, Allocator.TempJob, NativeArrayOptions.ClearMemory);
 
-        Entities.WithAll<ActiveTileTag>().ForEach((in Polluter polluter) =>
+        Entities.WithAll<ActiveTile>().ForEach((in Polluter polluter) =>
         {
             totalPollution[0] += polluter.pollution;
         }).Schedule();
-        Entities.WithAll<ActiveTileTag, ElectricityProducer>().ForEach((in Polluter polluter) =>
+        Entities.WithAll<ActiveTile, ElectricityProducer>().ForEach((in Polluter polluter) =>
         {
             electricityPollution[0] += polluter.pollution;
         }).Schedule();

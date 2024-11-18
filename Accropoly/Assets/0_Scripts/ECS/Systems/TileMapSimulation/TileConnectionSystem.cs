@@ -3,6 +3,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 using Components;
+using Tags;
 
 public partial class TileConnectionSystem : SystemBase
 {
@@ -17,7 +18,7 @@ public partial class TileConnectionSystem : SystemBase
 
         // Connect new tiles with the ConnectingTile component
         // ConnectingTile, MapTileComponent & LocalTransform can't be passed as parameters because SystemAPI.GetComponent & SystemAPI.HasComponent are used
-        Entities.WithAll<NewTileTag, ConnectingTile>().ForEach((Entity entity) =>
+        Entities.WithAll<NewTile, ConnectingTile>().ForEach((Entity entity) =>
         {
             ConnectingTile connectingTile = SystemAPI.GetComponent<ConnectingTile>(entity);
             Tile mapTileComponent = SystemAPI.GetComponent<Tile>(entity);
@@ -64,7 +65,7 @@ public partial class TileConnectionSystem : SystemBase
         }).Schedule();
 
         // Disconnect new tiles with the ConnectingTile component
-        Entities.WithAll<NewTileTag>().WithNone<ConnectingTile>().ForEach((Entity entity) =>
+        Entities.WithAll<NewTile>().WithNone<ConnectingTile>().ForEach((Entity entity) =>
         {
             var mapTileComponent = SystemAPI.GetComponent<Tile>(entity);
 
@@ -90,7 +91,7 @@ public partial class TileConnectionSystem : SystemBase
             }
         }).Schedule();
 
-        if (SystemAPI.HasSingleton<LoadGameTag>())
+        if (SystemAPI.HasSingleton<LoadGame>())
         {
             // ConnectingTile can't be passed as a parameter because SystemAPI.GetComponent & SystemAPI.HasComponent are used
             Entities.WithAll<ConnectingTile>().ForEach((Entity entity, ref Tile mapTileComponent, ref LocalTransform transform) =>

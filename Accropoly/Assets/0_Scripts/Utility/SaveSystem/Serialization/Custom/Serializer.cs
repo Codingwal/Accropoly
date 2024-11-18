@@ -1,5 +1,6 @@
 using System;
 using Components;
+using Tags;
 
 public partial class Serializer
 {
@@ -125,10 +126,10 @@ public partial class Serializer
                 bw.Write(componentData.totalSpace);
                 bw.Write(componentData.freeSpace);
             }
-            else if (type == typeof(IsConnectedTag)) bw.Write((int)TileComponents.IsConnectedTag);
-            else if (type == typeof(ActiveTileTag)) bw.Write((int)TileComponents.ActiveTileTag);
-            else if (type == typeof(NewTileTag)) bw.Write((int)TileComponents.NewTileTag);
-            else if (type == typeof(BuildingConnectorTag)) bw.Write((int)TileComponents.BuildingConnectorTag);
+            else if (type == typeof(IsConnected)) bw.Write((int)TileComponents.IsConnectedTag);
+            else if (type == typeof(ActiveTile)) bw.Write((int)TileComponents.ActiveTileTag);
+            else if (type == typeof(NewTile)) bw.Write((int)TileComponents.NewTileTag);
+            else if (type == typeof(BuildingConnector)) bw.Write((int)TileComponents.BuildingConnectorTag);
             else throw new($"Cannot serialize component of type {type}");
 
         }

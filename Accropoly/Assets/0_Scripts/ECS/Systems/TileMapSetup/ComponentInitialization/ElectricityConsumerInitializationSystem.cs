@@ -1,5 +1,6 @@
 using Unity.Entities;
 using Components;
+using Tags;
 
 [UpdateInGroup(typeof(ComponentInitializationSystemGroup))]
 public partial class ElectricityConsumerInitializationSystem : SystemBase
@@ -7,18 +8,18 @@ public partial class ElectricityConsumerInitializationSystem : SystemBase
     protected override void OnUpdate()
     {
         var ecb = SystemAPI.GetSingleton<EndComponentInitializationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
-        Entities.WithAll<NewTileTag, ElectricityConsumer>().ForEach((Entity entity) =>
+        Entities.WithAll<NewTile, ElectricityConsumer>().ForEach((Entity entity) =>
         {
-            ecb.AddComponent<HasElectricityTag>(entity);
-            ecb.SetComponentEnabled<HasElectricityTag>(entity, false);
+            ecb.AddComponent<HasElectricity>(entity);
+            ecb.SetComponentEnabled<HasElectricity>(entity, false);
         }).Schedule();
 
-        if (SystemAPI.HasSingleton<LoadGameTag>())
+        if (SystemAPI.HasSingleton<LoadGame>())
         {
             Entities.WithAll<ElectricityConsumer>().ForEach((Entity entity) =>
             {
-                ecb.AddComponent<HasElectricityTag>(entity);
-                ecb.SetComponentEnabled<HasElectricityTag>(entity, false);
+                ecb.AddComponent<HasElectricity>(entity);
+                ecb.SetComponentEnabled<HasElectricity>(entity, false);
             }).Schedule();
         }
     }

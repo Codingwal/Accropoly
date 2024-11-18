@@ -14,7 +14,7 @@ public partial struct BuildingSystem : ISystem
     private static Entity entity;
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<RunGameTag>();
+        state.RequireForUpdate<Tags.RunGame>();
         state.RequireForUpdate<TileToPlace>(); // Update only if there is a PlacementProcess running (The process is started by the menu)
 
         placementInputDataQuery = state.GetEntityQuery(typeof(PlacementInputData));

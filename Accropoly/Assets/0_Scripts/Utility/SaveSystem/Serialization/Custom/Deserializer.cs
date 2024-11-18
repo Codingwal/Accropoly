@@ -1,6 +1,7 @@
 using Unity.Entities;
 using Unity.Mathematics;
 using Components;
+using Tags;
 
 public partial class Deserializer
 {
@@ -111,10 +112,10 @@ public partial class Deserializer
                     freeSpace = br.ReadInt32()
                 },
 
-                TileComponents.IsConnectedTag => new IsConnectedTag(),
-                TileComponents.ActiveTileTag => new ActiveTileTag(),
-                TileComponents.NewTileTag => new NewTileTag(),
-                TileComponents.BuildingConnectorTag => new BuildingConnectorTag(),
+                TileComponents.IsConnectedTag => new IsConnected(),
+                TileComponents.ActiveTileTag => new ActiveTile(),
+                TileComponents.NewTileTag => new NewTile(),
+                TileComponents.BuildingConnectorTag => new BuildingConnector(),
 
                 _ => throw new($"Cannot deserialize component of type {type}")
             };

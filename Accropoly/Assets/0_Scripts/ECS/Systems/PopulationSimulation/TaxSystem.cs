@@ -6,7 +6,7 @@ public partial class TaxSystem : SystemBase
 {
     protected override void OnCreate()
     {
-        RequireForUpdate<NewDayTag>();
+        RequireForUpdate<Tags.NewDay>();
         RequireForUpdate<ConfigComponents.Taxes>();
     }
     protected override void OnUpdate()

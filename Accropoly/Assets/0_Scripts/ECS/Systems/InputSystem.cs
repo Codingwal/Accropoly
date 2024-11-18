@@ -16,7 +16,7 @@ public partial class InputSystem : SystemBase
 
     protected override void OnCreate()
     {
-        RequireForUpdate<RunGameTag>();
+        RequireForUpdate<Tags.RunGame>();
 
         inputActions = new();
         DisableInputActions();

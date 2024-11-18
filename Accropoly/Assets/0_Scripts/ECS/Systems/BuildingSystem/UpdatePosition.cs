@@ -11,7 +11,7 @@ public partial struct UpdatePosition : ISystem
     {
         state.RequireForUpdate<TileToPlace>();
         state.RequireForUpdate<ConfigComponents.BuildingSystem>();
-        state.RequireForUpdate<RunGameTag>();
+        state.RequireForUpdate<Tags.RunGame>();
     }
     public void OnUpdate(ref SystemState state)
     {

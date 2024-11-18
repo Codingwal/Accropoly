@@ -4,6 +4,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using Components;
+using Tags;
 
 [BurstCompile]
 [UpdateInGroup(typeof(CreationSystemGroup))]
@@ -14,7 +15,7 @@ public partial class ImmigrationSystem : SystemBase
     protected override void OnCreate()
     {
         RequireForUpdate<ConfigComponents.PrefabEntity>();
-        RequireForUpdate<RunGameTag>();
+        RequireForUpdate<RunGame>();
     }
     [BurstCompile]
     protected override void OnUpdate()
@@ -24,25 +25,25 @@ public partial class ImmigrationSystem : SystemBase
         var ecb = SystemAPI.GetSingleton<EndCreationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
         Entity prefab = SystemAPI.GetSingleton<ConfigComponents.PrefabEntity>();
 
-        NativeArray<Entity> homelessEntities = GetEntityQuery(typeof(HomelessTag)).ToEntityArray(Allocator.TempJob);
-        NativeArray<Person> homelessPersonComponents = GetEntityQuery(typeof(HomelessTag), typeof(Person)).ToComponentDataArray<Person>(Allocator.TempJob);
-        NativeArray<LocalTransform> homelessTransforms = GetEntityQuery(typeof(HomelessTag), typeof(LocalTransform)).ToComponentDataArray<LocalTransform>(Allocator.TempJob);
+        NativeArray<Entity> homelessEntities = GetEntityQuery(typeof(Homeless)).ToEntityArray(Allocator.TempJob);
+        NativeArray<Person> homelessPersonComponents = GetEntityQuery(typeof(Homeless), typeof(Person)).ToComponentDataArray<Person>(Allocator.TempJob);
+        NativeArray<LocalTransform> homelessTransforms = GetEntityQuery(typeof(Homeless), typeof(LocalTransform)).ToComponentDataArray<LocalTransform>(Allocator.TempJob);
         NativeArray<int> homelessIndex = new(1, Allocator.TempJob);
         homelessIndex[0] = 0;
 
         // Foreach active habitat with space
-        Entities.WithAll<ActiveTileTag, HasSpaceTag>().ForEach((Entity habitatEntity, ref Habitat habitat, in Tile habitatTile) =>
+        Entities.WithAll<ActiveTile, HasSpace>().ForEach((Entity habitatEntity, ref Habitat habitat, in Tile habitatTile) =>
         {
             if (homelessIndex[0] < homelessEntities.Length) // If there is at least one homeless person left
             {
                 // Reimmigration
 
                 habitat.freeSpace--;
-                if (habitat.freeSpace == 0) ecb.RemoveComponent<HasSpaceTag>(habitatEntity);
+                if (habitat.freeSpace == 0) ecb.RemoveComponent<HasSpace>(habitatEntity);
 
                 var homelessEntity = homelessEntities[homelessIndex[0]];
 
-                ecb.RemoveComponent<HomelessTag>(homelessEntity);
+                ecb.RemoveComponent<Homeless>(homelessEntity);
 
                 // Update homeTile
                 var personComponent = homelessPersonComponents[homelessIndex[0]];
@@ -60,11 +61,11 @@ public partial class ImmigrationSystem : SystemBase
                 // Immigration
 
                 habitat.freeSpace--;
-                if (habitat.freeSpace == 0) ecb.RemoveComponent<HasSpaceTag>(habitatEntity);
+                if (habitat.freeSpace == 0) ecb.RemoveComponent<HasSpace>(habitatEntity);
 
                 // Create new inhabitant for this house ("immigrant")
                 Entity entity = ecb.Instantiate(prefab);
-                ecb.AddComponent(entity, new NewPersonTag());
+                ecb.AddComponent(entity, new NewPerson());
                 ecb.AddComponent(entity, new Person
                 {
                     homeTile = habitatTile.pos,

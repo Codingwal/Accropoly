@@ -1,5 +1,6 @@
 using Unity.Entities;
 using Components;
+using Tags;
 
 public partial class UpdatePopulationStatisticsSystem : SystemBase
 {
@@ -7,10 +8,10 @@ public partial class UpdatePopulationStatisticsSystem : SystemBase
     private EntityQuery unemployedQuery;
     protected override void OnCreate()
     {
-        RequireForUpdate<RunGameTag>();
+        RequireForUpdate<RunGame>();
 
         populationQuery = GetEntityQuery(typeof(Person));
-        unemployedQuery = GetEntityQuery(typeof(UnemployedTag));
+        unemployedQuery = GetEntityQuery(typeof(Unemployed));
     }
     protected override void OnUpdate()
     {

@@ -1,5 +1,6 @@
 using Unity.Entities;
 using Components;
+using Tags;
 
 [UpdateInGroup(typeof(ComponentInitializationSystemGroup))]
 public partial class WorkerInitializationSystem : SystemBase
@@ -11,18 +12,18 @@ public partial class WorkerInitializationSystem : SystemBase
     protected override void OnUpdate()
     {
         var ecb = SystemAPI.GetSingleton<EndComponentInitializationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
-        Entities.WithAll<NewPersonTag, Worker>().ForEach((Entity entity) =>
+        Entities.WithAll<NewPerson, Worker>().ForEach((Entity entity) =>
         {
             ecb.SetComponent(entity, new Worker { employer = new(-1, -1) });
-            ecb.AddComponent<UnemployedTag>(entity);
+            ecb.AddComponent<Unemployed>(entity);
         }).Schedule();
 
-        if (SystemAPI.HasSingleton<LoadGameTag>())
+        if (SystemAPI.HasSingleton<LoadGame>())
         {
             Entities.ForEach((Entity entity, in Worker worker) =>
             {
                 if (worker.employer.Equals(new(-1, -1)))
-                    ecb.AddComponent<UnemployedTag>(entity);
+                    ecb.AddComponent<Unemployed>(entity);
             }).Schedule();
         }
     }

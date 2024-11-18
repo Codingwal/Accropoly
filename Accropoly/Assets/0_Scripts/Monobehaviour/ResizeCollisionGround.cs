@@ -8,7 +8,7 @@ public class ResizecollisionGround : MonoBehaviour
     void Start()
     {
         EntityManager em = World.DefaultGameObjectInjectionWorld.EntityManager;
-        query = em.CreateEntityQuery(typeof(LoadGameTag));
+        query = em.CreateEntityQuery(typeof(Tags.LoadGame));
     }
 
     // Update is called once per frame

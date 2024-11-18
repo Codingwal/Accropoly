@@ -6,11 +6,11 @@ public partial struct DeleteNewPersonTagSystem : ISystem
     private EntityQuery newTileTagQuery;
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<NewPersonTag>();
-        newTileTagQuery = state.GetEntityQuery(typeof(NewPersonTag));
+        state.RequireForUpdate<Tags.NewPerson>();
+        newTileTagQuery = state.GetEntityQuery(typeof(Tags.NewPerson));
     }
     public void OnUpdate(ref SystemState state)
     {
-        state.EntityManager.RemoveComponent(newTileTagQuery, typeof(NewPersonTag));
+        state.EntityManager.RemoveComponent(newTileTagQuery, typeof(Tags.NewPerson));
     }
 }
