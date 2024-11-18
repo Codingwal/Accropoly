@@ -1,23 +1,29 @@
 using Unity.Entities;
 using UnityEngine;
 
-public class BuildingSystemConfigAuthoring : MonoBehaviour
+namespace Authoring
 {
-    [SerializeField] private LayerMask mouseRayLayer;
-
-    public class Baker : Baker<BuildingSystemConfigAuthoring>
+    public class BuildingSystem : MonoBehaviour
     {
-        public override void Bake(BuildingSystemConfigAuthoring authoring)
+        [SerializeField] private LayerMask mouseRayLayer;
+
+        public class Baker : Baker<BuildingSystem>
         {
-            Entity entity = GetEntity(TransformUsageFlags.None);
-            AddComponent(entity, new BuildingSystemConfig
+            public override void Bake(BuildingSystem authoring)
             {
-                mouseRayLayer = authoring.mouseRayLayer,
-            });
+                Entity entity = GetEntity(TransformUsageFlags.None);
+                AddComponent(entity, new ConfigComponents.BuildingSystem
+                {
+                    mouseRayLayer = authoring.mouseRayLayer,
+                });
+            }
         }
     }
 }
-public struct BuildingSystemConfig : IComponentData
+namespace ConfigComponents
 {
-    public LayerMask mouseRayLayer;
+    public struct BuildingSystem : IComponentData
+    {
+        public LayerMask mouseRayLayer;
+    }
 }

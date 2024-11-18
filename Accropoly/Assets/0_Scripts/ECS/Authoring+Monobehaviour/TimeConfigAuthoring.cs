@@ -1,23 +1,29 @@
 using Unity.Entities;
 using UnityEngine;
 
-public class TimeConfigAuthoring : MonoBehaviour
+namespace Authoring
 {
-    [SerializeField] private float secondsPerDay;
-    public class Baker : Baker<TimeConfigAuthoring>
+    public class Time : MonoBehaviour
     {
-        public override void Bake(TimeConfigAuthoring authoring)
+        [SerializeField] private float secondsPerDay;
+        public class Baker : Baker<Time>
         {
-            Entity entity = GetEntity(TransformUsageFlags.None);
-
-            AddComponent(entity, new TimeConfig
+            public override void Bake(Time authoring)
             {
-                secondsPerDay = authoring.secondsPerDay
-            });
+                Entity entity = GetEntity(TransformUsageFlags.None);
+
+                AddComponent(entity, new ConfigComponents.Time
+                {
+                    secondsPerDay = authoring.secondsPerDay
+                });
+            }
         }
     }
 }
-public struct TimeConfig : IComponentData
+namespace ConfigComponents
 {
-    public float secondsPerDay;
+    public struct Time : IComponentData
+    {
+        public float secondsPerDay;
+    }
 }

@@ -2,27 +2,33 @@ using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 
-public class TilePricesAuthoring : MonoBehaviour
+namespace Authoring
 {
-    [SerializeField] private SerializableDictionary<TileType, float> tilePrices = new();
-    public class Baker : Baker<TilePricesAuthoring>
+    public class TilePrices : MonoBehaviour
     {
-        public override void Bake(TilePricesAuthoring authoring)
+        [SerializeField] private SerializableDictionary<TileType, float> tilePrices = new();
+        public class Baker : Baker<TilePrices>
         {
-            Entity entity = GetEntity(TransformUsageFlags.None);
-
-            AddComponentObject(entity, new TilePrices
+            public override void Bake(TilePrices authoring)
             {
-                prices = authoring.tilePrices
-            });
+                Entity entity = GetEntity(TransformUsageFlags.None);
+
+                AddComponentObject(entity, new ConfigComponents.TilePrices
+                {
+                    prices = authoring.tilePrices
+                });
+            }
         }
     }
 }
-public class TilePrices : IComponentData
+namespace ConfigComponents
 {
-    public Dictionary<TileType, float> prices;
-    public TilePrices()
+    public class TilePrices : IComponentData
     {
-        prices = new();
+        public Dictionary<TileType, float> prices;
+        public TilePrices()
+        {
+            prices = new();
+        }
     }
 }

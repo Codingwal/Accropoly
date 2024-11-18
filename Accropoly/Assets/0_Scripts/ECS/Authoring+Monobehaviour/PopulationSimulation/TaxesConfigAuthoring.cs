@@ -1,22 +1,28 @@
 using Unity.Entities;
 using UnityEngine;
 
-public class TaxesConfigAuthoring : MonoBehaviour
+namespace Authoring
 {
-    [SerializeField] private float taxPerHappiness;
-    public class Baker : Baker<TaxesConfigAuthoring>
+    public class Taxes : MonoBehaviour
     {
-        public override void Bake(TaxesConfigAuthoring authoring)
+        [SerializeField] private float taxPerHappiness;
+        public class Baker : Baker<Taxes>
         {
-            Entity entity = GetEntity(TransformUsageFlags.None);
-            AddComponent(entity, new TaxesConfig
+            public override void Bake(Taxes authoring)
             {
-                taxPerHappiness = authoring.taxPerHappiness
-            });
+                Entity entity = GetEntity(TransformUsageFlags.None);
+                AddComponent(entity, new ConfigComponents.Taxes
+                {
+                    taxPerHappiness = authoring.taxPerHappiness
+                });
+            }
         }
     }
 }
-public struct TaxesConfig : IComponentData
+namespace ConfigComponents
 {
-    public float taxPerHappiness;
+    public struct Taxes : IComponentData
+    {
+        public float taxPerHappiness;
+    }
 }

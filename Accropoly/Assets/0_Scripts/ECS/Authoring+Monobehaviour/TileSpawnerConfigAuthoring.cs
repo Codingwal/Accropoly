@@ -1,31 +1,37 @@
 using Unity.Entities;
 using UnityEngine;
 
-public class TileSpawnerConfigAuthoring : MonoBehaviour
+namespace Authoring
 {
-    [SerializeField] private GameObject prefab;
-
-    public class Baker : Baker<TileSpawnerConfigAuthoring>
+    public class PrefabEntity : MonoBehaviour
     {
-        public override void Bake(TileSpawnerConfigAuthoring authoring)
+        [SerializeField] private GameObject prefab;
+
+        public class Baker : Baker<PrefabEntity>
         {
-            Debug.Assert(authoring.prefab != null, "tilePrefab is null");
+            public override void Bake(PrefabEntity authoring)
+            {
+                Debug.Assert(authoring.prefab != null, "tilePrefab is null");
 
-            Entity entity = GetEntity(TransformUsageFlags.None);
+                Entity entity = GetEntity(TransformUsageFlags.None);
 
-            AddComponent<PrefabEntity>(entity, GetEntity(authoring.prefab, TransformUsageFlags.Dynamic));
+                AddComponent<ConfigComponents.PrefabEntity>(entity, GetEntity(authoring.prefab, TransformUsageFlags.Dynamic));
+            }
         }
     }
 }
-public struct PrefabEntity : IComponentData
+namespace ConfigComponents
 {
-    public Entity prefab;
-    public static implicit operator PrefabEntity(Entity entity)
+    public struct PrefabEntity : IComponentData
     {
-        return new PrefabEntity { prefab = entity };
-    }
-    public static implicit operator Entity(PrefabEntity config)
-    {
-        return config.prefab;
+        public Entity prefab;
+        public static implicit operator PrefabEntity(Entity entity)
+        {
+            return new PrefabEntity { prefab = entity };
+        }
+        public static implicit operator Entity(PrefabEntity config)
+        {
+            return config.prefab;
+        }
     }
 }
