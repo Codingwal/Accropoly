@@ -35,7 +35,7 @@ public static class MenuUtility
     {
         SaveSystem.Instance.UpdateWorldName(worldName);
 
-        WorldDataSystem.LoadWorldData();
+        Systems.WorldDataSystem.LoadWorldData();
 
         InputSystem.EnableInputActions();
 
@@ -45,7 +45,7 @@ public static class MenuUtility
     }
     public static void QuitGame()
     {
-        WorldDataSystem.SaveWorldData();
+        Systems.WorldDataSystem.SaveWorldData();
 
         EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
         entityManager.DestroyEntity(entityManager.CreateEntityQuery(typeof(Tags.RunGame)));
@@ -87,7 +87,7 @@ public static class MenuUtility
     }
     public static void PlaceTile(TileType tileType)
     {
-        BuildingSystem.StartPlacementProcess(tileType);
+        Systems.BuildingSystem.StartPlacementProcess(tileType);
     }
     public static void OpenExplorer()
     {
@@ -102,5 +102,5 @@ public static class MenuUtility
         return EntityManager.CreateEntityQuery(typeof(T)).GetSingleton<T>();
     }
     private static EntityManager EntityManager => World.DefaultGameObjectInjectionWorld.EntityManager;
-    private static InputSystem InputSystem => World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<InputSystem>();
+    private static Systems.InputSystem InputSystem => World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<Systems.InputSystem>();
 }

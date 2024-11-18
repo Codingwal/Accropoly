@@ -2,24 +2,27 @@ using Unity.Entities;
 using Components;
 using Tags;
 
-[UpdateInGroup(typeof(ComponentInitializationSystemGroup))]
-public partial class PersonComponentInitializationSystem : SystemBase
+namespace Systems
 {
-    protected override void OnCreate()
+    [UpdateInGroup(typeof(ComponentInitializationSystemGroup))]
+    public partial class PersonComponentInitialization : SystemBase
     {
-        RequireForUpdate<Person>();
-    }
-    protected override void OnUpdate()
-    {
-        var ecb = SystemAPI.GetSingleton<EndComponentInitializationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
-
-        if (SystemAPI.HasSingleton<LoadGame>())
+        protected override void OnCreate()
         {
-            Entities.ForEach((Entity entity, in Person person) =>
+            RequireForUpdate<Person>();
+        }
+        protected override void OnUpdate()
+        {
+            var ecb = SystemAPI.GetSingleton<EndComponentInitializationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
+
+            if (SystemAPI.HasSingleton<LoadGame>())
             {
-                if (person.homeTile.Equals(new(-1, -1)))
-                    ecb.AddComponent<Homeless>(entity);
-            }).Schedule();
+                Entities.ForEach((Entity entity, in Person person) =>
+                {
+                    if (person.homeTile.Equals(new(-1, -1)))
+                        ecb.AddComponent<Homeless>(entity);
+                }).Schedule();
+            }
         }
     }
 }

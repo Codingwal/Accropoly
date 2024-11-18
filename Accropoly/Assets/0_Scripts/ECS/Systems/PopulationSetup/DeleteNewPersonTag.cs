@@ -1,16 +1,19 @@
 using Unity.Entities;
 
-[UpdateInGroup(typeof(PreCreationSystemGroup))]
-public partial struct DeleteNewPersonTagSystem : ISystem
+namespace Systems
 {
-    private EntityQuery newTileTagQuery;
-    public void OnCreate(ref SystemState state)
+    [UpdateInGroup(typeof(PreCreationSystemGroup))]
+    public partial struct DeleteNewPersonTag : ISystem
     {
-        state.RequireForUpdate<Tags.NewPerson>();
-        newTileTagQuery = state.GetEntityQuery(typeof(Tags.NewPerson));
-    }
-    public void OnUpdate(ref SystemState state)
-    {
-        state.EntityManager.RemoveComponent(newTileTagQuery, typeof(Tags.NewPerson));
+        private EntityQuery newTileTagQuery;
+        public void OnCreate(ref SystemState state)
+        {
+            state.RequireForUpdate<Tags.NewPerson>();
+            newTileTagQuery = state.GetEntityQuery(typeof(Tags.NewPerson));
+        }
+        public void OnUpdate(ref SystemState state)
+        {
+            state.EntityManager.RemoveComponent(newTileTagQuery, typeof(Tags.NewPerson));
+        }
     }
 }

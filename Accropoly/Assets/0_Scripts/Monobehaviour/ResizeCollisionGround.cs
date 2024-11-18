@@ -16,7 +16,7 @@ public class ResizecollisionGround : MonoBehaviour
     {
         if (query.CalculateEntityCount() != 0)
         {
-            float mapScale = WorldDataSystem.worldData.map.tiles.GetLength(0);
+            float mapScale = Systems.WorldDataSystem.worldData.map.tiles.GetLength(0);
             transform.position = new(mapScale - 1, -0.01f, mapScale - 1);
             transform.localScale = new(mapScale / 5, 1, mapScale / 5);
         }

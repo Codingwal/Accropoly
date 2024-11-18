@@ -33,7 +33,7 @@ public class MenuManager : MonoBehaviour
     private string SelectedMapTemplateName => mapTemplateDropdown.options[mapTemplateDropdown.value].text;
     private void Awake()
     {
-        InputSystem.uiInput += OnUIInput;
+        Systems.InputSystem.uiInput += OnUIInput;
 
         startGameButton.onClick.AddListener(OnStartGame);
         createMapButton.onClick.AddListener(OnCreateMap);
@@ -61,7 +61,7 @@ public class MenuManager : MonoBehaviour
     }
     private void OnDisable()
     {
-        InputSystem.uiInput -= OnUIInput;
+        Systems.InputSystem.uiInput -= OnUIInput;
     }
 
     private void OnStartGame()

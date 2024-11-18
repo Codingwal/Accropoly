@@ -2,36 +2,39 @@ using Components;
 using Unity.Entities;
 using Tags;
 
-public partial class UpdateTileActivation : SystemBase
+namespace Systems
 {
-    private int frame;
-    protected override void OnCreate()
+    public partial class UpdateTileActivation : SystemBase
     {
-        RequireForUpdate<RunGame>();
-    }
-    protected override void OnUpdate()
-    {
-        frame++;
-        if (frame % 50 != 0) return;
-
-        var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
-
-        Entities.WithAll<Tile>().ForEach((Entity entity) =>
+        private int frame;
+        protected override void OnCreate()
         {
-            ecb.SetComponentEnabled<ActiveTile>(entity, true);
-        }).Schedule();
+            RequireForUpdate<RunGame>();
+        }
+        protected override void OnUpdate()
+        {
+            frame++;
+            if (frame % 50 != 0) return;
 
-        // Disable buildings without connection (street, ...)
-        Entities.WithDisabled<IsConnected>().ForEach((Entity entity) =>
-       {
-           ecb.SetComponentEnabled<ActiveTile>(entity, false);
-       }).Schedule();
+            var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
 
-        // Disable e-consumers without electricity
-        Entities.WithDisabled<HasElectricity>().ForEach((Entity entity, in ElectricityConsumer electricityConsumer) =>
-       {
-           if (electricityConsumer.disableIfElectroless) // Only disable if electricity is strictly required
+            Entities.WithAll<Tile>().ForEach((Entity entity) =>
+            {
+                ecb.SetComponentEnabled<ActiveTile>(entity, true);
+            }).Schedule();
+
+            // Disable buildings without connection (street, ...)
+            Entities.WithDisabled<IsConnected>().ForEach((Entity entity) =>
+           {
                ecb.SetComponentEnabled<ActiveTile>(entity, false);
-       }).Schedule();
+           }).Schedule();
+
+            // Disable e-consumers without electricity
+            Entities.WithDisabled<HasElectricity>().ForEach((Entity entity, in ElectricityConsumer electricityConsumer) =>
+           {
+               if (electricityConsumer.disableIfElectroless) // Only disable if electricity is strictly required
+                   ecb.SetComponentEnabled<ActiveTile>(entity, false);
+           }).Schedule();
+        }
     }
 }
