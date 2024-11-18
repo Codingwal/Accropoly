@@ -1,5 +1,6 @@
 using Unity.Entities;
 using Unity.Mathematics;
+using Components;
 
 public static class TileGridUtility
 {
@@ -7,13 +8,13 @@ public static class TileGridUtility
     {
         var em = World.DefaultGameObjectInjectionWorld.EntityManager;
         Entity entity = em.CreateEntity();
-        em.AddComponent<EntityGridHolder>(entity);
+        em.AddComponent<Tags.EntityGridHolder>(entity);
         return em.AddBuffer<EntityBufferElement>(entity);
     }
     public static DynamicBuffer<EntityBufferElement> GetEntityGrid()
     {
         var em = World.DefaultGameObjectInjectionWorld.EntityManager;
-        var query = em.CreateEntityQuery(typeof(EntityGridHolder));
+        var query = em.CreateEntityQuery(typeof(Tags.EntityGridHolder));
         return em.GetBuffer<EntityBufferElement>(query.GetSingletonEntity());
     }
     public static int GetIndex(int2 pos, int totalMapSize)

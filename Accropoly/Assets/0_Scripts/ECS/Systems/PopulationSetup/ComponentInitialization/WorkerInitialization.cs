@@ -1,28 +1,33 @@
 using Unity.Entities;
+using Components;
+using Tags;
 
-[UpdateInGroup(typeof(ComponentInitializationSystemGroup))]
-public partial class WorkerInitializationSystem : SystemBase
+namespace Systems
 {
-    protected override void OnCreate()
+    [UpdateInGroup(typeof(ComponentInitializationSystemGroup))]
+    public partial class WorkerInitialization : SystemBase
     {
-        RequireForUpdate<Worker>();
-    }
-    protected override void OnUpdate()
-    {
-        var ecb = SystemAPI.GetSingleton<EndComponentInitializationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
-        Entities.WithAll<NewPersonTag, Worker>().ForEach((Entity entity) =>
+        protected override void OnCreate()
         {
-            ecb.SetComponent(entity, new Worker { employer = new(-1, -1) });
-            ecb.AddComponent<UnemployedTag>(entity);
-        }).Schedule();
-
-        if (SystemAPI.HasSingleton<LoadGameTag>())
+            RequireForUpdate<Worker>();
+        }
+        protected override void OnUpdate()
         {
-            Entities.ForEach((Entity entity, in Worker worker) =>
+            var ecb = SystemAPI.GetSingleton<EndComponentInitializationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
+            Entities.WithAll<NewPerson, Worker>().ForEach((Entity entity) =>
             {
-                if (worker.employer.Equals(new(-1, -1)))
-                    ecb.AddComponent<UnemployedTag>(entity);
+                ecb.SetComponent(entity, new Worker { employer = new(-1, -1) });
+                ecb.AddComponent<Unemployed>(entity);
             }).Schedule();
+
+            if (SystemAPI.HasSingleton<LoadGame>())
+            {
+                Entities.ForEach((Entity entity, in Worker worker) =>
+                {
+                    if (worker.employer.Equals(new(-1, -1)))
+                        ecb.AddComponent<Unemployed>(entity);
+                }).Schedule();
+            }
         }
     }
 }

@@ -19,8 +19,8 @@ public class StatisticsDisplay : MonoBehaviour
     }
     private void Update()
     {
-        UIInfo uiInfo = MenuUtility.GetUIInfo();
-        GameInfo gameInfo = MenuUtility.GetGameInfo();
+        var uiInfo = MenuUtility.GetUIInfo();
+        var gameInfo = MenuUtility.GetGameInfo();
 
         balanceText.text = $"Balance: {Format(gameInfo.balance)}";
 

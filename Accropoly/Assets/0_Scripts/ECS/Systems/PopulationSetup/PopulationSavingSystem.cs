@@ -1,65 +1,70 @@
 using System.Collections.Generic;
+using Components;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
+using Tags;
 
-[UpdateInGroup(typeof(CreationSystemGroup))]
-public partial struct PopulationSavingSystem : ISystem
+namespace Systems
 {
-    [BurstCompile]
-    public void OnCreate(ref SystemState state)
+    [UpdateInGroup(typeof(CreationSystemGroup))]
+    public partial struct PopulationSavingSystem : ISystem
     {
-        state.RequireForUpdate<SaveGameTag>();
-    }
-    public void OnUpdate(ref SystemState state)
-    {
-        // Ignore all rendering and transform related components
-        var prefab = SystemAPI.GetSingleton<PrefabEntity>();
-        NativeArray<ComponentType> typesToIgnore = state.EntityManager.GetChunk(prefab.prefab).Archetype.GetComponentTypes();
-
-        // Convert to HashSet for faster search
-        HashSet<ComponentType> typesToIgnoreSet = new();
-        foreach (var type in typesToIgnore)
-            typesToIgnoreSet.Add(type);
-        typesToIgnoreSet.Add(typeof(UnemployedTag));
-        typesToIgnoreSet.Add(typeof(HomelessTag));
-        typesToIgnore.Dispose();
-
-        WorldDataSystem.worldData.population = new();
-        foreach ((var _, Entity entity) in SystemAPI.Query<RefRO<PersonComponent>>().WithEntityAccess())
+        [BurstCompile]
+        public void OnCreate(ref SystemState state)
         {
-            List<(IComponentData, bool)> components = new();
-            NativeArray<ComponentType> componentTypes = state.EntityManager.GetChunk(entity).Archetype.GetComponentTypes();
+            state.RequireForUpdate<SaveGame>();
+        }
+        public void OnUpdate(ref SystemState state)
+        {
+            // Ignore all rendering and transform related components
+            var prefab = SystemAPI.GetSingleton<ConfigComponents.PrefabEntity>();
+            NativeArray<ComponentType> typesToIgnore = state.EntityManager.GetChunk(prefab.prefab).Archetype.GetComponentTypes();
 
-            EntityManager entityManager = state.EntityManager;
-            foreach (var componentType in componentTypes)
+            // Convert to HashSet for faster search
+            HashSet<ComponentType> typesToIgnoreSet = new();
+            foreach (var type in typesToIgnore)
+                typesToIgnoreSet.Add(type);
+            typesToIgnoreSet.Add(typeof(Unemployed));
+            typesToIgnoreSet.Add(typeof(Homeless));
+            typesToIgnore.Dispose();
+
+            WorldDataSystem.worldData.population = new();
+            foreach ((var _, Entity entity) in SystemAPI.Query<RefRO<Person>>().WithEntityAccess())
             {
-                if (typesToIgnoreSet.Contains(componentType)) continue;
+                List<(IComponentData, bool)> components = new();
+                NativeArray<ComponentType> componentTypes = state.EntityManager.GetChunk(entity).Archetype.GetComponentTypes();
 
-                void AddComponentData<T>() where T : unmanaged, IComponentData
+                EntityManager entityManager = state.EntityManager;
+                foreach (var componentType in componentTypes)
                 {
-                    // If the component is enableable, check if it is enabled. Else set it to true 
-                    bool isEnabled = !componentType.IsEnableable || entityManager.IsComponentEnabled(entity, componentType);
-                    components.Add((entityManager.GetComponentData<T>(entity), isEnabled));
-                }
-                void AddTagComponent<T>() where T : unmanaged, IComponentData
-                {
-                    bool isEnabled = !componentType.IsEnableable || entityManager.IsComponentEnabled(entity, componentType);
-                    components.Add((new T(), isEnabled));
-                }
+                    if (typesToIgnoreSet.Contains(componentType)) continue;
 
-                if (componentType == typeof(PersonComponent)) AddComponentData<PersonComponent>();
-                else if (componentType == typeof(Worker)) AddComponentData<Worker>();
-                else Debug.LogWarning($"Component of type {componentType} will not be serialized but also isn't present in typesToIgnore");
+                    void AddComponentData<T>() where T : unmanaged, IComponentData
+                    {
+                        // If the component is enableable, check if it is enabled. Else set it to true 
+                        bool isEnabled = !componentType.IsEnableable || entityManager.IsComponentEnabled(entity, componentType);
+                        components.Add((entityManager.GetComponentData<T>(entity), isEnabled));
+                    }
+                    void AddComponent<T>() where T : unmanaged, IComponentData
+                    {
+                        bool isEnabled = !componentType.IsEnableable || entityManager.IsComponentEnabled(entity, componentType);
+                        components.Add((new T(), isEnabled));
+                    }
+
+                    if (componentType == typeof(Person)) AddComponentData<Person>();
+                    else if (componentType == typeof(Worker)) AddComponentData<Worker>();
+                    else Debug.LogWarning($"Component of type {componentType} will not be serialized but also isn't present in typesToIgnore");
+                }
+                componentTypes.Dispose();
+
+                // Save the position in a otherwise unused component
+                components.Add((new PosComponent { pos = entityManager.GetComponentData<LocalTransform>(entity).Position }, true));
+
+                WorldDataSystem.worldData.population.Add(new() { components = components });
             }
-            componentTypes.Dispose();
-
-            // Save the position in a otherwise unused component
-            components.Add((new PosComponent { pos = entityManager.GetComponentData<LocalTransform>(entity).Position }, true));
-
-            WorldDataSystem.worldData.population.Add(new() { components = components });
         }
     }
 }

@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-using UIAction = UIInputData.Action;
+using UIAction = Components.UIInputData.Action;
 
 public class MenuManager : MonoBehaviour
 {
@@ -33,7 +33,7 @@ public class MenuManager : MonoBehaviour
     private string SelectedMapTemplateName => mapTemplateDropdown.options[mapTemplateDropdown.value].text;
     private void Awake()
     {
-        InputSystem.uiInput += OnUIInput;
+        Systems.InputSystem.uiInput += OnUIInput;
 
         startGameButton.onClick.AddListener(OnStartGame);
         createMapButton.onClick.AddListener(OnCreateMap);
@@ -61,7 +61,7 @@ public class MenuManager : MonoBehaviour
     }
     private void OnDisable()
     {
-        InputSystem.uiInput -= OnUIInput;
+        Systems.InputSystem.uiInput -= OnUIInput;
     }
 
     private void OnStartGame()
@@ -98,7 +98,7 @@ public class MenuManager : MonoBehaviour
     {
         MenuUtility.Quit();
     }
-    private void OnUIInput(UIInputData inputData)
+    private void OnUIInput(Components.UIInputData inputData)
     {
         switch (inputData.action)
         {

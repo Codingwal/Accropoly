@@ -4,6 +4,8 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
+using Components;
+using Tags;
 
 public static class TilePlacingUtility
 {
@@ -17,18 +19,18 @@ public static class TilePlacingUtility
             TileType.Forest => new() { },
             TileType.House => new() { (new Habitat {totalSpace = rnd.Next(2, 6)}, true),
                                       (new ElectricityConsumer { consumption = 2, disableIfElectroless = false }, true),
-                                      (new Polluter { pollution = 3 }, true), (new IsConnectedTag(), false) },
+                                      (new Polluter { pollution = 3 }, true), (new IsConnected(), false) },
             TileType.SolarPanel => new() { (new ElectricityProducer { production = 10 }, true), (new Polluter { pollution = 1 }, true),
                                            (new Employer{totalSpace = 1}, true) },
-            TileType.Street => new() { (new ConnectingTile(ConnectingTileGroup.Street), true), (new BuildingConnectorTag(), true) },
+            TileType.Street => new() { (new ConnectingTile(ConnectingTileGroup.Street), true), (new BuildingConnector(), true) },
             TileType.Lake => new() { (new ConnectingTile(ConnectingTileGroup.Lake), true) },
             TileType.River => new() { (new ConnectingTile(ConnectingTileGroup.River), true) },
             TileType.Hut => new() { (new Habitat { totalSpace = rnd.Next(1, 3) }, true) },
             _ => throw new($"Missing componentTypes for tileType {tileType}")
         };
-        components.Add((new MapTileComponent { tileType = tileType, pos = pos, rotation = rotation }, true));
-        components.Add((new ActiveTileTag(), false));
-        components.Add((new NewTileTag(), true));
+        components.Add((new Tile { tileType = tileType, pos = pos, rotation = rotation }, true));
+        components.Add((new ActiveTile(), false));
+        components.Add((new NewTile(), true));
         return components;
     }
     public static void UpdateEntity(Entity tile, List<(IComponentData, bool)> components, EntityCommandBuffer ecb)
@@ -41,7 +43,7 @@ public static class TilePlacingUtility
             componentTypes.Add(component.GetType());
 
         // Add all components of the prefab (Transform & Rendering components)
-        var prefab = em.CreateEntityQuery(typeof(PrefabEntity)).GetSingleton<PrefabEntity>(); // Get the tilePrefab
+        var prefab = em.CreateEntityQuery(typeof(ConfigComponents.PrefabEntity)).GetSingleton<ConfigComponents.PrefabEntity>(); // Get the tilePrefab
         NativeArray<ComponentType> prefabComponentTypes = em.GetChunk(prefab).Archetype.GetComponentTypes(Allocator.Temp);
 
         foreach (var componentType in prefabComponentTypes)
@@ -49,7 +51,7 @@ public static class TilePlacingUtility
                 componentTypes.Add(componentType);
         prefabComponentTypes.Dispose();
 
-        // Moving the archetype keeps values of components that were already present (rendering components, SceneTag, ...)
+        // Moving the archetype keeps values of components that were already present (rendering components, Scene, ...)
         EntityArchetype archetype = em.CreateArchetype(componentTypes.ToArray());
         em.SetArchetype(tile, archetype);
 
@@ -65,11 +67,11 @@ public static class TilePlacingUtility
         foreach (var (component, enabled) in components)
         {
             Type type = component.GetType();
-            if (new ComponentType(type).IsZeroSized) // Handle tag components
+            if (new ComponentType(type).IsZeroSized) // Handle  components
             {
                 if (new ComponentType(type).IsEnableable) ecb.SetComponentEnabled(tile, type, enabled);
             }
-            else if (type == typeof(MapTileComponent)) SetComponentData<MapTileComponent>(component, enabled);
+            else if (type == typeof(Tile)) SetComponentData<Tile>(component, enabled);
             else if (type == typeof(AgingTile)) SetComponentData<AgingTile>(component, enabled);
             else if (type == typeof(ElectricityProducer)) SetComponentData<ElectricityProducer>(component, enabled);
             else if (type == typeof(ElectricityConsumer)) SetComponentData<ElectricityConsumer>(component, enabled);

@@ -1,15 +1,19 @@
 using Unity.Entities;
 using Unity.Mathematics;
-public struct MapTileComponent : IComponentData
+
+namespace Components
 {
-    public TileType tileType;
-    public int2 pos;
-    public Direction rotation;
-    public MapTileComponent(int x, int y, TileType tileType, Direction rotation)
+    public struct Tile : IComponentData
     {
-        pos = new(x, y);
-        this.tileType = tileType;
-        this.rotation = rotation;
+        public TileType tileType;
+        public int2 pos;
+        public Direction rotation;
+        public Tile(int x, int y, TileType tileType, Direction rotation)
+        {
+            pos = new(x, y);
+            this.tileType = tileType;
+            this.rotation = rotation;
+        }
     }
 }
 // Explicit values for compatability with other versions (new TileTypes just get a higher value)

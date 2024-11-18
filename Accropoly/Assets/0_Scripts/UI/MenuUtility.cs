@@ -1,6 +1,7 @@
 using System;
 using Unity.Entities;
 using UnityEngine;
+using Components;
 
 public static class MenuUtility
 {
@@ -34,7 +35,7 @@ public static class MenuUtility
     {
         SaveSystem.Instance.UpdateWorldName(worldName);
 
-        WorldDataSystem.LoadWorldData();
+        Systems.WorldDataSystem.LoadWorldData();
 
         InputSystem.EnableInputActions();
 
@@ -44,10 +45,10 @@ public static class MenuUtility
     }
     public static void QuitGame()
     {
-        WorldDataSystem.SaveWorldData();
+        Systems.WorldDataSystem.SaveWorldData();
 
         EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-        entityManager.DestroyEntity(entityManager.CreateEntityQuery(typeof(RunGameTag)));
+        entityManager.DestroyEntity(entityManager.CreateEntityQuery(typeof(Tags.RunGame)));
 
         InputSystem.DisableMenuInputActions();
     }
@@ -71,7 +72,7 @@ public static class MenuUtility
     public static void PauseGame()
     {
         Time.timeScale = 0;
-        EntityManager.DestroyEntity(EntityManager.CreateEntityQuery(typeof(RunGameTag)));
+        EntityManager.DestroyEntity(EntityManager.CreateEntityQuery(typeof(Tags.RunGame)));
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         InputSystem.DisableGameplayInputActions();
@@ -80,13 +81,13 @@ public static class MenuUtility
     public static void ContinueGame()
     {
         Time.timeScale = 1;
-        EntityManager.CreateSingleton<RunGameTag>();
+        EntityManager.CreateSingleton<Tags.RunGame>();
         InputSystem.EnableGameplayInputActions();
         continuingGame?.Invoke();
     }
     public static void PlaceTile(TileType tileType)
     {
-        BuildingSystem.StartPlacementProcess(tileType);
+        Systems.BuildingSystem.StartPlacementProcess(tileType);
     }
     public static void OpenExplorer()
     {
@@ -101,5 +102,5 @@ public static class MenuUtility
         return EntityManager.CreateEntityQuery(typeof(T)).GetSingleton<T>();
     }
     private static EntityManager EntityManager => World.DefaultGameObjectInjectionWorld.EntityManager;
-    private static InputSystem InputSystem => World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<InputSystem>();
+    private static Systems.InputSystem InputSystem => World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<Systems.InputSystem>();
 }

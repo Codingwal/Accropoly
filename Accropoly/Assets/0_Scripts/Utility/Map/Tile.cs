@@ -2,10 +2,10 @@ using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 
-public struct Tile
+public struct TileData
 {
     public List<(IComponentData, bool)> components;
-    public Tile(params IComponentData[] _components)
+    public TileData(params IComponentData[] _components)
     {
         components = new(_components.Length);
         foreach (var component in _components)
@@ -24,7 +24,7 @@ public struct Tile
 public enum TileComponents : int
 {
     // Components
-    MapTileComponent = 0,
+    Tile = 0,
     AgingTile = 1,
     ElectricityProducer = 2,
     ElectricityConsumer = 3,

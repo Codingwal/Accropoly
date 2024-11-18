@@ -163,7 +163,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 115408466}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 220d5f93a282b394e9f143d998b0cf5b, type: 3}
+  m_Script: {fileID: 11500000, guid: 9082c8cf8bed6954096f828cc363f5e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   seed: 100
@@ -217,7 +217,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 903553014}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7aeaa149d5b5fd44890c85d2e574beab, type: 3}
+  m_Script: {fileID: 11500000, guid: 4d963a51b25edb34790f3bb4003f4f90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   prefab: {fileID: 8833141692400065624, guid: 0220ee1e56efbf44992718310e25e3f1, type: 3}
@@ -230,7 +230,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 903553014}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b487c08e3cccfec4db2446881c265d2c, type: 3}
+  m_Script: {fileID: 11500000, guid: d4691fd6d2601bb4598db17567c221c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 8
@@ -251,7 +251,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 903553014}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7d1cc74213826d94fbd6eb7c724de00c, type: 3}
+  m_Script: {fileID: 11500000, guid: a3af8d59134bd684e8a7c77199a076e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   mouseRayLayer:
@@ -266,7 +266,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 903553014}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ffc5e936c6ae2c04aab448ec5cdb98a2, type: 3}
+  m_Script: {fileID: 11500000, guid: 0f94288f40292c7499028c3d7a87383b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   tilePrices:
@@ -296,7 +296,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 903553014}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6940c18514324fa498fae082367bc9ef, type: 3}
+  m_Script: {fileID: 11500000, guid: 2bca66b101e807543b0cb50460c3f498, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   secondsPerDay: 10
@@ -342,7 +342,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1407001049}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cbb4f6f978064e44c8408903df5642a7, type: 3}
+  m_Script: {fileID: 11500000, guid: c9e846388cb20c44bad87a2d5955e404, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   defaultHappiness: 50
@@ -360,7 +360,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1407001049}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6fd36387a8464824c82d9c6a8a91bcd3, type: 3}
+  m_Script: {fileID: 11500000, guid: b0d39e227dd6ceb41b473c992ea754f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   taxPerHappiness: 1

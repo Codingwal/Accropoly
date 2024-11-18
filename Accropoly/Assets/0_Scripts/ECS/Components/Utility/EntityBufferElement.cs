@@ -1,14 +1,17 @@
 using Unity.Entities;
 
-public struct EntityBufferElement : IBufferElementData
+namespace Components
 {
-    public Entity entity;
-    public static implicit operator EntityBufferElement(Entity entity)
+    public struct EntityBufferElement : IBufferElementData
     {
-        return new EntityBufferElement { entity = entity };
-    }
-    public static implicit operator Entity(EntityBufferElement element)
-    {
-        return element.entity;
+        public Entity entity;
+        public static implicit operator EntityBufferElement(Entity entity)
+        {
+            return new EntityBufferElement { entity = entity };
+        }
+        public static implicit operator Entity(EntityBufferElement element)
+        {
+            return element.entity;
+        }
     }
 }

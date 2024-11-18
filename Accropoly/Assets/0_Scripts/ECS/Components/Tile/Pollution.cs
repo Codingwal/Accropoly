@@ -1,6 +1,9 @@
 using Unity.Entities;
 
-public struct Polluter : IComponentData
+namespace Components
 {
-    public float pollution;
+    public struct Polluter : IComponentData
+    {
+        public float pollution;
+    }
 }
