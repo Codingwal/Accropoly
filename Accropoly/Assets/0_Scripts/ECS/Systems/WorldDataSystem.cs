@@ -1,5 +1,6 @@
 using Unity.Entities;
 using UnityEngine;
+using Components;
 
 [UpdateInGroup(typeof(PreCreationSystemGroup))]
 public partial struct WorldDataSystem : ISystem
@@ -19,8 +20,8 @@ public partial struct WorldDataSystem : ISystem
 
         loadGameTagQuery = state.GetEntityQuery(typeof(LoadGameTag));
         saveGameTagQuery = state.GetEntityQuery(typeof(SaveGameTag));
-        tileMapQuery = state.GetEntityQuery(typeof(MapTileComponent));
-        populationQuery = state.GetEntityQuery(typeof(PersonComponent));
+        tileMapQuery = state.GetEntityQuery(typeof(Tile));
+        populationQuery = state.GetEntityQuery(typeof(Person));
         gameInfoQuery = state.GetEntityQuery(typeof(GameInfo));
     }
     public void OnUpdate(ref SystemState state)

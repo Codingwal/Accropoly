@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Unity.Entities;
 
-public struct Person
+public struct PersonData
 {
     public List<(IComponentData, bool)> components;
 }

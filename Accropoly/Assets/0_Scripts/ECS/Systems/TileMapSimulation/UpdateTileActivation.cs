@@ -1,3 +1,4 @@
+using Components;
 using Unity.Entities;
 
 public partial class UpdateTileActivation : SystemBase
@@ -14,7 +15,7 @@ public partial class UpdateTileActivation : SystemBase
 
         var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
 
-        Entities.WithAll<MapTileComponent>().ForEach((Entity entity) =>
+        Entities.WithAll<Tile>().ForEach((Entity entity) =>
         {
             ecb.SetComponentEnabled<ActiveTileTag>(entity, true);
         }).Schedule();

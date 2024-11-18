@@ -18,7 +18,7 @@ public partial struct TimeSystem : ISystem
 
         ecb.DestroyEntity(newDayTagQuery, EntityQueryCaptureMode.AtRecord); // Delete old tag if present
 
-        GameInfo gameInfo = SystemAPI.GetSingleton<GameInfo>();
+        var gameInfo = SystemAPI.GetSingleton<Components.GameInfo>();
         gameInfo.time.seconds += SystemAPI.Time.DeltaTime;
 
         if (gameInfo.time.seconds > config.secondsPerDay)

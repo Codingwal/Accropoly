@@ -1,4 +1,5 @@
 using Unity.Entities;
+using Components;
 
 [UpdateInGroup(typeof(ComponentInitializationSystemGroup))]
 public partial class ElectricityConsumerInitializationSystem : SystemBase

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Components;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -22,13 +23,13 @@ public partial struct PopulationLoadingSystem : ISystem
 
         WorldData worldData = WorldDataSystem.worldData;
 
-        List<Person> population = worldData.population;
-        foreach (Person person in population)
+        List<PersonData> populationData = worldData.population;
+        foreach (PersonData personData in populationData)
         {
             Entity entity = ecb.Instantiate(prefab); // Entity needs to be created on main thread so that a valid value is stored in the buffer
 
             float3 pos = new();
-            foreach (var (component, enabled) in person.components)
+            foreach (var (component, enabled) in personData.components)
             {
                 void AddComponent<T>() where T : unmanaged, IComponentData
                 {
@@ -39,7 +40,7 @@ public partial struct PopulationLoadingSystem : ISystem
 
                 Type type = component.GetType();
                 if (type == typeof(PosComponent)) pos = ((PosComponent)component).pos;
-                else if (type == typeof(PersonComponent)) AddComponent<PersonComponent>();
+                else if (type == typeof(Person)) AddComponent<Person>();
                 else if (type == typeof(Worker)) AddComponent<Worker>();
                 else Debug.LogError($"Unexpected type {type.Name}");
             }

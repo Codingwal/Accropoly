@@ -1,10 +1,13 @@
 using Unity.Entities;
 using Unity.Mathematics;
 
-public struct PersonComponent : IComponentData
+namespace Components
 {
-    public int2 homeTile;
-    public float happiness;
-    public int age;
+    public struct Person : IComponentData
+    {
+        public int2 homeTile;
+        public float happiness;
+        public int age;
+    }
 }
 public struct HomelessTag : IComponentData { }

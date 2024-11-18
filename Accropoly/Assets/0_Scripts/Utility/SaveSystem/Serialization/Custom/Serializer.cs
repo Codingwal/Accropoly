@@ -1,4 +1,5 @@
 using System;
+using Components;
 
 public partial class Serializer
 {
@@ -21,7 +22,7 @@ public partial class Serializer
     {
         Serialize(data.tiles);
     }
-    public void Serialize(Person data)
+    public void Serialize(PersonData data)
     {
         if (data.components == null) throw new("Failed to serialize tile because Tile.TileComponents is null");
 
@@ -37,10 +38,10 @@ public partial class Serializer
 
                 Serialize(componentData.pos);
             }
-            else if (type == typeof(PersonComponent))
+            else if (type == typeof(Person))
             {
                 bw.Write((int)PersonComponents.PersonComponent);
-                PersonComponent componentData = (PersonComponent)component;
+                Person componentData = (Person)component;
 
                 Serialize(componentData.homeTile);
                 bw.Write(componentData.age);
@@ -55,7 +56,7 @@ public partial class Serializer
             else throw new($"Cannot serialize component of type {type}");
         }
     }
-    public void Serialize(Tile data)
+    public void Serialize(TileData data)
     {
         if (data.components == null) throw new("Failed to serialize tile because Tile.TileComponents is null");
 
@@ -64,11 +65,11 @@ public partial class Serializer
         {
             bw.Write(isEnabled);
             Type type = component.GetType();
-            if (type == typeof(MapTileComponent))
+            if (type == typeof(Tile))
             {
                 bw.Write((int)TileComponents.MapTileComponent);
 
-                MapTileComponent componentData = (MapTileComponent)component;
+                Tile componentData = (Tile)component;
                 bw.Write((int)componentData.tileType);
                 Serialize(componentData.pos);
                 bw.Write((uint)componentData.rotation);

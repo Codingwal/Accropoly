@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Components;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -28,7 +29,7 @@ public partial struct PopulationSavingSystem : ISystem
         typesToIgnore.Dispose();
 
         WorldDataSystem.worldData.population = new();
-        foreach ((var _, Entity entity) in SystemAPI.Query<RefRO<PersonComponent>>().WithEntityAccess())
+        foreach ((var _, Entity entity) in SystemAPI.Query<RefRO<Person>>().WithEntityAccess())
         {
             List<(IComponentData, bool)> components = new();
             NativeArray<ComponentType> componentTypes = state.EntityManager.GetChunk(entity).Archetype.GetComponentTypes();
@@ -50,7 +51,7 @@ public partial struct PopulationSavingSystem : ISystem
                     components.Add((new T(), isEnabled));
                 }
 
-                if (componentType == typeof(PersonComponent)) AddComponentData<PersonComponent>();
+                if (componentType == typeof(Person)) AddComponentData<Person>();
                 else if (componentType == typeof(Worker)) AddComponentData<Worker>();
                 else Debug.LogWarning($"Component of type {componentType} will not be serialized but also isn't present in typesToIgnore");
             }

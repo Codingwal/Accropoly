@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-using UIAction = UIInputData.Action;
+using UIAction = Components.UIInputData.Action;
 
 public class MenuManager : MonoBehaviour
 {
@@ -98,7 +98,7 @@ public class MenuManager : MonoBehaviour
     {
         MenuUtility.Quit();
     }
-    private void OnUIInput(UIInputData inputData)
+    private void OnUIInput(Components.UIInputData inputData)
     {
         switch (inputData.action)
         {

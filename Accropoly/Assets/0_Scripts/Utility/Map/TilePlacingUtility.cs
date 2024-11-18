@@ -4,6 +4,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
+using Components;
 
 public static class TilePlacingUtility
 {
@@ -26,7 +27,7 @@ public static class TilePlacingUtility
             TileType.Hut => new() { (new Habitat { totalSpace = rnd.Next(1, 3) }, true) },
             _ => throw new($"Missing componentTypes for tileType {tileType}")
         };
-        components.Add((new MapTileComponent { tileType = tileType, pos = pos, rotation = rotation }, true));
+        components.Add((new Tile { tileType = tileType, pos = pos, rotation = rotation }, true));
         components.Add((new ActiveTileTag(), false));
         components.Add((new NewTileTag(), true));
         return components;
@@ -69,7 +70,7 @@ public static class TilePlacingUtility
             {
                 if (new ComponentType(type).IsEnableable) ecb.SetComponentEnabled(tile, type, enabled);
             }
-            else if (type == typeof(MapTileComponent)) SetComponentData<MapTileComponent>(component, enabled);
+            else if (type == typeof(Tile)) SetComponentData<Tile>(component, enabled);
             else if (type == typeof(AgingTile)) SetComponentData<AgingTile>(component, enabled);
             else if (type == typeof(ElectricityProducer)) SetComponentData<ElectricityProducer>(component, enabled);
             else if (type == typeof(ElectricityConsumer)) SetComponentData<ElectricityConsumer>(component, enabled);

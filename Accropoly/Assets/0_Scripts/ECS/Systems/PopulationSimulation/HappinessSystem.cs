@@ -2,6 +2,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Collections;
 using UnityEngine;
+using Components;
 
 public partial class HappinessSystem : SystemBase
 {
@@ -21,22 +22,22 @@ public partial class HappinessSystem : SystemBase
         var hasElectricityTagLookup = GetComponentLookup<HasElectricityTag>();
 
         NativeArray<float> happinessSum = new NativeArray<float>(1, Allocator.TempJob, NativeArrayOptions.ClearMemory);
-        Entities.ForEach((Entity entity, ref PersonComponent personComponent) =>
+        Entities.ForEach((Entity entity, ref Person person) =>
         {
-            personComponent.happiness = config.defaultHappiness;
+            person.happiness = config.defaultHappiness;
 
             // Habitat factors
             {
-                int2 homeTile = personComponent.homeTile;
+                int2 homeTile = person.homeTile;
                 if (homeTile.Equals(new(-1))) // (-1, -1) means missing (in this case homeless)
-                    personComponent.happiness += config.homeless;
+                    person.happiness += config.homeless;
                 else
                 {
                     Entity habitatEntity = TileGridUtility.GetTile(homeTile, buffer);
                     if (hasElectricityTagLookup.HasComponent(habitatEntity))
                     {
                         bool hasElectricity = hasElectricityTagLookup.IsComponentEnabled(habitatEntity);
-                        personComponent.happiness += hasElectricity ? config.hasElectricity : config.noElectricity;
+                        person.happiness += hasElectricity ? config.hasElectricity : config.noElectricity;
                     }
                 }
             }
@@ -45,11 +46,11 @@ public partial class HappinessSystem : SystemBase
             if (SystemAPI.HasComponent<Worker>(entity))
             {
                 bool employed = !SystemAPI.HasComponent<UnemployedTag>(entity);
-                personComponent.happiness += employed ? config.employed : config.unemployed;
+                person.happiness += employed ? config.employed : config.unemployed;
             }
 
-            personComponent.happiness = math.clamp(personComponent.happiness, 0, 100);
-            happinessSum[0] += personComponent.happiness;
+            person.happiness = math.clamp(person.happiness, 0, 100);
+            happinessSum[0] += person.happiness;
         }).Schedule();
 
         Entities.ForEach((ref UIInfo info) =>

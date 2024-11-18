@@ -1,5 +1,7 @@
 using Unity.Entities;
 using Unity.Mathematics;
+using Components;
+
 public partial class Deserializer
 {
     public WorldData Deserialize(WorldData data)
@@ -19,7 +21,7 @@ public partial class Deserializer
         data.seconds = br.ReadSingle();
         return data;
     }
-    public Person Deserialize(Person data)
+    public PersonData Deserialize(PersonData data)
     {
         int count = br.ReadInt32();
         data.components = new(count);
@@ -37,7 +39,7 @@ public partial class Deserializer
                 {
                     pos = Deserialize(new float3()),
                 },
-                PersonComponents.PersonComponent => new PersonComponent()
+                PersonComponents.PersonComponent => new Person()
                 {
                     homeTile = Deserialize(new int2()),
                     age = br.ReadInt32(),
@@ -57,7 +59,7 @@ public partial class Deserializer
         data.tiles = Deserialize(data.tiles);
         return data;
     }
-    public Tile Deserialize(Tile data)
+    public TileData Deserialize(TileData data)
     {
         int count = br.ReadInt32();
         data.components = new(count);
@@ -71,7 +73,7 @@ public partial class Deserializer
             TileComponents type = (TileComponents)br.ReadInt32();
             component = type switch
             {
-                TileComponents.MapTileComponent => new MapTileComponent()
+                TileComponents.MapTileComponent => new Tile()
                 {
                     tileType = (TileType)br.ReadInt32(),
                     pos = Deserialize(new int2()),

@@ -1,6 +1,7 @@
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
+using Components;
 
 public partial class EmployementSystem : SystemBase
 {
@@ -9,7 +10,7 @@ public partial class EmployementSystem : SystemBase
     {
         RequireForUpdate<RunGameTag>();
         RequireForUpdate<UnemployedTag>();
-        employersWithSpaceQuery = GetEntityQuery(typeof(Employer), typeof(HasSpaceTag), typeof(MapTileComponent));
+        employersWithSpaceQuery = GetEntityQuery(typeof(Employer), typeof(HasSpaceTag), typeof(Tile));
         RequireForUpdate(employersWithSpaceQuery);
     }
     protected override void OnUpdate()
@@ -18,7 +19,7 @@ public partial class EmployementSystem : SystemBase
 
         NativeArray<Entity> employerEntities = employersWithSpaceQuery.ToEntityArray(Allocator.TempJob);
         NativeArray<Employer> employers = employersWithSpaceQuery.ToComponentDataArray<Employer>(Allocator.TempJob);
-        NativeArray<MapTileComponent> employerMapTileComponents = employersWithSpaceQuery.ToComponentDataArray<MapTileComponent>(Allocator.TempJob);
+        NativeArray<Tile> employerMapTileComponents = employersWithSpaceQuery.ToComponentDataArray<Tile>(Allocator.TempJob);
         NativeArray<int> index = new(1, Allocator.TempJob);
 
         Entities.WithAll<UnemployedTag>().ForEach((Entity entity, ref Worker worker) =>

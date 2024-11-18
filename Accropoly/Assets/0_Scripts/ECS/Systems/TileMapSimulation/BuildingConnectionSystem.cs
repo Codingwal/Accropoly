@@ -1,5 +1,5 @@
 using Unity.Entities;
-
+using Components;
 public partial class BuildingConnectionSystem : SystemBase
 {
     private int frame;
@@ -17,7 +17,7 @@ public partial class BuildingConnectionSystem : SystemBase
         var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
         var buffer = SystemAPI.GetBuffer<EntityBufferElement>(SystemAPI.GetSingletonEntity<EntityGridHolder>());
 
-        Entities.WithPresent<IsConnectedTag>().ForEach((Entity entity, in MapTileComponent mapTileComponent) =>
+        Entities.WithPresent<IsConnectedTag>().ForEach((Entity entity, in Tile mapTileComponent) =>
         {
             bool isConnected = false;
             foreach (Direction direction in Direction.GetDirections())

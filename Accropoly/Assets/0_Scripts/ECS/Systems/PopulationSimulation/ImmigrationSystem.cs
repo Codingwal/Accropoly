@@ -3,6 +3,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using Components;
 
 [BurstCompile]
 [UpdateInGroup(typeof(CreationSystemGroup))]
@@ -24,13 +25,13 @@ public partial class ImmigrationSystem : SystemBase
         Entity prefab = SystemAPI.GetSingleton<ConfigComponents.PrefabEntity>();
 
         NativeArray<Entity> homelessEntities = GetEntityQuery(typeof(HomelessTag)).ToEntityArray(Allocator.TempJob);
-        NativeArray<PersonComponent> homelessPersonComponents = GetEntityQuery(typeof(HomelessTag), typeof(PersonComponent)).ToComponentDataArray<PersonComponent>(Allocator.TempJob);
+        NativeArray<Person> homelessPersonComponents = GetEntityQuery(typeof(HomelessTag), typeof(Person)).ToComponentDataArray<Person>(Allocator.TempJob);
         NativeArray<LocalTransform> homelessTransforms = GetEntityQuery(typeof(HomelessTag), typeof(LocalTransform)).ToComponentDataArray<LocalTransform>(Allocator.TempJob);
         NativeArray<int> homelessIndex = new(1, Allocator.TempJob);
         homelessIndex[0] = 0;
 
         // Foreach active habitat with space
-        Entities.WithAll<ActiveTileTag, HasSpaceTag>().ForEach((Entity habitatEntity, ref Habitat habitat, in MapTileComponent habitatTile) =>
+        Entities.WithAll<ActiveTileTag, HasSpaceTag>().ForEach((Entity habitatEntity, ref Habitat habitat, in Tile habitatTile) =>
         {
             if (homelessIndex[0] < homelessEntities.Length) // If there is at least one homeless person left
             {
@@ -64,7 +65,7 @@ public partial class ImmigrationSystem : SystemBase
                 // Create new inhabitant for this house ("immigrant")
                 Entity entity = ecb.Instantiate(prefab);
                 ecb.AddComponent(entity, new NewPersonTag());
-                ecb.AddComponent(entity, new PersonComponent
+                ecb.AddComponent(entity, new Person
                 {
                     homeTile = habitatTile.pos,
                     age = 0,

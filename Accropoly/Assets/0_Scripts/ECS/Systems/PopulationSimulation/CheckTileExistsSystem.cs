@@ -3,6 +3,7 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
+using Components;
 
 public partial class CheckTileExistsSystem : SystemBase
 {
@@ -13,7 +14,7 @@ public partial class CheckTileExistsSystem : SystemBase
         RequireForUpdate<RunGameTag>();
 
         newTilesQuery = GetEntityQuery(typeof(NewTileTag));
-        disabledTilesQuery = GetEntityQuery(new EntityQueryDesc { Disabled = new ComponentType[] { typeof(ActiveTileTag) }, All = new ComponentType[] { typeof(MapTileComponent) } });
+        disabledTilesQuery = GetEntityQuery(new EntityQueryDesc { Disabled = new ComponentType[] { typeof(ActiveTileTag) }, All = new ComponentType[] { typeof(Tile) } });
     }
     protected override void OnUpdate()
     {
@@ -24,14 +25,14 @@ public partial class CheckTileExistsSystem : SystemBase
 
         // Get all positions of deleted (replaced) tiles
         NativeArray<int2> newTilesPositions = new(newTilesCount, Allocator.TempJob);
-        var inputDeps = Entities.WithAll<NewTileTag>().ForEach((int entityInQueryIndex, in MapTileComponent mapTileComponent) =>
+        var inputDeps = Entities.WithAll<NewTileTag>().ForEach((int entityInQueryIndex, in Tile mapTileComponent) =>
         {
             newTilesPositions[entityInQueryIndex] = mapTileComponent.pos;
         }).Schedule(Dependency);
 
         // Get all positions of disabled tiles
         NativeArray<int2> disabledTilesPositions = new(disabledTilesCount, Allocator.TempJob);
-        inputDeps = Entities.WithDisabled<ActiveTileTag>().ForEach((int entityInQueryIndex, in MapTileComponent mapTileComponent) =>
+        inputDeps = Entities.WithDisabled<ActiveTileTag>().ForEach((int entityInQueryIndex, in Tile mapTileComponent) =>
         {
             disabledTilesPositions[entityInQueryIndex] = mapTileComponent.pos;
         }).Schedule(inputDeps);
@@ -40,7 +41,7 @@ public partial class CheckTileExistsSystem : SystemBase
         // Make them homeless if their home is deactivated / has been replaced
         var ecb1 = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
         Unity.Mathematics.Random rnd = new((uint)UnityEngine.Random.Range(1, 1000));
-        JobHandle handle1 = Entities.WithNone<HomelessTag>().ForEach((Entity entity, ref PersonComponent person) =>
+        JobHandle handle1 = Entities.WithNone<HomelessTag>().ForEach((Entity entity, ref Person person) =>
         {
             int2 homeTilePos = person.homeTile;
             if (newTilesPositions.Contains(homeTilePos) || disabledTilesPositions.Contains(homeTilePos))

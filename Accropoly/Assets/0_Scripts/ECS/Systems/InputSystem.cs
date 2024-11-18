@@ -1,8 +1,9 @@
 using Unity.Entities;
 using UnityEngine;
+using Components;
 
-using UIAction = UIInputData.Action;
-using PlacementAction = PlacementInputData.Action;
+using UIAction = Components.UIInputData.Action;
+using PlacementAction = Components.PlacementInputData.Action;
 using System;
 
 [UpdateInGroup(typeof(LateInitializationSystemGroup))]

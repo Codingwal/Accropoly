@@ -16,7 +16,7 @@ public struct WorldData
     public float balance;
 
     // Population
-    public List<Person> population;
+    public List<PersonData> population;
 
     // Tilemap system
     public MapData map;
@@ -39,5 +39,5 @@ public struct WorldData
 
 public struct MapData
 {
-    public Tile[,] tiles;
+    public TileData[,] tiles;
 }

@@ -1,9 +1,9 @@
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
+using Components;
 
 [UpdateInGroup(typeof(CreationSystemGroup))]
 public partial struct TileSpawningSystem : ISystem
@@ -23,7 +23,7 @@ public partial struct TileSpawningSystem : ISystem
 
         TileGridUtility.CreateEntityGridBuffer();
 
-        Tile[,] tiles = worldData.map.tiles;
+        var tiles = worldData.map.tiles;
         for (int x = 0; x < tiles.GetLength(0); x++)
         {
             for (int y = 0; y < tiles.GetLength(1); y++)
@@ -36,10 +36,10 @@ public partial struct TileSpawningSystem : ISystem
                 TilePlacingUtility.UpdateEntity(entity, tiles[x, y].components, ecb);
 
                 // Get MapTileComponent and try to get ConnectingTile
-                MapTileComponent mapTileComponent = new();
+                Tile mapTileComponent = new();
                 foreach (var (component, _) in tiles[x, y].components)
-                    if (component.GetType() == typeof(MapTileComponent))
-                        mapTileComponent = (MapTileComponent)component;
+                    if (component.GetType() == typeof(Tile))
+                        mapTileComponent = (Tile)component;
 
 
                 // Set LocalTransform of the new tile using the MapTileComponent data

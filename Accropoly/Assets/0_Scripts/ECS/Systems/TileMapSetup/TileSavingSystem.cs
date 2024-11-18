@@ -4,6 +4,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
+using Components;
 
 [UpdateInGroup(typeof(CreationSystemGroup))]
 public partial struct TileSavingSystem : ISystem
@@ -26,18 +27,18 @@ public partial struct TileSavingSystem : ISystem
         typesToIgnore.Dispose();
 
         // MapTileComponent gets saved outside of the loop, some tags can be regenerated after loading 
-        typesToIgnoreSet.Add(typeof(MapTileComponent));
+        typesToIgnoreSet.Add(typeof(Tile));
         typesToIgnoreSet.Add(typeof(HasSpaceTag));
         typesToIgnoreSet.Add(typeof(HasElectricityTag));
 
-        WorldDataSystem.worldData.map.tiles = new Tile[WorldDataSystem.worldData.map.tiles.GetLength(0), WorldDataSystem.worldData.map.tiles.GetLength(1)];
+        WorldDataSystem.worldData.map.tiles = new TileData[WorldDataSystem.worldData.map.tiles.GetLength(0), WorldDataSystem.worldData.map.tiles.GetLength(1)];
 
         // Foreach tile...
-        foreach ((MapTileComponent mapTileComponent, Entity entity) in SystemAPI.Query<MapTileComponent>().WithEntityAccess())
+        foreach ((Tile mapTileComponent, Entity entity) in SystemAPI.Query<Tile>().WithEntityAccess())
         {
             int2 index = mapTileComponent.pos; // needed to determine where in the 2DArray the tile gets stored
 
-            Tile tile = new(mapTileComponent);
+            TileData tile = new(mapTileComponent);
             NativeArray<ComponentType> componentTypes = state.EntityManager.GetChunk(entity).Archetype.GetComponentTypes(Allocator.TempJob);
 
             foreach (var componentType in componentTypes)

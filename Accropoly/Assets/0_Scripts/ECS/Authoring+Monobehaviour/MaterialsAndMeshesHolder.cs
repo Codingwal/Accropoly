@@ -60,7 +60,7 @@ public class MaterialsAndMeshesHolder : MonoBehaviour
     {
         UpdateMeshAndMaterial(entity, GetMaterialAndMesh(newTileType));
     }
-    public static void UpdateAppearence(Entity entity, TileType tileType, ConnectingTile connectingTile)
+    public static void UpdateAppearence(Entity entity, TileType tileType, Components.ConnectingTile connectingTile)
     {
         if (instance == null) Debug.LogError("Instance == null");
 

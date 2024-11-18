@@ -1,4 +1,5 @@
 using Unity.Entities;
+using Components;
 
 public partial class ClearDeactivatedHabitatsSystem : SystemBase
 {

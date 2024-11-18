@@ -1,11 +1,12 @@
 using Unity.Entities;
+using Components;
 
 [UpdateInGroup(typeof(ComponentInitializationSystemGroup))]
 public partial class PersonComponentInitializationSystem : SystemBase
 {
     protected override void OnCreate()
     {
-        RequireForUpdate<PersonComponent>();
+        RequireForUpdate<Person>();
     }
     protected override void OnUpdate()
     {
@@ -13,7 +14,7 @@ public partial class PersonComponentInitializationSystem : SystemBase
 
         if (SystemAPI.HasSingleton<LoadGameTag>())
         {
-            Entities.ForEach((Entity entity, in PersonComponent person) =>
+            Entities.ForEach((Entity entity, in Person person) =>
             {
                 if (person.homeTile.Equals(new(-1, -1)))
                     ecb.AddComponent<HomelessTag>(entity);

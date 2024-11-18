@@ -1,5 +1,6 @@
 using Unity.Collections;
 using Unity.Entities;
+using Components;
 
 public partial class TaxSystem : SystemBase
 {
@@ -13,9 +14,9 @@ public partial class TaxSystem : SystemBase
         var config = SystemAPI.GetSingleton<ConfigComponents.Taxes>();
 
         NativeArray<float> totalTaxIncome = new(1, Allocator.TempJob, NativeArrayOptions.ClearMemory);
-        Entities.ForEach((in PersonComponent personComponent) =>
+        Entities.ForEach((in Person person) =>
         {
-            totalTaxIncome[0] += personComponent.happiness * config.taxPerHappiness;
+            totalTaxIncome[0] += person.happiness * config.taxPerHappiness;
         }).Schedule();
 
         // There probably is only one instance of both, this just simplifies the code

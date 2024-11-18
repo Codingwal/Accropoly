@@ -1,4 +1,5 @@
 using Unity.Entities;
+using Components;
 
 public partial class UpdatePopulationStatisticsSystem : SystemBase
 {
@@ -8,7 +9,7 @@ public partial class UpdatePopulationStatisticsSystem : SystemBase
     {
         RequireForUpdate<RunGameTag>();
 
-        populationQuery = GetEntityQuery(typeof(PersonComponent));
+        populationQuery = GetEntityQuery(typeof(Person));
         unemployedQuery = GetEntityQuery(typeof(UnemployedTag));
     }
     protected override void OnUpdate()

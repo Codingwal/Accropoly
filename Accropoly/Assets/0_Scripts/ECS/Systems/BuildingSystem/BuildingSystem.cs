@@ -2,7 +2,9 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
-using PlacementAction = PlacementInputData.Action;
+using Components;
+
+using PlacementAction = Components.PlacementInputData.Action;
 
 [UpdateInGroup(typeof(CreationSystemGroup))]
 public partial struct BuildingSystem : ISystem

@@ -2,6 +2,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
+using Components;
 
 public partial class TileConnectionSystem : SystemBase
 {
@@ -19,7 +20,7 @@ public partial class TileConnectionSystem : SystemBase
         Entities.WithAll<NewTileTag, ConnectingTile>().ForEach((Entity entity) =>
         {
             ConnectingTile connectingTile = SystemAPI.GetComponent<ConnectingTile>(entity);
-            MapTileComponent mapTileComponent = SystemAPI.GetComponent<MapTileComponent>(entity);
+            Tile mapTileComponent = SystemAPI.GetComponent<Tile>(entity);
             LocalTransform transform = SystemAPI.GetComponent<LocalTransform>(entity);
 
             foreach (Direction direction in Direction.GetDirections())
@@ -39,7 +40,7 @@ public partial class TileConnectionSystem : SystemBase
                     ecb.SetComponent(neighbour, neighbourConnectingTile);
 
                     // Update neighbour material and mesh
-                    MaterialsAndMeshesHolder.UpdateAppearence(neighbour, SystemAPI.GetComponent<MapTileComponent>(neighbour).tileType, neighbourConnectingTile);
+                    MaterialsAndMeshesHolder.UpdateAppearence(neighbour, SystemAPI.GetComponent<Tile>(neighbour).tileType, neighbourConnectingTile);
 
                     // Update neighbour rotation
                     var neighbourTransform = SystemAPI.GetComponent<LocalTransform>(neighbour);
@@ -65,7 +66,7 @@ public partial class TileConnectionSystem : SystemBase
         // Disconnect new tiles with the ConnectingTile component
         Entities.WithAll<NewTileTag>().WithNone<ConnectingTile>().ForEach((Entity entity) =>
         {
-            MapTileComponent mapTileComponent = SystemAPI.GetComponent<MapTileComponent>(entity);
+            var mapTileComponent = SystemAPI.GetComponent<Tile>(entity);
 
             foreach (Direction direction in Direction.GetDirections())
             {
@@ -79,7 +80,7 @@ public partial class TileConnectionSystem : SystemBase
                     ecb.SetComponent(neighbour, neighbourConnectingTile);
 
                     // Update neighbour material and mesh
-                    MaterialsAndMeshesHolder.UpdateAppearence(neighbour, SystemAPI.GetComponent<MapTileComponent>(neighbour).tileType, neighbourConnectingTile);
+                    MaterialsAndMeshesHolder.UpdateAppearence(neighbour, SystemAPI.GetComponent<Tile>(neighbour).tileType, neighbourConnectingTile);
 
                     // Update neighbour rotation
                     var neighbourTransform = SystemAPI.GetComponent<LocalTransform>(neighbour);
@@ -92,7 +93,7 @@ public partial class TileConnectionSystem : SystemBase
         if (SystemAPI.HasSingleton<LoadGameTag>())
         {
             // ConnectingTile can't be passed as a parameter because SystemAPI.GetComponent & SystemAPI.HasComponent are used
-            Entities.WithAll<ConnectingTile>().ForEach((Entity entity, ref MapTileComponent mapTileComponent, ref LocalTransform transform) =>
+            Entities.WithAll<ConnectingTile>().ForEach((Entity entity, ref Tile mapTileComponent, ref LocalTransform transform) =>
             {
                 ConnectingTile connectingTile = SystemAPI.GetComponent<ConnectingTile>(entity);
                 foreach (Direction direction in Direction.GetDirections())
