@@ -9,7 +9,7 @@ public struct WorldData
 
     // Camera system
     public float2 cameraSystemPos;
-    public quaternion cameraSystemRotation;
+    public float3 cameraSystemRotation;
     public float cameraDistance;
 
     // Economy system
@@ -25,8 +25,8 @@ public struct WorldData
     {
         time = new();
 
-        cameraSystemPos = new();
-        cameraSystemRotation = quaternion.identity;
+        cameraSystemPos = new(20, 20);
+        cameraSystemRotation = new(70, 0, 0);
         cameraDistance = 30;
 
         balance = 5000;

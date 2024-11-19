@@ -9,20 +9,11 @@ namespace Systems
 {
     public partial struct CameraSystem : ISystem
     {
-        private Entity transformHolder;
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<Tags.RunGame>();
             state.RequireForUpdate<ConfigComponents.Camera>();
-            state.RequireForUpdate<InputData>();
-
-            transformHolder = state.EntityManager.CreateSingleton(new CameraTransform
-            {
-                pos = new(0, 0, 0),
-                rot = new(30, 0, 0),
-                camDist = 10,
-                cursorLocked = false,
-            });
+            // state.RequireForUpdate<InputData>();
         }
         public void OnUpdate(ref SystemState state)
         {
@@ -54,7 +45,7 @@ namespace Systems
                 deltaTime = Time.deltaTime,
                 mapSize = WorldDataSystem.worldData.map.tiles.GetLength(0),
                 transform = cameraTransform,
-                transformHolder = transformHolder,
+                transformHolder = SystemAPI.GetSingletonEntity<CameraTransform>(),
             }.Schedule(state.Dependency);
         }
 
@@ -104,7 +95,7 @@ namespace Systems
 
                 // Rotate freely around x- & y-axis
 
-                if (!inputData.camera.look) // Free the cursor and skip the lookCode if the player isn't in lookMode (middle mousebutton by default)
+                if (!inputData.camera.look) // Free the cursor and skip the lookMode if the player isn't in lookMode (middle mousebutton by default)
                 {
                     transform.cursorLocked = false;
                 }
