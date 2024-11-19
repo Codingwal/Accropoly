@@ -1,9 +1,9 @@
 using Tags;
 using Unity.Entities;
 using UnityEngine;
-using Components;
 using ConfigComponents;
 using Unity.Transforms;
+using Components;
 
 public partial class BillboardSystem : SystemBase
 {
@@ -16,20 +16,39 @@ public partial class BillboardSystem : SystemBase
         Entity prefab = SystemAPI.GetSingleton<BillboardPrefab>();
         var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
 
-        Entities.WithNone<HasBillboard>().WithDisabled<HasElectricity>().ForEach((Entity tileEntity, in LocalTransform transform) =>
+        Entities.WithAbsent<HasElectricity>().ForEach((Entity entity, in BillboardOwner billboardOwner) =>
         {
-            ecb.AddComponent<HasBillboard>(tileEntity);
+            ecb.DestroyEntity(billboardOwner.billboardEntity);
 
+            ecb.RemoveComponent<BillboardOwner>(entity);
+        }).Schedule();
+        Entities.WithAll<HasElectricity>().ForEach((Entity entity, in BillboardOwner billboardOwner) =>
+        {
+            ecb.DestroyEntity(billboardOwner.billboardEntity);
+
+            ecb.RemoveComponent<BillboardOwner>(entity);
+        }).Schedule();
+
+        Entities.WithNone<BillboardOwner>().WithDisabled<HasElectricity>().ForEach((Entity tileEntity, in LocalTransform transform) =>
+        {
             Entity entity = ecb.Instantiate(prefab);
             LocalTransform transformCopy = transform;
             transformCopy.Position.y = 1;
             ecb.SetComponent(entity, transformCopy);
             ecb.AddComponent<Billboard>(entity);
+
+            ecb.AddComponent(tileEntity, new BillboardOwner { billboardEntity = entity });
         }).Schedule();
     }
 }
 namespace Tags
 {
     public struct Billboard : IComponentData { }
-    public struct HasBillboard : IComponentData { }
+}
+namespace Components
+{
+    public struct BillboardOwner : IComponentData
+    {
+        public Entity billboardEntity;
+    }
 }
