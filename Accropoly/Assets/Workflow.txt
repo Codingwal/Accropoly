@@ -18,5 +18,10 @@ ENTITYSCENE IMPORT ERROR:
 - Edit/Preferences/Entities -> Clear entity cache
 - Click on subscene, reimport
 
-IMPORTANT:
+SERIALIZATION:
 - Never use BinaryReader.Read(), use BinaryReader.ReadInt32()
+
+GITHUB:
+- always commit / merge to dev
+- branches are identical but github shows commit conflicts:
+    git merge -s ours main
