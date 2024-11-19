@@ -4,7 +4,7 @@ namespace Components
 {
     public struct UIInfo : IComponentData
     {
-        public float populationSize;
+        public float populationSize; // The total population size. This also includes homeless people
         public float happinessSum; // The sum of the happiness of all people. averageHappiness = happinessSum / populationSize
         public float unemployedCount;// unemploymentRate = unemployedCount / populationSize
 
