@@ -17,8 +17,6 @@ namespace Systems
         }
         public void OnUpdate(ref SystemState state)
         {
-            Debug.Log("!");
-
             var config = SystemAPI.GetSingleton<ConfigComponents.Camera>();
             var inputData = SystemAPI.GetSingleton<InputData>();
             var cameraTransform = SystemAPI.GetSingleton<CameraTransform>();

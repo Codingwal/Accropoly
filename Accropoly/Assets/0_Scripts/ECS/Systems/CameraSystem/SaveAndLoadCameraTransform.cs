@@ -32,9 +32,9 @@ public partial struct SaveAndLoadCameraTransform : ISystem
         {
             var cameraTransform = SystemAPI.GetSingleton<CameraTransform>();
 
-            // WorldDataSystem.worldData.cameraSystemPos = cameraTransform.pos.xz;
-            // WorldDataSystem.worldData.cameraSystemRotation = cameraTransform.rot;
-            // WorldDataSystem.worldData.cameraDistance = cameraTransform.camDist;
+            WorldDataSystem.worldData.cameraSystemPos = cameraTransform.pos.xz;
+            WorldDataSystem.worldData.cameraSystemRotation = cameraTransform.rot;
+            WorldDataSystem.worldData.cameraDistance = cameraTransform.camDist;
 
             state.EntityManager.DestroyEntity(SystemAPI.GetSingletonEntity<CameraTransform>());
         }
