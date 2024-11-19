@@ -1,42 +1,46 @@
 using Unity.Entities;
 using UnityEngine;
+using Components;
 
-public partial struct TileAgingSystem : ISystem
+namespace Systems
 {
-    public void OnCreate(ref SystemState state)
+    public partial struct TileAgingSystem : ISystem
     {
-        state.RequireForUpdate<RunGameTag>();
-        state.RequireForUpdate<AgingTile>();
-        state.RequireForUpdate<TileAgeingConfig>();
-    }
-    public void OnUpdate(ref SystemState state)
-    {
-        TileAgeingConfig config = SystemAPI.GetSingleton<TileAgeingConfig>();
-
-        new TileAgingJob()
+        public void OnCreate(ref SystemState state)
         {
-            ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged),
-            deltaTime = Time.deltaTime,
-            maxAge = config.maxAge,
-            newTileType = config.newTileType,
-        }.Schedule();
-    }
-    private partial struct TileAgingJob : IJobEntity
-    {
-        public EntityCommandBuffer ecb;
-        public float deltaTime;
-        public float maxAge;
-        public TileType newTileType;
-        public void Execute(ref AgingTile agingTile, ref MapTileComponent mapTileComponent, in Entity entity)
+            state.RequireForUpdate<Tags.RunGame>();
+            state.RequireForUpdate<AgingTile>();
+            state.RequireForUpdate<ConfigComponents.TileAgeing>();
+        }
+        public void OnUpdate(ref SystemState state)
         {
-            agingTile.age += deltaTime;
+            var config = SystemAPI.GetSingleton<ConfigComponents.TileAgeing>();
 
-            if (agingTile.age > maxAge)
+            new TileAgingJob()
             {
-                mapTileComponent.tileType = newTileType;
-                MaterialsAndMeshesHolder.UpdateMeshAndMaterial(entity, mapTileComponent.tileType);
+                ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged),
+                deltaTime = Time.deltaTime,
+                maxAge = config.maxAge,
+                newTileType = config.newTileType,
+            }.Schedule();
+        }
+        private partial struct TileAgingJob : IJobEntity
+        {
+            public EntityCommandBuffer ecb;
+            public float deltaTime;
+            public float maxAge;
+            public TileType newTileType;
+            public void Execute(ref AgingTile agingTile, ref Tile tile, in Entity entity)
+            {
+                agingTile.age += deltaTime;
 
-                ecb.RemoveComponent<AgingTile>(entity);
+                if (agingTile.age > maxAge)
+                {
+                    tile.tileType = newTileType;
+                    MaterialsAndMeshesHolder.UpdateMeshAndMaterial(entity, tile.tileType);
+
+                    ecb.RemoveComponent<AgingTile>(entity);
+                }
             }
         }
     }

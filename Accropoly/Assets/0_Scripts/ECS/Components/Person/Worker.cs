@@ -1,8 +1,14 @@
 using Unity.Entities;
 using Unity.Mathematics;
 
-public struct Worker : IComponentData
+namespace Components
 {
-    public int2 employer;
+    public struct Worker : IComponentData
+    {
+        public int2 employer;
+    }
 }
-public struct UnemployedTag : IComponentData { }
+namespace Tags
+{
+    public struct Unemployed : IComponentData { }
+}

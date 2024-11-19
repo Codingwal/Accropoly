@@ -25,6 +25,19 @@ public class SerializableDictionary<TKey, TValue> : IEnumerable<SerializableKeyV
             return default;
         }
     }
+    public bool TryGetValue(TKey key, out TValue value)
+    {
+        foreach (SerializableKeyValuePair<TKey, TValue> keyValuePair in dictionary)
+        {
+            if (keyValuePair.key.Equals(key))
+            {
+                value = keyValuePair.value;
+                return true;
+            }
+        }
+        value = default;
+        return false;
+    }
     public bool Contains(TKey key)
     {
         foreach (SerializableKeyValuePair<TKey, TValue> keyValuePair in dictionary)

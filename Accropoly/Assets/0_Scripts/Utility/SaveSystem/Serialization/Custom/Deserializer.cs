@@ -1,5 +1,8 @@
 using Unity.Entities;
 using Unity.Mathematics;
+using Components;
+using Tags;
+
 public partial class Deserializer
 {
     public WorldData Deserialize(WorldData data)
@@ -19,7 +22,7 @@ public partial class Deserializer
         data.seconds = br.ReadSingle();
         return data;
     }
-    public Person Deserialize(Person data)
+    public PersonData Deserialize(PersonData data)
     {
         int count = br.ReadInt32();
         data.components = new(count);
@@ -37,7 +40,7 @@ public partial class Deserializer
                 {
                     pos = Deserialize(new float3()),
                 },
-                PersonComponents.PersonComponent => new PersonComponent()
+                PersonComponents.Person => new Person()
                 {
                     homeTile = Deserialize(new int2()),
                     age = br.ReadInt32(),
@@ -57,7 +60,7 @@ public partial class Deserializer
         data.tiles = Deserialize(data.tiles);
         return data;
     }
-    public Tile Deserialize(Tile data)
+    public TileData Deserialize(TileData data)
     {
         int count = br.ReadInt32();
         data.components = new(count);
@@ -71,7 +74,7 @@ public partial class Deserializer
             TileComponents type = (TileComponents)br.ReadInt32();
             component = type switch
             {
-                TileComponents.MapTileComponent => new MapTileComponent()
+                TileComponents.Tile => new Tile()
                 {
                     tileType = (TileType)br.ReadInt32(),
                     pos = Deserialize(new int2()),
@@ -90,7 +93,10 @@ public partial class Deserializer
                     consumption = br.ReadSingle(),
                     disableIfElectroless = br.ReadBoolean()
                 },
-                TileComponents.BuildingConnector => BuildingConnector.Deserialize(br.ReadInt32()),
+                TileComponents.ConnectingTile => new ConnectingTile
+                {
+                    group = (ConnectingTileGroup)br.ReadInt32(),
+                },
                 TileComponents.Polluter => new Polluter()
                 {
                     pollution = br.ReadSingle()
@@ -106,9 +112,10 @@ public partial class Deserializer
                     freeSpace = br.ReadInt32()
                 },
 
-                TileComponents.IsConnectedTag => new IsConnectedTag(),
-                TileComponents.ActiveTileTag => new ActiveTileTag(),
-                TileComponents.NewTileTag => new NewTileTag(),
+                TileComponents.IsConnectedTag => new IsConnected(),
+                TileComponents.ActiveTileTag => new ActiveTile(),
+                TileComponents.NewTileTag => new NewTile(),
+                TileComponents.BuildingConnectorTag => new BuildingConnector(),
 
                 _ => throw new($"Cannot deserialize component of type {type}")
             };

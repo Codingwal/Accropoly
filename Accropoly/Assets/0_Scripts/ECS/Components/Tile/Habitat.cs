@@ -1,7 +1,10 @@
 using Unity.Entities;
 
-public struct Habitat : IComponentData
+namespace Components
 {
-    public int totalSpace;
-    public int freeSpace;
+    public struct Habitat : IComponentData
+    {
+        public int totalSpace;
+        public int freeSpace;
+    }
 }

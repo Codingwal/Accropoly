@@ -1,7 +1,10 @@
 using Unity.Entities;
 
-public struct Employer : IComponentData
+namespace Components
 {
-    public int totalSpace;
-    public int freeSpace;
+    public struct Employer : IComponentData
+    {
+        public int totalSpace;
+        public int freeSpace;
+    }
 }

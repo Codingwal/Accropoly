@@ -1,36 +1,41 @@
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
+using Components;
+using Tags;
 
-public partial class PollutionSystem : SystemBase
+namespace Systems
 {
-    private uint frame;
-    protected override void OnCreate()
+    public partial class PollutionSystem : SystemBase
     {
-        RequireForUpdate<RunGameTag>();
-    }
-    protected override void OnUpdate()
-    {
-        // Only run this function every 50 frames
-        frame++;
-        if (frame % 50 != 3) return;
-
-        NativeArray<float> totalPollution = new(1, Allocator.TempJob, NativeArrayOptions.ClearMemory);
-        NativeArray<float> electricityPollution = new(1, Allocator.TempJob, NativeArrayOptions.ClearMemory);
-
-        Entities.WithAll<ActiveTileTag>().ForEach((in Polluter polluter) =>
+        private uint frame;
+        protected override void OnCreate()
         {
-            totalPollution[0] += polluter.pollution;
-        }).Schedule();
-        Entities.WithAll<ActiveTileTag, ElectricityProducer>().ForEach((in Polluter polluter) =>
+            RequireForUpdate<RunGame>();
+        }
+        protected override void OnUpdate()
         {
-            electricityPollution[0] += polluter.pollution;
-        }).Schedule();
+            // Only run this function every 50 frames
+            frame++;
+            if (frame % 50 != 3) return;
 
-        Entities.ForEach((ref UIInfo info) =>
-        {
-            info.pollution = totalPollution[0];
-            info.electricityPollution = electricityPollution[0];
-        }).WithDisposeOnCompletion(totalPollution).WithDisposeOnCompletion(electricityPollution).Schedule();
+            NativeArray<float> totalPollution = new(1, Allocator.TempJob, NativeArrayOptions.ClearMemory);
+            NativeArray<float> electricityPollution = new(1, Allocator.TempJob, NativeArrayOptions.ClearMemory);
+
+            Entities.WithAll<ActiveTile>().ForEach((in Polluter polluter) =>
+            {
+                totalPollution[0] += polluter.pollution;
+            }).Schedule();
+            Entities.WithAll<ActiveTile, ElectricityProducer>().ForEach((in Polluter polluter) =>
+            {
+                electricityPollution[0] += polluter.pollution;
+            }).Schedule();
+
+            Entities.ForEach((ref UIInfo info) =>
+            {
+                info.pollution = totalPollution[0];
+                info.electricityPollution = electricityPollution[0];
+            }).WithDisposeOnCompletion(totalPollution).WithDisposeOnCompletion(electricityPollution).Schedule();
+        }
     }
 }

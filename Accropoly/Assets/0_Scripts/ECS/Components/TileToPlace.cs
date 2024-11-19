@@ -1,7 +1,10 @@
 using Unity.Entities;
 
-public struct TileToPlace : IComponentData
+namespace Components
 {
-    public TileType tileType;
-    public Direction rotation;
+    public struct TileToPlace : IComponentData
+    {
+        public TileType tileType;
+        public Direction rotation;
+    }
 }

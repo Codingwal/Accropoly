@@ -2,11 +2,11 @@ using System.Collections.Generic;
 
 public static class MapTemplates
 {
-    public static Tile[,] PlainsMap
+    public static TileData[,] PlainsMap
     {
         get
         {
-            Tile[,] tiles = new Tile[20, 20];
+            TileData[,] tiles = new TileData[20, 20];
             for (int x = 0; x < tiles.GetLength(0); x++)
             {
                 for (int y = 0; y < tiles.GetLength(1); y++)
@@ -17,11 +17,11 @@ public static class MapTemplates
             return tiles;
         }
     }
-    public static Tile[,] ForestMap
+    public static TileData[,] ForestMap
     {
         get
         {
-            Tile[,] tiles = new Tile[20, 20];
+            TileData[,] tiles = new TileData[20, 20];
             for (int x = 0; x < tiles.GetLength(0); x++)
             {
                 for (int y = 0; y < tiles.GetLength(1); y++)
@@ -32,11 +32,11 @@ public static class MapTemplates
             return tiles;
         }
     }
-    public static Tile[,] BigPlainsMap
+    public static TileData[,] BigPlainsMap
     {
         get
         {
-            Tile[,] tiles = new Tile[100, 100];
+            TileData[,] tiles = new TileData[100, 100];
             for (int x = 0; x < tiles.GetLength(0); x++)
             {
                 for (int y = 0; y < tiles.GetLength(1); y++)
@@ -47,11 +47,11 @@ public static class MapTemplates
             return tiles;
         }
     }
-    public static Tile[,] BigForestMap
+    public static TileData[,] BigForestMap
     {
         get
         {
-            Tile[,] tiles = new Tile[100, 100];
+            TileData[,] tiles = new TileData[100, 100];
             for (int x = 0; x < tiles.GetLength(0); x++)
             {
                 for (int y = 0; y < tiles.GetLength(1); y++)

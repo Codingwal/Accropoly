@@ -1,49 +1,53 @@
 using System;
 using System.Collections.Generic;
+using Components;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 
-[UpdateInGroup(typeof(CreationSystemGroup))]
-public partial struct PopulationLoadingSystem : ISystem
+namespace Systems
 {
-    [BurstCompile]
-    public void OnCreate(ref SystemState state)
+    [UpdateInGroup(typeof(CreationSystemGroup))]
+    public partial struct PopulationLoadingSystem : ISystem
     {
-        state.RequireForUpdate<LoadGameTag>();
-    }
-
-    public void OnUpdate(ref SystemState state)
-    {
-        var ecb = SystemAPI.GetSingleton<EndCreationECBSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
-        Entity prefab = SystemAPI.GetSingleton<PrefabEntity>();
-
-        WorldData worldData = WorldDataSystem.worldData;
-
-        List<Person> population = worldData.population;
-        foreach (Person person in population)
+        [BurstCompile]
+        public void OnCreate(ref SystemState state)
         {
-            Entity entity = ecb.Instantiate(prefab); // Entity needs to be created on main thread so that a valid value is stored in the buffer
+            state.RequireForUpdate<Tags.LoadGame>();
+        }
 
-            float3 pos = new();
-            foreach (var (component, enabled) in person.components)
+        public void OnUpdate(ref SystemState state)
+        {
+            var ecb = SystemAPI.GetSingleton<EndCreationECBSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
+            Entity prefab = SystemAPI.GetSingleton<ConfigComponents.PrefabEntity>();
+
+            WorldData worldData = WorldDataSystem.worldData;
+
+            List<PersonData> populationData = worldData.population;
+            foreach (PersonData personData in populationData)
             {
-                void AddComponent<T>() where T : unmanaged, IComponentData
-                {
-                    ecb.AddComponent<T>(entity, (T)component);
-                    if (component is IEnableableComponent)
-                        ecb.SetComponentEnabled(entity, typeof(T), enabled);
-                }
+                Entity entity = ecb.Instantiate(prefab); // Entity needs to be created on main thread so that a valid value is stored in the buffer
 
-                Type type = component.GetType();
-                if (type == typeof(PosComponent)) pos = ((PosComponent)component).pos;
-                else if (type == typeof(PersonComponent)) AddComponent<PersonComponent>();
-                else if (type == typeof(Worker)) AddComponent<Worker>();
-                else Debug.LogError($"Unexpected type {type.Name}");
+                float3 pos = new();
+                foreach (var (component, enabled) in personData.components)
+                {
+                    void AddComponent<T>() where T : unmanaged, IComponentData
+                    {
+                        ecb.AddComponent<T>(entity, (T)component);
+                        if (component is IEnableableComponent)
+                            ecb.SetComponentEnabled(entity, typeof(T), enabled);
+                    }
+
+                    Type type = component.GetType();
+                    if (type == typeof(PosComponent)) pos = ((PosComponent)component).pos;
+                    else if (type == typeof(Person)) AddComponent<Person>();
+                    else if (type == typeof(Worker)) AddComponent<Worker>();
+                    else Debug.LogError($"Unexpected type {type.Name}");
+                }
+                ecb.SetComponent(entity, LocalTransform.FromPositionRotationScale(pos, quaternion.identity, 0.1f));
             }
-            ecb.SetComponent(entity, LocalTransform.FromPositionRotationScale(pos, quaternion.identity, 0.1f));
         }
     }
 }

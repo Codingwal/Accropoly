@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Unity.Entities;
 
-public struct Person
+public struct PersonData
 {
     public List<(IComponentData, bool)> components;
 }
@@ -10,7 +10,7 @@ public enum PersonComponents : int
 {
     // Components
     PosComponent = 0,
-    PersonComponent = 1,
+    Person = 1,
     Worker = 2,
 
     // Tags
