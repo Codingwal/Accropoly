@@ -1,14 +1,15 @@
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 
 namespace Components
 {
     public struct BillboardOwner : IComponentData
     {
-        public NativeList<BillboardInfo> billboards;
+        public UnsafeList<BillboardInfo> billboards;
         public BillboardOwner(BillboardInfo element)
         {
-            billboards = new(Allocator.Persistent)
+            billboards = new(1, Allocator.Persistent)
             {
                 element
             };

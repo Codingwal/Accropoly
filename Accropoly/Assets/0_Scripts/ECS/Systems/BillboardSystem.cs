@@ -4,10 +4,9 @@ using UnityEngine;
 using ConfigComponents;
 using Unity.Transforms;
 using Components;
-using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 
 using BillboardProblems = Components.BillboardOwner.BillboardInfo.Problems;
-using System.Linq;
 
 public partial class BillboardSystem : SystemBase
 {
@@ -37,7 +36,7 @@ public partial class BillboardSystem : SystemBase
             foreach (var info in billboardOwner.billboards)
                 ecb.DestroyEntity(info.entity);
 
-            // Dispose the NativeList
+            // Dispose the UnsafeList
             billboardOwner.billboards.Dispose();
         }).Schedule();
 
@@ -51,13 +50,15 @@ public partial class BillboardSystem : SystemBase
                 ecb.RemoveComponent<BillboardOwner>(entity);
         }).Schedule();
 
-        // Add billboard if there is a problem
+        // Add billboard if there is a problem and the tile is not a billboard owner
         Entity prefab = SystemAPI.GetSingleton<BillboardPrefab>();
         Entities.WithNone<BillboardOwner>().WithDisabled<HasElectricity>().ForEach((Entity tileEntity, in LocalTransform transform) =>
         {
             Entity newBillboard = AddBillboard(transform, prefab, ecb);
             ecb.AddComponent(tileEntity, new BillboardOwner(new(newBillboard, BillboardProblems.NoElectricity)));
         }).Schedule();
+
+        // Add billboard if there is a problem and the tile is a billboard owner
         Entities.WithDisabled<HasElectricity>().ForEach((Entity tileEntity, ref BillboardOwner billboardOwner, in LocalTransform transform) =>
         {
             if (ContainsProblem(billboardOwner.billboards, BillboardProblems.NoElectricity)) return; // Return if this problem has already been added
@@ -75,14 +76,14 @@ public partial class BillboardSystem : SystemBase
         ecb.AddComponent<Billboard>(entity); // Tag component used by queries
         return entity;
     }
-    private static bool ContainsProblem(in NativeList<BillboardOwner.BillboardInfo> billboards, BillboardProblems problem)
+    private static bool ContainsProblem(in UnsafeList<BillboardOwner.BillboardInfo> billboards, BillboardProblems problem)
     {
         for (int i = 0; i < billboards.Length; i++)
             if (billboards[i].problem == problem)
                 return true;
         return false;
     }
-    private static void RemoveBillboard(ref NativeList<BillboardOwner.BillboardInfo> billboards, BillboardProblems problem, EntityCommandBuffer ecb)
+    private static void RemoveBillboard(ref UnsafeList<BillboardOwner.BillboardInfo> billboards, BillboardProblems problem, EntityCommandBuffer ecb)
     {
         for (int i = 0; i < billboards.Length; i++)
         {
