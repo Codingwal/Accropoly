@@ -41,14 +41,3 @@ public partial class BillboardSystem : SystemBase
         }).Schedule();
     }
 }
-namespace Tags
-{
-    public struct Billboard : IComponentData { }
-}
-namespace Components
-{
-    public struct BillboardOwner : IComponentData
-    {
-        public Entity billboardEntity;
-    }
-}

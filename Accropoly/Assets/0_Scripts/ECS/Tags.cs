@@ -18,4 +18,7 @@ namespace Tags
     // Population
     public struct NewPerson : IComponentData { }
     // public struct SearchesSpace : IComponentData { }
+
+    // Other
+    public struct Billboard : IComponentData { }
 }
