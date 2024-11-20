@@ -16,12 +16,15 @@ public partial class BillboardSystem : SystemBase
         Entity prefab = SystemAPI.GetSingleton<BillboardPrefab>();
         var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
 
-        Entities.WithAbsent<HasElectricity>().ForEach((Entity entity, in BillboardOwner billboardOwner) =>
+        // Delete billboard if tile gets replaced
+        Entities.WithAll<Replace>().ForEach((Entity entity, in BillboardOwner billboardOwner) =>
         {
             ecb.DestroyEntity(billboardOwner.billboardEntity);
 
             ecb.RemoveComponent<BillboardOwner>(entity);
         }).Schedule();
+
+        // Delete billboard if problem is fixed
         Entities.WithAll<HasElectricity>().ForEach((Entity entity, in BillboardOwner billboardOwner) =>
         {
             ecb.DestroyEntity(billboardOwner.billboardEntity);
@@ -29,6 +32,7 @@ public partial class BillboardSystem : SystemBase
             ecb.RemoveComponent<BillboardOwner>(entity);
         }).Schedule();
 
+        // Add billboard if there is a problem
         Entities.WithNone<BillboardOwner>().WithDisabled<HasElectricity>().ForEach((Entity tileEntity, in LocalTransform transform) =>
         {
             Entity entity = ecb.Instantiate(prefab);
