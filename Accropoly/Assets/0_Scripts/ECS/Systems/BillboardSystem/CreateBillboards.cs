@@ -31,14 +31,14 @@ namespace Systems
             }).Schedule();
 
             // Add billboard if there is a problem and the tile is a billboard owner
-            // Entities.WithDisabled<HasElectricity>().ForEach((Entity tileEntity, ref BillboardOwner billboardOwner, in LocalTransform transform) =>
-            // {
-            //     if (ContainsProblem(billboardOwner.billboards, NoElectricityProblem)) return; // Return if this problem has already been added
+            Entities.WithDisabled<HasElectricity>().ForEach((Entity tileEntity, ref BillboardOwner billboardOwner, in LocalTransform transform) =>
+            {
+                if (ContainsProblem(billboardOwner.billboards, NoElectricityProblem)) return; // Return if this problem has already been added
 
-            //     // Create billboard and add it to the billboardOwner list
-            //     Entity newBillboard = AddBillboard(transform, prefab, ecb);
-            //     billboardOwner.billboards.Add(new(newBillboard, NoElectricityProblem));
-            // }).Schedule();
+                // Create billboard and add it to the billboardOwner list
+                Entity newBillboard = AddBillboard(transform, prefab, ecb);
+                billboardOwner.billboards.Add(new(newBillboard, NoElectricityProblem));
+            }).Schedule();
         }
         private static Entity AddBillboard(LocalTransform ownerTransform, Entity billboardPrefab, EntityCommandBuffer ecb)
         {

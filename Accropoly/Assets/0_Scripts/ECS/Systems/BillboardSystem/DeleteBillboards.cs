@@ -39,14 +39,17 @@ namespace Systems
             }).Schedule();
 
             // Delete billboard if problem is fixed
-            // Entities.WithAll<HasElectricity>().ForEach((Entity entity, ref BillboardOwner billboardOwner) =>
-            // {
-            //     RemoveBillboard(ref billboardOwner.billboards, BillboardProblems.NoElectricity, ecb);
+            Entities.WithAll<HasElectricity>().ForEach((Entity entity, ref BillboardOwner billboardOwner) =>
+            {
+                RemoveBillboard(ref billboardOwner.billboards, BillboardInfo.Problems.NoElectricity, ecb);
 
-            //     // Check if there are no billboards left
-            //     if (billboardOwner.billboards.Length == 0)
-            //         ecb.RemoveComponent<BillboardOwner>(entity);
-            // }).Schedule();
+                // Check if there are no billboards left
+                if (billboardOwner.billboards.Length == 0)
+                {
+                    billboardOwner.billboards.Dispose();
+                    ecb.RemoveComponent<BillboardOwner>(entity);
+                }
+            }).Schedule();
         }
         private static void RemoveBillboard(ref UnsafeList<BillboardInfo> billboards, BillboardInfo.Problems problem, EntityCommandBuffer ecb)
         {
