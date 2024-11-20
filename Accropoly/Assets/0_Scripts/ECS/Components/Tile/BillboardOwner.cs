@@ -7,11 +7,11 @@ namespace Components
     public struct BillboardOwner : IComponentData
     {
         public UnsafeList<BillboardInfo> billboards;
-        public BillboardOwner(BillboardInfo element)
+        public static BillboardOwner CreateInstance()
         {
-            billboards = new(1, Allocator.Persistent)
+            return new BillboardOwner
             {
-                element
+                billboards = new(0, Allocator.Persistent)
             };
         }
     }

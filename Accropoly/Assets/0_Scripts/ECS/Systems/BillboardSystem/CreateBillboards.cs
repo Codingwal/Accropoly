@@ -5,6 +5,7 @@ using ConfigComponents;
 using Unity.Transforms;
 using Components;
 using Unity.Collections.LowLevel.Unsafe;
+using Unity.Collections;
 
 
 namespace Systems
@@ -24,9 +25,9 @@ namespace Systems
             Entity prefab = SystemAPI.GetSingleton<BillboardPrefab>();
             Entities.WithNone<BillboardOwner>().WithDisabled<HasElectricity>().ForEach((Entity tileEntity, in LocalTransform transform) =>
             {
-                // Entity newBillboard = AddBillboard(transform, prefab, ecb);
-                Entity newBillboard = ecb.Instantiate(prefab); // Create the billboard
-                ecb.AddComponent(tileEntity, new BillboardOwner(new(newBillboard, NoElectricityProblem)));
+                Entity newBillboard = AddBillboard(transform, prefab, ecb);
+                ecb.AddComponent(tileEntity, new BillboardInfo(newBillboard, NoElectricityProblem)); // This will get added to the billboards list
+                ecb.AddComponent(tileEntity, BillboardOwner.CreateInstance());
             }).Schedule();
 
             // Add billboard if there is a problem and the tile is a billboard owner
