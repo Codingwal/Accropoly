@@ -29,10 +29,11 @@ namespace Systems
                 typesToIgnoreSet.Add(type);
             typesToIgnore.Dispose();
 
-            // MapTileComponent gets saved outside of the loop, some s can be regenerated after loading 
+            // MapTileComponent gets saved outside of the loop, some tags and components can be regenerated after loading 
             typesToIgnoreSet.Add(typeof(Tile));
             typesToIgnoreSet.Add(typeof(HasSpace));
             typesToIgnoreSet.Add(typeof(HasElectricity));
+            typesToIgnoreSet.Add(typeof(BillboardOwner));
 
             WorldDataSystem.worldData.map.tiles = new TileData[WorldDataSystem.worldData.map.tiles.GetLength(0), WorldDataSystem.worldData.map.tiles.GetLength(1)];
 

@@ -7,14 +7,24 @@ using Components;
 
 public partial class BillboardSystem : SystemBase
 {
+    EntityQuery billboardQuery;
     protected override void OnCreate()
     {
-        RequireForUpdate<RunGame>();
+        billboardQuery = GetEntityQuery(typeof(Billboard));
     }
     protected override void OnUpdate()
     {
-        Entity prefab = SystemAPI.GetSingleton<BillboardPrefab>();
         var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
+
+        // Delete all billboards if the game is getting saved
+        if (SystemAPI.HasSingleton<SaveGame>())
+        {
+            ecb.DestroyEntity(billboardQuery, EntityQueryCaptureMode.AtPlayback);
+            return;
+        }
+
+        // Alternative to RequireForUpdate<RunGame>()
+        if (!SystemAPI.HasSingleton<RunGame>()) return;
 
         // Delete billboard if tile gets replaced
         Entities.WithAll<Replace>().ForEach((Entity entity, in BillboardOwner billboardOwner) =>
@@ -33,6 +43,7 @@ public partial class BillboardSystem : SystemBase
         }).Schedule();
 
         // Add billboard if there is a problem
+        Entity prefab = SystemAPI.GetSingleton<BillboardPrefab>();
         Entities.WithNone<BillboardOwner>().WithDisabled<HasElectricity>().ForEach((Entity tileEntity, in LocalTransform transform) =>
         {
             Entity entity = ecb.Instantiate(prefab);
