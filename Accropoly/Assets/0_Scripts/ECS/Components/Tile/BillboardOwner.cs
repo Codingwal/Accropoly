@@ -27,6 +27,7 @@ namespace Components
         public enum Problems
         {
             NoElectricity,
+            NotConnected,
         }
     }
 }

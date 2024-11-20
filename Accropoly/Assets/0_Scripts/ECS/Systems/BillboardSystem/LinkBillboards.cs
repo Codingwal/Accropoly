@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace Systems
 {
+    [UpdateBefore(typeof(CreateBillboards))]
     public partial class LinkBillboards : SystemBase
     {
         protected override void OnCreate()

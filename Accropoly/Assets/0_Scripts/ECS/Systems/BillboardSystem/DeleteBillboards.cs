@@ -41,26 +41,32 @@ namespace Systems
             // Delete billboard if problem is fixed
             Entities.WithChangeFilter<HasElectricity>().WithAll<HasElectricity>().ForEach((Entity entity, ref BillboardOwner billboardOwner) =>
             {
-                RemoveBillboard(ref billboardOwner.billboards, BillboardInfo.Problems.NoElectricity, ecb);
-
-                // Check if there are no billboards left
-                if (billboardOwner.billboards.Length == 0)
-                {
-                    billboardOwner.billboards.Dispose();
-                    ecb.RemoveComponent<BillboardOwner>(entity);
-                }
+                RemoveBillboard(entity, ref billboardOwner, BillboardInfo.Problems.NoElectricity, ecb);
+            }).Schedule();
+            Entities.WithChangeFilter<IsConnected>().WithAll<IsConnected>().ForEach((Entity entity, ref BillboardOwner billboardOwner) =>
+            {
+                RemoveBillboard(entity, ref billboardOwner, BillboardInfo.Problems.NotConnected, ecb);
             }).Schedule();
         }
-        private static void RemoveBillboard(ref UnsafeList<BillboardInfo> billboards, BillboardInfo.Problems problem, EntityCommandBuffer ecb)
+        private static void RemoveBillboard(Entity entity, ref BillboardOwner billboardOwner, BillboardInfo.Problems problem, EntityCommandBuffer ecb)
         {
-            for (int i = 0; i < billboards.Length; i++)
+            // Delete the billboard
+            for (int i = 0; i < billboardOwner.billboards.Length; i++)
             {
-                var info = billboards[i];
+                var info = billboardOwner.billboards[i];
                 if (info.problem == problem)
                 {
                     ecb.DestroyEntity(info.entity);
-                    billboards.RemoveAt(i);
+                    billboardOwner.billboards.RemoveAt(i);
                 }
+            }
+
+            // Check if there are no billboards left
+            if (billboardOwner.billboards.Length == 0)
+            {
+                // Dispose the UnsafeList and remove the component
+                billboardOwner.billboards.Dispose();
+                ecb.RemoveComponent<BillboardOwner>(entity);
             }
         }
     }
