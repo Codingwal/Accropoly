@@ -14,19 +14,19 @@ namespace Components
                 element
             };
         }
-        public struct BillboardInfo
+    }
+    public struct BillboardInfo : IComponentData
+    {
+        public Entity entity;
+        public Problems problem;
+        public BillboardInfo(Entity entity, Problems problem)
         {
-            public Entity entity;
-            public Problems problem;
-            public BillboardInfo(Entity entity, Problems problem)
-            {
-                this.entity = entity;
-                this.problem = problem;
-            }
-            public enum Problems
-            {
-                NoElectricity,
-            }
+            this.entity = entity;
+            this.problem = problem;
+        }
+        public enum Problems
+        {
+            NoElectricity,
         }
     }
 }
