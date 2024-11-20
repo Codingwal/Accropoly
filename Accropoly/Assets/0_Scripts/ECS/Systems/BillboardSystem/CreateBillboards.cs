@@ -1,11 +1,10 @@
 using Tags;
 using Unity.Entities;
-using UnityEngine;
 using ConfigComponents;
 using Unity.Transforms;
 using Components;
 using Unity.Collections.LowLevel.Unsafe;
-using Unity.Collections;
+using UnityEngine;
 
 
 namespace Systems
@@ -31,7 +30,7 @@ namespace Systems
             }).Schedule();
 
             // Add billboard if there is a problem and the tile is a billboard owner
-            Entities.WithDisabled<HasElectricity>().ForEach((Entity tileEntity, ref BillboardOwner billboardOwner, in LocalTransform transform) =>
+            Entities.WithChangeFilter<HasElectricity>().WithDisabled<HasElectricity>().ForEach((Entity tileEntity, ref BillboardOwner billboardOwner, in LocalTransform transform) =>
             {
                 if (ContainsProblem(billboardOwner.billboards, NoElectricityProblem)) return; // Return if this problem has already been added
 

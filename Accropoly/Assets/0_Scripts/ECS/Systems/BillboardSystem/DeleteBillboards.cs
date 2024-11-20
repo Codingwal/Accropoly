@@ -39,7 +39,7 @@ namespace Systems
             }).Schedule();
 
             // Delete billboard if problem is fixed
-            Entities.WithAll<HasElectricity>().ForEach((Entity entity, ref BillboardOwner billboardOwner) =>
+            Entities.WithChangeFilter<HasElectricity>().WithAll<HasElectricity>().ForEach((Entity entity, ref BillboardOwner billboardOwner) =>
             {
                 RemoveBillboard(ref billboardOwner.billboards, BillboardInfo.Problems.NoElectricity, ecb);
 
