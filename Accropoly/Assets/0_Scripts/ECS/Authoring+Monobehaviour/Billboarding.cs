@@ -3,6 +3,7 @@ using System.Linq;
 using Components;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Entities.UniversalDelegates;
 using Unity.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -23,22 +24,24 @@ namespace Authoring
                 Entity entity = GetEntity(TransformUsageFlags.None);
 
                 var entitiesGraphicsSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<EntitiesGraphicsSystem>();
-
                 BatchMeshID meshID = entitiesGraphicsSystem.RegisterMesh(authoring.mesh);
-
-                int largestEnumValue = Enum.GetValues(typeof(BillboardInfo.Problems)).Cast<int>().Max();
-                NativeArray<BatchMaterialID> materialIDs = new(largestEnumValue, Allocator.Persistent);
-                foreach (var pair in authoring.materials)
-                {
-                    materialIDs[(int)pair.key] = entitiesGraphicsSystem.RegisterMaterial(pair.value);
-                }
-
-                AddComponent(entity, new ConfigComponents.Billboarding
+                var configComponent = new ConfigComponents.Billboarding
                 {
                     prefab = GetEntity(authoring.prefab, TransformUsageFlags.Dynamic),
                     meshID = meshID,
-                    materialIDs = materialIDs,
-                });
+                };
+                foreach (var pair in authoring.materials)
+                {
+                    int index = (int)pair.key;
+
+                    // Change the length (if necessary) so that the element can be added at the correct positon
+                    if (index >= configComponent.materialIDs.Length)
+                        configComponent.materialIDs.Length = index + 1;
+
+                    configComponent.materialIDs[(int)pair.key] = entitiesGraphicsSystem.RegisterMaterial(pair.value);
+                }
+
+                AddComponent(entity, configComponent);
             }
         }
     }
@@ -49,6 +52,6 @@ namespace ConfigComponents
     {
         public Entity prefab;
         public BatchMeshID meshID;
-        public NativeArray<BatchMaterialID> materialIDs;
+        public FixedList128Bytes<BatchMaterialID> materialIDs; // supports ~30 BatchMaterialIDs
     }
 }

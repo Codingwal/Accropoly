@@ -75,6 +75,7 @@ namespace Systems
 
             // Use owner transform but position in the air over it
             ownerTransform.Position.y = (int)problem + 1;
+            ownerTransform.Scale = 0.5f;
             ecb.SetComponent(entity, ownerTransform);
             ecb.AddComponent<Billboard>(entity); // Tag component used by queries
 
