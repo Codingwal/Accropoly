@@ -23,6 +23,10 @@ namespace Systems
             if (SystemAPI.HasSingleton<SaveGame>())
             {
                 ecb.DestroyEntity(billboardQuery, EntityQueryCaptureMode.AtPlayback);
+                Entities.ForEach((ref BillboardOwner billboardOwner) =>
+                {
+                    billboardOwner.billboards.Dispose();
+                }).Schedule(); 
                 return;
             }
 
