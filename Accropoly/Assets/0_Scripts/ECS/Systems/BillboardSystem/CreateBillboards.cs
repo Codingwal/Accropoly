@@ -39,7 +39,8 @@ namespace Systems
             // Add billboard if there is a problem and the tile is a billboard owner
             Entities.WithDisabled<HasElectricity>().ForEach((Entity tileEntity, ref BillboardOwner billboardOwner, in LocalTransform transform) =>
             {
-                AddBillboardToBillboardOwner(tileEntity, ref billboardOwner, transform, NoElectricityProblem, config, ecb, alreadyVisitedEntities);
+                if (!ContainsProblem(billboardOwner.billboards, NotConnectedProblem))
+                    AddBillboardToBillboardOwner(tileEntity, ref billboardOwner, transform, NoElectricityProblem, config, ecb, alreadyVisitedEntities);
             }).Schedule();
             Entities.WithDisabled<IsConnected>().ForEach((Entity tileEntity, ref BillboardOwner billboardOwner, in LocalTransform transform) =>
             {
@@ -50,9 +51,9 @@ namespace Systems
         }
         private static void AddBillboardNoBillboardOwner(Entity tileEntity, in LocalTransform transform, BillboardInfo.Problems problem, Billboarding config, EntityCommandBuffer ecb, NativeList<Entity> alreadyVisitedEntities)
         {
-            if (alreadyVisitedEntities.Contains(tileEntity)) return;
+            if (alreadyVisitedEntities.Contains(tileEntity)) return; // Only add one problem per frame
 
-            Entity newBillboard = AddBillboard(transform, problem, config, ecb);
+            Entity newBillboard = CreateBillboard(transform, problem, config, ecb);
             ecb.AddComponent(tileEntity, new BillboardInfo(newBillboard, problem)); // This will get added to the billboards list
             ecb.AddComponent(tileEntity, BillboardOwner.CreateInstance());
 
@@ -60,15 +61,23 @@ namespace Systems
         }
         private static void AddBillboardToBillboardOwner(Entity tileEntity, ref BillboardOwner billboardOwner, in LocalTransform transform, BillboardInfo.Problems problem, Billboarding config, EntityCommandBuffer ecb, NativeList<Entity> alreadyVisitedEntities)
         {
-            if (alreadyVisitedEntities.Contains(tileEntity)) return;
+            if (alreadyVisitedEntities.Contains(tileEntity)) return; // Only add one problem per frame
             if (ContainsProblem(billboardOwner.billboards, problem)) return; // Return if this problem has already been added
 
-            Entity newBillboard = AddBillboard(transform, problem, config, ecb);
+            // A missing connection disables the building -> all other problems become irrelevant and shouldn't be shown
+            if (problem == NotConnectedProblem)
+            {
+                foreach (var info in billboardOwner.billboards)
+                    ecb.DestroyEntity(info.entity);
+                billboardOwner.billboards.Clear();
+            }
+
+            Entity newBillboard = CreateBillboard(transform, problem, config, ecb);
             ecb.AddComponent(tileEntity, new BillboardInfo(newBillboard, problem)); // This will get added to the billboards list
 
             alreadyVisitedEntities.Add(tileEntity);
         }
-        private static Entity AddBillboard(LocalTransform ownerTransform, BillboardInfo.Problems problem, Billboarding config, EntityCommandBuffer ecb)
+        private static Entity CreateBillboard(LocalTransform ownerTransform, BillboardInfo.Problems problem, Billboarding config, EntityCommandBuffer ecb)
         {
             // Create the billboard using the prefab
             Entity entity = ecb.Instantiate(config.prefab);
