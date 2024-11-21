@@ -41,6 +41,7 @@ namespace Systems
                 maxConsumption[0] += consumer.consumption; // Only for informative purposes
             }).Schedule();
 
+            // Update UIInfo (used for the statistics display)
             Entities.ForEach((ref UIInfo info) =>
             {
                 info.electricityProduction = totalProduction[0];

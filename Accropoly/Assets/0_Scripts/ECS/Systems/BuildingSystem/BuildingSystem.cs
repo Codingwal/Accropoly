@@ -5,6 +5,7 @@ using UnityEngine;
 using Components;
 
 using PlacementAction = Components.PlacementInputData.Action;
+using Tags;
 
 
 namespace Systems
@@ -50,28 +51,7 @@ namespace Systems
                 {
                     int2 pos = (int2)localTransform.Position.xz / 2;
                     Entity oldTile = TileGridUtility.GetTile(pos);
-                    TileType newTileType = tileToPlace.tileType;
-
-                    // If the tile can be bought, buy it, else, abort
-                    float price = SystemAPI.ManagedAPI.GetSingleton<ConfigComponents.TilePrices>().prices[newTileType];
-                    GameInfo info = SystemAPI.GetSingleton<GameInfo>();
-                    if (price > info.balance) // If the tile can't be bought, abort
-                        return;
-                    info.balance -= price; // Buy the tile
-                    SystemAPI.SetSingleton(info); // Save the modified GameInfo
-
-                    // Set the archetype to the archetype of the newTileType
-                    var components = TilePlacingUtility.GetComponents(newTileType, pos, tileToPlace.rotation);
-
-                    TilePlacingUtility.UpdateEntity(oldTile, components, ecb);
-
-                    // Set the transform rotation according to the rotation of tileToPlace
-                    var transform = state.EntityManager.GetComponentData<LocalTransform>(oldTile);
-                    transform.Rotation = quaternion.EulerXYZ(0, tileToPlace.rotation.ToRadians(), 0);
-                    ecb.SetComponent(oldTile, transform);
-
-                    // Set mesh & material according to the new tileType
-                    MaterialsAndMeshesHolder.UpdateMeshAndMaterial(oldTile, newTileType);
+                    ecb.AddComponent<Replace>(oldTile);
                 }
             }
         }
