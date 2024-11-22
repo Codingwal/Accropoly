@@ -50,7 +50,16 @@ namespace Systems
                 {
                     int2 pos = (int2)localTransform.Position.xz / 2;
                     Entity oldTile = TileGridUtility.GetTile(pos);
-                    ecb.AddComponent<Replace>(oldTile);
+
+                    // If the tile can be bought, buy it, else, abort
+                    var gameInfo = SystemAPI.GetSingleton<GameInfo>();
+                    float price = SystemAPI.ManagedAPI.GetSingleton<ConfigComponents.TilePrices>().prices[tileToPlace.tileType];
+                    if (price <= gameInfo.balance) // If the tile can be bought
+                    {
+                        gameInfo.balance -= price; // Buy the tile
+                        ecb.AddComponent<Replace>(oldTile); // Mark tile for placement
+                        ecb.SetComponent(SystemAPI.GetSingletonEntity<GameInfo>(), gameInfo); // Update the balance
+                    }
                 }
             }
         }

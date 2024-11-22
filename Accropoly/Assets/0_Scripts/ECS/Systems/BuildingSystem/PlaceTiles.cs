@@ -21,22 +21,11 @@ namespace Systems
         {
             var ecb = SystemAPI.GetSingleton<EndCreationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
 
-            var gameInfo = SystemAPI.GetSingleton<GameInfo>();
-
             var tileToPlace = SystemAPI.GetSingleton<TileToPlace>();
             TileType newTileType = tileToPlace.tileType;
-            float price = SystemAPI.ManagedAPI.GetSingleton<ConfigComponents.TilePrices>().prices[newTileType];
 
             Entities.WithAll<Replace>().ForEach((Entity entity, in Tile tile) =>
             {
-                // If the tile can be bought, buy it, else, abort
-                if (price > gameInfo.balance) // If the tile can't be bought, abort
-                {
-                    ecb.RemoveComponent<Replace>(entity);
-                    return;
-                }
-                gameInfo.balance -= price; // Buy the tile
-
                 var transform = SystemAPI.GetComponent<LocalTransform>(entity);
 
                 // Set the archetype to the archetype of the newTileType
@@ -51,9 +40,6 @@ namespace Systems
                 // Set mesh & material according to the new tileType
                 MaterialsAndMeshesHolder.UpdateMeshAndMaterial(entity, newTileType);
             }).WithStructuralChanges().Run();
-
-            // Save the updated balance
-            ecb.SetComponent(SystemAPI.GetSingletonEntity<GameInfo>(), gameInfo);
         }
     }
 }
