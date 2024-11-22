@@ -14,7 +14,7 @@ public partial struct SaveAndLoadCameraTransform : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
-        if (loadGameQuery.CalculateEntityCount() != 0)
+        if (!loadGameQuery.IsEmpty)
         {
             var worldData = WorldDataSystem.worldData;
             CameraTransform cameraTransform = new CameraTransform
@@ -28,7 +28,7 @@ public partial struct SaveAndLoadCameraTransform : ISystem
             state.EntityManager.CreateSingleton(cameraTransform);
         }
 
-        if (saveGameQuery.CalculateEntityCount() != 0)
+        if (!saveGameQuery.IsEmpty)
         {
             var cameraTransform = SystemAPI.GetSingleton<CameraTransform>();
 

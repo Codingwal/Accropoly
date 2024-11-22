@@ -1,6 +1,7 @@
 using Unity.Entities;
 using UnityEngine;
 using Components;
+using Tags;
 
 namespace Systems
 {
@@ -10,8 +11,6 @@ namespace Systems
         private static bool loadGame;
         private static bool saveGame;
         public static WorldData worldData;
-        private EntityQuery loadGameTagQuery;
-        private EntityQuery saveGameTagQuery;
         private EntityQuery tileMapQuery;
         private EntityQuery populationQuery;
         private EntityQuery gameInfoQuery;
@@ -20,8 +19,6 @@ namespace Systems
             loadGame = false;
             saveGame = false;
 
-            loadGameTagQuery = state.GetEntityQuery(typeof(Tags.LoadGame));
-            saveGameTagQuery = state.GetEntityQuery(typeof(Tags.SaveGame));
             tileMapQuery = state.GetEntityQuery(typeof(Tile));
             populationQuery = state.GetEntityQuery(typeof(Person));
             gameInfoQuery = state.GetEntityQuery(typeof(GameInfo));
@@ -29,7 +26,7 @@ namespace Systems
         public void OnUpdate(ref SystemState state)
         {
             // If the game is being saved
-            if (saveGameTagQuery.CalculateEntityCount() != 0)
+            if (SystemAPI.HasSingleton<SaveGame>())
             {
                 // Save GameInfo
                 GameInfo gameInfo = SystemAPI.GetSingleton<GameInfo>();
@@ -44,14 +41,14 @@ namespace Systems
                 // Destroy the tag, all people and all tiles
                 state.EntityManager.DestroyEntity(tileMapQuery);
                 state.EntityManager.DestroyEntity(populationQuery);
-                state.EntityManager.DestroyEntity(saveGameTagQuery);
+                state.EntityManager.DestroyEntity(SystemAPI.GetSingletonEntity<SaveGame>());
             }
 
             // If the game has been loaded
-            if (loadGameTagQuery.CalculateEntityCount() != 0)
+            if (SystemAPI.HasSingleton<LoadGame>())
             {
-                state.EntityManager.DestroyEntity(loadGameTagQuery);
-                state.EntityManager.CreateSingleton<Tags.RunGame>();
+                state.EntityManager.DestroyEntity(SystemAPI.GetSingletonEntity<LoadGame>());
+                state.EntityManager.CreateSingleton<RunGame>();
             }
 
             if (loadGame)

@@ -3,7 +3,6 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 using Components;
-
 using PlacementAction = Components.PlacementInputData.Action;
 using Tags;
 
@@ -18,7 +17,7 @@ namespace Systems
         private static Entity entity;
         public void OnCreate(ref SystemState state)
         {
-            state.RequireForUpdate<Tags.RunGame>();
+            state.RequireForUpdate<RunGame>();
             state.RequireForUpdate<TileToPlace>(); // Update only if there is a PlacementProcess running (The process is started by the menu)
 
             placementInputDataQuery = state.GetEntityQuery(typeof(PlacementInputData));
@@ -31,7 +30,7 @@ namespace Systems
             var localTransform = state.EntityManager.GetComponentData<LocalTransform>(entity);
             var tileToPlace = state.EntityManager.GetComponentData<TileToPlace>(entity);
 
-            if (placementInputDataQuery.CalculateEntityCount() != 0) // If there is placementInput (can't use singleton functions bc of IEnableableComponent)
+            if (!placementInputDataQuery.IsEmpty) // If there is placementInput (can't use singleton functions bc of IEnableableComponent)
             {
                 // The PlacementInputData is attached to the same entity as the singleton InputData
                 var placementInputData = state.EntityManager.GetComponentData<PlacementInputData>(SystemAPI.GetSingletonEntity<InputData>());
