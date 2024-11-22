@@ -10,17 +10,12 @@ namespace Systems
 {
     public partial class ElectricitySystem : SystemBase
     {
-        private uint frame;
         protected override void OnCreate()
         {
             RequireForUpdate<RunGame>();
         }
         protected override void OnUpdate()
         {
-            // Only run this function every 50 frames
-            frame++;
-            if (frame % 50 != 0) return;
-
             // Calculate the current production
             NativeArray<float> totalProduction = new(1, Allocator.TempJob, NativeArrayOptions.ClearMemory);
             Entities.WithAll<ActiveTile>().ForEach((in ElectricityProducer producer) =>

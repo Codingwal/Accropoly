@@ -14,7 +14,7 @@ public partial class BuildingConnectionSystem : SystemBase
     {
         // Only run this function every 50 frames
         frame++;
-        if (frame % 50 != 4) return;
+        if (frame % 50 != 0) return;
 
         var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
         var buffer = SystemAPI.GetBuffer<EntityBufferElement>(SystemAPI.GetSingletonEntity<EntityGridHolder>());
