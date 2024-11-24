@@ -13,15 +13,15 @@ namespace Systems
     public partial struct BuildingSystem : ISystem
     {
         private EntityQuery placementInputDataQuery;
-        private EntityQuery tilePricesQuery;
         private static Entity entity;
+        private static EntityQuery tileToPlaceQuery;
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<RunGame>();
             state.RequireForUpdate<TileToPlace>(); // Update only if there is a PlacementProcess running (The process is started by the menu)
 
             placementInputDataQuery = state.GetEntityQuery(typeof(PlacementInputData));
-            tilePricesQuery = state.GetEntityQuery(typeof(ConfigComponents.TilePrices));
+            tileToPlaceQuery = state.GetEntityQuery(typeof(Components.TileToPlace));
         }
         public void OnUpdate(ref SystemState state)
         {
@@ -67,14 +67,19 @@ namespace Systems
         {
             EntityManager em = World.DefaultGameObjectInjectionWorld.EntityManager;
 
-            if (em.CreateEntityQuery(typeof(TileToPlace)).CalculateEntityCount() != 0) return; // Return if there already is a PlacementProcess
-
-            var prefab = em.CreateEntityQuery(typeof(ConfigComponents.PrefabEntity)).GetSingleton<ConfigComponents.PrefabEntity>(); // Get the tilePrefab
-            entity = em.Instantiate(prefab);
-            em.AddComponentData(entity, new TileToPlace
+            if (!tileToPlaceQuery.IsEmpty) // If there already is a placement process running
             {
-                tileType = tileType,
-            });
+                em.SetComponentData(entity, new TileToPlace { tileType = tileType, });
+            }
+            else
+            {
+                var prefab = em.CreateEntityQuery(typeof(ConfigComponents.PrefabEntity)).GetSingleton<ConfigComponents.PrefabEntity>(); // Get the tilePrefab
+                entity = em.Instantiate(prefab);
+                em.AddComponentData(entity, new TileToPlace
+                {
+                    tileType = tileType,
+                });
+            }
             MaterialsAndMeshesHolder.UpdateMeshAndMaterial(entity, tileType); // Set mesh & material according to the specified tileType
         }
     }
