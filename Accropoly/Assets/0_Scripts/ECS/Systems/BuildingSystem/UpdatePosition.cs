@@ -12,7 +12,7 @@ namespace Systems
     {
         public void OnCreate(ref SystemState state)
         {
-            state.RequireForUpdate<TileToPlace>();
+            state.RequireForUpdate<TileToPlaceInfo>();
             state.RequireForUpdate<ConfigComponents.BuildingSystem>();
             state.RequireForUpdate<RunGame>();
         }
@@ -20,7 +20,7 @@ namespace Systems
         {
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
 
-            Entity entity = SystemAPI.GetSingletonEntity<TileToPlace>();
+            Entity entity = SystemAPI.GetSingletonEntity<TileToPlaceInfo>();
             var localTransform = state.EntityManager.GetComponentData<LocalTransform>(entity);
 
             var inputData = SystemAPI.GetSingleton<InputData>();
