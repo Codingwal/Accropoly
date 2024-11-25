@@ -14,7 +14,7 @@ namespace Systems
     {
         protected override void OnCreate()
         {
-            RequireForUpdate<TileToPlace>();
+            RequireForUpdate<TileToPlaceInfo>();
             RequireForUpdate<Replace>();
         }
         protected override void OnUpdate()

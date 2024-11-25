@@ -30,16 +30,12 @@ namespace Systems
 
             if (!placementInputDataQuery.IsEmpty) // If there is placementInput (can't use singleton functions bc of IEnableableComponent)
             {
-                Debug.Log("!");
-
                 // The PlacementInputData is attached to the same entity as the singleton InputData
                 var placementInputData = EntityManager.GetComponentData<PlacementInputData>(SystemAPI.GetSingletonEntity<InputData>());
                 var tileToPlaceInfo = SystemAPI.GetSingleton<TileToPlaceInfo>();
 
                 if (placementInputData.placementProcessRunning)
                 {
-                    Debug.Log("placing");
-
                     // Place TileToPlace at current pos, if there isn't one already
                     var tileToPlaceInfoEntity = SystemAPI.GetSingletonEntity<TileToPlaceInfo>();
                     float2 pos = SystemAPI.GetComponent<LocalTransform>(tileToPlaceInfoEntity).Position.xz;
@@ -62,8 +58,6 @@ namespace Systems
                 }
                 else if (placementInputData.action == PlacementAction.Place)
                 {
-                    Debug.Log("place");
-
                     var gameInfo = SystemAPI.GetSingleton<GameInfo>();
                     float price = SystemAPI.ManagedAPI.GetSingleton<TilePrices>().prices[tileToPlaceInfo.tileType];
 
@@ -85,8 +79,6 @@ namespace Systems
                 }
                 else if (placementInputData.action == PlacementAction.Rotate)
                 {
-                    Debug.Log("rotate");
-
                     tileToPlaceInfo.rotation = tileToPlaceInfo.rotation.Rotate(1);
                     ecb.SetComponent(SystemAPI.GetSingletonEntity<TileToPlaceInfo>(), tileToPlaceInfo);
                     Entities.WithAll<TileToPlace>().ForEach((ref LocalTransform transform) =>
@@ -96,8 +88,6 @@ namespace Systems
                 }
                 else if (placementInputData.action == PlacementAction.Cancel)
                 {
-                    Debug.Log("cancel");
-
                     ecb.DestroyEntity(tileToPlaceQuery, EntityQueryCaptureMode.AtPlayback);
                     ecb.DestroyEntity(SystemAPI.GetSingletonEntity<TileToPlaceInfo>());
                     return;
