@@ -4,6 +4,7 @@ using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
 using Components;
+using Tags;
 
 namespace Systems
 {
@@ -13,7 +14,7 @@ namespace Systems
         {
             state.RequireForUpdate<TileToPlace>();
             state.RequireForUpdate<ConfigComponents.BuildingSystem>();
-            state.RequireForUpdate<Tags.RunGame>();
+            state.RequireForUpdate<RunGame>();
         }
         public void OnUpdate(ref SystemState state)
         {
