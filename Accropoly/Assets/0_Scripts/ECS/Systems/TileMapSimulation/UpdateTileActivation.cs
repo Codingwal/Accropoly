@@ -13,9 +13,6 @@ namespace Systems
         }
         protected override void OnUpdate()
         {
-            frame++;
-            if (frame % 50 != 0) return;
-
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
 
             Entities.WithAll<Tile>().ForEach((Entity entity) =>

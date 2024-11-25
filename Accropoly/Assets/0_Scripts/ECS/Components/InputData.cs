@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
@@ -25,6 +23,7 @@ namespace Components
     {
         public enum Action
         {
+            None,
             Ctrl,
             Clear,
             Menu,
@@ -38,10 +37,12 @@ namespace Components
     {
         public enum Action
         {
+            None,
             Rotate,
             Place,
             Cancel
         }
         public Action action;
+        public bool placementProcessRunning;
     }
 }

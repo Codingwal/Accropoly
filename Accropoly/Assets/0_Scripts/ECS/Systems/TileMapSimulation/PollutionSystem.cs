@@ -8,16 +8,12 @@ namespace Systems
 {
     public partial class PollutionSystem : SystemBase
     {
-        private uint frame;
         protected override void OnCreate()
         {
             RequireForUpdate<RunGame>();
         }
         protected override void OnUpdate()
         {
-            // Only run this function every 50 frames
-            frame++;
-            if (frame % 50 != 3) return;
 
             NativeArray<float> totalPollution = new(1, Allocator.TempJob, NativeArrayOptions.ClearMemory);
             NativeArray<float> electricityPollution = new(1, Allocator.TempJob, NativeArrayOptions.ClearMemory);
