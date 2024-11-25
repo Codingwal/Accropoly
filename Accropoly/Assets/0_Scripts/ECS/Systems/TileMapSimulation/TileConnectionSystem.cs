@@ -42,7 +42,7 @@ namespace Systems
                         // Update neighbour if they don't get updated this frame anyway
                         if (!SystemAPI.HasComponent<NewTile>(neighbour))
                         {
-                            ecb.SetComponent(neighbour, neighbourConnectingTile);
+                            SystemAPI.SetComponent(neighbour, neighbourConnectingTile); // Changes must be applied directly as they might be read in the same job
                             MaterialsAndMeshesHolder.UpdateAppearence(neighbour, SystemAPI.GetComponent<Tile>(neighbour).tileType, neighbourConnectingTile);
                             var neighbourTransform = SystemAPI.GetComponent<LocalTransform>(neighbour);
                             neighbourTransform.Rotation = quaternion.EulerXYZ(0, neighbourConnectingTile.GetRotation().ToRadians(), 0);
