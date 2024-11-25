@@ -52,7 +52,7 @@ namespace Systems
                     {
                         var prefab = SystemAPI.GetSingleton<PrefabEntity>();
                         Entity entity = ecb.Instantiate(prefab);
-                        ecb.SetComponent(entity, LocalTransform.FromPosition(new(pos.x, 0.3f, pos.y)));
+                        ecb.SetComponent(entity, LocalTransform.FromPositionRotation(new(pos.x, 0.3f, pos.y), quaternion.Euler(new(0, tileToPlaceInfo.rotation.ToRadians(), 0))));
                         ecb.AddComponent<TileToPlace>(entity);
                     }
                 }
@@ -80,10 +80,18 @@ namespace Systems
                 else if (placementInputData.action == PlacementAction.Rotate)
                 {
                     tileToPlaceInfo.rotation = tileToPlaceInfo.rotation.Rotate(1);
-                    ecb.SetComponent(SystemAPI.GetSingletonEntity<TileToPlaceInfo>(), tileToPlaceInfo);
+
+                    // Update transform & TileToPlaceInfo
+                    Entity tileToPlaceInfoEntity = SystemAPI.GetSingletonEntity<TileToPlaceInfo>();
+                    var tileToPlaceInfoTransform = SystemAPI.GetComponent<LocalTransform>(tileToPlaceInfoEntity);
+                    tileToPlaceInfoTransform.Rotation = quaternion.Euler(new(0, tileToPlaceInfo.rotation.ToRadians(), 0));
+                    ecb.SetComponent(tileToPlaceInfoEntity, tileToPlaceInfoTransform);
+                    ecb.SetComponent(tileToPlaceInfoEntity, tileToPlaceInfo);
+
+                    // Update all TileToPlace entities
                     Entities.WithAll<TileToPlace>().ForEach((ref LocalTransform transform) =>
                     {
-                        transform = transform.RotateY(math.radians(90));
+                        transform.Rotation = quaternion.Euler(new(0, tileToPlaceInfo.rotation.ToRadians(), 0));
                     }).Schedule();
                 }
                 else if (placementInputData.action == PlacementAction.Cancel)
