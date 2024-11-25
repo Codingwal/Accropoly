@@ -6,17 +6,17 @@ namespace Systems
     [UpdateInGroup(typeof(CreationSystemGroup))]
     public partial struct DeleteTileToPlace : ISystem
     {
-        private EntityQuery tileToPlaceQuery;
+        private EntityQuery tileToPlaceInfoQuery;
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<Tags.SaveGame>();
-            state.RequireForUpdate<TileToPlace>();
+            state.RequireForUpdate<TileToPlaceInfo>();
 
-            tileToPlaceQuery = state.GetEntityQuery(typeof(TileToPlace));
+            tileToPlaceInfoQuery = state.GetEntityQuery(typeof(TileToPlaceInfo));
         }
         public void OnUpdate(ref SystemState state)
         {
-            state.EntityManager.DestroyEntity(tileToPlaceQuery.GetSingletonEntity());
+            state.EntityManager.DestroyEntity(tileToPlaceInfoQuery.GetSingletonEntity());
         }
     }
 }

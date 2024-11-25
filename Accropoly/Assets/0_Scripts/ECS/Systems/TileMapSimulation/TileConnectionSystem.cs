@@ -39,16 +39,15 @@ namespace Systems
                         }
                         else neighbourConnectingTile.RemoveDirection(direction.Flip());
 
-                        // Update neighbour ConnectingTile
-                        ecb.SetComponent(neighbour, neighbourConnectingTile);
-
-                        // Update neighbour material and mesh
-                        MaterialsAndMeshesHolder.UpdateAppearence(neighbour, SystemAPI.GetComponent<Tile>(neighbour).tileType, neighbourConnectingTile);
-
-                        // Update neighbour rotation
-                        var neighbourTransform = SystemAPI.GetComponent<LocalTransform>(neighbour);
-                        neighbourTransform.Rotation = quaternion.EulerXYZ(0, neighbourConnectingTile.GetRotation().ToRadians(), 0);
-                        ecb.SetComponent(neighbour, neighbourTransform);
+                        // Update neighbour if they don't get updated this frame anyway
+                        if (!SystemAPI.HasComponent<NewTile>(neighbour))
+                        {
+                            SystemAPI.SetComponent(neighbour, neighbourConnectingTile); // Changes must be applied directly as they might be read in the same job
+                            MaterialsAndMeshesHolder.UpdateAppearence(neighbour, SystemAPI.GetComponent<Tile>(neighbour).tileType, neighbourConnectingTile);
+                            var neighbourTransform = SystemAPI.GetComponent<LocalTransform>(neighbour);
+                            neighbourTransform.Rotation = quaternion.EulerXYZ(0, neighbourConnectingTile.GetRotation().ToRadians(), 0);
+                            ecb.SetComponent(neighbour, neighbourTransform);
+                        }
                     }
                 }
 

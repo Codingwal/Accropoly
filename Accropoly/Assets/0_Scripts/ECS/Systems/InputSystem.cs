@@ -29,7 +29,7 @@ namespace Systems
             SystemAPI.SetComponentEnabled<PlacementInputData>(inputDataHolder, false);
 
             inputActions.InGame.Rotate.performed += (ctx) => OnPlacementAction(PlacementAction.Rotate);
-            inputActions.InGame.Place.performed += (ctx) => OnPlacementAction(PlacementAction.Place);
+            inputActions.InGame.Place.canceled += (ctx) => OnPlacementAction(PlacementAction.Place);    
             inputActions.InGame.Cancel.performed += (ctx) => OnPlacementAction(PlacementAction.Cancel);
             inputActions.UI.Menu.performed += (ctx) => OnUIAction(UIAction.Menu); ;
             inputActions.UI.Clear.performed += (ctx) => OnUIAction(UIAction.Clear); ;
@@ -62,9 +62,11 @@ namespace Systems
                 shift = inGameActions.Shift.IsPressed(),
             });
 
-            // Disable input event tags
-            ecb.SetComponentEnabled<PlacementInputData>(inputDataHolder, false);
             ecb.SetComponentEnabled<UIInputData>(inputDataHolder, false);
+
+            bool placementProcessRunning = inputActions.InGame.Place.IsPressed();
+            SystemAPI.SetComponent(inputDataHolder, new PlacementInputData { placementProcessRunning = placementProcessRunning, action = PlacementAction.None });
+            SystemAPI.SetComponentEnabled<PlacementInputData>(inputDataHolder, placementProcessRunning);
         }
         public void EnableInputActions() { inputActions.Enable(); }
         public void DisableInputActions() { inputActions.Disable(); }

@@ -2,9 +2,13 @@ using Unity.Entities;
 
 namespace Components
 {
-    public struct TileToPlace : IComponentData
+    public struct TileToPlaceInfo : IComponentData
     {
         public TileType tileType;
         public Direction rotation;
     }
+}
+namespace Tags
+{
+    public struct TileToPlace : IComponentData { }
 }
