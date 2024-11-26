@@ -4,7 +4,7 @@ using Unity.Collections.LowLevel.Unsafe;
 
 namespace Components
 {
-    public struct Traveller : IComponentData, IEnableableComponent
+    public struct Traveller : IComponentData
     {
         public int nextWaypointIndex;
         public UnsafeList<Waypoint> waypoints;

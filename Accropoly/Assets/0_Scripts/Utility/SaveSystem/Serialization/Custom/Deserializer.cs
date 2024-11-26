@@ -2,6 +2,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Components;
 using Tags;
+using Unity.Collections.LowLevel.Unsafe;
 
 public partial class Deserializer
 {
@@ -49,10 +50,21 @@ public partial class Deserializer
                 {
                     employer = Deserialize(new int2()),
                 },
+                PersonComponents.Traveller => new Traveller()
+                {
+                    nextWaypointIndex = br.ReadInt32(),
+                    waypoints = Deserialize(new UnsafeList<Waypoint>()),
+                },
+                PersonComponents.Travelling => new Travelling(),
                 _ => throw new($"Cannot deserialize component of type {type}")
             };
             data.components.Add((component, isEnabled));
         }
+        return data;
+    }
+    public Waypoint Deserialize(Waypoint data)
+    {
+        data.pos = Deserialize(new float2());
         return data;
     }
     public MapData Deserialize(MapData data)

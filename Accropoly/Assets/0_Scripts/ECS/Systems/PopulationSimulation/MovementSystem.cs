@@ -15,6 +15,7 @@ namespace Systems
         protected override void OnCreate()
         {
             RequireForUpdate<Traveller>();
+            RequireForUpdate<RunGame>();
         }
         protected override void OnUpdate()
         {

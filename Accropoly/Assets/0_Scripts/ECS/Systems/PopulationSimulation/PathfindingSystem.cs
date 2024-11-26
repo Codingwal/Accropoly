@@ -11,6 +11,8 @@ namespace Systems
         private static Unity.Mathematics.Random rnd;
         protected override void OnCreate()
         {
+            RequireForUpdate<Traveller>();
+            RequireForUpdate<RunGame>();
             rnd = new(1);
         }
         protected override void OnUpdate()
@@ -34,6 +36,13 @@ namespace Systems
                 }
 
                 ecb.SetComponentEnabled<Travelling>(entity, true);
+            }).Schedule();
+        }
+        protected override void OnDestroy()
+        {
+            Entities.ForEach((ref Traveller traveller) =>
+            {
+                traveller.waypoints.Dispose();
             }).Schedule();
         }
     }

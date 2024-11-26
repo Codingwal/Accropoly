@@ -6,6 +6,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
+using Tags;
 
 namespace Systems
 {
@@ -44,6 +45,8 @@ namespace Systems
                     if (type == typeof(PosComponent)) pos = ((PosComponent)component).pos;
                     else if (type == typeof(Person)) AddComponent<Person>();
                     else if (type == typeof(Worker)) AddComponent<Worker>();
+                    else if (type == typeof(Traveller)) AddComponent<Traveller>();
+                    else if (type == typeof(Travelling)) AddComponent<Travelling>();
                     else Debug.LogError($"Unexpected type {type.Name}");
                 }
                 ecb.SetComponent(entity, LocalTransform.FromPositionRotationScale(pos, quaternion.identity, 0.1f));

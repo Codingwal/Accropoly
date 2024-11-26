@@ -1,4 +1,5 @@
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 
 public partial class Serializer
 {
@@ -9,5 +10,15 @@ public partial class Serializer
         {
             Serialize((dynamic)e);
         }
+        data.Dispose();
+    }
+    public void Serialize<T>(UnsafeList<T> data) where T : unmanaged
+    {
+        bw.Write(data.Length);
+        foreach (var e in data)
+        {
+            Serialize((dynamic)e);
+        }
+        data.Dispose();
     }
 }
