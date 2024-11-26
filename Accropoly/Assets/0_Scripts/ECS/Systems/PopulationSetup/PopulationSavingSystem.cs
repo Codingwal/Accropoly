@@ -29,6 +29,7 @@ namespace Systems
                 typesToIgnoreSet.Add(type);
             typesToIgnoreSet.Add(typeof(Unemployed));
             typesToIgnoreSet.Add(typeof(Homeless));
+            typesToIgnoreSet.Add(typeof(WantsToTravel));
             typesToIgnore.Dispose();
 
             WorldDataSystem.worldData.population = new();

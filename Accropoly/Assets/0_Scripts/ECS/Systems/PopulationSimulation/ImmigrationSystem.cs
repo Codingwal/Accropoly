@@ -74,7 +74,12 @@ namespace Systems
                         age = 0,
                     });
                     ecb.AddComponent(entity, new Worker { employer = new(-1) });
+
+                    ecb.AddComponent<WantsToTravel>(entity);
+                    ecb.SetComponentEnabled<WantsToTravel>(entity, false);
+
                     ecb.AddComponent<Traveller>(entity);
+
                     ecb.AddComponent<Travelling>(entity);
                     ecb.SetComponentEnabled<Travelling>(entity, false);
 

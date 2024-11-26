@@ -6,6 +6,7 @@ namespace Components
 {
     public struct Traveller : IComponentData
     {
+        public int2 destination;
         public int nextWaypointIndex;
         public UnsafeList<Waypoint> waypoints;
     }
@@ -17,4 +18,5 @@ public struct Waypoint
 namespace Tags
 {
     public struct Travelling : IComponentData, IEnableableComponent { }
+    public struct WantsToTravel : IComponentData, IEnableableComponent { }
 }

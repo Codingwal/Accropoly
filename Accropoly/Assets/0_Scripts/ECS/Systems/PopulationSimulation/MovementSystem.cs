@@ -29,6 +29,7 @@ namespace Systems
                 if (math.distancesq(transform.Position.xz, nextWaypoint.pos) <= waypointRangeSqr)
                 {
                     traveller.nextWaypointIndex++;
+                    Debug.Log(nextWaypoint);
 
                     if (traveller.nextWaypointIndex == traveller.waypoints.Length) // If the destination has been reached
                     {
