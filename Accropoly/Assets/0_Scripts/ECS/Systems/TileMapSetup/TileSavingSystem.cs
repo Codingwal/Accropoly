@@ -58,7 +58,7 @@ namespace Systems
                         bool isEnabled = !componentType.IsEnableable || entityManager.IsComponentEnabled(entity, componentType);
                         tile.components.Add((entityManager.GetComponentData<T>(entity), isEnabled));
                     }
-                    void AddComponent<T>() where T : unmanaged, IComponentData
+                    void AddTag<T>() where T : unmanaged, IComponentData
                     {
                         // If the component is enableable, check if it is enabled. Else set it to true 
                         bool isEnabled = !componentType.IsEnableable || entityManager.IsComponentEnabled(entity, componentType);
@@ -73,9 +73,9 @@ namespace Systems
                     else if (componentType == typeof(Habitat)) AddComponentData<Habitat>();
                     else if (componentType == typeof(Employer)) AddComponentData<Employer>();
 
-                    else if (componentType == typeof(IsConnected)) AddComponent<IsConnected>();
-                    else if (componentType == typeof(ActiveTile)) AddComponent<ActiveTile>();
-                    else if (componentType == typeof(BuildingConnector)) AddComponent<BuildingConnector>();
+                    else if (componentType == typeof(IsConnected)) AddTag<IsConnected>();
+                    else if (componentType == typeof(ActiveTile)) AddTag<ActiveTile>();
+                    else if (componentType == typeof(BuildingConnector)) AddTag<BuildingConnector>();
 
                     else Debug.LogWarning($"Component of type {componentType} will not be serialized but also isn't present in typesToIgnore");
 

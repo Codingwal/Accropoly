@@ -48,7 +48,7 @@ namespace Systems
                         bool isEnabled = !componentType.IsEnableable || entityManager.IsComponentEnabled(entity, componentType);
                         components.Add((entityManager.GetComponentData<T>(entity), isEnabled));
                     }
-                    void AddComponent<T>() where T : unmanaged, IComponentData
+                    void AddTag<T>() where T : unmanaged, IComponentData
                     {
                         bool isEnabled = !componentType.IsEnableable || entityManager.IsComponentEnabled(entity, componentType);
                         components.Add((new T(), isEnabled));
