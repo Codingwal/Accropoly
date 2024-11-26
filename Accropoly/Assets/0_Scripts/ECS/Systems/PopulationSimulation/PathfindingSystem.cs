@@ -22,6 +22,7 @@ namespace Systems
             Entities.WithDisabled<Travelling>().ForEach((Entity entity, ref Traveller traveller) =>
             {
                 traveller.nextWaypointIndex = 0;
+
                 if (traveller.waypoints.IsCreated)
                     traveller.waypoints.Clear();
                 else
@@ -36,13 +37,6 @@ namespace Systems
                 }
 
                 ecb.SetComponentEnabled<Travelling>(entity, true);
-            }).Schedule();
-        }
-        protected override void OnDestroy()
-        {
-            Entities.ForEach((ref Traveller traveller) =>
-            {
-                traveller.waypoints.Dispose();
             }).Schedule();
         }
     }
