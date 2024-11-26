@@ -26,7 +26,7 @@ namespace Systems
             {
                 Waypoint nextWaypoint = traveller.waypoints[traveller.nextWaypointIndex];
 
-                if (math.distancesq(transform.Position.xz, nextWaypoint.pos) <= waypointRangeSqr)
+                if (math.distancesq(transform.Position.xz, nextWaypoint.pos * 2) <= waypointRangeSqr)
                 {
                     traveller.nextWaypointIndex++;
 
@@ -39,7 +39,7 @@ namespace Systems
                     nextWaypoint = traveller.waypoints[traveller.nextWaypointIndex];
                 }
 
-                float2 direction = nextWaypoint.pos -= transform.Position.xz;
+                float2 direction = nextWaypoint.pos * 2 - transform.Position.xz;
                 float2 directionNormalized = math.normalize(direction);
                 transform.Position.xz += deltaTime * speed * directionNormalized;
             }).WithBurst(Unity.Burst.FloatMode.Fast, Unity.Burst.FloatPrecision.Low).Schedule();

@@ -30,7 +30,7 @@ namespace Systems
                 else
                     traveller.waypoints = new(8, Unity.Collections.Allocator.Persistent, Unity.Collections.NativeArrayOptions.UninitializedMemory);
 
-                FindPath(ref traveller.waypoints, (int2)math.round(transform.Position.xz), traveller.destination * 2);
+                FindPath(ref traveller.waypoints, (int2)math.round(transform.Position.xz) / 2, traveller.destination, buffer);
 
                 ecb.SetComponentEnabled<Travelling>(entity, true);
                 ecb.SetComponentEnabled<WantsToTravel>(entity, false);
@@ -50,13 +50,13 @@ namespace Systems
             int2 pos = start;
             while (pos.x != dest.x)
             {
-                pos += pos.x > dest.x ? new int2(-2, 0) : new int2(2, 0);
+                pos += pos.x > dest.x ? new int2(-1, 0) : new int2(1, 0);
 
                 waypoints.Add(new Waypoint { pos = pos });
 
                 if (pos.y != dest.y)
                 {
-                    pos += pos.y > dest.y ? new int2(0, -2) : new int2(0, 2);
+                    pos += pos.y > dest.y ? new int2(0, -1) : new int2(0, 1);
                     waypoints.Add(new Waypoint { pos = pos });
                 }
 
@@ -66,7 +66,7 @@ namespace Systems
             i = 0;
             while (pos.y != dest.y)
             {
-                pos += pos.y > dest.y ? new int2(0, -2) : new int2(0, 2);
+                pos += pos.y > dest.y ? new int2(0, -1) : new int2(0, 1);
                 waypoints.Add(new Waypoint { pos = pos });
 
                 if (i > maxIterations) throw new();
