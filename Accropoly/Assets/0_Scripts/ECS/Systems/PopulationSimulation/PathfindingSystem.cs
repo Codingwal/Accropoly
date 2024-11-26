@@ -20,7 +20,10 @@ namespace Systems
             Entities.WithDisabled<Travelling>().ForEach((Entity entity, ref Traveller traveller) =>
             {
                 traveller.nextWaypointIndex = 0;
-                traveller.waypoints = new(waypointCount, Unity.Collections.Allocator.Persistent, Unity.Collections.NativeArrayOptions.UninitializedMemory);
+                if (traveller.waypoints.IsCreated)
+                    traveller.waypoints.Clear();
+                else
+                    traveller.waypoints = new(waypointCount, Unity.Collections.Allocator.Persistent, Unity.Collections.NativeArrayOptions.UninitializedMemory);
 
                 for (int i = 0; i < waypointCount; i++)
                 {

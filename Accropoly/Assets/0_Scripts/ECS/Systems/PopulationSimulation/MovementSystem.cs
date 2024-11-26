@@ -9,7 +9,7 @@ namespace Systems
 {
     public partial class MovementSystem : SystemBase
     {
-        private const float speed = 2f;
+        private const float speed = 3f;
         private const float waypointRange = 0.1f;
         private const float waypointRangeSqr = waypointRange * waypointRange;
         protected override void OnCreate()
@@ -31,7 +31,6 @@ namespace Systems
 
                     if (traveller.nextWaypointIndex == traveller.waypoints.Length) // If the destination has been reached
                     {
-                        traveller.waypoints.Dispose();
                         ecb.SetComponentEnabled<Travelling>(entity, false);
                         return;
                     }
