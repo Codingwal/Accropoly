@@ -29,7 +29,6 @@ namespace Systems
                 if (math.distancesq(transform.Position.xz, nextWaypoint.pos) <= waypointRangeSqr)
                 {
                     traveller.nextWaypointIndex++;
-                    Debug.Log(nextWaypoint);
 
                     if (traveller.nextWaypointIndex == traveller.waypoints.Length) // If the destination has been reached
                     {
@@ -42,7 +41,7 @@ namespace Systems
 
                 float2 direction = nextWaypoint.pos -= transform.Position.xz;
                 float2 directionNormalized = math.normalize(direction);
-                transform.Position.xz += directionNormalized * speed * deltaTime;
+                transform.Position.xz += deltaTime * speed * directionNormalized;
             }).WithBurst(Unity.Burst.FloatMode.Fast, Unity.Burst.FloatPrecision.Low).Schedule();
         }
     }

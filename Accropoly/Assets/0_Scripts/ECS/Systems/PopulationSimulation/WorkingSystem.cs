@@ -17,7 +17,7 @@ public partial class WorkingSystem : SystemBase
 
         Entities.WithNone<Unemployed>().WithDisabled<WantsToTravel, Travelling>().ForEach((Entity entity, ref Traveller traveller, in LocalTransform transform, in Person person, in Worker worker) =>
         {
-            int2 pos = (int2)transform.Position.xz;
+            int2 pos = (int2)math.round(transform.Position.xz) / 2;
 
             if (pos.Equals(person.homeTile))
             {

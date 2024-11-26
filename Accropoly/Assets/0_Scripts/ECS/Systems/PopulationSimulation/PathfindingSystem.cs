@@ -30,7 +30,7 @@ namespace Systems
                 else
                     traveller.waypoints = new(8, Unity.Collections.Allocator.Persistent, Unity.Collections.NativeArrayOptions.UninitializedMemory);
 
-                FindPath(ref traveller.waypoints, (int2)math.round(transform.Position.xz) * 2, traveller.destination * 2);
+                FindPath(ref traveller.waypoints, (int2)math.round(transform.Position.xz), traveller.destination * 2);
 
                 ecb.SetComponentEnabled<Travelling>(entity, true);
                 ecb.SetComponentEnabled<WantsToTravel>(entity, false);
@@ -39,8 +39,10 @@ namespace Systems
         private static void FindPath(ref UnsafeList<Waypoint> waypoints, int2 start, int2 dest)
         {
             // Both start and dest must tile centers
-            Debug.Assert((start % 2).Equals(0));
-            Debug.Assert((dest % 2).Equals(0));
+            Debug.Assert((start % 2).Equals(0), "Both start and dest must tile centers");
+            Debug.Assert((dest % 2).Equals(0), "Both start and dest must tile centers");
+            Debug.Assert(!start.Equals(dest), "The start must not equal the destination");
+
 
             const int maxIterations = 1000;
             int i = 0;
