@@ -47,10 +47,9 @@ namespace Systems
             Debug.Assert(!start.Equals(dest), "The start must not equal the destination");
 
             const int maxIterations = 1000;
-            int i = 0;
 
             int2 pos = start;
-            while (!pos.Equals(dest))
+            for (int i = 0; i < maxIterations; i++)
             {
                 int2 dir = new();
                 foreach (Direction direction in Direction.GetDirections())
@@ -71,34 +70,9 @@ namespace Systems
                 pos += dir;
                 waypoints.Add(new Waypoint { pos = pos });
 
-                if (i > maxIterations) throw new($"Reached the maximum amount of iterations while searching a path from {start} to {dest}! Stuck at {pos}");
                 i++;
             }
-
-            // while (pos.x != dest.x)
-            // {
-            //     pos += pos.x > dest.x ? new int2(-1, 0) : new int2(1, 0);
-
-            //     waypoints.Add(new Waypoint { pos = pos });
-
-            //     if (pos.y != dest.y)
-            //     {
-            //         pos += pos.y > dest.y ? new int2(0, -1) : new int2(0, 1);
-            //         waypoints.Add(new Waypoint { pos = pos });
-            //     }
-
-            //     if (i > maxIterations) throw new();
-            //     i++;
-            // }
-            // i = 0;
-            // while (pos.y != dest.y)
-            // {
-            //     pos += pos.y > dest.y ? new int2(0, -1) : new int2(0, 1);
-            //     waypoints.Add(new Waypoint { pos = pos });
-
-            //     if (i > maxIterations) throw new();
-            //     i++;
-            // }
+            throw new($"Reached the maximum amount of iterations while searching a path from {start} to {dest}! Stuck at {pos}");
         }
     }
 }
