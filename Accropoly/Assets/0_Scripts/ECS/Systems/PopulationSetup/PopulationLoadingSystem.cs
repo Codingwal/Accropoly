@@ -47,6 +47,7 @@ namespace Systems
                     else if (type == typeof(Worker)) AddComponent<Worker>();
                     else if (type == typeof(Traveller)) AddComponent<Traveller>();
                     else if (type == typeof(Travelling)) AddComponent<Travelling>();
+                    else if (type == typeof(WantsToTravel)) AddComponent<WantsToTravel>();
                     else Debug.LogError($"Unexpected type {type.Name}");
                 }
                 ecb.SetComponent(entity, LocalTransform.FromPositionRotationScale(pos, quaternion.identity, 0.1f));

@@ -59,6 +59,7 @@ public partial class Serializer
                 Serialize(componentData.waypoints);
             }
             else if (type == typeof(Travelling)) bw.Write((int)PersonComponents.Travelling);
+            else if (type == typeof(WantsToTravel)) bw.Write((int)PersonComponents.WantsToTravel);
             else throw new($"Cannot serialize component of type {type}");
         }
     }

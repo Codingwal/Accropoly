@@ -29,7 +29,6 @@ namespace Systems
                 typesToIgnoreSet.Add(type);
             typesToIgnoreSet.Add(typeof(Unemployed));
             typesToIgnoreSet.Add(typeof(Homeless));
-            typesToIgnoreSet.Add(typeof(WantsToTravel));
             typesToIgnore.Dispose();
 
             WorldDataSystem.worldData.population = new();
@@ -59,6 +58,7 @@ namespace Systems
                     else if (componentType == typeof(Worker)) AddComponentData<Worker>();
                     else if (componentType == typeof(Traveller)) AddComponentData<Traveller>();
                     else if (componentType == typeof(Travelling)) AddTag<Travelling>();
+                    else if (componentType == typeof(WantsToTravel)) AddTag<WantsToTravel>();
                     else Debug.LogWarning($"Component of type {componentType} will not be serialized but also isn't present in typesToIgnore");
                 }
                 componentTypes.Dispose();

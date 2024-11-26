@@ -56,6 +56,7 @@ public partial class Deserializer
                     waypoints = Deserialize(new UnsafeList<Waypoint>()),
                 },
                 PersonComponents.Travelling => new Travelling(),
+                PersonComponents.WantsToTravel => new WantsToTravel(),
                 _ => throw new($"Cannot deserialize component of type {type}")
             };
             data.components.Add((component, isEnabled));
