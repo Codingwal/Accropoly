@@ -76,6 +76,7 @@ namespace Systems
                     else if (componentType == typeof(IsConnected)) AddTag<IsConnected>();
                     else if (componentType == typeof(ActiveTile)) AddTag<ActiveTile>();
                     else if (componentType == typeof(BuildingConnector)) AddTag<BuildingConnector>();
+                    else if (componentType == typeof(TransportTile)) AddTag<TransportTile>();
 
                     else Debug.LogWarning($"Component of type {componentType} will not be serialized but also isn't present in typesToIgnore");
 
