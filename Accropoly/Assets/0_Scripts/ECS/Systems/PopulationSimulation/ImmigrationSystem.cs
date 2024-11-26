@@ -74,6 +74,9 @@ namespace Systems
                         age = 0,
                     });
                     ecb.AddComponent(entity, new Worker { employer = new(-1) });
+                    ecb.AddComponent<Traveller>(entity);
+                    ecb.AddComponent<Travelling>(entity);
+                    ecb.SetComponentEnabled<Travelling>(entity, false);
 
                     float offset = (habitat.totalSpace - habitat.freeSpace - 2.5f) * 0.2f;
                     float3 pos = new(2 * habitatTile.pos.x + offset, 0.5f, 2 * habitatTile.pos.y);
