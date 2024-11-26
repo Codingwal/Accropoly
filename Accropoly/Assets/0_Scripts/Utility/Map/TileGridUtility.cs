@@ -11,6 +11,7 @@ public static class TileGridUtility
         em.AddComponent<Tags.EntityGridHolder>(entity);
         return em.AddBuffer<EntityBufferElement>(entity);
     }
+    /// <remarks>Can't be used in jobs!</remarks>
     public static DynamicBuffer<EntityBufferElement> GetEntityGrid()
     {
         var em = World.DefaultGameObjectInjectionWorld.EntityManager;
@@ -29,7 +30,6 @@ public static class TileGridUtility
         else
             throw new($"Invalid position {pos}");
     }
-    /// <remarks>Can't be used in jobs!</remarks>
     public static Entity GetTile(int2 pos, DynamicBuffer<EntityBufferElement> buffer)
     {
         if (TryGetTile(pos, buffer, out Entity entity))
@@ -37,6 +37,7 @@ public static class TileGridUtility
         else
             throw new($"Invalid position {pos}");
     }
+    /// <remarks>Can't be used in jobs!</remarks>
     public static bool TryGetTile(int2 pos, out Entity entity) { return TryGetTile(pos, GetEntityGrid(), out entity); }
     public static bool TryGetTile(int2 pos, DynamicBuffer<EntityBufferElement> buffer, out Entity entity)
     {

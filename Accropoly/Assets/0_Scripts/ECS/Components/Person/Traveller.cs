@@ -1,6 +1,7 @@
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Collections.LowLevel.Unsafe;
+using System;
 
 namespace Components
 {
@@ -11,9 +12,14 @@ namespace Components
         public UnsafeList<Waypoint> waypoints;
     }
 }
-public struct Waypoint
+public struct Waypoint : IEquatable<Waypoint>
 {
     public float2 pos;
+
+    public bool Equals(Waypoint other)
+    {
+        return pos.Equals(other.pos);
+    }
 }
 namespace Tags
 {
