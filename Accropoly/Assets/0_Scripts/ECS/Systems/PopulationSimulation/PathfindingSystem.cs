@@ -36,15 +36,19 @@ namespace Systems
                 if (traveller.waypoints.IsCreated)
                     traveller.waypoints.Clear();
                 else
-                    traveller.waypoints = new(8, Unity.Collections.Allocator.Persistent, Unity.Collections.NativeArrayOptions.UninitializedMemory);
+                    traveller.waypoints = new(8, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
 
-                FindPath(ref traveller.waypoints, (int2)math.round(transform.Position.xz) / 2, traveller.destination, buffer);
-
-                ecb.SetComponentEnabled<Travelling>(entity, true);
-                ecb.SetComponentEnabled<WantsToTravel>(entity, false);
+                if (FindPath(ref traveller.waypoints, (int2)math.round(transform.Position.xz) / 2, traveller.destination, buffer))
+                {
+                    ecb.SetComponentEnabled<Travelling>(entity, true);
+                    ecb.SetComponentEnabled<WantsToTravel>(entity, false);
+                }
             }).Schedule();
         }
-        private static void FindPath(ref UnsafeList<Waypoint> waypoints, int2 start, int2 dest, in DynamicBuffer<EntityBufferElement> buffer)
+        /// <summary>Finds the shortest path using A* pathfinding from start to dest and stores it in waypoints.</summary>
+        /// <param name="buffer">The buffer containing the tile grid</param>
+        /// <returns>Returns true if a path was found</returns>
+        private static bool FindPath(ref UnsafeList<Waypoint> waypoints, int2 start, int2 dest, in DynamicBuffer<EntityBufferElement> buffer)
         {
             Debug.Assert(!start.Equals(dest));
             Debug.Assert(waypoints.IsCreated);
@@ -82,9 +86,8 @@ namespace Systems
                         waypoints.Add(new(dest));
                         openList.Dispose();
                         closedList.Dispose();
-                        return;
+                        return true;
                     }
-                    // TODO: does GetTile cause errors at edges?
                     if (!TileGridUtility.TryGetTile(neighbourPos, buffer, out Entity entity)) continue; // Skip positions outside of the map
                     if (!transportTilesLookup.HasComponent(entity)) continue; // Skip non-street tiles
 
@@ -96,7 +99,7 @@ namespace Systems
             }
             openList.Dispose();
             closedList.Dispose();
-            Debug.LogError($"Failed to find a path from {start} to {dest}");
+            return false;
         }
         private static (float, NodeToVisit) PopCheapest(in NativeList<(float, NodeToVisit)> openList)
         {
