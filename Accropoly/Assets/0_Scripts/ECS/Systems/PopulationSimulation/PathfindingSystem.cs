@@ -84,7 +84,9 @@ namespace Systems
                         closedList.Dispose();
                         return;
                     }
-                    if (!transportTilesLookup.HasComponent(TileGridUtility.GetTile(neighbourPos, buffer))) continue; // Skip non-street tiles
+                    // TODO: does GetTile cause errors at edges?
+                    if (!TileGridUtility.TryGetTile(neighbourPos, buffer, out Entity entity)) continue; // Skip positions outside of the map
+                    if (!transportTilesLookup.HasComponent(entity)) continue; // Skip non-street tiles
 
                     openList.Add((CalculateCost(neighbourPos, node.pos, cost, dest), new(neighbourPos, node.pos)));
                 }
