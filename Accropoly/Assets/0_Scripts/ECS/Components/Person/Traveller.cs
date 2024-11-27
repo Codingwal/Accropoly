@@ -15,7 +15,10 @@ namespace Components
 public struct Waypoint : IEquatable<Waypoint>
 {
     public float2 pos;
-
+    public Waypoint(float2 pos)
+    {
+        this.pos = pos;
+    }
     public bool Equals(Waypoint other)
     {
         return pos.Equals(other.pos);

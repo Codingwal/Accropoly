@@ -1,5 +1,8 @@
+using System;
+using System.Linq;
 using Components;
 using Tags;
+using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -43,36 +46,100 @@ namespace Systems
         }
         private static void FindPath(ref UnsafeList<Waypoint> waypoints, int2 start, int2 dest, in DynamicBuffer<EntityBufferElement> buffer)
         {
-            // Both start and dest must tile center
-            Debug.Assert(!start.Equals(dest), "The start must not equal the destination");
+            Debug.Assert(!start.Equals(dest));
+            Debug.Assert(waypoints.IsCreated);
 
-            const int maxIterations = 1000;
+            NativeList<(float, NodeToVisit)> openList = new(8, Allocator.TempJob) { (0, new(start, -1)) };
+            NativeHashMap<int2, VisitedNode> closedList = new(8, Allocator.TempJob);
 
-            int2 pos = start;
-            for (int i = 0; i < maxIterations; i++)
+            int iteration = 0;
+
+            // AStar
+            while (openList.Length != 0)
             {
-                int2 dir = new();
-                foreach (Direction direction in Direction.GetDirections())
+                var (cost, node) = PopCheapest(openList);
+                if (closedList.ContainsKey(node.pos)) continue; // Skip already visited nodes
+                closedList.Add(node.pos, new(node.previous));
+                foreach (Direction dir in Direction.GetDirections())
                 {
-                    int2 newPos = pos + direction.DirectionVec;
-
-                    if (newPos.Equals(dest))
+                    int2 neighbourPos = node.pos + dir.DirectionVec;
+                    if (neighbourPos.Equals(dest))
                     {
-                        waypoints.Add(new Waypoint { pos = newPos });
+                        // Get path
+                        NativeList<Waypoint> reversedPath = new(Allocator.TempJob);
+                        int2 currentPos = node.pos;
+                        while (!currentPos.Equals(start))
+                        {
+                            reversedPath.Add(new(currentPos));
+                            currentPos = closedList[currentPos].previous;
+                        }
+
+                        // Reverse path
+                        for (int i = reversedPath.Length - 1; i >= 0; i--)
+                            waypoints.Add(reversedPath[i]);
+                        reversedPath.Dispose();
+
+                        waypoints.Add(new(dest));
+                        openList.Dispose();
+                        closedList.Dispose();
                         return;
                     }
-                    if (transportTilesLookup.HasComponent(TileGridUtility.GetTile(newPos, buffer)) && !waypoints.Contains(new Waypoint { pos = newPos }))
-                    {
-                        dir = direction.DirectionVec;
-                        break;
-                    }
-                }
-                pos += dir;
-                waypoints.Add(new Waypoint { pos = pos });
+                    if (!transportTilesLookup.HasComponent(TileGridUtility.GetTile(neighbourPos, buffer))) continue; // Skip non-street tiles
 
-                i++;
+                    openList.Add((CalculateCost(neighbourPos, node.pos, cost, dest), new(neighbourPos, node.pos)));
+                }
+
+                if (iteration > 1000) throw new();
+                iteration++;
             }
-            throw new($"Reached the maximum amount of iterations while searching a path from {start} to {dest}! Stuck at {pos}");
+            openList.Dispose();
+            closedList.Dispose();
+            Debug.LogError($"Failed to find a path from {start} to {dest}");
+        }
+        private static (float, NodeToVisit) PopCheapest(in NativeList<(float, NodeToVisit)> openList)
+        {
+            float lowestCost = float.PositiveInfinity;
+            int cheapestIndex = new();
+            for (int i = 0; i < openList.Length; i++)
+            {
+                if (openList[i].Item1 < lowestCost)
+                {
+                    lowestCost = openList[i].Item1;
+                    cheapestIndex = i;
+                }
+            }
+            Debug.Assert(lowestCost != float.PositiveInfinity);
+
+            var cheapestNode = openList[cheapestIndex];
+            openList.RemoveAtSwapBack(cheapestIndex);
+            return cheapestNode;
+        }
+        private static float CalculateCost(int2 pos, int2 previousPos, float previousCost, int2 dest)
+        {
+            return previousCost + 1 + ManhattanDistance(pos, dest) - ManhattanDistance(previousPos, dest);
+        }
+        private static float ManhattanDistance(int2 pos, int2 dest)
+        {
+            int2 v = dest - pos;
+            return v.x + v.y;
+        }
+        private struct VisitedNode
+        {
+            public int2 previous;
+            public VisitedNode(int2 previous)
+            {
+                this.previous = previous;
+            }
+        }
+        private struct NodeToVisit
+        {
+            public int2 pos;
+            public int2 previous;
+            public NodeToVisit(int2 pos, int2 previous)
+            {
+                this.pos = pos;
+                this.previous = previous;
+            }
         }
     }
 }
