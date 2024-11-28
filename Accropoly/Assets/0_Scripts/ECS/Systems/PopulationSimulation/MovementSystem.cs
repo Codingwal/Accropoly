@@ -26,31 +26,39 @@ namespace Systems
             Entities.WithAll<Travelling>().ForEach((Entity entity, ref Traveller traveller) =>
             {
                 LocalTransform transform = SystemAPI.GetComponent<LocalTransform>(entity);
-
                 Waypoint waypoint = traveller.waypoints[traveller.nextWaypointIndex];
+
+                // If this is the destination waypoint, jump directly on the destination tile
+                if (traveller.nextWaypointIndex + 1 == traveller.waypoints.Length)
+                {
+                    transform.Position.xz = waypoint.pos;
+                    ecb.SetComponentEnabled<Travelling>(entity, false);
+                    return;
+                }
+
+                // Calculate the side on which the current tile should be left
                 Waypoint nextWaypoint = traveller.waypoints[traveller.nextWaypointIndex + 1];
                 Direction dir = new(nextWaypoint.pos - waypoint.pos);
-                var transportTileAspect = SystemAPI.GetAspect<TransportTileAspect>(TileGridUtility.GetTile(waypoint.pos, buffer));
 
+                // Make sure the tile contains all TransportTileAspect component
+                Debug.Assert(SystemAPI.HasComponent<TransportTile>(TileGridUtility.GetTile(waypoint.pos, buffer)));
+
+                // Calculate the position using the TransportTileAspect of the current tile
+                var transportTileAspect = SystemAPI.GetAspect<TransportTileAspect>(TileGridUtility.GetTile(waypoint.pos, buffer));
                 float2 pos = transportTileAspect.TravelOnTile(dir, traveller.timeOnTile, out bool reachedTileEnd);
 
+                // Update the time spent on the current tile
+                traveller.timeOnTile += deltaTime;
+
+                // Move on to the next tile if the current tile has been completely traversed
                 if (reachedTileEnd)
                 {
                     traveller.nextWaypointIndex++;
                     traveller.timeOnTile = 0;
-
-                    if (traveller.nextWaypointIndex == traveller.waypoints.Length) // If the destination has been reached
-                    {
-                        Debug.LogError("!");
-                        ecb.SetComponentEnabled<Travelling>(entity, false);
-                        return;
-                    }
-
                     waypoint = traveller.waypoints[traveller.nextWaypointIndex];
                 }
 
-                traveller.timeOnTile += deltaTime;
-
+                // Update and store the transform
                 transform.Position.xz = pos;
                 ecb.SetComponent(entity, transform);
 
