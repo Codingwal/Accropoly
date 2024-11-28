@@ -23,7 +23,8 @@ namespace Components
         {
             connectableSides[(uint)direction] = false;
         }
-        ///  <summary>This doesn't contain the full component information! This is only used to select a MeshMaterialPair</summary>
+        ///  <remarks>This doesn't contain the full component information! This is only used to select a MeshMaterialPair</remarks>
+        ///  <returns>0=>not connected; 1=>dead end; 2=>street; 3=>curve; 4=>T-junction; 5=>junction</returns>
         public readonly int GetIndex()
         {
             Direction rotation = GetRotation();

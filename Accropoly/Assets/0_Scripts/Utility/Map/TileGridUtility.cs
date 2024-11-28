@@ -1,6 +1,7 @@
 using Unity.Entities;
 using Unity.Mathematics;
 using Components;
+using UnityEngine;
 
 public static class TileGridUtility
 {
@@ -11,6 +12,7 @@ public static class TileGridUtility
         em.AddComponent<Tags.EntityGridHolder>(entity);
         return em.AddBuffer<EntityBufferElement>(entity);
     }
+    /// <remarks>Can't be used in jobs!</remarks>
     public static DynamicBuffer<EntityBufferElement> GetEntityGrid()
     {
         var em = World.DefaultGameObjectInjectionWorld.EntityManager;
@@ -19,7 +21,21 @@ public static class TileGridUtility
     }
     public static int GetIndex(int2 pos, int totalMapSize)
     {
-        return pos.x * (int)math.sqrt(totalMapSize) + pos.y;
+        if (TryGetIndex(pos, totalMapSize, out int index))
+            return index;
+        else
+            throw new($"Invalid position {pos}");
+    }
+    public static bool TryGetIndex(int2 pos, int totalMapSize, out int index)
+    {
+        int length = (int)math.sqrt(totalMapSize);
+        if (pos.x >= length || pos.x < 0 || pos.y >= length || pos.y < 0)
+        {
+            index = -1;
+            return false;
+        }
+        index = pos.x * length + pos.y;
+        return true;
     }
     /// <remarks>Can't be used in jobs!</remarks>
     public static Entity GetTile(int2 pos)
@@ -29,7 +45,6 @@ public static class TileGridUtility
         else
             throw new($"Invalid position {pos}");
     }
-    /// <remarks>Can't be used in jobs!</remarks>
     public static Entity GetTile(int2 pos, DynamicBuffer<EntityBufferElement> buffer)
     {
         if (TryGetTile(pos, buffer, out Entity entity))
@@ -37,17 +52,17 @@ public static class TileGridUtility
         else
             throw new($"Invalid position {pos}");
     }
+    /// <remarks>Can't be used in jobs!</remarks>
     public static bool TryGetTile(int2 pos, out Entity entity) { return TryGetTile(pos, GetEntityGrid(), out entity); }
     public static bool TryGetTile(int2 pos, DynamicBuffer<EntityBufferElement> buffer, out Entity entity)
     {
-        int index = GetIndex(pos, buffer.Length);
-        if (index >= buffer.Length || index < 0)
+        if (TryGetIndex(pos, buffer.Length, out int index))
         {
-            entity = default;
-            return false;
+            entity = buffer[index];
+            return true;
         }
-        entity = buffer[index];
-        return true;
+        entity = default;
+        return false;
     }
     public static Entity[] GetNeighbourTiles(int2 pos)
     {

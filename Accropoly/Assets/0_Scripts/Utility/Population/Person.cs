@@ -12,6 +12,9 @@ public enum PersonComponents : int
     PosComponent = 0,
     Person = 1,
     Worker = 2,
+    Traveller = 3,
 
     // Tags
+    Travelling = 100,
+    WantsToTravel = 101,
 }

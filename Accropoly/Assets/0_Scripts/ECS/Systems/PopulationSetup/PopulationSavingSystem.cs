@@ -48,7 +48,7 @@ namespace Systems
                         bool isEnabled = !componentType.IsEnableable || entityManager.IsComponentEnabled(entity, componentType);
                         components.Add((entityManager.GetComponentData<T>(entity), isEnabled));
                     }
-                    void AddComponent<T>() where T : unmanaged, IComponentData
+                    void AddTag<T>() where T : unmanaged, IComponentData
                     {
                         bool isEnabled = !componentType.IsEnableable || entityManager.IsComponentEnabled(entity, componentType);
                         components.Add((new T(), isEnabled));
@@ -56,6 +56,9 @@ namespace Systems
 
                     if (componentType == typeof(Person)) AddComponentData<Person>();
                     else if (componentType == typeof(Worker)) AddComponentData<Worker>();
+                    else if (componentType == typeof(Traveller)) AddComponentData<Traveller>();
+                    else if (componentType == typeof(Travelling)) AddTag<Travelling>();
+                    else if (componentType == typeof(WantsToTravel)) AddTag<WantsToTravel>();
                     else Debug.LogWarning($"Component of type {componentType} will not be serialized but also isn't present in typesToIgnore");
                 }
                 componentTypes.Dispose();

@@ -75,8 +75,16 @@ namespace Systems
                     });
                     ecb.AddComponent(entity, new Worker { employer = new(-1) });
 
+                    ecb.AddComponent<WantsToTravel>(entity);
+                    ecb.SetComponentEnabled<WantsToTravel>(entity, false);
+
+                    ecb.AddComponent<Traveller>(entity);
+
+                    ecb.AddComponent<Travelling>(entity);
+                    ecb.SetComponentEnabled<Travelling>(entity, false);
+
                     float offset = (habitat.totalSpace - habitat.freeSpace - 2.5f) * 0.2f;
-                    float3 pos = new(2 * habitatTile.pos.x + offset, 0.5f, 2 * habitatTile.pos.y);
+                    float3 pos = new(2 * habitatTile.pos.x + offset, 0.1f, 2 * habitatTile.pos.y);
                     ecb.SetComponent(entity, LocalTransform.FromPositionRotationScale(pos, quaternion.identity, 0.1f));
                 }
             }).WithDisposeOnCompletion(homelessEntities).WithDisposeOnCompletion(homelessPersonComponents).WithDisposeOnCompletion(homelessTransforms).WithDisposeOnCompletion(homelessIndex).Schedule();

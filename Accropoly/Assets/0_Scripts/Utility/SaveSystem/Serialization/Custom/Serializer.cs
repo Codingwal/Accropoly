@@ -19,10 +19,6 @@ public partial class Serializer
         bw.Write(data.day);
         bw.Write(data.seconds);
     }
-    public void Serialize(MapData data)
-    {
-        Serialize(data.tiles);
-    }
     public void Serialize(PersonData data)
     {
         if (data.components == null) throw new("Failed to serialize tile because Tile.TileComponents is null");
@@ -39,6 +35,13 @@ public partial class Serializer
 
                 Serialize(componentData.pos);
             }
+            else if (type == typeof(Worker))
+            {
+                bw.Write((int)PersonComponents.Worker);
+                Worker componentData = (Worker)component;
+
+                Serialize(componentData.employer);
+            }
             else if (type == typeof(Person))
             {
                 bw.Write((int)PersonComponents.Person);
@@ -47,15 +50,26 @@ public partial class Serializer
                 Serialize(componentData.homeTile);
                 bw.Write(componentData.age);
             }
-            else if (type == typeof(Worker))
+            else if (type == typeof(Traveller))
             {
-                bw.Write((int)PersonComponents.Worker);
-                Worker componentData = (Worker)component;
+                bw.Write((int)PersonComponents.Traveller);
+                Traveller componentData = (Traveller)component;
 
-                Serialize(componentData.employer);
+                bw.Write(componentData.nextWaypointIndex);
+                Serialize(componentData.waypoints);
             }
+            else if (type == typeof(Travelling)) bw.Write((int)PersonComponents.Travelling);
+            else if (type == typeof(WantsToTravel)) bw.Write((int)PersonComponents.WantsToTravel);
             else throw new($"Cannot serialize component of type {type}");
         }
+    }
+    public void Serialize(Waypoint waypoint)
+    {
+        Serialize(waypoint.pos);
+    }
+    public void Serialize(MapData data)
+    {
+        Serialize(data.tiles);
     }
     public void Serialize(TileData data)
     {
@@ -130,6 +144,7 @@ public partial class Serializer
             else if (type == typeof(ActiveTile)) bw.Write((int)TileComponents.ActiveTileTag);
             else if (type == typeof(NewTile)) bw.Write((int)TileComponents.NewTileTag);
             else if (type == typeof(BuildingConnector)) bw.Write((int)TileComponents.BuildingConnectorTag);
+            else if (type == typeof(TransportTile)) bw.Write((int)TileComponents.TransportTile);
             else throw new($"Cannot serialize component of type {type}");
 
         }
