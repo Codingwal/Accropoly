@@ -31,7 +31,8 @@ namespace Systems
                 // If this is the destination waypoint, jump directly on the destination tile
                 if (traveller.nextWaypointIndex + 1 == traveller.waypoints.Length)
                 {
-                    transform.Position.xz = waypoint.pos;
+                    transform.Position.xz = waypoint.pos * 2;
+                    ecb.SetComponent(entity, transform);
                     ecb.SetComponentEnabled<Travelling>(entity, false);
                     return;
                 }
