@@ -30,40 +30,31 @@ namespace Systems
                 Waypoint waypoint = traveller.waypoints[traveller.nextWaypointIndex];
                 Waypoint nextWaypoint = traveller.waypoints[traveller.nextWaypointIndex + 1];
                 Direction dir = new(nextWaypoint.pos - waypoint.pos);
-                Road[] roads = SystemAPI.GetAspect<TransportTileAspect>(TileGridUtility.GetTile(waypoint.pos, buffer)).GetRoads();
+                var transportTileAspect = SystemAPI.GetAspect<TransportTileAspect>(TileGridUtility.GetTile(waypoint.pos, buffer));
 
-                // Select a road
-                Road road = new();
-                foreach (Road r in roads)
-                    if (r.exitDirection == dir)
-                        road = r;
+                float2 pos = transportTileAspect.TravelOnTile(dir, traveller.timeOnTile, out bool reachedTileEnd);
 
-                float2 nextPoint = road.points[traveller.nextPointIndex];
-
-                if (math.distancesq(transform.Position.xz, nextPoint * 2) <= waypointRangeSqr)
+                if (reachedTileEnd)
                 {
-                    traveller.nextPointIndex++;
+                    traveller.nextWaypointIndex++;
+                    traveller.timeOnTile = 0;
 
-                    if (traveller.nextPointIndex == road.points.Length) // If the final point has been reached, move on to next waypoint
+                    if (traveller.nextWaypointIndex == traveller.waypoints.Length) // If the destination has been reached
                     {
-                        traveller.nextWaypointIndex++;
-                        traveller.nextPointIndex = 0;
-
-                        if (traveller.nextWaypointIndex == traveller.waypoints.Length) // If the destination has been reached
-                        {
-                            ecb.SetComponentEnabled<Travelling>(entity, false);
-                            return;
-                        }
-
-                        waypoint = traveller.waypoints[traveller.nextWaypointIndex];
+                        Debug.LogError("!");
+                        ecb.SetComponentEnabled<Travelling>(entity, false);
+                        return;
                     }
+
+                    waypoint = traveller.waypoints[traveller.nextWaypointIndex];
                 }
 
-                float2 direction = nextPoint * 2 - transform.Position.xz;
-                float2 directionNormalized = math.normalize(direction);
-                transform.Position.xz += deltaTime * speed * directionNormalized;
+                traveller.timeOnTile += deltaTime;
 
+                transform.Position.xz = pos;
                 ecb.SetComponent(entity, transform);
+
+                Debug.Log($"Current tile: {waypoint.pos}");
             }).WithBurst(Unity.Burst.FloatMode.Fast, Unity.Burst.FloatPrecision.Low).Schedule();
         }
     }

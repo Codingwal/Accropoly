@@ -10,45 +10,52 @@ namespace Components
 {
     public readonly partial struct TransportTileAspect : IAspect
     {
-        public readonly RefRO<TransportTile> transportTile;
-        public readonly RefRO<LocalTransform> transform;
-        public readonly RefRO<Tile> tile;
-        [Optional] public readonly RefRO<ConnectingTile> connectingTile;
-        public readonly Road[] GetRoads()
+        // Disable compiler warning. TransportTile is unused but a required tag
+#pragma warning disable IDE0052
+        private readonly RefRO<TransportTile> transportTile;
+#pragma warning restore IDE0052
+
+        private const float offsetFromCenter = 0.25f;
+        private readonly RefRO<Tile> tile;
+        [Optional] private readonly RefRO<ConnectingTile> connectingTile;
+        public readonly float2 TravelOnTile(Direction direction, float time, out bool reachedDest)
         {
+            float2 pos = new(float.NaN);
+
             TileType tileType = tile.ValueRO.tileType;
             Direction rotation = tile.ValueRO.rotation;
-            Road[] roads = null;
 
-            if (connectingTile.IsValid)
+            if (tileType == TileType.Street)
             {
                 int connectionIndex = connectingTile.ValueRO.GetIndex();
-                roads = tileType switch
+                if (connectionIndex == 2 || connectionIndex == 1)
                 {
-                    TileType.Street => connectionIndex switch
+                    if (direction == Directions.North)
                     {
-                        1 => new Road[] // dead end
-                        {
-                            new(new(0.5f, -1), Directions.North, new float2(0.5f, 0.5f)),
-                            new(new(-0.5f, 1), Directions.South, new float2(-0.5f, -1)),
-                        },
-                        2 => new Road[] // street
-                        {
-                            new(new(0.5f, -1), Directions.North, new float2(0.5f, 1)),
-                            new(new(-0.5f, 1), Directions.South, new float2(-0.5f, -1)),
-                        },
-                        3 => new Road[] // curve
-                        {
-                            new(new(0.5f, -1), Directions.West, new float2(-1, 0.5f)),
-                            new(new(-1, -0.5f), Directions.South, new float2(-0.5f, -1)),
-                        },
-                        _ => throw new($"Invalid connectionIndex {connectionIndex}")
-                    },
-                    _ => throw new("!")
-                };
+                        pos.x = offsetFromCenter;
+                        pos.y = math.lerp(-1, 1, time);
+                    }
+                    else
+                    {
+                        pos.x = -offsetFromCenter;
+                        pos.y = math.lerp(1, -1, time);
+                    }
+                }
+                else
+                    Debug.LogError($"Unexpected connectionIndex {connectionIndex}");
             }
-            else throw new("!!");
-            return roads;
+            else
+                Debug.LogError($"Unexpected tileType {tileType}");
+
+            reachedDest = time >= 1;
+            if (reachedDest)
+                Debug.LogWarning("Reached tile end");
+
+            return pos + tile.ValueRO.pos * 2;
+        }
+        public readonly void GetRoadIndex()
+        {
+
         }
     }
 }

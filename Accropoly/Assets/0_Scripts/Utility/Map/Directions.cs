@@ -16,10 +16,10 @@ public struct Direction : IEquatable<Direction>
     public Direction(Directions direction) { this.direction = direction; }
     public Direction(int2 directionVec)
     {
-        if (directionVec.Equals(new(1, 0))) direction = Directions.North;
-        else if (directionVec.Equals(new(0, 1))) direction = Directions.East;
-        else if (directionVec.Equals(new(-1, 0))) direction = Directions.South;
-        else if (directionVec.Equals(new(0, -1))) direction = Directions.West;
+        if (directionVec.Equals(new(0, 1))) direction = Directions.North;
+        else if (directionVec.Equals(new(1, 0))) direction = Directions.East;
+        else if (directionVec.Equals(new(0, -1))) direction = Directions.South;
+        else if (directionVec.Equals(new(-1, 0))) direction = Directions.West;
         else throw new($"Invalid direction vector {directionVec}");
     }
 
@@ -36,6 +36,8 @@ public struct Direction : IEquatable<Direction>
     }
     public static bool operator ==(Direction left, Direction right) { return left.Equals(right); }
     public static bool operator !=(Direction left, Direction right) { return !(left == right); }
+    public static bool operator ==(Direction left, Directions right) { return left.direction == right; }
+    public static bool operator !=(Direction left, Directions right) { return !(left == right); }
     public static implicit operator Directions(Direction direction) { return direction.direction; }
     public static implicit operator Direction(Directions direction) { return new(direction); }
     public static explicit operator uint(Direction direction)

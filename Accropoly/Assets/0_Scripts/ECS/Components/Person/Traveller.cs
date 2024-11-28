@@ -8,7 +8,7 @@ namespace Components
     public struct Traveller : IComponentData
     {
         public int2 destination;
-        public int nextPointIndex;
+        public float timeOnTile;
         public int nextWaypointIndex;
         public UnsafeList<Waypoint> waypoints;
     }
