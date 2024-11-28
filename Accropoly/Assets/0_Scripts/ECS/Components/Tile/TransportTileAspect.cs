@@ -55,8 +55,14 @@ namespace Components
             }
             else
             {
-                pos.x = math.lerp(offsetFromCenter, -1, time);
-                pos.y = math.lerp(-1, offsetFromCenter, time);
+                if (time < 0.25f)
+                    pos.x = offsetFromCenter;
+                else
+                    pos.x = math.lerp(offsetFromCenter, -1, (time - 0.25f) / 0.75f);
+                if (time > 0.75f)
+                    pos.y = offsetFromCenter;
+                else
+                    pos.y = math.lerp(-1, offsetFromCenter, time / 0.75f);
             }
 
             return pos;
