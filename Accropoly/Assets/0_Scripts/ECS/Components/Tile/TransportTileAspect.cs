@@ -15,7 +15,9 @@ namespace Components
         private readonly RefRO<TransportTile> transportTile;
 #pragma warning restore IDE0052
 
+        private const float speed = 2f;
         private const float offsetFromCenter = 0.25f;
+
         private readonly RefRO<Tile> tile;
         public readonly float2 TravelOnTile(Direction entryDirection, Direction exitDirection, float time, out bool reachedDest)
         {
@@ -24,16 +26,16 @@ namespace Components
             // Calculate the rotation needed so that entryDirection is south
             int rotation = Direction.GetRotation(entryDirection, Directions.South);
 
-            float2 pos = GetPosOnTileIgnoreRotation(exitDirection.Rotate(rotation), time);
+            // Calculate the position with south as the entry direction
+            float2 pos = GetPosOnTileIgnoreRotation(exitDirection.Rotate(rotation), time * speed);
 
             // Check if the destination has been reached
-            reachedDest = time >= 1;
+            reachedDest = time * speed >= 1;
 
             // Rotate position "back"
             float3 rotatedPos = math.rotate(quaternion.EulerXYZ(0, -((Direction)rotation).ToRadians(), 0), new(pos.x, 0, pos.y));
 
-            // Debug.Log($"entry={entryDirection} -> r={rotation} => exit={exitDirection} -> normalizedExit={exitDirection.Rotate(rotation)}");
-
+            // Return the position (range -1 to 1) but add the tile position to convert to world space
             return rotatedPos.xz + tile.ValueRO.pos * 2;
         }
         // entryDirection is always south
@@ -45,20 +47,24 @@ namespace Components
 
             if (exitDirection == Directions.North)
             {
+                // move straight
                 pos.x = offsetFromCenter;
                 pos.y = math.lerp(-1, 1, time);
             }
             else if (exitDirection == Directions.East)
             {
+                // move diagonal
                 pos.x = math.lerp(offsetFromCenter, 1, time);
                 pos.y = math.lerp(-1, -offsetFromCenter, time);
             }
             else
             {
+                // move diagonal but add small straights close to the edge
                 if (time < 0.25f)
                     pos.x = offsetFromCenter;
                 else
                     pos.x = math.lerp(offsetFromCenter, -1, (time - 0.25f) / 0.75f);
+
                 if (time > 0.75f)
                     pos.y = offsetFromCenter;
                 else
@@ -67,17 +73,5 @@ namespace Components
 
             return pos;
         }
-    }
-}
-public struct Road
-{
-    public float2 entrypoint;
-    public Direction exitDirection;
-    public float2[] points;
-    public Road(float2 entrypoint, Direction exitDirection, params float2[] points)
-    {
-        this.entrypoint = entrypoint;
-        this.exitDirection = exitDirection;
-        this.points = points;
     }
 }
