@@ -43,7 +43,7 @@ namespace Systems
 
             // Make them homeless if their home is deactivated / has been replaced
             var ecb1 = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
-            Unity.Mathematics.Random rnd = new((uint)UnityEngine.Random.Range(1, 1000));
+            Random rnd = new((uint)UnityEngine.Random.Range(1, 1000));
             JobHandle handle1 = Entities.WithNone<Homeless>().ForEach((Entity entity, ref Person person) =>
             {
                 int2 homeTilePos = person.homeTile;

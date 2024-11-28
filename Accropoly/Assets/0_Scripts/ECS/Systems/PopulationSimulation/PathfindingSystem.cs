@@ -41,8 +41,8 @@ namespace Systems
                 if (FindPath(ref traveller.waypoints, (int2)math.round(transform.Position.xz) / 2, traveller.destination, buffer))
                 {
                     ecb.SetComponentEnabled<Travelling>(entity, true);
-                    ecb.SetComponentEnabled<WantsToTravel>(entity, false);
                 }
+                ecb.SetComponentEnabled<WantsToTravel>(entity, false);
             }).Schedule();
         }
         /// <summary>Finds the shortest path using A* pathfinding from start to dest and stores it in waypoints.</summary>
