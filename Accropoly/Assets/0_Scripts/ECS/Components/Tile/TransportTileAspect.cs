@@ -17,45 +17,49 @@ namespace Components
 
         private const float offsetFromCenter = 0.25f;
         private readonly RefRO<Tile> tile;
-        [Optional] private readonly RefRO<ConnectingTile> connectingTile;
-        public readonly float2 TravelOnTile(Direction direction, float time, out bool reachedDest)
+        public readonly float2 TravelOnTile(Direction entryDirection, Direction exitDirection, float time, out bool reachedDest)
         {
-            float2 pos = new(float.NaN);
+            Debug.Assert(tile.ValueRO.tileType == TileType.Street);
 
-            TileType tileType = tile.ValueRO.tileType;
-            Direction rotation = tile.ValueRO.rotation;
+            // Calculate the rotation needed so that entryDirection is south
+            int rotation = Direction.GetRotation(entryDirection, Directions.South);
 
-            if (tileType == TileType.Street)
+            float2 pos = GetPosOnTileIgnoreRotation(exitDirection.Rotate(rotation), time);
+
+            // Check if the destination has been reached
+            reachedDest = time >= 1;
+
+            // Rotate position "back"
+            float3 rotatedPos = math.rotate(quaternion.EulerXYZ(0, -((Direction)rotation).ToRadians(), 0), new(pos.x, 0, pos.y));
+
+            // Debug.Log($"entry={entryDirection} -> r={rotation} => exit={exitDirection} -> normalizedExit={exitDirection.Rotate(rotation)}");
+
+            return rotatedPos.xz + tile.ValueRO.pos * 2;
+        }
+        // entryDirection is always south
+        private readonly float2 GetPosOnTileIgnoreRotation(Direction exitDirection, float time)
+        {
+            Debug.Assert(exitDirection != Directions.South);
+
+            float2 pos = new(float.NaN); // Placeholder value, will be overwritten
+
+            if (exitDirection == Directions.North)
             {
-                int connectionIndex = connectingTile.ValueRO.GetIndex();
-                if (connectionIndex == 2 || connectionIndex == 1)
-                {
-                    if (direction == Directions.North)
-                    {
-                        pos.x = offsetFromCenter;
-                        pos.y = math.lerp(-1, 1, time);
-                    }
-                    else
-                    {
-                        pos.x = -offsetFromCenter;
-                        pos.y = math.lerp(1, -1, time);
-                    }
-                }
-                else
-                    Debug.LogError($"Unexpected connectionIndex {connectionIndex}");
+                pos.x = offsetFromCenter;
+                pos.y = math.lerp(-1, 1, time);
+            }
+            else if (exitDirection == Directions.East)
+            {
+                pos.x = math.lerp(offsetFromCenter, 1, time);
+                pos.y = math.lerp(-1, -offsetFromCenter, time);
             }
             else
-                Debug.LogError($"Unexpected tileType {tileType}");
+            {
+                pos.x = math.lerp(offsetFromCenter, -1, time);
+                pos.y = math.lerp(-1, offsetFromCenter, time);
+            }
 
-            reachedDest = time >= 1;
-            if (reachedDest)
-                Debug.LogWarning("Reached tile end");
-
-            return pos + tile.ValueRO.pos * 2;
-        }
-        public readonly void GetRoadIndex()
-        {
-
+            return pos;
         }
     }
 }

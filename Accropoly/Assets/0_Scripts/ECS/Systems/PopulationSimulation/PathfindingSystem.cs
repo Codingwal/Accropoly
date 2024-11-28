@@ -29,7 +29,7 @@ namespace Systems
 
             Entities.WithAll<WantsToTravel>().ForEach((Entity entity, ref Traveller traveller, in LocalTransform transform) =>
             {
-                traveller.nextWaypointIndex = 0;
+                traveller.nextWaypointIndex = 1; // waypoints[0] is start
 
                 if (traveller.waypoints.IsCreated)
                     traveller.waypoints.Clear();
@@ -77,6 +77,7 @@ namespace Systems
                         }
 
                         // Reverse path
+                        waypoints.Add(new(start));
                         for (int i = reversedPath.Length - 1; i >= 0; i--)
                             waypoints.Add(reversedPath[i]);
                         reversedPath.Dispose();

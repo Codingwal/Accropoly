@@ -37,15 +37,23 @@ namespace Systems
                 }
 
                 // Calculate the side on which the current tile should be left
+                Direction entryDir;
+                if (traveller.nextWaypointIndex > 0)
+                {
+                    Waypoint previousWaypoint = traveller.waypoints[traveller.nextWaypointIndex - 1];
+                    entryDir = new(previousWaypoint.pos - waypoint.pos);
+                }
+                else entryDir = Directions.South;
+
                 Waypoint nextWaypoint = traveller.waypoints[traveller.nextWaypointIndex + 1];
-                Direction dir = new(nextWaypoint.pos - waypoint.pos);
+                Direction exitDir = new(nextWaypoint.pos - waypoint.pos);
 
                 // Make sure the tile contains all TransportTileAspect component
                 Debug.Assert(SystemAPI.HasComponent<TransportTile>(TileGridUtility.GetTile(waypoint.pos, buffer)));
 
                 // Calculate the position using the TransportTileAspect of the current tile
                 var transportTileAspect = SystemAPI.GetAspect<TransportTileAspect>(TileGridUtility.GetTile(waypoint.pos, buffer));
-                float2 pos = transportTileAspect.TravelOnTile(dir, traveller.timeOnTile, out bool reachedTileEnd);
+                float2 pos = transportTileAspect.TravelOnTile(entryDir, exitDir, traveller.timeOnTile, out bool reachedTileEnd);
 
                 // Update the time spent on the current tile
                 traveller.timeOnTile += deltaTime;
@@ -61,8 +69,6 @@ namespace Systems
                 // Update and store the transform
                 transform.Position.xz = pos;
                 ecb.SetComponent(entity, transform);
-
-                Debug.Log($"Current tile: {waypoint.pos}");
             }).WithBurst(Unity.Burst.FloatMode.Fast, Unity.Burst.FloatPrecision.Low).Schedule();
         }
     }
