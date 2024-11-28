@@ -1,9 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using Tags;
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Transforms;
 using UnityEngine;
 
 namespace Components
@@ -38,7 +35,8 @@ namespace Components
             // Return the position (range -1 to 1) but add the tile position to convert to world space
             return rotatedPos.xz + tile.ValueRO.pos * 2;
         }
-        // entryDirection is always south
+
+        /// <remarks>entryDirection is always south</remarks>
         private readonly float2 GetPosOnTileIgnoreRotation(Direction exitDirection, float time)
         {
             Debug.Assert(exitDirection != Directions.South);

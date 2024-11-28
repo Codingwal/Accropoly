@@ -9,9 +9,6 @@ namespace Systems
 {
     public partial class MovementSystem : SystemBase
     {
-        private const float speed = 6f;
-        private const float waypointRange = 0.1f;
-        private const float waypointRangeSqr = waypointRange * waypointRange;
         protected override void OnCreate()
         {
             RequireForUpdate<Traveller>();
@@ -37,20 +34,14 @@ namespace Systems
                     return;
                 }
 
-                // Calculate the side on which the current tile should be left
-                Direction entryDir;
-                if (traveller.nextWaypointIndex > 0)
-                {
-                    Waypoint previousWaypoint = traveller.waypoints[traveller.nextWaypointIndex - 1];
-                    entryDir = new(previousWaypoint.pos - waypoint.pos);
-                }
-                else entryDir = Directions.South;
-
+                // Calculate the side on which the tile will be entered and exited using the previous and next waypoint
+                Waypoint previousWaypoint = traveller.waypoints[traveller.nextWaypointIndex - 1];
+                Direction entryDir = new(previousWaypoint.pos - waypoint.pos);
                 Waypoint nextWaypoint = traveller.waypoints[traveller.nextWaypointIndex + 1];
                 Direction exitDir = new(nextWaypoint.pos - waypoint.pos);
 
                 // Make sure the tile contains all TransportTileAspect component
-                Debug.Assert(SystemAPI.HasComponent<TransportTile>(TileGridUtility.GetTile(waypoint.pos, buffer)));
+                Debug.Assert(SystemAPI.HasComponent<TransportTile>(TileGridUtility.GetTile(waypoint.pos, buffer)), "Expected a transport tile");
 
                 // Calculate the position using the TransportTileAspect of the current tile
                 var transportTileAspect = SystemAPI.GetAspect<TransportTileAspect>(TileGridUtility.GetTile(waypoint.pos, buffer));
