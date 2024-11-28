@@ -14,14 +14,12 @@ namespace Systems
     public partial class PathfindingSystem : SystemBase
     {
         private static ComponentLookup<TransportTile> transportTilesLookup;
-        private static Unity.Mathematics.Random rnd;
         protected override void OnCreate()
         {
             RequireForUpdate<Traveller>();
             RequireForUpdate<RunGame>();
 
             transportTilesLookup = GetComponentLookup<TransportTile>(isReadOnly: true);
-            rnd = new(1);
         }
         protected override void OnUpdate()
         {

@@ -1,6 +1,7 @@
+using System;
 using Unity.Mathematics;
 
-public struct Direction
+public struct Direction : IEquatable<Direction>
 {
     public Directions direction;
     public readonly int2 DirectionVec => direction switch
@@ -29,6 +30,12 @@ public struct Direction
     {
         return direction.ToString();
     }
+    public readonly bool Equals(Direction other)
+    {
+        return direction == other.direction;
+    }
+    public static bool operator ==(Direction left, Direction right) { return left.Equals(right); }
+    public static bool operator !=(Direction left, Direction right) { return !(left == right); }
     public static implicit operator Directions(Direction direction) { return direction.direction; }
     public static implicit operator Direction(Directions direction) { return new(direction); }
     public static explicit operator uint(Direction direction)

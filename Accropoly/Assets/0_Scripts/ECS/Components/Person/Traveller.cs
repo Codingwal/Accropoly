@@ -8,14 +8,15 @@ namespace Components
     public struct Traveller : IComponentData
     {
         public int2 destination;
+        public int nextPointIndex;
         public int nextWaypointIndex;
         public UnsafeList<Waypoint> waypoints;
     }
 }
 public struct Waypoint : IEquatable<Waypoint>
 {
-    public float2 pos;
-    public Waypoint(float2 pos)
+    public int2 pos;
+    public Waypoint(int2 pos)
     {
         this.pos = pos;
     }
