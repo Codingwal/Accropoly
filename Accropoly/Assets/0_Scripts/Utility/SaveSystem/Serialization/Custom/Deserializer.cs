@@ -20,6 +20,8 @@ public partial class Deserializer
     public WorldTime Deserialize(WorldTime data)
     {
         data.day = br.ReadInt32();
+        data.hours = br.ReadInt32();
+        data.minutes = br.ReadInt32();
         data.seconds = br.ReadSingle();
         return data;
     }

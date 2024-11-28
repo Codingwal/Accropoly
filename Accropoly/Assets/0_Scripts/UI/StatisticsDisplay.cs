@@ -38,7 +38,7 @@ public class StatisticsDisplay : MonoBehaviour
 
         lastTaxIncomeText.text = $"Last tax income: {uiInfo.lastTaxIncome}";
 
-        timeText.text = $"Day {gameInfo.time.day}, {math.floor(gameInfo.time.seconds)}s";
+        timeText.text = gameInfo.time.ToString();
     }
     private string Format(float value)
     {

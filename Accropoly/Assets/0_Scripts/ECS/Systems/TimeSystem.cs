@@ -21,14 +21,11 @@ namespace Systems
             ecb.DestroyEntity(newDayTagQuery, EntityQueryCaptureMode.AtRecord); // Delete old tag if present
 
             var gameInfo = SystemAPI.GetSingleton<Components.GameInfo>();
-            gameInfo.time.seconds += SystemAPI.Time.DeltaTime;
 
-            if (gameInfo.time.seconds > config.secondsPerDay)
-            {
-                gameInfo.time.seconds -= config.secondsPerDay;
-                gameInfo.time.day++;
+            gameInfo.time.Advance(SystemAPI.Time.DeltaTime * config.TimeSpeed, out bool newDay);
+
+            if (newDay)
                 ecb.CreateEntity(state.EntityManager.CreateArchetype(typeof(Tags.NewDay))); // Create NewDayTag singleton
-            }
 
             SystemAPI.SetSingleton(gameInfo);
         }

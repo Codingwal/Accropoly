@@ -25,5 +25,6 @@ namespace ConfigComponents
     public struct Time : IComponentData
     {
         public float secondsPerDay;
+        public readonly float TimeSpeed => 24 * 60 * 60 / secondsPerDay;
     }
 }

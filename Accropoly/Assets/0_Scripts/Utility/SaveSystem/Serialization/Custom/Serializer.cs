@@ -17,6 +17,8 @@ public partial class Serializer
     public void Serialize(WorldTime data)
     {
         bw.Write(data.day);
+        bw.Write(data.hours);
+        bw.Write(data.minutes);
         bw.Write(data.seconds);
     }
     public void Serialize(PersonData data)
