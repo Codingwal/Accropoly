@@ -46,18 +46,23 @@ namespace Systems
         public static float CalculateTravelTime(int2 start, int2 dest, in DynamicBuffer<EntityBufferElement> entityGrid)
         {
             UnsafeList<Waypoint> path = new(10, Allocator.TempJob);
+            float travelTime = 0;
 
             if (FindPath(ref path, start, dest, entityGrid))
             {
-                int waypointCount = path.Length;
-                path.Dispose();
-                return waypointCount * 0.5f;
+                for (int i = 1; i < path.Length - 1; i++)
+                {
+                    Entity tileEntity = TileGridUtility.GetTile(path[i].pos, entityGrid);
+                    Debug.Assert(transportTilesLookup.HasComponent(tileEntity), $"Tile {path[i].pos} should be a transport tile");
+                    var transportTile = transportTilesLookup.GetRefRO(tileEntity);
+                    travelTime += transportTile.ValueRO.speed;
+                }
             }
-            else
-            {
-                path.Dispose();
-                return -1;
-            }
+            else travelTime = -1; // If there is no path
+
+            path.Dispose();
+            return travelTime;
+
         }
         /// <summary>Finds the shortest path using A* pathfinding from start to dest and stores it in waypoints.</summary>
         /// <param name="buffer">The buffer containing the tile grid</param>
@@ -104,9 +109,9 @@ namespace Systems
                         return true;
                     }
                     if (!TileGridUtility.TryGetTile(neighbourPos, entityGrid, out Entity entity)) continue; // Skip positions outside of the map
-                    if (!transportTilesLookup.HasComponent(entity)) continue; // Skip non-street tiles
+                    if (!transportTilesLookup.TryGetComponent(entity, out TransportTile transportTile)) continue; // Skip non-street tiles
 
-                    openList.Add((CalculateCost(neighbourPos, node.pos, cost, dest), new(neighbourPos, node.pos)));
+                    openList.Add((CalculateCost(neighbourPos, node.pos, cost, dest, transportTile.speed), new(neighbourPos, node.pos)));
                 }
 
                 if (iteration > 1000) throw new();
@@ -134,9 +139,9 @@ namespace Systems
             openList.RemoveAtSwapBack(cheapestIndex);
             return cheapestNode;
         }
-        private static float CalculateCost(int2 pos, int2 previousPos, float previousCost, int2 dest)
+        private static float CalculateCost(int2 pos, int2 previousPos, float previousCost, int2 dest, float tileSpeed)
         {
-            return previousCost + 1 + ManhattanDistance(pos, dest) - ManhattanDistance(previousPos, dest);
+            return previousCost + 1 / tileSpeed + ManhattanDistance(pos, dest) - ManhattanDistance(previousPos, dest);
         }
         private static float ManhattanDistance(int2 pos, int2 dest)
         {

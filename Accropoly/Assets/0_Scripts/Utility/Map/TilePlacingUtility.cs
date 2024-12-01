@@ -22,7 +22,7 @@ public static class TilePlacingUtility
                                       (new Polluter { pollution = 3 }, true), (new IsConnected(), false) },
             TileType.SolarPanel => new() { (new ElectricityProducer { production = 10 }, true), (new Polluter { pollution = 1 }, true),
                                            (new Employer{totalSpace = 1}, true) },
-            TileType.Street => new() { (new ConnectingTile(ConnectingTileGroup.Street), true), (new BuildingConnector(), true), (new TransportTile(), true) },
+            TileType.Street => new() { (new ConnectingTile(ConnectingTileGroup.Street), true), (new BuildingConnector(), true), (new TransportTile(2), true) },
             TileType.Lake => new() { (new ConnectingTile(ConnectingTileGroup.Lake), true) },
             TileType.River => new() { (new ConnectingTile(ConnectingTileGroup.River), true) },
             TileType.Hut => new() { (new Habitat { totalSpace = rnd.Next(1, 3) }, true) },
@@ -79,6 +79,7 @@ public static class TilePlacingUtility
             else if (type == typeof(Polluter)) SetComponentData<Polluter>(component, enabled);
             else if (type == typeof(Habitat)) SetComponentData<Habitat>(component, enabled);
             else if (type == typeof(Employer)) SetComponentData<Employer>(component, enabled);
+            else if (type == typeof(TransportTile)) SetComponentData<TransportTile>(component, enabled);
             else Debug.LogError($"Unexpected type {type.Name}");
         }
     }

@@ -1,9 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Entities;
-using UnityEngine;
 
-namespace Tags
+namespace Components
 {
-    public struct TransportTile : IComponentData { }
+    public struct TransportTile : IComponentData
+    {
+        public float speed;
+        public TransportTile(float speed)
+        {
+            this.speed = speed;
+        }
+    }
 }

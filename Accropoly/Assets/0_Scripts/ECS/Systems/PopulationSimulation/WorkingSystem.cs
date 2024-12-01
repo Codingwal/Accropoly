@@ -45,7 +45,6 @@ public partial class WorkingSystem : SystemBase
                 if (worker.employer.Equals(-1)) return; // Skip unemployed people
                 if (pos.Equals(worker.employer)) return; // Skip people that are already at work
 
-                Debug.Log($"s={worker.timeToWork} -> {worker.timeToWork * 24 / timeConfig.secondsPerDay} + {hours}");
                 if (hours + worker.timeToWork * 24 / timeConfig.secondsPerDay >= 8)
                 {
                     traveller.destination = worker.employer;
