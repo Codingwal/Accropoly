@@ -7,15 +7,15 @@ public struct WorldTime
     public void Advance(float deltaTime, out bool newDay)
     {
         seconds += deltaTime;
-        if (seconds > 60)
+        if (seconds >= 60)
         {
             seconds -= 60;
             minutes++;
-            if (minutes > 60)
+            if (minutes >= 60)
             {
                 minutes -= 60;
                 hours++;
-                if (hours > 24)
+                if (hours >= 24)
                 {
                     hours -= 24;
                     day++;

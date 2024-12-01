@@ -1,4 +1,5 @@
 using Components;
+using Systems;
 using Tags;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -16,7 +17,17 @@ public partial class WorkingSystem : SystemBase
         Dependency.Complete();
 
         var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
+        var entityGrid = SystemAPI.GetBuffer<EntityBufferElement>(SystemAPI.GetSingletonEntity<EntityGridHolder>());
+        var timeConfig = SystemAPI.GetSingleton<ConfigComponents.Time>();
         int hours = SystemAPI.GetSingleton<GameInfo>().time.hours;
+
+        if (hours == 0)
+        {
+            Entities.ForEach((ref Worker worker, in Person person) =>
+            {
+                worker.timeToWork = PathfindingSystem.CalculateTravelTime(person.homeTile, worker.employer, entityGrid);
+            }).Schedule();
+        }
 
         Entities.WithDisabled<WantsToTravel, Travelling>().ForEach((Entity entity, ref Traveller traveller, in LocalTransform transform, in Person person, in Worker worker) =>
         {
@@ -29,13 +40,17 @@ public partial class WorkingSystem : SystemBase
                 ecb.SetComponentEnabled<WantsToTravel>(entity, true);
 
             }
-            else if (hours >= 7)
+            else if (hours >= 3)
             {
                 if (worker.employer.Equals(-1)) return; // Skip unemployed people
                 if (pos.Equals(worker.employer)) return; // Skip people that are already at work
 
-                traveller.destination = worker.employer;
-                ecb.SetComponentEnabled<WantsToTravel>(entity, true);
+                Debug.Log($"s={worker.timeToWork} -> {worker.timeToWork * 24 / timeConfig.secondsPerDay} + {hours}");
+                if (hours + worker.timeToWork * 24 / timeConfig.secondsPerDay >= 8)
+                {
+                    traveller.destination = worker.employer;
+                    ecb.SetComponentEnabled<WantsToTravel>(entity, true);
+                }
             }
         }).Schedule();
     }
