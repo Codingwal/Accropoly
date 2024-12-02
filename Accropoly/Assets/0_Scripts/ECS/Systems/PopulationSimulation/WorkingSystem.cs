@@ -43,10 +43,12 @@ public partial class WorkingSystem : SystemBase
             else if (hours >= 3)
             {
                 if (worker.employer.Equals(-1)) return; // Skip unemployed people
+                if (worker.timeToWork == -1) return; // Skip people without valid path to work
                 if (pos.Equals(worker.employer)) return; // Skip people that are already at work
 
-                if (hours + worker.timeToWork * 24 / timeConfig.secondsPerDay >= 8)
+                if (hours + worker.timeToWork / 3600 >= 8)
                 {
+                    Debug.LogWarning(worker.timeToWork / 3600);
                     traveller.destination = worker.employer;
                     ecb.SetComponentEnabled<WantsToTravel>(entity, true);
                 }

@@ -55,14 +55,14 @@ namespace Systems
                     Entity tileEntity = TileGridUtility.GetTile(path[i].pos, entityGrid);
                     Debug.Assert(transportTilesLookup.HasComponent(tileEntity), $"Tile {path[i].pos} should be a transport tile");
                     var transportTile = transportTilesLookup.GetRefRO(tileEntity);
-                    travelTime += transportTile.ValueRO.speed;
+                    travelTime += 20 / transportTile.ValueRO.speed / TransportTileAspect.travelSecondsPerSecond; // tileSize [in m] / speed * secondsPerTravelSecond
                 }
             }
             else travelTime = -1; // If there is no path
 
             path.Dispose();
+            Debug.Log(travelTime);
             return travelTime;
-
         }
         /// <summary>Finds the shortest path using A* pathfinding from start to dest and stores it in waypoints.</summary>
         /// <param name="buffer">The buffer containing the tile grid</param>
