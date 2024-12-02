@@ -61,7 +61,6 @@ namespace Systems
             else travelTime = -1; // If there is no path
 
             path.Dispose();
-            Debug.Log(travelTime);
             return travelTime;
         }
         /// <summary>Finds the shortest path using A* pathfinding from start to dest and stores it in waypoints.</summary>

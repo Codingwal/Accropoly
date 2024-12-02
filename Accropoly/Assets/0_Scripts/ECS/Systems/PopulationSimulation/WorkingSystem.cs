@@ -19,9 +19,10 @@ public partial class WorkingSystem : SystemBase
         var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
         var entityGrid = SystemAPI.GetBuffer<EntityBufferElement>(SystemAPI.GetSingletonEntity<EntityGridHolder>());
         var timeConfig = SystemAPI.GetSingleton<ConfigComponents.Time>();
-        int hours = SystemAPI.GetSingleton<GameInfo>().time.hours;
+        var gameInfo = SystemAPI.GetSingleton<GameInfo>();
+        int hours = gameInfo.time.hours;
 
-        if (hours == 0)
+        if (hours == 3)
         {
             Entities.ForEach((ref Worker worker, in Person person) =>
             {
@@ -40,15 +41,14 @@ public partial class WorkingSystem : SystemBase
                 ecb.SetComponentEnabled<WantsToTravel>(entity, true);
 
             }
-            else if (hours >= 3)
+            else if (hours >= 4)
             {
                 if (worker.employer.Equals(-1)) return; // Skip unemployed people
                 if (worker.timeToWork == -1) return; // Skip people without valid path to work
                 if (pos.Equals(worker.employer)) return; // Skip people that are already at work
 
-                if (hours + worker.timeToWork / 3600 >= 8)
+                if (gameInfo.time.TimeOfDayInSeconds + worker.timeToWork >= WorldTime.HoursToSeconds(8))
                 {
-                    Debug.LogWarning(worker.timeToWork / 3600);
                     traveller.destination = worker.employer;
                     ecb.SetComponentEnabled<WantsToTravel>(entity, true);
                 }

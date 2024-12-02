@@ -18,8 +18,8 @@ namespace Systems
         {
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
             var buffer = SystemAPI.GetBuffer<EntityBufferElement>(SystemAPI.GetSingletonEntity<EntityGridHolder>());
-            float deltaTime = SystemAPI.Time.DeltaTime;
-            float timeSpeed = SystemAPI.GetSingleton<ConfigComponents.Time>().TimeSpeed;
+            WorldTime time = SystemAPI.GetSingleton<GameInfo>().time;
+            float deltaTime = SystemAPI.GetSingleton<GameInfo>().deltaTime;
 
             Entities.WithAll<Travelling>().ForEach((Entity entity, ref Traveller traveller) =>
             {
@@ -32,6 +32,7 @@ namespace Systems
                     transform.Position.xz = waypoint.pos * 2;
                     ecb.SetComponent(entity, transform);
                     ecb.SetComponentEnabled<Travelling>(entity, false);
+                    Debug.Log(time);
                     return;
                 }
 
@@ -49,7 +50,7 @@ namespace Systems
                 float2 pos = transportTileAspect.TravelOnTile(entryDir, exitDir, traveller.timeOnTile, out bool reachedTileEnd);
 
                 // Update the time spent on the current tile
-                traveller.timeOnTile += deltaTime * timeSpeed;
+                traveller.timeOnTile += deltaTime;
 
                 // Move on to the next tile if the current tile has been completely traversed
                 if (reachedTileEnd)

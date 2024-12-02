@@ -4,6 +4,8 @@ public struct WorldTime
     public int minutes;
     public int hours;
     public int day;
+    public readonly float TimeOfDayInSeconds => hours * 3600 + minutes * 60 + seconds;
+    public static float HoursToSeconds(int hours) { return hours * 3600; }
     public void Advance(float deltaTime, out bool newDay)
     {
         seconds += deltaTime;
@@ -28,6 +30,6 @@ public struct WorldTime
     }
     public readonly override string ToString()
     {
-        return $"{hours}:{minutes} ({day})";
+        return $"{hours}:{minutes:00} ({day})"; // Example: "12:05 (13)"
     }
 }

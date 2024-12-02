@@ -22,7 +22,8 @@ namespace Systems
 
             var gameInfo = SystemAPI.GetSingleton<Components.GameInfo>();
 
-            gameInfo.time.Advance(SystemAPI.Time.DeltaTime * config.TimeSpeed, out bool newDay);
+            gameInfo.deltaTime = SystemAPI.Time.DeltaTime * config.TimeSpeed;
+            gameInfo.time.Advance(gameInfo.deltaTime, out bool newDay);
 
             if (newDay)
                 ecb.CreateEntity(state.EntityManager.CreateArchetype(typeof(Tags.NewDay))); // Create NewDayTag singleton
