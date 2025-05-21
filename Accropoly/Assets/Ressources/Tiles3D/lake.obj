@@ -1,0 +1,27 @@
+# Made in Blockbench 4.12.4
+mtllib materials.mtl
+
+o water
+v 0.5 0.125 0.5
+v 0.5 0.125 -0.5
+v -0.5 0.125 0.5
+v -0.5 0.125 -0.5
+vt 0.25 0.75
+vt 0.25 1
+vt 0 1
+vt 0 0.75
+vn 0 1 0
+usemtl m_dee8779c-fbfc-43f7-180a-3fe3f73c1a43
+f 1/1/1 2/2/1 4/3/1 3/4/1
+o dirt
+v 0.5 -0.25 0.5
+v 0.5 -0.25 -0.5
+v -0.5 -0.25 0.5
+v -0.5 -0.25 -0.5
+vt 0.25 0.75
+vt 0.25 1
+vt 0 1
+vt 0 0.75
+vn 0 1 0
+usemtl m_18e4cc5d-e6db-f6aa-372f-671d31dcf413
+f 5/5/2 6/6/2 8/7/2 7/8/2
