@@ -20,6 +20,8 @@ public partial class Deserializer
     public WorldTime Deserialize(WorldTime data)
     {
         data.day = br.ReadInt32();
+        data.hours = br.ReadInt32();
+        data.minutes = br.ReadInt32();
         data.seconds = br.ReadSingle();
         return data;
     }
@@ -124,12 +126,15 @@ public partial class Deserializer
                     totalSpace = br.ReadInt32(),
                     freeSpace = br.ReadInt32()
                 },
+                TileComponents.TransportTile => new TransportTile()
+                {
+                    speed = br.ReadSingle()
+                },
 
                 TileComponents.IsConnectedTag => new IsConnected(),
                 TileComponents.ActiveTileTag => new ActiveTile(),
                 TileComponents.NewTileTag => new NewTile(),
                 TileComponents.BuildingConnectorTag => new BuildingConnector(),
-                TileComponents.TransportTile => new TransportTile(),
 
                 _ => throw new($"Cannot deserialize component of type {type}")
             };

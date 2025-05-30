@@ -24,7 +24,7 @@ namespace Systems
         protected override void OnUpdate()
         {
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
-            var buffer = SystemAPI.GetBuffer<EntityBufferElement>(SystemAPI.GetSingletonEntity<EntityGridHolder>());
+            var entityGrid = SystemAPI.GetBuffer<EntityBufferElement>(SystemAPI.GetSingletonEntity<EntityGridHolder>());
             transportTilesLookup.Update(this);
 
             Entities.WithAll<WantsToTravel>().ForEach((Entity entity, ref Traveller traveller, in LocalTransform transform) =>
@@ -36,20 +36,40 @@ namespace Systems
                 else
                     traveller.waypoints = new(8, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
 
-                if (FindPath(ref traveller.waypoints, (int2)math.round(transform.Position.xz) / 2, traveller.destination, buffer))
+                if (FindPath(ref traveller.waypoints, (int2)math.round(transform.Position.xz) / 2, traveller.destination, entityGrid))
                 {
                     ecb.SetComponentEnabled<Travelling>(entity, true);
                 }
                 ecb.SetComponentEnabled<WantsToTravel>(entity, false);
             }).Schedule();
         }
+        public static float CalculateTravelTime(int2 start, int2 dest, in DynamicBuffer<EntityBufferElement> entityGrid)
+        {
+            UnsafeList<Waypoint> path = new(10, Allocator.TempJob);
+            float travelTime = 0;
+
+            if (FindPath(ref path, start, dest, entityGrid))
+            {
+                for (int i = 1; i < path.Length - 1; i++)
+                {
+                    Entity tileEntity = TileGridUtility.GetTile(path[i].pos, entityGrid);
+                    Debug.Assert(transportTilesLookup.HasComponent(tileEntity), $"Tile {path[i].pos} should be a transport tile");
+                    var transportTile = transportTilesLookup.GetRefRO(tileEntity);
+                    travelTime += 20 / transportTile.ValueRO.speed / TransportTileAspect.travelSecondsPerSecond; // tileSize [in m] / speed * secondsPerTravelSecond
+                }
+            }
+            else travelTime = -1; // If there is no path
+
+            path.Dispose();
+            return travelTime;
+        }
         /// <summary>Finds the shortest path using A* pathfinding from start to dest and stores it in waypoints.</summary>
         /// <param name="buffer">The buffer containing the tile grid</param>
         /// <returns>Returns true if a path was found</returns>
-        private static bool FindPath(ref UnsafeList<Waypoint> waypoints, int2 start, int2 dest, in DynamicBuffer<EntityBufferElement> buffer)
+        private static bool FindPath(ref UnsafeList<Waypoint> waypoints, int2 start, int2 dest, in DynamicBuffer<EntityBufferElement> entityGrid)
         {
-            Debug.Assert(!start.Equals(dest));
-            Debug.Assert(waypoints.IsCreated);
+            Debug.Assert(!start.Equals(dest), $"Start must not equal destination (start and dest are {start})");
+            Debug.Assert(waypoints.IsCreated, "The UnsafeList<Waypoint> has not been created");
 
             NativeList<(float, NodeToVisit)> openList = new(8, Allocator.TempJob) { (0, new(start, -1)) };
             NativeHashMap<int2, VisitedNode> closedList = new(8, Allocator.TempJob);
@@ -87,10 +107,10 @@ namespace Systems
                         closedList.Dispose();
                         return true;
                     }
-                    if (!TileGridUtility.TryGetTile(neighbourPos, buffer, out Entity entity)) continue; // Skip positions outside of the map
-                    if (!transportTilesLookup.HasComponent(entity)) continue; // Skip non-street tiles
+                    if (!TileGridUtility.TryGetTile(neighbourPos, entityGrid, out Entity entity)) continue; // Skip positions outside of the map
+                    if (!transportTilesLookup.TryGetComponent(entity, out TransportTile transportTile)) continue; // Skip non-street tiles
 
-                    openList.Add((CalculateCost(neighbourPos, node.pos, cost, dest), new(neighbourPos, node.pos)));
+                    openList.Add((CalculateCost(neighbourPos, node.pos, cost, dest, transportTile.speed), new(neighbourPos, node.pos)));
                 }
 
                 if (iteration > 1000) throw new();
@@ -118,9 +138,9 @@ namespace Systems
             openList.RemoveAtSwapBack(cheapestIndex);
             return cheapestNode;
         }
-        private static float CalculateCost(int2 pos, int2 previousPos, float previousCost, int2 dest)
+        private static float CalculateCost(int2 pos, int2 previousPos, float previousCost, int2 dest, float tileSpeed)
         {
-            return previousCost + 1 + ManhattanDistance(pos, dest) - ManhattanDistance(previousPos, dest);
+            return previousCost + 1 / tileSpeed + ManhattanDistance(pos, dest) - ManhattanDistance(previousPos, dest);
         }
         private static float ManhattanDistance(int2 pos, int2 dest)
         {

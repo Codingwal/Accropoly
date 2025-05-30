@@ -1,9 +1,6 @@
-using System;
-using System.Linq;
 using Components;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Entities.UniversalDelegates;
 using Unity.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -23,7 +20,8 @@ namespace Authoring
 
                 Entity entity = GetEntity(TransformUsageFlags.None);
 
-                var entitiesGraphicsSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<EntitiesGraphicsSystem>();
+                var world = World.DefaultGameObjectInjectionWorld;
+                var entitiesGraphicsSystem = world.GetOrCreateSystemManaged<EntitiesGraphicsSystem>();
                 BatchMeshID meshID = entitiesGraphicsSystem.RegisterMesh(authoring.mesh);
                 var configComponent = new ConfigComponents.Billboarding
                 {

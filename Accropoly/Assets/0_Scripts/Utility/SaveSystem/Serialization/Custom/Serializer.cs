@@ -17,6 +17,8 @@ public partial class Serializer
     public void Serialize(WorldTime data)
     {
         bw.Write(data.day);
+        bw.Write(data.hours);
+        bw.Write(data.minutes);
         bw.Write(data.seconds);
     }
     public void Serialize(PersonData data)
@@ -140,11 +142,17 @@ public partial class Serializer
                 bw.Write(componentData.totalSpace);
                 bw.Write(componentData.freeSpace);
             }
+            else if (type == typeof(TransportTile))
+            {
+                bw.Write((int)TileComponents.TransportTile);
+
+                TransportTile componentData = (TransportTile)component;
+                bw.Write(componentData.speed);
+            }
             else if (type == typeof(IsConnected)) bw.Write((int)TileComponents.IsConnectedTag);
             else if (type == typeof(ActiveTile)) bw.Write((int)TileComponents.ActiveTileTag);
             else if (type == typeof(NewTile)) bw.Write((int)TileComponents.NewTileTag);
             else if (type == typeof(BuildingConnector)) bw.Write((int)TileComponents.BuildingConnectorTag);
-            else if (type == typeof(TransportTile)) bw.Write((int)TileComponents.TransportTile);
             else throw new($"Cannot serialize component of type {type}");
 
         }

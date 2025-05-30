@@ -32,11 +32,11 @@ public enum TileComponents : int
     Polluter = 5,
     Habitat = 6,
     Employer = 7,
+    TransportTile = 8,
 
     // Tags
     ActiveTileTag = 100,
     NewTileTag = 101,
     IsConnectedTag = 102,
     BuildingConnectorTag = 103,
-    TransportTile = 104,
 }

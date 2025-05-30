@@ -7,27 +7,26 @@ namespace Components
 {
     public readonly partial struct TransportTileAspect : IAspect
     {
-        // Disable compiler warning. TransportTile is unused but a required tag
-#pragma warning disable IDE0052
         private readonly RefRO<TransportTile> transportTile;
-#pragma warning restore IDE0052
 
-        private const float speed = 2f;
         private const float offsetFromCenter = 0.25f;
+        public const float travelSecondsPerSecond = 0.007f; // Slow down travel time. If cars would use the normal timeSpeed, they would be way too fast.
 
         private readonly RefRO<Tile> tile;
-        public readonly float2 TravelOnTile(Direction entryDirection, Direction exitDirection, float time, out bool reachedDest)
+        public readonly float2 TravelOnTile(Direction entryDirection, Direction exitDirection, float timeOnTile, out bool reachedDest)
         {
             Debug.Assert(tile.ValueRO.tileType == TileType.Street);
 
             // Calculate the rotation needed so that entryDirection is south
             int rotation = Direction.GetRotation(entryDirection, Directions.South);
 
+            float time = timeOnTile * transportTile.ValueRO.speed / 20 * travelSecondsPerSecond; // A tile is 20 meters big, speed is in m/s, timeOnTile in s
+
             // Calculate the position with south as the entry direction
-            float2 pos = GetPosOnTileIgnoreRotation(exitDirection.Rotate(rotation), time * speed);
+            float2 pos = GetPosOnTileIgnoreRotation(exitDirection.Rotate(rotation), time);
 
             // Check if the destination has been reached
-            reachedDest = time * speed >= 1;
+            reachedDest = time >= 1;
 
             // Rotate position "back"
             float3 rotatedPos = math.rotate(quaternion.EulerXYZ(0, -((Direction)rotation).ToRadians(), 0), new(pos.x, 0, pos.y));

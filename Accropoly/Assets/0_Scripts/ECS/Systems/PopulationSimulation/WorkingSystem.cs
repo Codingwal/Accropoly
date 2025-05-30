@@ -1,4 +1,5 @@
 using Components;
+using Systems;
 using Tags;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -13,21 +14,44 @@ public partial class WorkingSystem : SystemBase
     }
     protected override void OnUpdate()
     {
+        Dependency.Complete();
+
         var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
+        var entityGrid = SystemAPI.GetBuffer<EntityBufferElement>(SystemAPI.GetSingletonEntity<EntityGridHolder>());
+        var timeConfig = SystemAPI.GetSingleton<ConfigComponents.Time>();
+        var gameInfo = SystemAPI.GetSingleton<GameInfo>();
+        int hours = gameInfo.time.hours;
+
+        if (hours == 3)
+        {
+            Entities.ForEach((ref Worker worker, in Person person) =>
+            {
+                worker.timeToWork = PathfindingSystem.CalculateTravelTime(person.homeTile, worker.employer, entityGrid);
+            }).Schedule();
+        }
 
         Entities.WithDisabled<WantsToTravel, Travelling>().ForEach((Entity entity, ref Traveller traveller, in LocalTransform transform, in Person person, in Worker worker) =>
         {
             int2 pos = (int2)math.round(transform.Position.xz / 2);
-            if (pos.Equals(person.homeTile))
+            if (hours >= 16)
             {
-                if (worker.employer.Equals(-1)) return; // Skip unemployed people
-                traveller.destination = worker.employer;
-                ecb.SetComponentEnabled<WantsToTravel>(entity, true);
-            }
-            else
-            {
+                if (pos.Equals(person.homeTile)) return; // Skip people that are already at home
+
                 traveller.destination = person.homeTile;
                 ecb.SetComponentEnabled<WantsToTravel>(entity, true);
+
+            }
+            else if (hours >= 4)
+            {
+                if (worker.employer.Equals(-1)) return; // Skip unemployed people
+                if (worker.timeToWork == -1) return; // Skip people without valid path to work
+                if (pos.Equals(worker.employer)) return; // Skip people that are already at work
+
+                if (gameInfo.time.TimeOfDayInSeconds + worker.timeToWork >= WorldTime.HoursToSeconds(8))
+                {
+                    traveller.destination = worker.employer;
+                    ecb.SetComponentEnabled<WantsToTravel>(entity, true);
+                }
             }
         }).Schedule();
     }

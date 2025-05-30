@@ -5,6 +5,7 @@ using Unity.Mathematics;
 using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class MaterialsAndMeshesHolder : MonoBehaviour
 {
@@ -30,6 +31,10 @@ public class MaterialsAndMeshesHolder : MonoBehaviour
                 new Material[] { materialMeshPair.material },
                 new Mesh[] { materialMeshPair.mesh }
             ));
+
+            // id of -1 means index 0 of RenderMeshArray
+            int id = -1;
+            entityManager.SetComponentData(entity, new MaterialMeshInfo(new BatchMaterialID() { value = (uint)id }, new BatchMeshID() { value = (uint)id }));
         }
         entitiesToUpdate.Clear();
     }

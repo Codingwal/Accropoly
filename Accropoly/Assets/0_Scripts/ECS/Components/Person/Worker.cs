@@ -6,6 +6,7 @@ namespace Components
     public struct Worker : IComponentData
     {
         public int2 employer;
+        public float timeToWork; // in InGame seconds
     }
 }
 namespace Tags

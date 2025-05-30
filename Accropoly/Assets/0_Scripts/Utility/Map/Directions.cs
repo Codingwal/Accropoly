@@ -40,6 +40,14 @@ public struct Direction : IEquatable<Direction>
     {
         return direction == other.direction;
     }
+    public override readonly bool Equals(object other)
+    {
+        return other is Direction otherAsDir && this == otherAsDir;
+    }
+    public override readonly int GetHashCode()
+    {
+        return direction.GetHashCode();
+    }
     public static bool operator ==(Direction left, Direction right) { return left.Equals(right); }
     public static bool operator !=(Direction left, Direction right) { return !(left == right); }
     public static bool operator ==(Direction left, Directions right) { return left.direction == right; }

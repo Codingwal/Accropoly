@@ -18,7 +18,8 @@ namespace Systems
         {
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
             var buffer = SystemAPI.GetBuffer<EntityBufferElement>(SystemAPI.GetSingletonEntity<EntityGridHolder>());
-            float deltaTime = SystemAPI.Time.DeltaTime;
+            WorldTime time = SystemAPI.GetSingleton<GameInfo>().time;
+            float deltaTime = SystemAPI.GetSingleton<GameInfo>().deltaTime;
 
             Entities.WithAll<Travelling>().ForEach((Entity entity, ref Traveller traveller) =>
             {
@@ -31,6 +32,7 @@ namespace Systems
                     transform.Position.xz = waypoint.pos * 2;
                     ecb.SetComponent(entity, transform);
                     ecb.SetComponentEnabled<Travelling>(entity, false);
+                    Debug.Log(time);
                     return;
                 }
 
