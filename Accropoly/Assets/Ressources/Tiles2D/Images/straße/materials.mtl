@@ -1,0 +1,8 @@
+# Made in Blockbench 4.12.4
+newmtl m_04f649f9-ee25-9e44-fc3e-c9145fb545c9
+map_Kd grass.png
+newmtl m_65a067a6-8932-9c8c-3e60-1738b3690105
+map_Kd tarmac.png
+newmtl m_1b117271-48d9-5f4c-7692-27328ba6fe47
+map_Kd white.png
+newmtl none
