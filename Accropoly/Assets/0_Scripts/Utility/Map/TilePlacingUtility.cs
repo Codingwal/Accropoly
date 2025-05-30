@@ -67,7 +67,7 @@ public static class TilePlacingUtility
         foreach (var (component, enabled) in components)
         {
             Type type = component.GetType();
-            if (new ComponentType(type).IsZeroSized) // Handle  components
+            if (new ComponentType(type).IsZeroSized) // Handle tag components
             {
                 if (new ComponentType(type).IsEnableable) ecb.SetComponentEnabled(tile, type, enabled);
             }
