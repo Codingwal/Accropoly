@@ -1,0 +1,15 @@
+Colors
+Primary color: #0A610A
+Secondary color: #FFFFFF
+
+Buttons
+Large: 300x100
+Medium: 300x50
+Small: 200x25
+
+Margin: 25
+
+Text
+Large font size: 40
+Medium font size: 30
+Small font size: 20
