@@ -6,23 +6,31 @@ using UIAction = Components.UIInputData.Action;
 
 public class MenuManager : MonoBehaviour
 {
+
     [Header("Menus")]
     [SerializeField] private GameObject mainMenu;
+    [SerializeField] private GameObject optionMenu;
     [SerializeField] private GameObject pauseMenu;
     [SerializeField] private GameObject statisticsDisplay;
 
 
     [Header("Main menu")]
     [SerializeField] private Button startGameButton;
+    [SerializeField] private TMP_Dropdown mapsDropdown;
+    [SerializeField] private Button optionsButton;
+    [SerializeField] private Button quitButton;
+
+
+    [Header("Option menu")]
+    [SerializeField] private TextMeshProUGUI selectedMap;
     [SerializeField] private Button createMapButton;
     [SerializeField] private TMP_InputField mapNameField;
     [SerializeField] private TMP_Dropdown mapTemplateDropdown;
     [SerializeField] private string defaultTemplate;
     [SerializeField] private Button createTemplateButton;
     [SerializeField] private Button deleteMapButton;
-    [SerializeField] private TMP_Dropdown mapsDropdown;
     [SerializeField] private Button showInExplorerButton;
-    [SerializeField] private Button quitButton;
+    [SerializeField] private Button backToMainMenuButton;
 
 
     [Header("Pause menu")]
@@ -36,26 +44,40 @@ public class MenuManager : MonoBehaviour
         Systems.InputSystem.uiInput += OnUIInput;
 
         startGameButton.onClick.AddListener(OnStartGame);
+        quitButton.onClick.AddListener(OnQuit);
+        optionsButton.onClick.AddListener(OnOptions);
+
         createMapButton.onClick.AddListener(OnCreateMap);
         createTemplateButton.onClick.AddListener(OnCreateTemplate);
         deleteMapButton.onClick.AddListener(OnDeleteMap);
         showInExplorerButton.onClick.AddListener(OnShowInExplorer);
-        quitButton.onClick.AddListener(OnQuit);
+        backToMainMenuButton.onClick.AddListener(OnBackToMainMenu);
 
         continueButton.onClick.AddListener(() => MenuUtility.ContinueGame());
         toMainMenuButton.onClick.AddListener(() =>
         {
             MenuUtility.QuitGame();
             mainMenu.SetActive(true);
+            optionMenu.SetActive(false);
             pauseMenu.SetActive(false);
         });
-        MenuUtility.continuingGame += () => { pauseMenu.SetActive(false); statisticsDisplay.SetActive(true); };
-        MenuUtility.pausingGame += () => { pauseMenu.SetActive(true); statisticsDisplay.SetActive(false); };
+
+        MenuUtility.continuingGame += () =>
+        {
+            pauseMenu.SetActive(false);
+            statisticsDisplay.SetActive(true);
+        };
+        MenuUtility.pausingGame += () =>
+        {
+            pauseMenu.SetActive(true);
+            statisticsDisplay.SetActive(false);
+        };
 
         mainMenu.SetActive(true);
+        optionMenu.SetActive(false);
         pauseMenu.SetActive(false);
 
-        mapNameField.text = SaveSystem.Instance.GetWorldName();
+        //mapNameField.text = SaveSystem.Instance.GetWorldName();
 
         ReloadUI();
     }
@@ -70,18 +92,31 @@ public class MenuManager : MonoBehaviour
 
         MenuUtility.StartGame(SelectedWorldName);
     }
+    private void OnOptions()
+    {
+        mainMenu.SetActive(false);
+        optionMenu.SetActive(true);
+        selectedMap.text = "Selected map: " + SelectedWorldName;
+    }
+    private void OnQuit()
+    {
+        MenuUtility.Quit();
+    }
+
     private void OnCreateMap()
     {
+        optionMenu.SetActive(false);
+        MenuUtility.StartGame(mapNameField.text);
+
         MenuUtility.CreateWorld(mapNameField.text, SelectedMapTemplateName);
         ReloadUI();
-
         // Select the newly created world for convinience
         mapsDropdown.value = mapsDropdown.options.FindIndex(x => x.text == mapNameField.text);
     }
     private void OnCreateTemplate()
     {
         if (mapsDropdown.options.Count == 0) return;
-        MenuUtility.CreateTemplate(SelectedWorldName, mapNameField.text);
+        MenuUtility.CreateTemplate(SelectedWorldName, SelectedWorldName); // to make it easier, the template name is the same as the map name
         ReloadUI();
     }
     private void OnDeleteMap()
@@ -94,10 +129,13 @@ public class MenuManager : MonoBehaviour
     {
         MenuUtility.OpenExplorer();
     }
-    private void OnQuit()
+
+    private void OnBackToMainMenu()
     {
-        MenuUtility.Quit();
+        mainMenu.SetActive(true);
+        optionMenu.SetActive(false);
     }
+
     private void OnUIInput(Components.UIInputData inputData)
     {
         switch (inputData.action)
