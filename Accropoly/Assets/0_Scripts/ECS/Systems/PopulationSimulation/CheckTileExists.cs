@@ -41,7 +41,7 @@ namespace Systems
             }).Schedule(inputDeps);
 
 
-            // Make them homeless if their home is deactivated / has been replaced
+            // Make people homeless if their home is deactivated / has been replaced
             var ecb1 = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
             Random rnd = new((uint)UnityEngine.Random.Range(1, 1000));
             JobHandle handle1 = Entities.WithNone<Homeless>().ForEach((Entity entity, ref Person person) =>
@@ -59,7 +59,7 @@ namespace Systems
                 }
             }).WithReadOnly(newTilesPositions).WithReadOnly(disabledTilesPositions).Schedule(inputDeps);
 
-            // Make them unemployed if their employer is deactivated / has been replaced
+            // Make people unemployed if their employer is deactivated / has been replaced
             var ecb2 = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
             JobHandle handle2 = Entities.WithNone<Unemployed>().ForEach((Entity entity, ref Worker worker) =>
             {
