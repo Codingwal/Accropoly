@@ -26,7 +26,7 @@ public static class TilePlacingUtility
             TileType.Lake => new() { (new ConnectingTile(ConnectingTileGroup.Lake), true) },
             TileType.River => new() { (new ConnectingTile(ConnectingTileGroup.River), true) },
             TileType.Hut => new() { (new Habitat { totalSpace = rnd.Next(1, 3) }, true) },
-            TileType.Office => new() { (new ElectricityConsumer { consumption = 5, disableIfElectroless = false }, true),
+            TileType.Office => new() { (new ElectricityConsumer { consumption = 5, disableIfElectroless = true }, true),
                                        (new Employer { totalSpace = 10 }, true),
                                        (new IsConnected(), false) },
             _ => throw new($"Missing componentTypes for tileType {tileType}")
