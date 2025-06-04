@@ -13,7 +13,7 @@ namespace Systems
         {
             RequireForUpdate<RunGame>();
             RequireForUpdate<Unemployed>();
-            employersWithSpaceQuery = GetEntityQuery(typeof(Employer), typeof(HasSpace), typeof(Tile));
+            employersWithSpaceQuery = GetEntityQuery(typeof(ActiveTile), typeof(Employer), typeof(HasSpace), typeof(Tile));
             RequireForUpdate(employersWithSpaceQuery);
         }
         protected override void OnUpdate()
