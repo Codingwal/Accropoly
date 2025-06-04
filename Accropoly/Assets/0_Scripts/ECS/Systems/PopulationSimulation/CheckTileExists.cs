@@ -64,12 +64,12 @@ namespace Systems
             JobHandle handle2 = Entities.WithNone<Unemployed>().ForEach((Entity entity, ref Worker worker) =>
             {
                 int2 employerPos = worker.employer;
-                if (newTilesPositions.Contains(employerPos))
+                if (newTilesPositions.Contains(employerPos) || disabledTilesPositions.Contains(employerPos))
                 {
                     worker.employer = new(-1);
                     ecb2.AddComponent<Unemployed>(entity);
                 }
-            }).WithReadOnly(newTilesPositions).Schedule(inputDeps);
+            }).WithReadOnly(newTilesPositions).WithReadOnly(disabledTilesPositions).Schedule(inputDeps);
 
             // Dispose NativeArrays after all jobs that use them have been completed
             Dependency = newTilesPositions.Dispose(JobHandle.CombineDependencies(handle1, handle2));
