@@ -29,7 +29,7 @@ namespace Systems
                 typesToIgnoreSet.Add(type);
             typesToIgnore.Dispose();
 
-            // MapTileComponent gets saved outside of the loop, some tags and components can be regenerated after loading 
+            // Tile component gets saved outside of the loop, some tags and components can be regenerated after loading 
             typesToIgnoreSet.Add(typeof(Tile));
             typesToIgnoreSet.Add(typeof(HasSpace));
             typesToIgnoreSet.Add(typeof(HasElectricity));
@@ -77,6 +77,7 @@ namespace Systems
                     else if (componentType == typeof(IsConnected)) AddTag<IsConnected>();
                     else if (componentType == typeof(ActiveTile)) AddTag<ActiveTile>();
                     else if (componentType == typeof(BuildingConnector)) AddTag<BuildingConnector>();
+                    else if (componentType == typeof(DisabledTile)) AddTag<DisabledTile>();
 
                     else Debug.LogWarning($"Component of type {componentType} will not be serialized but also isn't present in typesToIgnore");
 
