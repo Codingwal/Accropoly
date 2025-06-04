@@ -4,6 +4,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 using Components;
+using Unity.Rendering;
 
 namespace Systems
 {
@@ -47,6 +48,9 @@ namespace Systems
                     // Set LocalTransform of the new tile using the MapTileComponent data
                     quaternion rotation = quaternion.EulerXYZ(0, math.radians((uint)mapTileComponent.rotation * 90), 0);
                     ecb.SetComponent(entity, LocalTransform.FromPositionRotationScale(2 * new float3(x, 0, y), rotation, 1));
+
+                    // The tile meshes are 2 units large -> the render bounds need to be extended from 0.5 to 1
+                    ecb.SetComponent(entity, new RenderBounds() { Value = new AABB() { Extents = new(1, 1, 1) } });
 
                     // Set mesh using MapTileComponent.tileType
                     MaterialsAndMeshesHolder.UpdateMeshAndMaterial(entity, mapTileComponent.tileType);
