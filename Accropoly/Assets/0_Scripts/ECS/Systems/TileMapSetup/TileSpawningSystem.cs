@@ -46,7 +46,7 @@ namespace Systems
 
                     // Set LocalTransform of the new tile using the MapTileComponent data
                     quaternion rotation = quaternion.EulerXYZ(0, math.radians((uint)mapTileComponent.rotation * 90), 0);
-                    ecb.SetComponent(entity, LocalTransform.FromPositionRotation(2 * new float3(x, 0, y), rotation));
+                    ecb.SetComponent(entity, LocalTransform.FromPositionRotationScale(2 * new float3(x, 0, y), rotation, 1));
 
                     // Set mesh using MapTileComponent.tileType
                     MaterialsAndMeshesHolder.UpdateMeshAndMaterial(entity, mapTileComponent.tileType);

@@ -32,7 +32,6 @@ namespace Systems
                     transform.Position.xz = waypoint.pos * 2;
                     ecb.SetComponent(entity, transform);
                     ecb.SetComponentEnabled<Travelling>(entity, false);
-                    //Debug.Log(time);
                     return;
                 }
 
