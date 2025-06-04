@@ -32,7 +32,7 @@ public static class TilePlacingUtility
             _ => throw new($"Missing componentTypes for tileType {tileType}")
         };
         components.Add((new Tile { tileType = tileType, pos = pos, rotation = rotation }, true));
-        components.Add((new ActiveTile(), true));
+        components.Add((new ActiveTile(), false));
         components.Add((new NewTile(), true));
         return components;
     }

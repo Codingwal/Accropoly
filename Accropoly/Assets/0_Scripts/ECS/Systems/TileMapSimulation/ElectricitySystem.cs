@@ -25,9 +25,11 @@ namespace Systems
 
             // Enable as many consumers as possible
             // Tiles with & without electricity are split so that the distribution is consistent across frames
+
             NativeArray<float> totalConsumption = new(1, Allocator.TempJob, NativeArrayOptions.ClearMemory);
             NativeArray<float> maxConsumption = new(1, Allocator.TempJob, NativeArrayOptions.ClearMemory);
-            Entities.WithAll<ActiveTile, HasElectricity>().ForEach((Entity entity, in ElectricityConsumer consumer) =>
+
+            Entities.WithAll<HasElectricity>().WithNone<DisabledTile>().ForEach((Entity entity, in ElectricityConsumer consumer) =>
             {
                 bool canEnable = totalConsumption[0] + consumer.consumption <= totalProduction[0];
                 totalConsumption[0] += canEnable ? consumer.consumption : 0; // Only add to the production if the consumer can be enabled
@@ -35,7 +37,8 @@ namespace Systems
 
                 maxConsumption[0] += consumer.consumption; // Only for informative purposes
             }).Schedule();
-            Entities.WithAll<ActiveTile>().WithDisabled<HasElectricity>().ForEach((Entity entity, in ElectricityConsumer consumer) =>
+
+            Entities.WithNone<DisabledTile>().WithDisabled<HasElectricity>().ForEach((Entity entity, in ElectricityConsumer consumer) =>
             {
                 bool canEnable = totalConsumption[0] + consumer.consumption <= totalProduction[0];
                 totalConsumption[0] += canEnable ? consumer.consumption : 0; // Only add to the production if the consumer can be enabled
