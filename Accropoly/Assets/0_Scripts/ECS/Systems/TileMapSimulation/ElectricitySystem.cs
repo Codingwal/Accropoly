@@ -26,9 +26,9 @@ namespace Systems
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
 
             // Enable as many consumers as possible
-            // Tiles with & without electrcity are split so that the distribution is consistent across frames
-            NativeArray<float> totalConsumption = new(1, Allocator.TempJob, NativeArrayOptions.ClearMemory);
-            NativeArray<float> maxConsumption = new(1, Allocator.TempJob, NativeArrayOptions.ClearMemory);
+            // Tiles with & without electricity are split so that the distribution is consistent across frames
+            NativeArray<float> totalConsumption = new(1, Allocator.TempJob, NativeArrayOptions.ClearMemory); // Only a single slot is needed, so that the data is accessable in a job
+            NativeArray<float> maxConsumption = new(1, Allocator.TempJob, NativeArrayOptions.ClearMemory); // Only a single slot is needed, so that the data is accessable in a job
             Entities.WithAll<ActiveTile, HasElectricity>().ForEach((Entity entity, in ElectricityConsumer consumer) =>
             {
                 bool canEnable = totalConsumption[0] + consumer.consumption <= totalProduction[0];

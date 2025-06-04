@@ -159,6 +159,7 @@ public class MenuManager : MonoBehaviour
                     4 => TileType.Street,
                     5 => TileType.River,
                     6 => TileType.Hut,
+                    7 => TileType.Office,
                     _ => throw new()
                 });
                 break;

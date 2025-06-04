@@ -7,11 +7,12 @@ CREATE TILE (TAG-)COMPONENT:
 - Add to TilePlacingUtility (bottom)                0_Scripts\Utility\Map\TilePlacingUtility.cs
 
 CREATE TILE (2D):
-- Import png
-- Create material (drag image onto a plane)         
 - Add to TileType enum                              0_Scripts\ECS\Components\Tile\MapTileComponent.cs
 - Add to GetComponents() function                   0_Scripts\Utility\Map\TilePlacingUtility.cs
 - Add to the placeable tiles                        0_Scripts\UI\MenuManager.cs
+- Add to tile prices list                           GameObject "SubScene/Authoring"
+- Import png
+- Create material (drag image onto a plane)         
 - Add material to MaterialsAndMeshes                GameObject "Config"
 
 ENTITYSCENE IMPORT ERROR:

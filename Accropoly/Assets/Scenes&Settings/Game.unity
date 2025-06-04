@@ -1253,6 +1253,10 @@ MonoBehaviour:
       value:
         material: {fileID: 2100000, guid: 2f15dd1d9711b1b42961e91c6c0fdc68, type: 2}
         mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
+    - key: 9
+      value:
+        material: {fileID: 2100000, guid: 4702c64369cdb3448af13d87cf8493a4, type: 2}
+        mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
   connectingTiles:
     dictionary:
     - key: 3
@@ -4705,7 +4709,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 21d0d477d1bd25547b9a6a647e85f8e7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

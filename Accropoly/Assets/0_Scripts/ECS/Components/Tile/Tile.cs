@@ -33,6 +33,9 @@ public enum TileType
     House = 4,
     Hut = 8,
 
+    // Workplaces
+    Office = 9,
+
     // Energy production
     SolarPanel = 5,
 }
