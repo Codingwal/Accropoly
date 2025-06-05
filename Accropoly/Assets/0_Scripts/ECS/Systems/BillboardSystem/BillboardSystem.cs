@@ -32,12 +32,33 @@ namespace Systems
             tilesWithProblemsQuery = GetEntityQuery(new EntityQueryDesc[] { notConnectedQuery, noElectricityQuery });
 
             RequireForUpdate<Billboarding>();
+
+            // The game needs to be running or saving
+            RequireAnyForUpdate(new EntityQuery[] { GetEntityQuery(typeof(RunGame)), GetEntityQuery(typeof(SaveGame)) });
         }
 
         protected override void OnUpdate()
         {
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
             var config = SystemAPI.GetSingleton<Billboarding>();
+
+            if (SystemAPI.HasSingleton<SaveGame>())
+            {
+                // Dispose BillboardOwners
+                Entities.ForEach((ref BillboardOwner billboardOwner) =>
+                {
+                    if (!billboardOwner.billboards.IsCreated)
+                        return;
+
+                    foreach (BillboardInfo billboard in billboardOwner.billboards)
+                    {
+                        ecb.SetComponent(billboard.entity, LocalTransform.FromPosition(new(0, -5, 0))); // Hide unused billboards
+                        unusedBillboards.Enqueue(billboard.entity);
+                    }
+                    billboardOwner.billboards.Dispose();
+                }).Schedule();
+                return;
+            }
 
             ecb.AddComponent(tilesWithProblemsQuery, new BillboardOwner());
 
