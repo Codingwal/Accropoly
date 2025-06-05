@@ -95,7 +95,7 @@ public partial class Deserializer
                     pos = Deserialize(new int2()),
                     rotation = (Direction)br.ReadUInt32()
                 },
-                TileComponents.AgingTile => new AgingTile()
+                TileComponents.GrowingTile => new GrowingTile()
                 {
                     age = br.ReadSingle()
                 },

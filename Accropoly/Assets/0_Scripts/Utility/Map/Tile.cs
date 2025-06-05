@@ -25,7 +25,7 @@ public enum TileComponents : int
 {
     // Components
     Tile = 0,
-    AgingTile = 1,
+    GrowingTile = 1,
     ElectricityProducer = 2,
     ElectricityConsumer = 3,
     ConnectingTile = 4,

@@ -68,7 +68,7 @@ namespace Systems
                         tile.components.Add((new T(), isEnabled));
                     }
 
-                    if (componentType == typeof(AgingTile)) AddComponentData<AgingTile>();
+                    if (componentType == typeof(GrowingTile)) AddComponentData<GrowingTile>();
                     else if (componentType == typeof(ElectricityProducer)) AddComponentData<ElectricityProducer>();
                     else if (componentType == typeof(ElectricityConsumer)) AddComponentData<ElectricityConsumer>();
                     else if (componentType == typeof(ConnectingTile)) AddComponentData<ConnectingTile>();

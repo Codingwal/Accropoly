@@ -2,7 +2,7 @@ using Unity.Entities;
 
 namespace Components
 {
-    public struct AgingTile : IComponentData
+    public struct GrowingTile : IComponentData
     {
         public float age;
     }

@@ -15,7 +15,7 @@ public static class TilePlacingUtility
         List<(IComponentData, bool)> components = tileType switch
         {
             TileType.Plains => new() { },
-            TileType.Sapling => new() { (new AgingTile { age = rnd.Next(10) }, true) },
+            TileType.Sapling => new() { (new GrowingTile { age = rnd.Next(10) }, true) },
             TileType.Forest => new() { },
             TileType.House => new() { (new Habitat {totalSpace = rnd.Next(2, 6)}, true),
                                       (new ElectricityConsumer { consumption = 2, disableIfElectroless = false }, true),
@@ -75,7 +75,7 @@ public static class TilePlacingUtility
                 if (new ComponentType(type).IsEnableable) ecb.SetComponentEnabled(tile, type, enabled);
             }
             else if (type == typeof(Tile)) SetComponentData<Tile>(component, enabled);
-            else if (type == typeof(AgingTile)) SetComponentData<AgingTile>(component, enabled);
+            else if (type == typeof(GrowingTile)) SetComponentData<GrowingTile>(component, enabled);
             else if (type == typeof(ElectricityProducer)) SetComponentData<ElectricityProducer>(component, enabled);
             else if (type == typeof(ElectricityConsumer)) SetComponentData<ElectricityConsumer>(component, enabled);
             else if (type == typeof(ConnectingTile)) SetComponentData<ConnectingTile>(component, enabled);

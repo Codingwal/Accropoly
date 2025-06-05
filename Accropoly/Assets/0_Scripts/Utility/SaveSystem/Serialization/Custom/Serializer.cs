@@ -91,11 +91,11 @@ public partial class Serializer
                 Serialize(componentData.pos);
                 bw.Write((uint)componentData.rotation);
             }
-            else if (type == typeof(AgingTile))
+            else if (type == typeof(GrowingTile))
             {
-                bw.Write((int)TileComponents.AgingTile);
+                bw.Write((int)TileComponents.GrowingTile);
 
-                AgingTile componentData = (AgingTile)component;
+                GrowingTile componentData = (GrowingTile)component;
                 bw.Write(componentData.age);
             }
             else if (type == typeof(ElectricityProducer))

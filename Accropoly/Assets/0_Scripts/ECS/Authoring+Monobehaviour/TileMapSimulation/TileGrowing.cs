@@ -4,21 +4,21 @@ using UnityEngine;
 
 namespace Authoring
 {
-    public class TileAgeing : MonoBehaviour
+    public class TileGrowing : MonoBehaviour
     {
         [SerializeField] private uint seed;
         [SerializeField] private int2 randomAgeRange;
         [SerializeField] private int maxAge;
         [SerializeField] private TileType newTileType;
-        public class Baker : Baker<TileAgeing>
+        public class Baker : Baker<TileGrowing>
         {
-            public override void Bake(TileAgeing authoring)
+            public override void Bake(TileGrowing authoring)
             {
                 Debug.Assert(authoring.seed != 0, "Seed should not be 0");
                 Debug.Assert(authoring.randomAgeRange.x < authoring.randomAgeRange.y, "First parameter of randomAgeRange is the min value");
 
                 Entity entity = GetEntity(TransformUsageFlags.None);
-                AddComponent(entity, new ConfigComponents.TileAgeing
+                AddComponent(entity, new ConfigComponents.TileGrowing
                 {
                     seed = authoring.seed,
                     randomAgeRange = authoring.randomAgeRange,
@@ -31,7 +31,7 @@ namespace Authoring
 }
 namespace ConfigComponents
 {
-    public struct TileAgeing : IComponentData
+    public struct TileGrowing : IComponentData
     {
         public uint seed;
         public int2 randomAgeRange;
