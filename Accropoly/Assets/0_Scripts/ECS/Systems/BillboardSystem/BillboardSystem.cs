@@ -121,6 +121,7 @@ namespace Systems
                 ecb.SetComponent(billboard.entity, LocalTransform.FromPosition(new(0, -5, 0))); // Hide unused billboards
 
                 RepositionBillboards(ref billboardOwner.billboards, ecb, pos);
+                return;
             }
             Debug.LogError("Billboard not present");
         }

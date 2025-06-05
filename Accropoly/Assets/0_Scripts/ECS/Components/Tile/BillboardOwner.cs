@@ -13,7 +13,7 @@ namespace Components
             billboards = new(2, Allocator.Persistent);
         }
     }
-    public struct BillboardInfo : IComponentData
+    public struct BillboardInfo
     {
         public Entity entity;
         public Problems problem;
