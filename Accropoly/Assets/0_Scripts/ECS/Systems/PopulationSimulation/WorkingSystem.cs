@@ -48,6 +48,7 @@ namespace Systems
                 if (hours >= 16)
                 {
                     if (pos.Equals(person.homeTile)) return; // Skip people that are already at home
+                    if (person.homeTile.Equals(new(-1, -1))) return; // Skip homeless people
 
                     traveller.destination = person.homeTile;
                     ecb.SetComponentEnabled<WantsToTravel>(entity, true);
@@ -56,6 +57,7 @@ namespace Systems
                 else if (hours >= 4)
                 {
                     if (worker.employer.Equals(new(-1, -1))) return; // Skip unemployed people
+                    if (person.homeTile.Equals(new(-1, -1))) return; // Skip homeless people
                     if (worker.timeToWork == -1) return; // Skip people without valid path to work
                     if (pos.Equals(worker.employer)) return; // Skip people that are already at work
 

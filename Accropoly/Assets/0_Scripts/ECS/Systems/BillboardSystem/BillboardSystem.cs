@@ -117,7 +117,7 @@ namespace Systems
                 }
 
                 // Update the component
-                ecb.SetComponent(entity, billboardOwner); // TODO: Why is this needed?
+                ecb.SetComponent(entity, billboardOwner); // Needed because the data is passed to sub-functions
             }).WithReadOnly(hasElectricityLookup).WithReadOnly(isConnectedLookup).Schedule();
         }
 
