@@ -56,18 +56,15 @@ namespace Systems
                 // Dispose BillboardOwners
                 Entities.ForEach((ref BillboardOwner billboardOwner) =>
                 {
-                    if (!billboardOwner.billboards.IsCreated)
-                        return;
-
-                    foreach (BillboardInfo billboard in billboardOwner.billboards)
-                    {
-                        ecb.SetComponent(billboard.entity, LocalTransform.FromPosition(new(0, -5, 0))); // Hide unused billboards
-                        unusedBillboards.Enqueue(billboard.entity);
-                    }
-                    billboardOwner.billboards.Dispose();
+                    DisposeBillboardOwner(ref billboardOwner, ref ecb);
                 }).Schedule();
                 return;
             }
+
+            Entities.WithAll<Replace>().ForEach((ref BillboardOwner billboardOwner) =>
+            {
+                DisposeBillboardOwner(ref billboardOwner, ref ecb);
+            }).Run();
 
             // Make sure all tiles with problems have the BillboardOwner component, this simplifies the Entities.ForEach 
             ecb.AddComponent(tilesWithProblemsQuery, new BillboardOwner());
@@ -89,7 +86,7 @@ namespace Systems
             var isConnectedLookup = GetComponentLookup<IsConnected>(true);
 
             // Update billboards / billboard owners
-            Entities.ForEach((Entity entity, ref BillboardOwner billboardOwner, in Tile tile) =>
+            Entities.WithNone<Replace>().ForEach((Entity entity, ref BillboardOwner billboardOwner, in Tile tile) =>
             {
                 if (!billboardOwner.IsInitialized)
                     billboardOwner.Initialize();
@@ -161,7 +158,6 @@ namespace Systems
             }
             Debug.LogError("Billboard not present");
         }
-
         private static void RepositionBillboards(ref UnsafeList<BillboardInfo> billboards, EntityCommandBuffer ecb, int2 pos)
         {
             for (int i = 0; i < billboards.Length; i++)
@@ -170,6 +166,18 @@ namespace Systems
                 var transform = LocalTransform.FromPositionRotationScale(new(pos.x * 2, i * 0.7f + 1, pos.y * 2), quaternion.identity, 0.5f);
                 ecb.SetComponent(billboards[i].entity, transform);
             }
+        }
+        private static void DisposeBillboardOwner(ref BillboardOwner billboardOwner, ref EntityCommandBuffer ecb)
+        {
+            if (!billboardOwner.billboards.IsCreated)
+                return;
+
+            foreach (BillboardInfo billboard in billboardOwner.billboards)
+            {
+                ecb.SetComponent(billboard.entity, LocalTransform.FromPosition(new(0, -5, 0))); // Hide unused billboards
+                unusedBillboards.Enqueue(billboard.entity);
+            }
+            billboardOwner.billboards.Dispose();
         }
     }
 }
