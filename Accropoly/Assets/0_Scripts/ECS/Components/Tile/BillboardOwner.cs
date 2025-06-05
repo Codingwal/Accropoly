@@ -7,15 +7,13 @@ namespace Components
     public struct BillboardOwner : IComponentData
     {
         public UnsafeList<BillboardInfo> billboards;
-        public static BillboardOwner CreateInstance()
+        public readonly bool IsInitialized => billboards.IsCreated;
+        public void Initialize()
         {
-            return new BillboardOwner
-            {
-                billboards = new(0, Allocator.Persistent)
-            };
+            billboards = new(2, Allocator.Persistent);
         }
     }
-    public struct BillboardInfo : IComponentData
+    public struct BillboardInfo
     {
         public Entity entity;
         public Problems problem;
