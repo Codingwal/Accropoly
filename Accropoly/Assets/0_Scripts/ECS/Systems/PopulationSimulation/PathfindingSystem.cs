@@ -40,9 +40,12 @@ namespace Systems
                 {
                     ecb.SetComponentEnabled<Travelling>(entity, true);
                 }
+                else Debug.LogWarning($"Couldn't find path from {(int2)math.round(transform.Position.xz) / 2} to {traveller.destination}!");
                 ecb.SetComponentEnabled<WantsToTravel>(entity, false);
             }).Schedule();
         }
+
+        /// <remarks>Returns -1 if no path is found</remarks>
         public static float CalculateTravelTime(int2 start, int2 dest, in DynamicBuffer<EntityBufferElement> entityGrid)
         {
             UnsafeList<Waypoint> path = new(10, Allocator.TempJob);

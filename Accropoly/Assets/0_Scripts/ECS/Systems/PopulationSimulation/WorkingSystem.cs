@@ -26,7 +26,11 @@ public partial class WorkingSystem : SystemBase
         {
             Entities.ForEach((ref Worker worker, in Person person) =>
             {
+                if (worker.employer.Equals(new(-1, -1))) return; // skip unemployed people
                 worker.timeToWork = PathfindingSystem.CalculateTravelTime(person.homeTile, worker.employer, entityGrid);
+
+                if (worker.timeToWork == -1)
+                    Debug.LogWarning($"Couldn't find path to work (travelTime=-1)! (employer={worker.employer}, homeTile={person.homeTile})");
             }).Schedule();
         }
 
@@ -43,7 +47,7 @@ public partial class WorkingSystem : SystemBase
             }
             else if (hours >= 4)
             {
-                if (worker.employer.Equals(-1)) return; // Skip unemployed people
+                if (worker.employer.Equals(new(-1, -1))) return; // Skip unemployed people
                 if (worker.timeToWork == -1) return; // Skip people without valid path to work
                 if (pos.Equals(worker.employer)) return; // Skip people that are already at work
 
