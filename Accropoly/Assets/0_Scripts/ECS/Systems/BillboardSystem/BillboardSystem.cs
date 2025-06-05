@@ -12,10 +12,15 @@ using Problems = Components.BillboardInfo.Problems;
 
 namespace Systems
 {
+    /// <summary>
+    /// Handles billboards (icons over buildings indicating problems)
+    /// Billboard entities aren't created and deleted (at least not often) but reused using a queue
+    /// </summary>
     public partial class BillboardSystem : SystemBase
     {
         private static NativeQueue<Entity> unusedBillboards;
         private static EntityQuery tilesWithProblemsQuery;
+
         protected override void OnCreate()
         {
             unusedBillboards = new(Allocator.Persistent);
@@ -64,6 +69,7 @@ namespace Systems
                 return;
             }
 
+            // Make sure all tiles with problems have the BillboardOwner component, this simplifies the Entities.ForEach 
             ecb.AddComponent(tilesWithProblemsQuery, new BillboardOwner());
 
             // Create a few new billboard entity if we're running short
@@ -88,6 +94,7 @@ namespace Systems
                 if (!billboardOwner.IsInitialized)
                     billboardOwner.Initialize();
 
+                // Handle electricity
                 bool noElectricity = hasElectricityLookup.HasComponent(entity) && !hasElectricityLookup.IsComponentEnabled(entity); // .IsComponentDisabled()
                 if (noElectricity && !ContainsProblem(billboardOwner.billboards, Problems.NoElectricity))
                 {
@@ -98,6 +105,7 @@ namespace Systems
                     RemoveProblem(ref billboardOwner, Problems.NoElectricity, ecb, tile.pos);
                 }
 
+                // Handle connection
                 bool notConnected = isConnectedLookup.HasComponent(entity) && !isConnectedLookup.IsComponentEnabled(entity); // .IsComponentDisabled()
                 if (notConnected && !ContainsProblem(billboardOwner.billboards, Problems.NotConnected))
                 {
@@ -108,6 +116,7 @@ namespace Systems
                     RemoveProblem(ref billboardOwner, Problems.NotConnected, ecb, tile.pos);
                 }
 
+                // Update the component
                 ecb.SetComponent(entity, billboardOwner); // TODO: Why is this needed?
             }).WithReadOnly(hasElectricityLookup).WithReadOnly(isConnectedLookup).Schedule();
         }
@@ -125,6 +134,7 @@ namespace Systems
         {
             if (unusedBillboards.Count == 0) return; // Wait for next frame, new billboards will be created
 
+            // Get an entity and update its appearence (transform is handled later)
             Entity billboard = unusedBillboards.Dequeue();
             ecb.SetComponent(billboard, new MaterialMeshInfo(config.materialIDs[(int)problem], config.meshID));
 
@@ -141,6 +151,7 @@ namespace Systems
                 if (billboard.problem != problem)
                     continue;
 
+                // Recycle the billboard
                 billboardOwner.billboards.RemoveAt(i);
                 unusedBillboards.Enqueue(billboard.entity);
                 ecb.SetComponent(billboard.entity, LocalTransform.FromPosition(new(0, -5, 0))); // Hide unused billboards
@@ -150,10 +161,12 @@ namespace Systems
             }
             Debug.LogError("Billboard not present");
         }
+
         private static void RepositionBillboards(ref UnsafeList<BillboardInfo> billboards, EntityCommandBuffer ecb, int2 pos)
         {
             for (int i = 0; i < billboards.Length; i++)
             {
+                // Billboards will be shown as a vertical stack
                 var transform = LocalTransform.FromPositionRotationScale(new(pos.x * 2, i * 0.7f + 1, pos.y * 2), quaternion.identity, 0.5f);
                 ecb.SetComponent(billboards[i].entity, transform);
             }
