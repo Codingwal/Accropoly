@@ -12,6 +12,7 @@ namespace Tags
     // Tiles
     public struct NewTile : IComponentData { }
     public struct ActiveTile : IComponentData, IEnableableComponent { }
+    public struct DisabledTile : IComponentData { }
     public struct Replace : IComponentData { }
     public struct HasSpace : IComponentData { }
     public struct BuildingConnector : IComponentData { }

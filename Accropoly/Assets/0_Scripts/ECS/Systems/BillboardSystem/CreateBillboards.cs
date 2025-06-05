@@ -18,8 +18,8 @@ namespace Systems
 
         protected override void OnCreate()
         {
-            RequireForUpdate<RunGame>();           
-             RequireForUpdate<Billboarding>();
+            RequireForUpdate<RunGame>();
+            RequireForUpdate<Billboarding>();
 
         }
         protected override void OnUpdate()

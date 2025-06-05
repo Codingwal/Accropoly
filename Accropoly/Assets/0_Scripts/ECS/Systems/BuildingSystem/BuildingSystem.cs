@@ -1,11 +1,9 @@
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine;
 using Components;
 using PlacementAction = Components.PlacementInputData.Action;
 using Tags;
-using Unity.Collections;
 using ConfigComponents;
 
 

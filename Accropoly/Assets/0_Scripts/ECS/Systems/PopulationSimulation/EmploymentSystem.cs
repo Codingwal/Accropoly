@@ -13,7 +13,7 @@ namespace Systems
         {
             RequireForUpdate<RunGame>();
             RequireForUpdate<Unemployed>();
-            employersWithSpaceQuery = GetEntityQuery(typeof(Employer), typeof(HasSpace), typeof(Tile));
+            employersWithSpaceQuery = GetEntityQuery(typeof(ActiveTile), typeof(Employer), typeof(HasSpace), typeof(Tile));
             RequireForUpdate(employersWithSpaceQuery);
         }
         protected override void OnUpdate()
@@ -38,7 +38,7 @@ namespace Systems
 
                 ecb.RemoveComponent<Unemployed>(entity); // The worker is no longer searching
 
-                if (employer.freeSpace <= 0)
+                if (employer.freeSpace == 0)
                 {
                     ecb.RemoveComponent<HasSpace>(employerEntities[index[0]]);
                     index[0]++; // Move to next employer
