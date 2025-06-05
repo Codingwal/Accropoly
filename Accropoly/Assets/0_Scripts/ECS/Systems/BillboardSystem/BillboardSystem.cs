@@ -54,32 +54,37 @@ namespace Systems
                 }
             }
 
+            var hasElectricityLookup = GetComponentLookup<HasElectricity>(true);
+            var isConnectedLookup = GetComponentLookup<IsConnected>(true);
+
             // Update billboards / billboard owners
             Entities.ForEach((Entity entity, ref BillboardOwner billboardOwner, in Tile tile) =>
             {
                 if (!billboardOwner.IsInitialized)
                     billboardOwner.Initialize();
 
-                bool hasElectricity = SystemAPI.HasComponent<HasElectricity>(entity);
-                if (!hasElectricity && !ContainsProblem(billboardOwner.billboards, Problems.NoElectricity))
+                bool noElectricity = hasElectricityLookup.HasComponent(entity) && !hasElectricityLookup.IsComponentEnabled(entity); // .IsComponentDisabled()
+                if (noElectricity && !ContainsProblem(billboardOwner.billboards, Problems.NoElectricity))
                 {
-                    AddProblem(billboardOwner, Problems.NoElectricity, ecb, tile.pos, config);
+                    AddProblem(ref billboardOwner, Problems.NoElectricity, ecb, tile.pos, config);
                 }
-                else if (hasElectricity && ContainsProblem(billboardOwner.billboards, Problems.NoElectricity))
+                else if (!noElectricity && ContainsProblem(billboardOwner.billboards, Problems.NoElectricity))
                 {
-                    RemoveProblem(billboardOwner, Problems.NoElectricity, ecb, tile.pos);
+                    RemoveProblem(ref billboardOwner, Problems.NoElectricity, ecb, tile.pos);
                 }
 
-                bool isConnected = SystemAPI.HasComponent<IsConnected>(entity);
-                if (!isConnected && !ContainsProblem(billboardOwner.billboards, Problems.NotConnected))
+                bool notConnected = isConnectedLookup.HasComponent(entity) && !isConnectedLookup.IsComponentEnabled(entity); // .IsComponentDisabled()
+                if (notConnected && !ContainsProblem(billboardOwner.billboards, Problems.NotConnected))
                 {
-                    AddProblem(billboardOwner, Problems.NotConnected, ecb, tile.pos, config);
+                    AddProblem(ref billboardOwner, Problems.NotConnected, ecb, tile.pos, config);
                 }
-                else if (isConnected && ContainsProblem(billboardOwner.billboards, Problems.NotConnected))
+                else if (!notConnected && ContainsProblem(billboardOwner.billboards, Problems.NotConnected))
                 {
-                    RemoveProblem(billboardOwner, Problems.NotConnected, ecb, tile.pos);
+                    RemoveProblem(ref billboardOwner, Problems.NotConnected, ecb, tile.pos);
                 }
-            }).Schedule();
+
+                ecb.SetComponent(entity, billboardOwner); // TODO: Why is this needed?
+            }).WithReadOnly(hasElectricityLookup).WithReadOnly(isConnectedLookup).Schedule();
         }
 
         private static bool ContainsProblem(UnsafeList<BillboardInfo> billboards, Problems problem)
@@ -91,7 +96,7 @@ namespace Systems
             }
             return false;
         }
-        private static void AddProblem(BillboardOwner billboardOwner, Problems problem, EntityCommandBuffer ecb, int2 pos, Billboarding config)
+        private static void AddProblem(ref BillboardOwner billboardOwner, Problems problem, EntityCommandBuffer ecb, int2 pos, Billboarding config)
         {
             if (unusedBillboards.Count == 0) return; // Wait for next frame, new billboards will be created
 
@@ -102,7 +107,7 @@ namespace Systems
 
             RepositionBillboards(ref billboardOwner.billboards, ecb, pos);
         }
-        private static void RemoveProblem(BillboardOwner billboardOwner, Problems problem, EntityCommandBuffer ecb, int2 pos)
+        private static void RemoveProblem(ref BillboardOwner billboardOwner, Problems problem, EntityCommandBuffer ecb, int2 pos)
         {
             for (int i = 0; i < billboardOwner.billboards.Length; i++)
             {

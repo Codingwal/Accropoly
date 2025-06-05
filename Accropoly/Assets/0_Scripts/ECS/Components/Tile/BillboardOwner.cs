@@ -10,7 +10,7 @@ namespace Components
         public readonly bool IsInitialized => billboards.IsCreated;
         public void Initialize()
         {
-            billboards = new(0, Allocator.Persistent);
+            billboards = new(2, Allocator.Persistent);
         }
     }
     public struct BillboardInfo : IComponentData
