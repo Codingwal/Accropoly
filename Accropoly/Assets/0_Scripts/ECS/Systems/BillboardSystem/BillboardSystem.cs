@@ -36,6 +36,10 @@ namespace Systems
             // The game needs to be running or saving
             RequireAnyForUpdate(new EntityQuery[] { GetEntityQuery(typeof(RunGame)), GetEntityQuery(typeof(SaveGame)) });
         }
+        protected override void OnDestroy()
+        {
+            unusedBillboards.Dispose();
+        }
 
         protected override void OnUpdate()
         {
