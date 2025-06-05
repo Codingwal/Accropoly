@@ -4,6 +4,9 @@ using Tags;
 
 namespace Systems
 {
+    /// <summary>
+    /// Update population related data in UIInfo (used for statistics display)
+    /// </summary>
     public partial class UpdatePopulationStatistics : SystemBase
     {
         private EntityQuery populationQuery;

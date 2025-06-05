@@ -2,6 +2,10 @@ using Unity.Entities;
 
 namespace Systems
 {
+    /// <summary>
+    /// Calculate in-Game time using deltaTime
+    /// Also manage NewDay tag
+    /// </summary>
     public partial struct TimeSystem : ISystem
     {
         private EntityQuery newDayTagQuery;

@@ -2,6 +2,11 @@ using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 
+/// <summary>
+/// Custom entity command buffer systems, code is copied from unity's ECBSystems
+/// </summary>
+
+
 [UpdateInGroup(typeof(PreCreationSystemGroup), OrderLast = true)]
 public partial class EndPreCreationECBSystem : EntityCommandBufferSystem
 {

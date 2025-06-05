@@ -2,6 +2,10 @@ using Unity.Entities;
 
 namespace Systems
 {
+    /// <summary>
+    /// Delete the NewPerson tag from people after they have had it for a frame
+    /// (This frame is used for initialization)
+    /// </summary>
     [UpdateInGroup(typeof(PreCreationSystemGroup))]
     public partial struct DeleteNewPersonTag : ISystem
     {

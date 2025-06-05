@@ -8,6 +8,10 @@ using Tags;
 
 namespace Systems
 {
+    /// <summary>
+    /// Reimmigrate homeless people
+    /// If there is space left, create a new person with a specific probability
+    /// </summary>
     [BurstCompile]
     [UpdateInGroup(typeof(CreationSystemGroup))]
     public partial class ImmigrationSystem : SystemBase

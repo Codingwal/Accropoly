@@ -4,6 +4,10 @@ using Components;
 
 namespace Systems
 {
+    /// <summary>
+    /// Handles taxes: The player gets money each morning
+    /// totalTaxIncome = averageHappiness * totalPopulation * taxPerHappiness
+    /// </summary>
     public partial class TaxSystem : SystemBase
     {
         protected override void OnCreate()

@@ -3,6 +3,9 @@ using Components;
 
 namespace Systems
 {
+    /// <summary>
+    /// Deletes singleton entity containing placement info when the game is getting closed
+    /// </summary>
     [UpdateInGroup(typeof(CreationSystemGroup))]
     public partial struct DeleteTileToPlace : ISystem
     {

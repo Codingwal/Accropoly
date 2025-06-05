@@ -4,6 +4,9 @@ using Tags;
 
 namespace Systems
 {
+    /// <summary>
+    /// Initialize electricty consumers (Add but disable HasElectricity tag)
+    /// </summary>
     [UpdateInGroup(typeof(ComponentInitializationSystemGroup))]
     public partial class ElectricityConsumerInitialization : SystemBase
     {

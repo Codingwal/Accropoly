@@ -6,6 +6,10 @@ using Tags;
 
 namespace Systems
 {
+    /// <summary>
+    /// Calculate electricity production and enable as many buildings as possible
+    /// Also update UIInfo with electricity related information (used for statistics display)
+    /// </summary>
     public partial class ElectricitySystem : SystemBase
     {
         protected override void OnCreate()

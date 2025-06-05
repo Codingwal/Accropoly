@@ -6,6 +6,10 @@ using Tags;
 
 namespace Systems
 {
+    /// <summary>
+    /// Employ unemployed people to employer-tiles with space
+    /// Does not handle travelling or anything else
+    /// </summary>
     public partial class EmployementSystem : SystemBase
     {
         private EntityQuery employersWithSpaceQuery;

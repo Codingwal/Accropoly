@@ -4,6 +4,9 @@ using Components;
 
 namespace Systems
 {
+    /// <summary>
+    /// Handle tree growth
+    /// </summary>
     public partial struct TileAgingSystem : ISystem
     {
         public void OnCreate(ref SystemState state)

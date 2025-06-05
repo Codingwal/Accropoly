@@ -3,10 +3,13 @@ using Tags;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine;
 
 namespace Systems
 {
+    /// <summary>
+    /// Links billboard and tile (works together with CreateBillboards
+    /// Linking means adding the billboard to billboardOwner.billboards and updating the transform
+    /// </summary>
     [UpdateBefore(typeof(CreateBillboards))]
     public partial class LinkBillboards : SystemBase
     {

@@ -1,62 +1,69 @@
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Collections;
-using UnityEngine;
 using Components;
 using Tags;
 
-public partial class HappinessSystem : SystemBase
+namespace Systems
 {
-    private int frame;
-    protected override void OnCreate()
+    /// <summary>
+    /// Calculate happiness for each person
+    /// </summary>
+    public partial class HappinessSystem : SystemBase
     {
-        RequireForUpdate<RunGame>();
-        RequireForUpdate<ConfigComponents.Happiness>();
-    }
-    protected override void OnUpdate()
-    {
-        frame++;
-        if (frame % 50 != 0) return;
-
-        var buffer = SystemAPI.GetBuffer<EntityBufferElement>(SystemAPI.GetSingletonEntity<EntityGridHolder>());
-        var config = SystemAPI.GetSingleton<ConfigComponents.Happiness>();
-        var hasElectricityLookup = GetComponentLookup<HasElectricity>();
-
-        NativeArray<float> happinessSum = new NativeArray<float>(1, Allocator.TempJob, NativeArrayOptions.ClearMemory);
-        Entities.ForEach((Entity entity, ref Person person) =>
+        private int frame;
+        protected override void OnCreate()
         {
-            person.happiness = config.defaultHappiness;
+            RequireForUpdate<RunGame>();
+            RequireForUpdate<ConfigComponents.Happiness>();
+        }
 
-            // Habitat factors
+        protected override void OnUpdate()
+        {
+            // Only execute every 50 frames
+            frame++;
+            if (frame % 50 != 0) return;
+
+            var buffer = SystemAPI.GetBuffer<EntityBufferElement>(SystemAPI.GetSingletonEntity<EntityGridHolder>());
+            var config = SystemAPI.GetSingleton<ConfigComponents.Happiness>();
+            var hasElectricityLookup = GetComponentLookup<HasElectricity>();
+
+            NativeArray<float> happinessSum = new NativeArray<float>(1, Allocator.TempJob, NativeArrayOptions.ClearMemory);
+            Entities.ForEach((Entity entity, ref Person person) =>
             {
-                int2 homeTile = person.homeTile;
-                if (homeTile.Equals(new(-1))) // (-1, -1) means missing (in this case homeless)
-                    person.happiness += config.homeless;
-                else
+                person.happiness = config.defaultHappiness;
+
+                // Habitat factors
                 {
-                    Entity habitatEntity = TileGridUtility.GetTile(homeTile, buffer);
-                    if (hasElectricityLookup.HasComponent(habitatEntity))
+                    int2 homeTile = person.homeTile;
+                    if (homeTile.Equals(new(-1))) // (-1, -1) means missing (in this case homeless)
+                        person.happiness += config.homeless;
+                    else
                     {
-                        bool hasElectricity = hasElectricityLookup.IsComponentEnabled(habitatEntity);
-                        person.happiness += hasElectricity ? config.hasElectricity : config.noElectricity;
+                        Entity habitatEntity = TileGridUtility.GetTile(homeTile, buffer);
+                        if (hasElectricityLookup.HasComponent(habitatEntity))
+                        {
+                            bool hasElectricity = hasElectricityLookup.IsComponentEnabled(habitatEntity);
+                            person.happiness += hasElectricity ? config.hasElectricity : config.noElectricity;
+                        }
                     }
                 }
-            }
 
-            // Work factors
-            if (SystemAPI.HasComponent<Worker>(entity))
+                // Work factors
+                if (SystemAPI.HasComponent<Worker>(entity))
+                {
+                    bool employed = !SystemAPI.HasComponent<Unemployed>(entity);
+                    person.happiness += employed ? config.employed : config.unemployed;
+                }
+
+                person.happiness = math.clamp(person.happiness, 0, 100);
+                happinessSum[0] += person.happiness;
+            }).Schedule();
+
+            Entities.ForEach((ref UIInfo info) =>
             {
-                bool employed = !SystemAPI.HasComponent<Unemployed>(entity);
-                person.happiness += employed ? config.employed : config.unemployed;
-            }
-
-            person.happiness = math.clamp(person.happiness, 0, 100);
-            happinessSum[0] += person.happiness;
-        }).Schedule();
-
-        Entities.ForEach((ref UIInfo info) =>
-        {
-            info.happinessSum = happinessSum[0];
-        }).WithDisposeOnCompletion(happinessSum).Schedule();
+                info.happinessSum = happinessSum[0];
+            }).WithDisposeOnCompletion(happinessSum).Schedule();
+        }
     }
 }

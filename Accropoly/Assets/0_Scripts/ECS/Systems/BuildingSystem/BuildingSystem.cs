@@ -6,9 +6,13 @@ using PlacementAction = Components.PlacementInputData.Action;
 using Tags;
 using ConfigComponents;
 
-
 namespace Systems
 {
+    /// <summary>
+    /// Handle tile placing (using the current mouse position calculated by UpdatePosition)
+    /// Does not directly place the tiles. 
+    /// Instead, they are marked with the Replace tag and the actual replacing is handled by PlaceTiles
+    /// </summary>
     [UpdateInGroup(typeof(CreationSystemGroup))]
     public partial class BuildingSystem : SystemBase
     {

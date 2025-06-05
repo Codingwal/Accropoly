@@ -8,6 +8,10 @@ using Tags;
 
 namespace Systems
 {
+    /// <summary>
+    /// Make people homeless/unemployed if their house/employer is removed/inactive
+    /// Also update the tiles free space
+    /// </summary>
     public partial class CheckTileExists : SystemBase
     {
         private EntityQuery newTilesQuery;

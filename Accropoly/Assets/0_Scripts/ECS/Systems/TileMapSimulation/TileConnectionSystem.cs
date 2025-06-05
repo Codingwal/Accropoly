@@ -1,12 +1,15 @@
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine;
 using Components;
 using Tags;
 
 namespace Systems
 {
+    /// <summary>
+    /// Handle connections between ConnectingTile tiles (streets, rivers, ...)
+    /// and update their appearence accordingly
+    /// </summary>
     public partial class TileConnectionSystem : SystemBase
     {
         protected override void OnCreate()

@@ -9,6 +9,9 @@ using Tags;
 
 namespace Systems
 {
+    /// <summary>
+    /// Save population data to save file
+    /// </summary>
     [UpdateInGroup(typeof(CreationSystemGroup))]
     public partial struct PopulationSavingSystem : ISystem
     {

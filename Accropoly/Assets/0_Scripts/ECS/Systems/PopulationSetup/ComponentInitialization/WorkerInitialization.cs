@@ -4,6 +4,11 @@ using Tags;
 
 namespace Systems
 {
+    /// <summary>
+    /// Re-add unemployed tag to unemployed people after world loading
+    /// (The tag isn't stored in the save file to reduce size)
+    /// Also add the tag to new people (they are obviously unemployed) and set their employer to (-1, -1)
+    /// </summary>
     [UpdateInGroup(typeof(ComponentInitializationSystemGroup))]
     public partial class WorkerInitialization : SystemBase
     {

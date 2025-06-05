@@ -9,6 +9,9 @@ using Tags;
 
 namespace Systems
 {
+    /// <summary>
+    /// Save tile map data
+    /// </summary>
     [UpdateInGroup(typeof(CreationSystemGroup))]
     public partial struct TileSavingSystem : ISystem
     {

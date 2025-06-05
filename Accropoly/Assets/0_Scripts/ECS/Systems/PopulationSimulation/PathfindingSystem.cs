@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using Components;
 using Tags;
 using Unity.Collections;
@@ -11,6 +9,10 @@ using UnityEngine;
 
 namespace Systems
 {
+    /// <summary>
+    /// Calculates the path for people with the WantsToTravel tag (from current pos to traveller.destination)
+    /// After the path is calculated and stored in traveller.waypoints, the person is set to travelling (Travelling tag)
+    /// </summary>
     public partial class PathfindingSystem : SystemBase
     {
         private static ComponentLookup<TransportTile> transportTilesLookup;

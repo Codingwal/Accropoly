@@ -4,6 +4,11 @@ using Tags;
 
 namespace Systems
 {
+    /// <summary>
+    /// Initialize "space components" (habitats, employers) 
+    /// -> set free space to total space, add HasSpace tag
+    /// Also re-adds HasSpace tag after world loading
+    /// </summary>
     [UpdateInGroup(typeof(ComponentInitializationSystemGroup))]
     public partial class SpaceComponentsInitialization : SystemBase
     {

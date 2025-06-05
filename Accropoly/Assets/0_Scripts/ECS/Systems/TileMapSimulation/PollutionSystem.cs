@@ -1,11 +1,14 @@
 using Unity.Collections;
 using Unity.Entities;
-using UnityEngine;
 using Components;
 using Tags;
 
 namespace Systems
 {
+    /// <summary>
+    /// Calculate totalPollution and pollution by electricity producers
+    /// Also update UIInfo
+    /// </summary>
     public partial class PollutionSystem : SystemBase
     {
         protected override void OnCreate()

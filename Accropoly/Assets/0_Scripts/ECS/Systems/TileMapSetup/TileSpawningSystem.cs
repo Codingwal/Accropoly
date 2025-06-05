@@ -2,12 +2,14 @@ using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine;
 using Components;
 using Unity.Rendering;
 
 namespace Systems
 {
+    /// <summary>
+    /// Re-create tile grid using the saved tile map data
+    /// </summary>
     [UpdateInGroup(typeof(CreationSystemGroup))]
     public partial struct TileSpawningSystem : ISystem
     {

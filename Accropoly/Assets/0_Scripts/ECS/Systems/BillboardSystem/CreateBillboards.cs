@@ -4,13 +4,19 @@ using ConfigComponents;
 using Unity.Transforms;
 using Components;
 using Unity.Collections.LowLevel.Unsafe;
-using UnityEngine;
 using Unity.Collections;
 using Unity.Rendering;
 
 
 namespace Systems
 {
+    /// <summary>
+    /// Creates billboard if there is a problem (no electricity / not connected)
+    /// 
+    /// Creates the billboard entity and adds required components to tile
+    /// The actual "linking" of tile & billboard is handled by LinkBillboards 
+    /// (CreateBillboards creates BillboardInfo tag, which is handled and removed by LinkBillboards)
+    /// </summary>
     public partial class CreateBillboards : SystemBase
     {
         const BillboardInfo.Problems NoElectricityProblem = BillboardInfo.Problems.NoElectricity;
@@ -20,7 +26,6 @@ namespace Systems
         {
             RequireForUpdate<RunGame>();
             RequireForUpdate<Billboarding>();
-
         }
         protected override void OnUpdate()
         {

@@ -7,6 +7,10 @@ using UnityEngine;
 
 namespace Systems
 {
+    /// <summary>
+    /// Move people that are currently travelling (Travelling tag)
+    /// Does not calculate the path, only moves the person along the waypoints managed by PathfindingSystem
+    /// </summary>
     public partial class MovementSystem : SystemBase
     {
         protected override void OnCreate()

@@ -10,13 +10,16 @@ using Tags;
 
 namespace Systems
 {
+    /// <summary>
+    /// Load population from save file
+    /// </summary>
     [UpdateInGroup(typeof(CreationSystemGroup))]
     public partial struct PopulationLoadingSystem : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
-            state.RequireForUpdate<Tags.LoadGame>();
+            state.RequireForUpdate<LoadGame>();
         }
 
         public void OnUpdate(ref SystemState state)

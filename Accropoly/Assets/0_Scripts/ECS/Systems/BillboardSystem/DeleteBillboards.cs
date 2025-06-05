@@ -1,13 +1,17 @@
 using Components;
 using Tags;
-using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine;
 
 namespace Systems
 {
+    /// <summary>
+    /// Deletes billboards when
+    /// (1) The game is getting saved -> delete all billboards
+    /// (2) Tile gets replaced -> delete all billboards of that tile
+    /// (3) The problem has been fixed -> remove the corresponding billboard
+    /// </summary>
     public partial class DeleteBillboards : SystemBase
     {
         EntityQuery billboardQuery;
@@ -26,7 +30,7 @@ namespace Systems
                 Entities.ForEach((ref BillboardOwner billboardOwner) =>
                 {
                     billboardOwner.billboards.Dispose();
-                }).Schedule(); 
+                }).Schedule();
                 return;
             }
 

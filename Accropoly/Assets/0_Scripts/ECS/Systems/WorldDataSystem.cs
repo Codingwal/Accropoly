@@ -5,6 +5,10 @@ using Tags;
 
 namespace Systems
 {
+    /// <summary>
+    /// Handle world data saving and loading
+    /// (Uses tags to notify data from other systems (PopulationLoadingSystem, TileLoadingSystem, PopulationSavingSystem, TileSavingSystem, ...))
+    /// </summary>
     [UpdateInGroup(typeof(PreCreationSystemGroup))]
     public partial struct WorldDataSystem : ISystem
     {
@@ -63,12 +67,12 @@ namespace Systems
                     balance = worldData.balance,
                     time = worldData.time,
                 });
-                state.EntityManager.CreateSingleton<Tags.LoadGame>();
+                state.EntityManager.CreateSingleton<LoadGame>();
             }
             if (saveGame)
             {
                 saveGame = false;
-                state.EntityManager.CreateSingleton<Tags.SaveGame>();
+                state.EntityManager.CreateSingleton<SaveGame>();
             }
         }
         public static void LoadWorldData()

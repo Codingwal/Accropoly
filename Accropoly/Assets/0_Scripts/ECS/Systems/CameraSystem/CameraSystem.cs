@@ -7,6 +7,10 @@ using Components;
 
 namespace Systems
 {
+    /// <summary>
+    /// Calculates camera data (position, zoom, rotation, ...) and updates the CameraTransform singleton
+    /// Also updates the Camera GameObject using the singleton data
+    /// </summary>
     public partial struct CameraSystem : ISystem
     {
         public void OnCreate(ref SystemState state)

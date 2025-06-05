@@ -8,6 +8,9 @@ using Tags;
 
 namespace Systems
 {
+    /// <summary>
+    /// Replaces tiles with the Replace tag (created by BuildingSystem)
+    /// </summary>
     [UpdateInGroup(typeof(CreationSystemGroup))]
     [UpdateBefore(typeof(BuildingSystem))]
     public partial class PlaceTiles : SystemBase

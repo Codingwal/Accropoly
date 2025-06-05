@@ -8,6 +8,9 @@ using Tags;
 
 namespace Systems
 {
+    /// <summary>
+    /// Update the position of the TileToPlace entity (used by BuildingSystem)
+    /// </summary>
     public partial struct UpdatePosition : ISystem
     {
         public void OnCreate(ref SystemState state)
@@ -32,7 +35,8 @@ namespace Systems
             {
                 ecb.SetComponentEnabled<MaterialMeshInfo>(entity, false); // Hide the tileToPlace entity if the user doesn't point on the tileMap
                 return;
-            };
+            }
+            ;
             ecb.SetComponentEnabled<MaterialMeshInfo>(entity, true); // Show the tileToPlace entity if the user points on the tileMap
 
             localTransform.Position.xz = math.round(((float3)info.point).xz / 2) * 2; // Align the position to the tileGrid

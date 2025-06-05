@@ -8,6 +8,9 @@ using System;
 
 namespace Systems
 {
+    /// <summary>
+    /// Manage input singletons (Update them using current input data)
+    /// </summary>
     [UpdateInGroup(typeof(LateInitializationSystemGroup))]
     public partial class InputSystem : SystemBase
     {
@@ -29,7 +32,7 @@ namespace Systems
             SystemAPI.SetComponentEnabled<PlacementInputData>(inputDataHolder, false);
 
             inputActions.InGame.Rotate.performed += (ctx) => OnPlacementAction(PlacementAction.Rotate);
-            inputActions.InGame.Place.canceled += (ctx) => OnPlacementAction(PlacementAction.Place);    
+            inputActions.InGame.Place.canceled += (ctx) => OnPlacementAction(PlacementAction.Place);
             inputActions.InGame.Cancel.performed += (ctx) => OnPlacementAction(PlacementAction.Cancel);
             inputActions.UI.Menu.performed += (ctx) => OnUIAction(UIAction.Menu); ;
             inputActions.UI.Clear.performed += (ctx) => OnUIAction(UIAction.Clear); ;

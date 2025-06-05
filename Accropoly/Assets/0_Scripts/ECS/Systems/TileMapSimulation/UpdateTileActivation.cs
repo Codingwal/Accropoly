@@ -4,9 +4,14 @@ using Tags;
 
 namespace Systems
 {
+    /// <summary>
+    /// Update which tiles are active
+    /// Deactivation reasons: 
+    /// - no connection (to street for example)
+    /// - no electricity (if strictly required)
+    /// </summary>
     public partial class UpdateTileActivation : SystemBase
     {
-        private int frame;
         protected override void OnCreate()
         {
             RequireForUpdate<RunGame>();

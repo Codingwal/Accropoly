@@ -3,40 +3,46 @@ using Unity.Entities;
 using Components;
 using Unity.Mathematics;
 
-public partial struct SaveAndLoadCameraTransform : ISystem
+namespace Systems
 {
-    private EntityQuery loadGameQuery;
-    private EntityQuery saveGameQuery;
-    public void OnCreate(ref SystemState state)
+    /// <summary>
+    /// Handle camera data loading and saving
+    /// </summary>
+    public partial struct SaveAndLoadCameraTransform : ISystem
     {
-        loadGameQuery = state.GetEntityQuery(typeof(Tags.LoadGame));
-        saveGameQuery = state.GetEntityQuery(typeof(Tags.SaveGame));
-    }
-    public void OnUpdate(ref SystemState state)
-    {
-        if (!loadGameQuery.IsEmpty)
+        private EntityQuery loadGameQuery;
+        private EntityQuery saveGameQuery;
+        public void OnCreate(ref SystemState state)
         {
-            var worldData = WorldDataSystem.worldData;
-            CameraTransform cameraTransform = new CameraTransform
-            {
-                pos = new float3(worldData.cameraSystemPos.x, 0, worldData.cameraSystemPos.y),
-                rot = worldData.cameraSystemRotation,
-                camDist = worldData.cameraDistance,
-                cursorLocked = false,
-            };
-
-            state.EntityManager.CreateSingleton(cameraTransform);
+            loadGameQuery = state.GetEntityQuery(typeof(Tags.LoadGame));
+            saveGameQuery = state.GetEntityQuery(typeof(Tags.SaveGame));
         }
-
-        if (!saveGameQuery.IsEmpty)
+        public void OnUpdate(ref SystemState state)
         {
-            var cameraTransform = SystemAPI.GetSingleton<CameraTransform>();
+            if (!loadGameQuery.IsEmpty)
+            {
+                var worldData = WorldDataSystem.worldData;
+                CameraTransform cameraTransform = new CameraTransform
+                {
+                    pos = new float3(worldData.cameraSystemPos.x, 0, worldData.cameraSystemPos.y),
+                    rot = worldData.cameraSystemRotation,
+                    camDist = worldData.cameraDistance,
+                    cursorLocked = false,
+                };
 
-            WorldDataSystem.worldData.cameraSystemPos = cameraTransform.pos.xz;
-            WorldDataSystem.worldData.cameraSystemRotation = cameraTransform.rot;
-            WorldDataSystem.worldData.cameraDistance = cameraTransform.camDist;
+                state.EntityManager.CreateSingleton(cameraTransform);
+            }
 
-            state.EntityManager.DestroyEntity(SystemAPI.GetSingletonEntity<CameraTransform>());
+            if (!saveGameQuery.IsEmpty)
+            {
+                var cameraTransform = SystemAPI.GetSingleton<CameraTransform>();
+
+                WorldDataSystem.worldData.cameraSystemPos = cameraTransform.pos.xz;
+                WorldDataSystem.worldData.cameraSystemRotation = cameraTransform.rot;
+                WorldDataSystem.worldData.cameraDistance = cameraTransform.camDist;
+
+                state.EntityManager.DestroyEntity(SystemAPI.GetSingletonEntity<CameraTransform>());
+            }
         }
     }
 }
