@@ -68,7 +68,7 @@ namespace Systems
                 Entity employerEntity = TileGridUtility.GetTile(worker.employer, entityGrid);
                 Employer employer = SystemAPI.GetComponent<Employer>(employerEntity);
                 employer.freeSpace++;
-                ecb.SetComponent(employerEntity, employer);
+                SystemAPI.SetComponent(employerEntity, employer); // Can't use ecb because the field might be updated multiple times
                 if (employer.freeSpace == 1) // If there was no space before
                     ecb.AddComponent<HasSpace>(employerEntity);
 
