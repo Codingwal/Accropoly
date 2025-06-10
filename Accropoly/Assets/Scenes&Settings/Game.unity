@@ -1252,7 +1252,7 @@ MonoBehaviour:
     - key: 8
       value:
         material: {fileID: 2100000, guid: 93a2d9d61f730484693c30efbced2de8, type: 2}
-        mesh: {fileID: -2432090755550338912, guid: 1e16f2e6ecccba048a8b7ca7dab8d600, type: 3}
+        mesh: {fileID: -2432090755550338912, guid: 0f572e543ca563f4383990b59af7b0ed, type: 3}
     - key: 9
       value:
         material: {fileID: 2100000, guid: 3c76df0dfb841e0458bfb4b93483dfdc, type: 2}
