@@ -12,6 +12,7 @@ namespace Systems
     /// Make people homeless/unemployed if their house/employer is removed/inactive
     /// Also update the tiles free space
     /// </summary>
+    [UpdateInGroup(typeof(SimulationSystemGroup), OrderLast = true)] // Related updates using ref values / ECBs should be synchronous (No system should execute between them)
     public partial class CheckTileExists : SystemBase
     {
         private EntityQuery newTilesQuery;
@@ -53,6 +54,7 @@ namespace Systems
                 int2 homeTilePos = person.homeTile;
                 if (newTilesPositions.Contains(homeTilePos) || disabledTilesPositions.Contains(homeTilePos))
                 {
+                    // These changes need to be synchronous -> Reason why the system executes directly before the ECBS
                     person.homeTile = new(-1);
                     ecb1.AddComponent<Homeless>(entity);
 
