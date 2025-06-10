@@ -6,14 +6,16 @@ CREATE TILE (TAG-)COMPONENT:
 - Add to Deserializer                               0_Scripts\Utility\SaveSystem\Serialization\Custom\Deserializer.cs
 - Add to TilePlacingUtility (bottom)                0_Scripts\Utility\Map\TilePlacingUtility.cs
 
-CREATE TILE (2D):
+CREATE TILE (3D):
 - Add to TileType enum                              0_Scripts\ECS\Components\Tile\MapTileComponent.cs
 - Add to GetComponents() function                   0_Scripts\Utility\Map\TilePlacingUtility.cs
 - Add to the placeable tiles                        0_Scripts\UI\MenuManager.cs
 - Add to tile prices list                           GameObject "SubScene/Authoring"
-- Import png
-- Create material (drag image onto a plane)         
-- Add material to MaterialsAndMeshes                GameObject "Config"
+- Import .obj, .mtl and .png      
+- Add material and mesh to MaterialsAndMeshes       GameObject "Config"
+Texture (png):
+- Set Texture-Type to "Sprite (2D and UI)"
+- Set Filter-Mode to "Point (no filter)"
 
 ENTITYSCENE IMPORT ERROR:
 - Edit/Preferences/Entities -> Clear entity cache
