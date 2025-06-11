@@ -99,7 +99,7 @@ namespace Systems
                 }
                 else if (!noElectricity && ContainsProblem(billboardOwner.billboards, Problems.NoElectricity))
                 {
-                    RemoveProblem(ref billboardOwner, Problems.NoElectricity, ecb, tile.pos);
+                    RemoveProblem(ref billboardOwner, Problems.NoElectricity, ecb, tile.pos, config);
                 }
 
                 // Handle connection
@@ -110,11 +110,11 @@ namespace Systems
                 }
                 else if (!notConnected && ContainsProblem(billboardOwner.billboards, Problems.NotConnected))
                 {
-                    RemoveProblem(ref billboardOwner, Problems.NotConnected, ecb, tile.pos);
+                    RemoveProblem(ref billboardOwner, Problems.NotConnected, ecb, tile.pos, config);
                 }
 
                 // Update the component
-                ecb.SetComponent(entity, billboardOwner); // Needed because the data is passed to sub-functions
+                ecb.SetComponent(entity, billboardOwner); // Needed because the data is passed to sub-functions (ref doesn't work as intended)
             }).WithReadOnly(hasElectricityLookup).WithReadOnly(isConnectedLookup).Schedule();
         }
 
@@ -137,9 +137,9 @@ namespace Systems
 
             billboardOwner.billboards.Add(new BillboardInfo(billboard, problem));
 
-            RepositionBillboards(ref billboardOwner.billboards, ecb, pos);
+            RepositionBillboards(ref billboardOwner.billboards, ecb, pos, config);
         }
-        private static void RemoveProblem(ref BillboardOwner billboardOwner, Problems problem, EntityCommandBuffer ecb, int2 pos)
+        private static void RemoveProblem(ref BillboardOwner billboardOwner, Problems problem, EntityCommandBuffer ecb, int2 pos, Billboarding config)
         {
             for (int i = 0; i < billboardOwner.billboards.Length; i++)
             {
@@ -153,17 +153,17 @@ namespace Systems
                 unusedBillboards.Enqueue(billboard.entity);
                 ecb.SetComponent(billboard.entity, LocalTransform.FromPosition(new(0, -5, 0))); // Hide unused billboards
 
-                RepositionBillboards(ref billboardOwner.billboards, ecb, pos);
+                RepositionBillboards(ref billboardOwner.billboards, ecb, pos, config);
                 return;
             }
             Debug.LogError("Billboard not present");
         }
-        private static void RepositionBillboards(ref UnsafeList<BillboardInfo> billboards, EntityCommandBuffer ecb, int2 pos)
+        private static void RepositionBillboards(ref UnsafeList<BillboardInfo> billboards, EntityCommandBuffer ecb, int2 pos, Billboarding config)
         {
             for (int i = 0; i < billboards.Length; i++)
             {
                 // Billboards will be shown as a vertical stack
-                var transform = LocalTransform.FromPositionRotationScale(new(pos.x * 2, i * 0.7f + 1, pos.y * 2), quaternion.identity, 0.5f);
+                var transform = LocalTransform.FromPositionRotationScale(new(pos.x * 2, i * 0.7f + config.billboardHeightOffset, pos.y * 2), quaternion.identity, 0.5f);
                 ecb.SetComponent(billboards[i].entity, transform);
             }
         }

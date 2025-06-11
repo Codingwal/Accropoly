@@ -321,6 +321,7 @@ MonoBehaviour:
       value: {fileID: 2100000, guid: 6e1c2e32957fac94ba5022870dd9df6d, type: 2}
     - key: 1
       value: {fileID: 2100000, guid: 57f722e1070edfd429e9b90304d56165, type: 2}
+  billboardHeightOffset: 2.5
 --- !u!1 &1407001049
 GameObject:
   m_ObjectHideFlags: 0

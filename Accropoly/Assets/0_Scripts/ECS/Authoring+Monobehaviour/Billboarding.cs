@@ -12,6 +12,7 @@ namespace Authoring
         [SerializeField] private GameObject prefab;
         [SerializeField] private Mesh mesh;
         [SerializeField] private SerializableDictionary<BillboardInfo.Problems, Material> materials;
+        [SerializeField] private float billboardHeightOffset;
         public class Baker : Baker<Billboarding>
         {
             public override void Bake(Billboarding authoring)
@@ -27,6 +28,7 @@ namespace Authoring
                 {
                     prefab = GetEntity(authoring.prefab, TransformUsageFlags.Dynamic),
                     meshID = meshID,
+                    billboardHeightOffset = authoring.billboardHeightOffset
                 };
                 foreach (var pair in authoring.materials)
                 {
@@ -51,5 +53,6 @@ namespace ConfigComponents
         public Entity prefab;
         public BatchMeshID meshID;
         public FixedList128Bytes<BatchMaterialID> materialIDs; // supports ~30 BatchMaterialIDs
+        public float billboardHeightOffset;
     }
 }
