@@ -55,9 +55,10 @@ namespace Systems
                 if (!alreadyExists)
                 {
                     var prefab = SystemAPI.GetSingleton<PrefabEntity>();
-                    Entity entity = ecb.Instantiate(prefab);
+                    Entity entity = EntityManager.Instantiate(prefab); // Inefficient but who cares
                     ecb.SetComponent(entity, LocalTransform.FromPositionRotation(new(pos.x, 0.3f, pos.y), quaternion.Euler(new(0, tileToPlaceInfo.rotation.ToRadians(), 0))));
                     ecb.AddComponent<TileToPlace>(entity);
+                    MaterialsAndMeshesHolder.UpdateMeshAndMaterial(entity, tileToPlaceInfo.tileType);
                 }
             }
             else if (placementInputData.action == PlacementAction.Place)
@@ -104,10 +105,6 @@ namespace Systems
                 ecb.DestroyEntity(SystemAPI.GetSingletonEntity<TileToPlaceInfo>());
                 return;
             }
-
-            // Update meshes and materials (inefficient as it's mostly redundant, but who cares)
-            foreach ((_, Entity entity) in SystemAPI.Query<TileToPlace>().WithEntityAccess())
-                MaterialsAndMeshesHolder.UpdateMeshAndMaterial(entity, tileToPlaceInfo.tileType);
         }
         public static void StartPlacementProcess(TileType tileType)
         {
