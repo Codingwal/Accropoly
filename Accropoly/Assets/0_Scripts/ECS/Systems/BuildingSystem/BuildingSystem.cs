@@ -115,22 +115,18 @@ namespace Systems
 
             var tileToPlaceInfoQuery = em.CreateEntityQuery(typeof(TileToPlaceInfo));
 
-            if (tileToPlaceInfoQuery.IsEmpty) // Is there already a tileToPlaceInfo singleton
+            // If there already is a placement process running, stop it
+            if (!tileToPlaceInfoQuery.IsEmpty)
             {
-                // Create a tileToPlaceInfo singleton entity and set mesh & material
-                var prefab = em.CreateEntityQuery(typeof(PrefabEntity)).GetSingleton<PrefabEntity>();
-                Entity tileToPlaceInfoEntity = em.Instantiate(prefab);
-                em.AddComponentData(tileToPlaceInfoEntity, new TileToPlaceInfo { tileType = tileType });
-                MaterialsAndMeshesHolder.UpdateMeshAndMaterial(tileToPlaceInfoEntity, tileType);
-            }
-            else
-            {
-                // Update the singleton component and set mesh & material
-                Entity tileToPlaceInfoEntity = tileToPlaceInfoQuery.GetSingletonEntity();
-                em.SetComponentData(tileToPlaceInfoEntity, new TileToPlaceInfo { tileType = tileType });
-                MaterialsAndMeshesHolder.UpdateMeshAndMaterial(tileToPlaceInfoEntity, tileType);
+                em.DestroyEntity(tileToPlaceQuery); // Delete all TileToPlace entities
+                em.DestroyEntity(tileToPlaceInfoQuery); // Delete TileToPlaceInfo singleton (will be recreated afterwards (with the new TileType))
             }
 
+            // Create a tileToPlaceInfo singleton entity and set mesh & material
+            var prefab = em.CreateEntityQuery(typeof(PrefabEntity)).GetSingleton<PrefabEntity>();
+            Entity tileToPlaceInfoEntity = em.Instantiate(prefab);
+            em.AddComponentData(tileToPlaceInfoEntity, new TileToPlaceInfo { tileType = tileType });
+            MaterialsAndMeshesHolder.UpdateMeshAndMaterial(tileToPlaceInfoEntity, tileType);
         }
     }
 }
