@@ -22,6 +22,7 @@ public enum TileType
     // Natural
     Plains = 0,
     Sapling = 1,
+    GrowingForest = 10,
     Forest = 2,
     Lake = 6,
     River = 7,
