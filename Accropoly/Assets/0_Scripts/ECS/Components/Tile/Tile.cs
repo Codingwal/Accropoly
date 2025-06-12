@@ -19,23 +19,25 @@ namespace Components
 // Explicit values for compatability with other versions (new TileTypes just get a higher value)
 public enum TileType
 {
+    None = 0,
+
     // Natural
-    Plains = 0,
-    Sapling = 1,
-    Forest = 2,
-    Lake = 6,
-    River = 7,
+    Plains = 1,
+    Sapling = 2,
+    Forest = 3,
+    Lake = 7,
+    River = 8,
 
     // Streets
-    Street = 3,
+    Street = 4,
 
     // Habitats
-    House = 4,
-    Hut = 8,
+    House = 5,
+    Hut = 9,
 
     // Workplaces
-    Office = 9,
+    Office = 10,
 
     // Energy production
-    SolarPanel = 5,
+    SolarPanel = 6,
 }

@@ -171,7 +171,7 @@ MonoBehaviour:
     x: 0
     y: 10
   maxAge: 20
-  newTileType: 2
+  newTileType: 3
 --- !u!1 &903553014
 GameObject:
   m_ObjectHideFlags: 0
@@ -272,21 +272,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tilePrices:
     dictionary:
-    - key: 0
-      value: 5
     - key: 1
+      value: 5
+    - key: 2
       value: 10
-    - key: 3
-      value: 50
     - key: 4
-      value: 200
-    - key: 8
       value: 50
     - key: 5
-      value: 50
-    - key: 7
-      value: 50
+      value: 200
     - key: 9
+      value: 50
+    - key: 6
+      value: 50
+    - key: 8
+      value: 50
+    - key: 10
       value: 500
 --- !u!114 &903553022
 MonoBehaviour:

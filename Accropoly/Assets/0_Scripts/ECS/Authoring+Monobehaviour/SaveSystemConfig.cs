@@ -16,5 +16,6 @@ public class SaveSystemConfig : MonoBehaviour
     private void Awake()
     {
         instance = this;
+        SaveSystem.Initialize();
     }
 }

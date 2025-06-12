@@ -39,6 +39,7 @@ public class SaveSystem : FileHandler
         if (SaveSystemConfig.DeleteSaves)
             DeleteDirectoryContent("Saves");
     }
+    public static void Initialize() { _instance = new(); }
     public WorldData GetWorldData(string worldName) { return LoadObject<WorldData>("Saves", worldName); }
     public WorldData GetWorldData() { return GetWorldData(GetWorldName()); }
     public UserData GetUserData() { return LoadObject<UserData>("UserData", "userdata"); }

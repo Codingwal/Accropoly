@@ -86,4 +86,56 @@ public static class TilePlacingUtility
             else Debug.LogError($"Unexpected type {type.Name}");
         }
     }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="oldType"></param>
+    /// <param name="newType">The TileType selected in the menu. Might not be the TileType that's actually placed.</param>
+    /// <returns>(The TileType to place, cost)</returns>
+    public static (TileType, int) GetPlacingData(TileType oldType, TileType newType)
+    {
+        (TileType, int) INVALID = (TileType.None, -1);
+
+        Debug.Assert(oldType != TileType.None && newType != TileType.None);
+
+        // Water can't be replaced
+        if (oldType == TileType.River || oldType == TileType.Lake)
+            return INVALID;
+
+        // Handle placing on empty tile
+        if (oldType == TileType.Plains)
+        {
+            return newType switch
+            {
+                TileType.River => (TileType.River, 100), // TEMPORARY
+
+                TileType.Sapling => (TileType.Sapling, 10),
+                TileType.House => (TileType.House, 200),
+                TileType.SolarPanel => (TileType.SolarPanel, 50),
+                TileType.Street => (TileType.Street, 50),
+                TileType.Hut => (TileType.Hut, 50),
+                TileType.Office => (TileType.Office, 500),
+                _ => INVALID
+            };
+        }
+
+        switch (newType)
+        {
+            case TileType.Plains:
+                return (TileType.Plains, 5);
+            case TileType.Sapling:
+                if (oldType == TileType.House)
+                    return (TileType.Hut, 10);
+                else
+                    return INVALID;
+            case TileType.House:
+                if (oldType == TileType.Forest)
+                    return (TileType.Hut, 50);
+                else
+                    return INVALID;
+            default:
+                return INVALID;
+        }
+    }
 }

@@ -54,25 +54,39 @@ namespace Systems
                 }
                 if (!alreadyExists)
                 {
+                    // Get new tile type
+                    Entity oldTile = TileGridUtility.GetTile((int2)pos / 2);
+                    TileType oldTileType = SystemAPI.GetComponent<Tile>(oldTile).tileType;
+                    (TileType tileType, _) = TilePlacingUtility.GetPlacingData(oldTileType, tileToPlaceInfo.tileType);
+
+                    // Tile cannot be placed here
+                    if (tileType == TileType.None)
+                        return;
+
                     var prefab = SystemAPI.GetSingleton<PrefabEntity>();
-                    Entity entity = ecb.Instantiate(prefab);
+                    Entity entity = EntityManager.Instantiate(prefab); // Inefficient but who cares
                     ecb.SetComponent(entity, LocalTransform.FromPositionRotation(new(pos.x, 0.3f, pos.y), quaternion.Euler(new(0, tileToPlaceInfo.rotation.ToRadians(), 0))));
                     ecb.AddComponent<TileToPlace>(entity);
+                    MaterialsAndMeshesHolder.UpdateMeshAndMaterial(entity, tileType);
                 }
+                return;
             }
             else if (placementInputData.action == PlacementAction.Place)
             {
                 var gameInfo = SystemAPI.GetSingleton<GameInfo>();
-                float price = SystemAPI.ManagedAPI.GetSingleton<TilePrices>().prices[tileToPlaceInfo.tileType];
 
                 Entities.WithAll<TileToPlace>().ForEach((in LocalTransform transform) =>
                 {
                     int2 pos = (int2)transform.Position.xz / 2;
                     Entity tile = TileGridUtility.GetTile(pos);
 
-                    if (price <= gameInfo.balance) // If the tile can be bought
+                    // Get tile placing cost
+                    TileType oldTileType = SystemAPI.GetComponent<Tile>(tile).tileType;
+                    (_, int cost) = TilePlacingUtility.GetPlacingData(oldTileType, tileToPlaceInfo.tileType);
+
+                    if (cost <= gameInfo.balance) // If the tile can be bought
                     {
-                        gameInfo.balance -= price; // Buy the tile
+                        gameInfo.balance -= cost; // Buy the tile
                         ecb.AddComponent<Replace>(tile); // Mark tile for placement
                     }
                 }).Run();
@@ -80,6 +94,8 @@ namespace Systems
 
                 // Delete all TileToPlace entities (as they have been placed now)
                 ecb.DestroyEntity(tileToPlaceQuery, EntityQueryCaptureMode.AtPlayback);
+
+                return;
             }
             else if (placementInputData.action == PlacementAction.Rotate)
             {
@@ -97,6 +113,8 @@ namespace Systems
                 {
                     transform.Rotation = quaternion.Euler(new(0, tileToPlaceInfo.rotation.ToRadians(), 0));
                 }).Schedule();
+
+                return;
             }
             else if (placementInputData.action == PlacementAction.Cancel)
             {
@@ -104,10 +122,6 @@ namespace Systems
                 ecb.DestroyEntity(SystemAPI.GetSingletonEntity<TileToPlaceInfo>());
                 return;
             }
-
-            // Update meshes and materials (inefficient as it's mostly redundant, but who cares)
-            foreach ((_, Entity entity) in SystemAPI.Query<TileToPlace>().WithEntityAccess())
-                MaterialsAndMeshesHolder.UpdateMeshAndMaterial(entity, tileToPlaceInfo.tileType);
         }
         public static void StartPlacementProcess(TileType tileType)
         {
@@ -115,22 +129,18 @@ namespace Systems
 
             var tileToPlaceInfoQuery = em.CreateEntityQuery(typeof(TileToPlaceInfo));
 
-            if (tileToPlaceInfoQuery.IsEmpty) // Is there already a tileToPlaceInfo singleton
+            // If there already is a placement process running, stop it
+            if (!tileToPlaceInfoQuery.IsEmpty)
             {
-                // Create a tileToPlaceInfo singleton entity and set mesh & material
-                var prefab = em.CreateEntityQuery(typeof(PrefabEntity)).GetSingleton<PrefabEntity>();
-                Entity tileToPlaceInfoEntity = em.Instantiate(prefab);
-                em.AddComponentData(tileToPlaceInfoEntity, new TileToPlaceInfo { tileType = tileType });
-                MaterialsAndMeshesHolder.UpdateMeshAndMaterial(tileToPlaceInfoEntity, tileType);
-            }
-            else
-            {
-                // Update the singleton component and set mesh & material
-                Entity tileToPlaceInfoEntity = tileToPlaceInfoQuery.GetSingletonEntity();
-                em.SetComponentData(tileToPlaceInfoEntity, new TileToPlaceInfo { tileType = tileType });
-                MaterialsAndMeshesHolder.UpdateMeshAndMaterial(tileToPlaceInfoEntity, tileType);
+                em.DestroyEntity(tileToPlaceQuery); // Delete all TileToPlace entities
+                em.DestroyEntity(tileToPlaceInfoQuery); // Delete TileToPlaceInfo singleton (will be recreated afterwards (with the new TileType))
             }
 
+            // Create a tileToPlaceInfo singleton entity and set mesh & material
+            var prefab = em.CreateEntityQuery(typeof(PrefabEntity)).GetSingleton<PrefabEntity>();
+            Entity tileToPlaceInfoEntity = em.Instantiate(prefab);
+            em.AddComponentData(tileToPlaceInfoEntity, new TileToPlaceInfo { tileType = tileType });
+            MaterialsAndMeshesHolder.UpdateMeshAndMaterial(tileToPlaceInfoEntity, tileType);
         }
     }
 }
