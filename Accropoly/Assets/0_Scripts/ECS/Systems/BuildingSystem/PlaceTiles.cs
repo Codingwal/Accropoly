@@ -1,7 +1,5 @@
 using Unity.Entities;
-using UnityEngine;
 using Components;
-using Unity.Collections;
 using Unity.Mathematics;
 using Unity.Transforms;
 using Tags;
@@ -25,11 +23,12 @@ namespace Systems
             var ecb = SystemAPI.GetSingleton<EndCreationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
 
             var tileToPlaceInfo = SystemAPI.GetSingleton<TileToPlaceInfo>();
-            TileType newTileType = tileToPlaceInfo.tileType;
 
             Entities.WithAll<Replace>().ForEach((Entity entity, in Tile tile) =>
             {
                 var transform = SystemAPI.GetComponent<LocalTransform>(entity);
+
+                (TileType newTileType, _) = TilePlacingUtility.GetPlacingData(tile.tileType, tileToPlaceInfo.tileType);
 
                 // Set the archetype to the archetype of the newTileType
                 var components = TilePlacingUtility.GetComponents(newTileType, tile.pos, tileToPlaceInfo.rotation);
