@@ -401,6 +401,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Hotkey8",
+                    "type": "Button",
+                    "id": "5780f40b-3259-4adf-8754-21e7df810aa7",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Hotkey9",
+                    "type": "Button",
+                    "id": "5780f40b-3259-4adf-8754-21e7df810aa9",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -489,6 +507,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Hotkey7",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },,
+                {
+                    "name": "",
+                    "id": "492990fe-1d85-4cdd-9bab-0988c2593f21",
+                    "path": "<Keyboard>/8",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Hotkey8",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },,
+                {
+                    "name": "",
+                    "id": "492990fe-1d85-4cdd-9bab-0988c2593f22",
+                    "path": "<Keyboard>/9",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Hotkey9",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

@@ -288,6 +288,8 @@ MonoBehaviour:
       value: 50
     - key: 10
       value: 500
+    - key: 11
+      value: 1000
 --- !u!114 &903553022
 MonoBehaviour:
   m_ObjectHideFlags: 0

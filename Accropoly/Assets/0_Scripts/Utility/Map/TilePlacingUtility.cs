@@ -28,7 +28,9 @@ public static class TilePlacingUtility
             TileType.Hut => new() { (new Habitat { totalSpace = rnd.Next(1, 3) }, true) },
             TileType.Office => new() { (new ElectricityConsumer { consumption = 5, disableIfElectroless = true }, true),
                                        (new Employer { totalSpace = 10 }, true),
-                                       (new IsConnected(), false) },
+                                       (new Polluter { pollution = 5 }, true), (new IsConnected(), false) },
+            TileType.WindTurbine => new() { (new ElectricityProducer { production = 50 }, true), (new Polluter { pollution = 2 }, true),
+                                           (new Employer{totalSpace = 2}, true) },
             _ => throw new($"Missing componentTypes for tileType {tileType}")
         };
         components.Add((new Tile { tileType = tileType, pos = pos, rotation = rotation }, true));
@@ -110,12 +112,13 @@ public static class TilePlacingUtility
             {
                 TileType.River => (TileType.River, 100), // TEMPORARY
 
-                TileType.Sapling => (TileType.Sapling, 10),
+                TileType.Sapling => (TileType.Sapling, 10), // prices
                 TileType.House => (TileType.House, 200),
                 TileType.SolarPanel => (TileType.SolarPanel, 50),
                 TileType.Street => (TileType.Street, 50),
                 TileType.Hut => (TileType.Hut, 50),
                 TileType.Office => (TileType.Office, 500),
+                TileType.WindTurbine => (TileType.WindTurbine, 1000),
                 _ => INVALID
             };
         }

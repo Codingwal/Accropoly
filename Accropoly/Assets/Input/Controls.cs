@@ -423,6 +423,24 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Hotkey8"",
+                    ""type"": ""Button"",
+                    ""id"": ""5780f40b-3259-4adf-8754-21e7df810aa7"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Hotkey9"",
+                    ""type"": ""Button"",
+                    ""id"": ""5780f40b-3259-4adf-8754-21e7df810aa9"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -516,6 +534,28 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""492990fe-1d85-4cdd-9bab-0988c2593f21"",
+                    ""path"": ""<Keyboard>/8"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Hotkey8"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""492990fe-1d85-4cdd-9bab-0988c2593f22"",
+                    ""path"": ""<Keyboard>/9"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Hotkey9"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""7ffd6e19-f9aa-43a2-a48c-a280518bbb0d"",
                     ""path"": ""<Keyboard>/x"",
                     ""interactions"": """",
@@ -582,6 +622,8 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         m_UI_Hotkey5 = m_UI.FindAction("Hotkey5", throwIfNotFound: true);
         m_UI_Hotkey6 = m_UI.FindAction("Hotkey6", throwIfNotFound: true);
         m_UI_Hotkey7 = m_UI.FindAction("Hotkey7", throwIfNotFound: true);
+        m_UI_Hotkey8 = m_UI.FindAction("Hotkey8", throwIfNotFound: true);
+        m_UI_Hotkey9 = m_UI.FindAction("Hotkey9", throwIfNotFound: true);
         // Menu
         m_Menu = asset.FindActionMap("Menu", throwIfNotFound: true);
         m_Menu_Escape = m_Menu.FindAction("Escape", throwIfNotFound: true);
@@ -781,6 +823,8 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     private readonly InputAction m_UI_Hotkey5;
     private readonly InputAction m_UI_Hotkey6;
     private readonly InputAction m_UI_Hotkey7;
+    private readonly InputAction m_UI_Hotkey8;
+    private readonly InputAction m_UI_Hotkey9;
     public struct UIActions
     {
         private @Controls m_Wrapper;
@@ -794,6 +838,8 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         public InputAction @Hotkey5 => m_Wrapper.m_UI_Hotkey5;
         public InputAction @Hotkey6 => m_Wrapper.m_UI_Hotkey6;
         public InputAction @Hotkey7 => m_Wrapper.m_UI_Hotkey7;
+        public InputAction @Hotkey8 => m_Wrapper.m_UI_Hotkey8;
+        public InputAction @Hotkey9 => m_Wrapper.m_UI_Hotkey9;
         public InputActionMap Get() { return m_Wrapper.m_UI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -830,6 +876,12 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Hotkey7.started += instance.OnHotkey7;
             @Hotkey7.performed += instance.OnHotkey7;
             @Hotkey7.canceled += instance.OnHotkey7;
+            @Hotkey8.started += instance.OnHotkey8;
+            @Hotkey8.performed += instance.OnHotkey8;
+            @Hotkey8.canceled += instance.OnHotkey8;
+            @Hotkey9.started += instance.OnHotkey9;
+            @Hotkey9.performed += instance.OnHotkey9;
+            @Hotkey9.canceled += instance.OnHotkey9;
         }
 
         private void UnregisterCallbacks(IUIActions instance)
@@ -949,6 +1001,8 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         void OnHotkey5(InputAction.CallbackContext context);
         void OnHotkey6(InputAction.CallbackContext context);
         void OnHotkey7(InputAction.CallbackContext context);
+        void OnHotkey8(InputAction.CallbackContext context);
+        void OnHotkey9(InputAction.CallbackContext context);
     }
     public interface IMenuActions
     {

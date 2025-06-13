@@ -160,6 +160,7 @@ public class MenuManager : MonoBehaviour
                     5 => TileType.River,
                     6 => TileType.Hut,
                     7 => TileType.Office,
+                    8 => TileType.WindTurbine,
                     _ => throw new()
                 });
                 break;

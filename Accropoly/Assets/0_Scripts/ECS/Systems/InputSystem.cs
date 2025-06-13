@@ -43,6 +43,8 @@ namespace Systems
             inputActions.UI.Hotkey5.performed += (ctx) => OnUIAction(UIAction.Hotkey, 5); ;
             inputActions.UI.Hotkey6.performed += (ctx) => OnUIAction(UIAction.Hotkey, 6); ;
             inputActions.UI.Hotkey7.performed += (ctx) => OnUIAction(UIAction.Hotkey, 7); ;
+            inputActions.UI.Hotkey8.performed += (ctx) => OnUIAction(UIAction.Hotkey, 8); ;
+            inputActions.UI.Hotkey9.performed += (ctx) => OnUIAction(UIAction.Hotkey, 9); ;
             inputActions.Menu.Escape.performed += (ctx) => OnUIAction(UIAction.Escape); ;
         }
         protected override void OnUpdate()

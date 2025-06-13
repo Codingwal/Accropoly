@@ -1247,8 +1247,8 @@ MonoBehaviour:
         mesh: {fileID: -2432090755550338912, guid: 0a758aca83d5bf543bfd7c5503973667, type: 3}
     - key: 6
       value:
-        material: {fileID: 2100000, guid: e064d54b67228d043ae598404b205470, type: 2}
-        mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
+        material: {fileID: -8589965782984495478, guid: 5247728bd7d65144a8b357d918b28d6f, type: 3}
+        mesh: {fileID: -2432090755550338912, guid: 5247728bd7d65144a8b357d918b28d6f, type: 3}
     - key: 9
       value:
         material: {fileID: 2100000, guid: 93a2d9d61f730484693c30efbced2de8, type: 2}
@@ -1257,6 +1257,10 @@ MonoBehaviour:
       value:
         material: {fileID: 2100000, guid: 3c76df0dfb841e0458bfb4b93483dfdc, type: 2}
         mesh: {fileID: -2432090755550338912, guid: 2eded4833cd62de4e8c8af722cd66eb6, type: 3}
+    - key: 11
+      value:
+        material: {fileID: -4189213074476457470, guid: 224f214a1facdb74ba9b20f031cdaeb0, type: 3}
+        mesh: {fileID: -2432090755550338912, guid: 224f214a1facdb74ba9b20f031cdaeb0, type: 3}
   connectingTiles:
     dictionary:
     - key: 4
