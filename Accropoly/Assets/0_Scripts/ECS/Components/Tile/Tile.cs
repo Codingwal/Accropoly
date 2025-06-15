@@ -27,6 +27,7 @@ public enum TileType
     Forest = 3,
     Lake = 7,
     River = 8,
+    GrowingForest = 12,
 
     // Streets
     Street = 4,

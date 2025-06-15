@@ -1,50 +1,46 @@
 using Unity.Entities;
-using UnityEngine;
 using Components;
+using Tags;
+using UnityEngine;
 
 namespace Systems
 {
     /// <summary>
     /// Handle tree growth
     /// </summary>
-    public partial struct TileGrowthSystem : ISystem
+    public partial class TileGrowthSystem : SystemBase
     {
-        public void OnCreate(ref SystemState state)
+        protected override void OnCreate()
         {
-            state.RequireForUpdate<Tags.RunGame>();
-            state.RequireForUpdate<GrowingTile>();
-            state.RequireForUpdate<ConfigComponents.TileGrowing>();
+            RequireForUpdate<RunGame>();
+            RequireForUpdate<GrowingTile>();
+            RequireForUpdate<ConfigComponents.TileGrowing>();
         }
-        public void OnUpdate(ref SystemState state)
+        protected override void OnUpdate()
         {
             var config = SystemAPI.GetSingleton<ConfigComponents.TileGrowing>();
+            var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
+            float deltaTime = SystemAPI.GetSingleton<GameInfo>().deltaTime;
 
-            new TileGrowthJob()
-            {
-                ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged),
-                deltaTime = Time.deltaTime,
-                maxAge = config.maxAge,
-                newTileType = config.newTileType,
-            }.Schedule();
-        }
-        private partial struct TileGrowthJob : IJobEntity
-        {
-            public EntityCommandBuffer ecb;
-            public float deltaTime;
-            public float maxAge;
-            public TileType newTileType;
-            public void Execute(ref GrowingTile growingTile, ref Tile tile, in Entity entity)
+            Entities.WithAll<ActiveTile>().ForEach((Entity entity, ref Tile tile, ref GrowingTile growingTile) =>
             {
                 growingTile.age += deltaTime;
 
-                if (growingTile.age > maxAge)
+                if (tile.tileType == TileType.Sapling && growingTile.age >= config.maxAge1)
                 {
-                    tile.tileType = newTileType;
-                    MaterialsAndMeshesHolder.UpdateMeshAndMaterial(entity, tile.tileType);
-
-                    ecb.RemoveComponent<GrowingTile>(entity);
+                    Debug.Log("!");
+                    tile.tileType = TileType.GrowingForest;
+                    MaterialsAndMeshesHolder.UpdateMeshAndMaterial(entity, TileType.GrowingForest);
+                    ecb.AddComponent<NewTile>(entity);
                 }
-            }
+                else if (tile.tileType == TileType.GrowingForest && growingTile.age >= config.maxAge2)
+                {
+                    tile.tileType = TileType.Forest;
+                    MaterialsAndMeshesHolder.UpdateMeshAndMaterial(entity, TileType.Forest);
+                    ecb.RemoveComponent<GrowingTile>(entity);
+                    ecb.AddComponent<NewTile>(entity);
+                }
+            }).Schedule();
         }
     }
 }

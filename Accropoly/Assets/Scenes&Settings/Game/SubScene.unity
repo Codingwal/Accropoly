@@ -166,12 +166,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e0f4a499360eca469acb9771e2ebd15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  seed: 100
-  randomAgeRange:
-    x: 0
-    y: 10
-  maxAge: 20
-  newTileType: 3
+  maxAge1: 6
+  maxAge2: 12
 --- !u!1 &903553014
 GameObject:
   m_ObjectHideFlags: 0

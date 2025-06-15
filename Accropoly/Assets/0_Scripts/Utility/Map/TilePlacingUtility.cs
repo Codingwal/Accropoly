@@ -11,11 +11,13 @@ public static class TilePlacingUtility
 {
     public static List<(IComponentData, bool)> GetComponents(TileType tileType, int2 pos, Direction rotation)
     {
+        EntityManager em = World.DefaultGameObjectInjectionWorld.EntityManager;
+        var tileGrowingConfig = em.CreateEntityQuery(typeof(ConfigComponents.TileGrowing)).GetSingleton<ConfigComponents.TileGrowing>();
         System.Random rnd = new();
         List<(IComponentData, bool)> components = tileType switch
         {
             TileType.Plains => new() { },
-            TileType.Sapling => new() { (new GrowingTile { age = rnd.Next(10) }, true) },
+            TileType.Sapling => new() { (new GrowingTile { age = rnd.Next(tileGrowingConfig.maxAge1) }, true) },
             TileType.Forest => new() { },
             TileType.House => new() { (new Habitat {totalSpace = rnd.Next(2, 6)}, true),
                                       (new ElectricityConsumer { consumption = 2, disableIfElectroless = false }, true),
@@ -30,7 +32,8 @@ public static class TilePlacingUtility
                                        (new Employer { totalSpace = 10 }, true),
                                        (new Polluter { pollution = 5 }, true), (new IsConnected(), false) },
             TileType.WindTurbine => new() { (new ElectricityProducer { production = 50 }, true), (new Polluter { pollution = 2 }, true),
-                                           (new Employer{totalSpace = 2}, true) },
+                                           (new Employer {totalSpace = 2}, true) },
+            TileType.GrowingForest => new() { (new GrowingTile { age = rnd.Next(tileGrowingConfig.maxAge1, tileGrowingConfig.maxAge2) }, true) },
             _ => throw new($"Missing componentTypes for tileType {tileType}")
         };
         components.Add((new Tile { tileType = tileType, pos = pos, rotation = rotation }, true));
@@ -112,7 +115,7 @@ public static class TilePlacingUtility
             {
                 TileType.River => (TileType.River, 100), // TEMPORARY
 
-                TileType.Sapling => (TileType.Sapling, 10), // prices
+                TileType.Sapling => (TileType.Sapling, 10),
                 TileType.House => (TileType.House, 200),
                 TileType.SolarPanel => (TileType.SolarPanel, 50),
                 TileType.Street => (TileType.Street, 50),

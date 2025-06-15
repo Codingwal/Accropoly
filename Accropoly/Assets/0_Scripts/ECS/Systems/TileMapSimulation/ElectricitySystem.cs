@@ -33,7 +33,7 @@ namespace Systems
             NativeArray<float> totalConsumption = new(1, Allocator.TempJob, NativeArrayOptions.ClearMemory);
             NativeArray<float> maxConsumption = new(1, Allocator.TempJob, NativeArrayOptions.ClearMemory);
 
-            Entities.WithAll<HasElectricity>().WithNone<DisabledTile>().ForEach((Entity entity, in ElectricityConsumer consumer) =>
+            Entities.WithNone<DisabledTile>().WithAll<HasElectricity>().ForEach((Entity entity, in ElectricityConsumer consumer) =>
             {
                 bool canEnable = totalConsumption[0] + consumer.consumption <= totalProduction[0];
                 totalConsumption[0] += canEnable ? consumer.consumption : 0; // Only add to the production if the consumer can be enabled
