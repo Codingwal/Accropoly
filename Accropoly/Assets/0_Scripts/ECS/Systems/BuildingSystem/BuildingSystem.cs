@@ -138,9 +138,10 @@ namespace Systems
 
             // Create a tileToPlaceInfo singleton entity and set mesh & material
             var prefab = ECSUtility.GetSingleton<PrefabEntity>();
-            Entity tileToPlaceInfoEntity = em.Instantiate(prefab);
-            em.AddComponentData(tileToPlaceInfoEntity, new TileToPlaceInfo { tileType = tileType });
-            MaterialsAndMeshesHolder.UpdateMeshAndMaterial(tileToPlaceInfoEntity, tileType);
+            Entity entity = em.Instantiate(prefab);
+            em.AddComponentData(entity, new TileToPlaceInfo { tileType = tileType });
+            em.SetComponentData(entity, LocalTransform.FromPosition(0, -10, 0)); // Hide entity until the position is updated by UpdatePosition.cs
+            MaterialsAndMeshesHolder.UpdateMeshAndMaterial(entity, tileType);
         }
     }
 }
