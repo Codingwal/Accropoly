@@ -24,10 +24,8 @@ namespace Systems
 
             var tileToPlaceInfo = SystemAPI.GetSingleton<TileToPlaceInfo>();
 
-            Entities.WithAll<Replace>().ForEach((Entity entity, in Tile tile) =>
+            Entities.WithAll<Replace>().ForEach((Entity entity, ref LocalTransform transform, in Tile tile) =>
             {
-                var transform = SystemAPI.GetComponent<LocalTransform>(entity);
-
                 (TileType newTileType, _) = TilePlacingUtility.GetPlacingData(tile.tileType, tileToPlaceInfo.tileType);
 
                 // Set the archetype to the archetype of the newTileType
@@ -37,7 +35,6 @@ namespace Systems
 
                 // Set the transform rotation according to the rotation of tileToPlace
                 transform.Rotation = quaternion.EulerXYZ(0, tileToPlaceInfo.rotation.ToRadians(), 0);
-                ecb.SetComponent(entity, transform);
 
                 // Set mesh & material according to the new tileType
                 MaterialsAndMeshesHolder.UpdateMeshAndMaterial(entity, newTileType);
