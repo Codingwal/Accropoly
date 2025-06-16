@@ -16,18 +16,22 @@ namespace Systems
     public partial class PathfindingSystem : SystemBase
     {
         private static ComponentLookup<TransportTile> transportTilesLookup;
+        private static TransportTileAspect.Lookup transportTileAspectLookup;
         protected override void OnCreate()
         {
             RequireForUpdate<Traveller>();
             RequireForUpdate<RunGame>();
 
             transportTilesLookup = GetComponentLookup<TransportTile>(isReadOnly: true);
+            transportTileAspectLookup = new(ref CheckedStateRef);
         }
         protected override void OnUpdate()
         {
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
             var entityGrid = SystemAPI.GetBuffer<EntityBufferElement>(SystemAPI.GetSingletonEntity<EntityGridHolder>());
+
             transportTilesLookup.Update(this);
+            transportTileAspectLookup.Update(ref CheckedStateRef);
 
             Entities.WithAll<WantsToTravel>().ForEach((Entity entity, ref Traveller traveller, in LocalTransform transform) =>
             {
@@ -76,10 +80,25 @@ namespace Systems
             Debug.Assert(!start.Equals(dest), $"Start must not equal destination (start and dest are {start})");
             Debug.Assert(waypoints.IsCreated, "The UnsafeList<Waypoint> has not been created");
 
-            NativeList<(float, NodeToVisit)> openList = new(8, Allocator.TempJob) { (0, new(start, -1)) };
-            NativeHashMap<int2, VisitedNode> closedList = new(8, Allocator.TempJob);
+            NativeList<(float, NodeToVisit)> openList = new(8, Allocator.TempJob) { (0, new(start, -1)) }; // (cost, info)
+            NativeHashMap<int2, VisitedNode> closedList = new(8, Allocator.TempJob); // (pos, info)
+
+            NativeList<Direction> directions = new(4, Allocator.TempJob); // Create here to improve performance
+
+            void Dispose()
+            {
+                openList.Dispose();
+                closedList.Dispose();
+                directions.Dispose();
+            }
 
             int iteration = 0;
+
+            bool IsAdjacent(int2 a, int2 b)
+            {
+                int2 v = math.abs(a - b);
+                return v.x + v.y == 1; // Check if the manhattan distance is 1
+            }
 
             // AStar
             while (openList.Length != 0)
@@ -87,42 +106,59 @@ namespace Systems
                 var (cost, node) = PopCheapest(openList);
                 if (closedList.ContainsKey(node.pos)) continue; // Skip already visited nodes
                 closedList.Add(node.pos, new(node.previous));
-                foreach (Direction dir in Direction.GetDirections())
+
+                // If this tile is next to the destination, create waypoint list and return
+                if (IsAdjacent(node.pos, dest))
+                {
+                    // Get path
+                    NativeList<Waypoint> reversedPath = new(Allocator.TempJob);
+                    int2 currentPos = node.pos;
+                    while (!currentPos.Equals(start))
+                    {
+                        reversedPath.Add(new(currentPos));
+                        currentPos = closedList[currentPos].previous;
+                    }
+
+                    // Reverse path
+                    waypoints.Add(new(start));
+                    for (int i = reversedPath.Length - 1; i >= 0; i--)
+                        waypoints.Add(reversedPath[i]);
+                    reversedPath.Dispose();
+
+                    waypoints.Add(new(dest));
+                    Dispose();
+                    return true;
+                }
+
+                // Get neighbours
+                if (node.pos.Equals(start))
+                {
+                    foreach (Direction dir in Direction.GetDirections())
+                        directions.Add(dir);
+                }
+                else
+                {
+                    Entity tile = TileGridUtility.GetTile(node.pos, entityGrid);
+                    var transportTileAspect = transportTileAspectLookup[tile];
+                    transportTileAspect.GetDirections(ref directions);
+                }
+
+                // Add neighbours to openList (if they are valid)
+                foreach (Direction dir in directions)
                 {
                     int2 neighbourPos = node.pos + dir.DirectionVec;
-                    if (neighbourPos.Equals(dest))
-                    {
-                        // Get path
-                        NativeList<Waypoint> reversedPath = new(Allocator.TempJob);
-                        int2 currentPos = node.pos;
-                        while (!currentPos.Equals(start))
-                        {
-                            reversedPath.Add(new(currentPos));
-                            currentPos = closedList[currentPos].previous;
-                        }
 
-                        // Reverse path
-                        waypoints.Add(new(start));
-                        for (int i = reversedPath.Length - 1; i >= 0; i--)
-                            waypoints.Add(reversedPath[i]);
-                        reversedPath.Dispose();
-
-                        waypoints.Add(new(dest));
-                        openList.Dispose();
-                        closedList.Dispose();
-                        return true;
-                    }
-                    if (!TileGridUtility.TryGetTile(neighbourPos, entityGrid, out Entity entity)) continue; // Skip positions outside of the map
-                    if (!transportTilesLookup.TryGetComponent(entity, out TransportTile transportTile)) continue; // Skip non-street tiles
+                    if (!TileGridUtility.TryGetTile(neighbourPos, entityGrid, out Entity neighbourEntity)) continue; // Skip positions outside of the map
+                    if (!transportTilesLookup.TryGetComponent(neighbourEntity, out TransportTile transportTile)) continue; // Skip non-street tiles
 
                     openList.Add((CalculateCost(neighbourPos, node.pos, cost, dest, transportTile.speed), new(neighbourPos, node.pos)));
                 }
+                directions.Clear();
 
                 if (iteration > 1000) throw new();
                 iteration++;
             }
-            openList.Dispose();
-            closedList.Dispose();
+            Dispose();
             return false;
         }
         private static (float, NodeToVisit) PopCheapest(in NativeList<(float, NodeToVisit)> openList)
@@ -145,6 +181,7 @@ namespace Systems
         }
         private static float CalculateCost(int2 pos, int2 previousPos, float previousCost, int2 dest, float tileSpeed)
         {
+            // prevCost + (movementCost + dist(currPos) - dist(prevPos))
             return previousCost + 1 / tileSpeed + ManhattanDistance(pos, dest) - ManhattanDistance(previousPos, dest);
         }
         private static float ManhattanDistance(int2 pos, int2 dest)

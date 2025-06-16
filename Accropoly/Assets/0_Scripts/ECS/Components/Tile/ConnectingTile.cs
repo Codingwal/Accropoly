@@ -15,6 +15,10 @@ namespace Components
                 AddDirection(direction);
             }
         }
+        public bool IsConnected(Direction direction)
+        {
+            return connectableSides[(uint)direction];
+        }
         public void AddDirection(Direction direction)
         {
             connectableSides[(uint)direction] = true;

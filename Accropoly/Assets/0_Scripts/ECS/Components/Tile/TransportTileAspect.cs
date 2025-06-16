@@ -1,4 +1,4 @@
-using Tags;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
@@ -8,11 +8,33 @@ namespace Components
     public readonly partial struct TransportTileAspect : IAspect
     {
         private readonly RefRO<TransportTile> transportTile;
+        private readonly RefRO<Tile> tile;
+        [Optional] private readonly RefRO<ConnectingTile> connectingTile;
 
         private const float offsetFromCenter = 0.25f;
         public const float travelSecondsPerSecond = 0.007f; // Slow down travel time. If cars would use the normal timeSpeed, they would be way too fast.
 
-        private readonly RefRO<Tile> tile;
+        public float Speed => transportTile.ValueRO.speed;
+
+        /// <summary>
+        /// Get all directions a car can travel to (from this tile)
+        /// </summary>
+        public readonly void GetDirections(ref NativeList<Direction> directions)
+        {
+            Debug.Assert(directions.IsCreated);
+
+            if (connectingTile.IsValid)
+            {
+                foreach (Direction dir in Direction.GetDirections())
+                {
+                    if (connectingTile.ValueRO.IsConnected(dir))
+                        directions.Add(dir);
+                }
+            }
+            else
+                throw new();
+        }
+
         public readonly float2 TravelOnTile(Direction entryDirection, Direction exitDirection, float timeOnTile, out bool reachedDest)
         {
             Debug.Assert(tile.ValueRO.tileType == TileType.Street);

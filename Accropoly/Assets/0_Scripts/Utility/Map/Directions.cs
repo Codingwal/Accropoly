@@ -1,6 +1,5 @@
 using System;
 using Unity.Mathematics;
-using UnityEngine;
 
 public struct Direction : IEquatable<Direction>
 {
