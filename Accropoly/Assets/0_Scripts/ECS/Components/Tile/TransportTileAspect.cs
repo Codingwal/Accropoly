@@ -13,6 +13,7 @@ namespace Components
 
         private const float offsetFromCenter = 0.25f;
         public const float travelSecondsPerSecond = 0.007f; // Slow down travel time. If cars would use the normal timeSpeed, they would be way too fast.
+        public const float defaultVerticalOffset = 0.8f;
 
         public float Speed => transportTile.ValueRO.speed;
 
@@ -35,7 +36,7 @@ namespace Components
                 throw new();
         }
 
-        public readonly float2 TravelOnTile(Direction entryDirection, Direction exitDirection, float timeOnTile, out bool reachedDest)
+        public readonly float3 TravelOnTile(Direction entryDirection, Direction exitDirection, float timeOnTile, out bool reachedDest)
         {
             Debug.Assert(tile.ValueRO.tileType == TileType.Street);
 
@@ -45,36 +46,38 @@ namespace Components
             float time = timeOnTile * transportTile.ValueRO.speed / 20 * travelSecondsPerSecond; // A tile is 20 meters big, speed is in m/s, timeOnTile in s
 
             // Calculate the position with south as the entry direction
-            float2 pos = GetPosOnTileIgnoreRotation(exitDirection.Rotate(rotation), time);
+            float3 pos = GetPosOnTileIgnoreRotation(exitDirection.Rotate(rotation), time);
 
             // Check if the destination has been reached
             reachedDest = time >= 1;
 
             // Rotate position "back"
-            float3 rotatedPos = math.rotate(quaternion.EulerXYZ(0, -((Direction)rotation).ToRadians(), 0), new(pos.x, 0, pos.y));
+            float3 rotatedPos = math.rotate(quaternion.EulerXYZ(0, -((Direction)rotation).ToRadians(), 0), pos);
 
             // Return the position (range -1 to 1) but add the tile position to convert to world space
-            return rotatedPos.xz + tile.ValueRO.pos * 2;
+            return rotatedPos + new float3(tile.ValueRO.pos.x, 0, tile.ValueRO.pos.y) * 2;
         }
 
         /// <remarks>entryDirection is always south</remarks>
-        private readonly float2 GetPosOnTileIgnoreRotation(Direction exitDirection, float time)
+        private readonly float3 GetPosOnTileIgnoreRotation(Direction exitDirection, float time)
         {
             Debug.Assert(exitDirection != Directions.South);
 
-            float2 pos = new(float.NaN); // Placeholder value, will be overwritten
+            float3 pos = new(float.NaN); // Placeholder value, will be overwritten
 
             if (exitDirection == Directions.North)
             {
                 // move straight
                 pos.x = offsetFromCenter;
-                pos.y = math.lerp(-1, 1, time);
+                pos.z = math.lerp(-1, 1, time);
+                pos.y = defaultVerticalOffset;
             }
             else if (exitDirection == Directions.East)
             {
                 // move diagonal
                 pos.x = math.lerp(offsetFromCenter, 1, time);
-                pos.y = math.lerp(-1, -offsetFromCenter, time);
+                pos.z = math.lerp(-1, -offsetFromCenter, time);
+                pos.y = defaultVerticalOffset;
             }
             else
             {
@@ -85,9 +88,11 @@ namespace Components
                     pos.x = math.lerp(offsetFromCenter, -1, (time - 0.25f) / 0.75f);
 
                 if (time > 0.75f)
-                    pos.y = offsetFromCenter;
+                    pos.z = offsetFromCenter;
                 else
-                    pos.y = math.lerp(-1, offsetFromCenter, time / 0.75f);
+                    pos.z = math.lerp(-1, offsetFromCenter, time / 0.75f);
+
+                pos.y = defaultVerticalOffset;
             }
 
             return pos;

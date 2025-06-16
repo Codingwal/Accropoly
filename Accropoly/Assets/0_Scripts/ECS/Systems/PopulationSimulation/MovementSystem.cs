@@ -50,7 +50,7 @@ namespace Systems
 
                 // Calculate the position using the TransportTileAspect of the current tile
                 var transportTileAspect = SystemAPI.GetAspect<TransportTileAspect>(TileGridUtility.GetTile(waypoint.pos, buffer));
-                float2 pos = transportTileAspect.TravelOnTile(entryDir, exitDir, traveller.timeOnTile, out bool reachedTileEnd);
+                float3 pos = transportTileAspect.TravelOnTile(entryDir, exitDir, traveller.timeOnTile, out bool reachedTileEnd);
 
                 // Update the time spent on the current tile
                 traveller.timeOnTile += deltaTime;
@@ -64,7 +64,7 @@ namespace Systems
                 }
 
                 // Update and store the transform
-                transform.Position.xz = pos;
+                transform.Position = pos;
                 ecb.SetComponent(entity, transform);
             }).WithBurst(Unity.Burst.FloatMode.Fast, Unity.Burst.FloatPrecision.Low).Schedule();
         }
