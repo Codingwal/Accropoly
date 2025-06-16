@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using Unity.Mathematics;
 
 public struct Direction : IEquatable<Direction>
@@ -73,9 +75,9 @@ public struct Direction : IEquatable<Direction>
 
     private static int Normalize(int value) { return (value + 100) % 4; }
     public static Direction Rotate(Direction direction, int rotation) { return (Direction)Normalize((int)direction + rotation); }
-    public static Direction[] GetDirections()
+    public static DirectionEnumerable GetDirections()
     {
-        return new Direction[] { Directions.North, Directions.East, Directions.South, Directions.West };
+        return new DirectionEnumerable();
     }
     ///<summary>
     /// Calculates how you need to rotate direction to get resultingDirection.<br/>
@@ -84,6 +86,35 @@ public struct Direction : IEquatable<Direction>
     public static int GetRotation(Direction direction, Direction resultingDirection)
     {
         return Normalize((int)resultingDirection - (int)direction);
+    }
+}
+public class DirectionEnumerable : IEnumerable
+{
+    public DirectionEnumerator GetEnumerator()
+    {
+        return new();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+}
+public class DirectionEnumerator : IEnumerator
+{
+    private int dir = -1;
+    public Direction Current => (Direction)dir;
+    object IEnumerator.Current => Current;
+
+    public void Dispose() { }
+    public bool MoveNext()
+    {
+        dir++;
+        return dir < 4;
+    }
+    public void Reset()
+    {
+        dir = -1;
     }
 }
 public enum Directions
