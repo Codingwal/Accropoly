@@ -19,7 +19,7 @@ namespace Systems
         protected override void OnUpdate()
         {
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
-            var buffer = SystemAPI.GetBuffer<EntityBufferElement>(SystemAPI.GetSingletonEntity<EntityGridHolder>());
+            var entityGrid = TileGridUtility.GetEntityGrid();
 
             // Connect new tiles with the ConnectingTile component
             // ConnectingTile, MapTileComponent & LocalTransform can't be passed as parameters because SystemAPI.GetComponent & SystemAPI.HasComponent are used
@@ -31,7 +31,7 @@ namespace Systems
 
                 foreach (Direction direction in Direction.GetDirections())
                 {
-                    if (!TileGridUtility.TryGetTile(mapTileComponent.pos + direction.DirectionVec, buffer, out Entity neighbour)) continue;
+                    if (!TileGridUtility.TryGetTile(mapTileComponent.pos + direction.DirectionVec, entityGrid, out Entity neighbour)) continue;
                     if (SystemAPI.HasComponent<ConnectingTile>(neighbour))
                     {
                         var neighbourConnectingTile = SystemAPI.GetComponent<ConnectingTile>(neighbour);
@@ -75,7 +75,7 @@ namespace Systems
 
                 foreach (Direction direction in Direction.GetDirections())
                 {
-                    if (!TileGridUtility.TryGetTile(mapTileComponent.pos + direction.DirectionVec, buffer, out Entity neighbour)) continue;
+                    if (!TileGridUtility.TryGetTile(mapTileComponent.pos + direction.DirectionVec, entityGrid, out Entity neighbour)) continue;
                     if (SystemAPI.HasComponent<ConnectingTile>(neighbour))
                     {
                         var neighbourConnectingTile = SystemAPI.GetComponent<ConnectingTile>(neighbour);
@@ -103,7 +103,7 @@ namespace Systems
                     ConnectingTile connectingTile = SystemAPI.GetComponent<ConnectingTile>(entity);
                     foreach (Direction direction in Direction.GetDirections())
                     {
-                        if (!TileGridUtility.TryGetTile(mapTileComponent.pos + direction.DirectionVec, buffer, out Entity neighbour)) continue;
+                        if (!TileGridUtility.TryGetTile(mapTileComponent.pos + direction.DirectionVec, entityGrid, out Entity neighbour)) continue;
                         if (SystemAPI.HasComponent<ConnectingTile>(neighbour))
                         {
                             var neighbourConnectingTile = SystemAPI.GetComponent<ConnectingTile>(neighbour);

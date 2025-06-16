@@ -20,7 +20,7 @@ public class MaterialsAndMeshesHolder : MonoBehaviour
     private void Update()
     {
         if (entitiesToUpdate.Count == 0) return;
-        EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+        EntityManager entityManager = ECSUtility.EntityManager;
         foreach (var (entity, materialMeshPair) in entitiesToUpdate)
         {
             if (!entityManager.Exists(entity)) continue;

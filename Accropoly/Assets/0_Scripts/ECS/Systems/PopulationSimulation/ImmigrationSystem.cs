@@ -91,7 +91,10 @@ namespace Systems
                     float3 pos = new(2 * habitatTile.pos.x + offset, 0.1f, 2 * habitatTile.pos.y);
                     ecb.SetComponent(entity, LocalTransform.FromPositionRotationScale(pos, quaternion.identity, 0.1f));
                 }
-            }).WithDisposeOnCompletion(homelessEntities).WithDisposeOnCompletion(homelessPersonComponents).WithDisposeOnCompletion(homelessTransforms).WithDisposeOnCompletion(homelessIndex).Schedule();
+            })
+            .WithDisposeOnCompletion(homelessEntities).WithDisposeOnCompletion(homelessPersonComponents)
+            .WithDisposeOnCompletion(homelessTransforms).WithDisposeOnCompletion(homelessIndex)
+            .Schedule();
         }
     }
 }

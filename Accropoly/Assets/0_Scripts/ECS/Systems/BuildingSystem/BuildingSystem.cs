@@ -125,7 +125,7 @@ namespace Systems
         }
         public static void StartPlacementProcess(TileType tileType)
         {
-            EntityManager em = World.DefaultGameObjectInjectionWorld.EntityManager;
+            EntityManager em = ECSUtility.EntityManager;
 
             var tileToPlaceInfoQuery = em.CreateEntityQuery(typeof(TileToPlaceInfo));
 
@@ -137,7 +137,7 @@ namespace Systems
             }
 
             // Create a tileToPlaceInfo singleton entity and set mesh & material
-            var prefab = em.CreateEntityQuery(typeof(PrefabEntity)).GetSingleton<PrefabEntity>();
+            var prefab = ECSUtility.GetSingleton<PrefabEntity>();
             Entity tileToPlaceInfoEntity = em.Instantiate(prefab);
             em.AddComponentData(tileToPlaceInfoEntity, new TileToPlaceInfo { tileType = tileType });
             MaterialsAndMeshesHolder.UpdateMeshAndMaterial(tileToPlaceInfoEntity, tileType);

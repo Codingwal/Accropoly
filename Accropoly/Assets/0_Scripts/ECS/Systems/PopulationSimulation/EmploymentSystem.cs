@@ -23,7 +23,7 @@ namespace Systems
         {
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
 
-            var entityGrid = SystemAPI.GetBuffer<EntityBufferElement>(SystemAPI.GetSingletonEntity<EntityGridHolder>());
+            var entityGrid = TileGridUtility.GetEntityGrid();
 
             NativeArray<Entity> employerEntities = employersWithSpaceQuery.ToEntityArray(Allocator.TempJob);
             NativeArray<Employer> employers = employersWithSpaceQuery.ToComponentDataArray<Employer>(Allocator.TempJob);

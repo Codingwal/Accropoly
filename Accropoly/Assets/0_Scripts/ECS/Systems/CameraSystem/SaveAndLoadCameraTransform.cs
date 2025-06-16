@@ -22,7 +22,7 @@ namespace Systems
             if (!loadGameQuery.IsEmpty)
             {
                 var worldData = WorldDataSystem.worldData;
-                CameraTransform cameraTransform = new CameraTransform
+                CameraTransform cameraTransform = new()
                 {
                     pos = new float3(worldData.cameraSystemPos.x, 0, worldData.cameraSystemPos.y),
                     rot = worldData.cameraSystemRotation,

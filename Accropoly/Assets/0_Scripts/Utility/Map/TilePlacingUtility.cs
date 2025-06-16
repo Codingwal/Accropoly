@@ -11,8 +11,7 @@ public static class TilePlacingUtility
 {
     public static List<(IComponentData, bool)> GetComponents(TileType tileType, int2 pos, Direction rotation)
     {
-        EntityManager em = World.DefaultGameObjectInjectionWorld.EntityManager;
-        var tileGrowingConfig = em.CreateEntityQuery(typeof(ConfigComponents.TileGrowing)).GetSingleton<ConfigComponents.TileGrowing>();
+        var tileGrowingConfig = ECSUtility.GetSingleton<ConfigComponents.TileGrowing>();
         System.Random rnd = new();
         List<(IComponentData, bool)> components = tileType switch
         {
@@ -43,7 +42,7 @@ public static class TilePlacingUtility
     }
     public static void UpdateEntity(Entity tile, List<(IComponentData, bool)> components, EntityCommandBuffer ecb)
     {
-        EntityManager em = World.DefaultGameObjectInjectionWorld.EntityManager;
+        EntityManager em = ECSUtility.EntityManager;
 
         // Get all componentTypes from the components list
         List<ComponentType> componentTypes = new();
@@ -51,7 +50,7 @@ public static class TilePlacingUtility
             componentTypes.Add(component.GetType());
 
         // Add all components of the prefab (Transform & Rendering components)
-        var prefab = em.CreateEntityQuery(typeof(ConfigComponents.PrefabEntity)).GetSingleton<ConfigComponents.PrefabEntity>(); // Get the tilePrefab
+        var prefab = ECSUtility.GetSingleton<ConfigComponents.PrefabEntity>(); // Get the tilePrefab
         NativeArray<ComponentType> prefabComponentTypes = em.GetChunk(prefab).Archetype.GetComponentTypes(Allocator.Temp);
 
         foreach (var componentType in prefabComponentTypes)

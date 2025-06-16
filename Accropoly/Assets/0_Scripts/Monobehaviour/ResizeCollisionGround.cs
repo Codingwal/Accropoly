@@ -7,8 +7,7 @@ public class ResizecollisionGround : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        EntityManager em = World.DefaultGameObjectInjectionWorld.EntityManager;
-        query = em.CreateEntityQuery(typeof(Tags.LoadGame));
+        query = ECSUtility.EntityManager.CreateEntityQuery(typeof(Tags.LoadGame));
     }
 
     // Update is called once per frame

@@ -1,13 +1,12 @@
 using Unity.Entities;
 using Unity.Mathematics;
 using Components;
-using UnityEngine;
 
 public static class TileGridUtility
 {
     public static DynamicBuffer<EntityBufferElement> CreateEntityGridBuffer()
     {
-        var em = World.DefaultGameObjectInjectionWorld.EntityManager;
+        var em = ECSUtility.EntityManager;
         Entity entity = em.CreateEntity();
         em.AddComponent<Tags.EntityGridHolder>(entity);
         return em.AddBuffer<EntityBufferElement>(entity);
@@ -15,7 +14,7 @@ public static class TileGridUtility
     /// <remarks>Can't be used in jobs!</remarks>
     public static DynamicBuffer<EntityBufferElement> GetEntityGrid()
     {
-        var em = World.DefaultGameObjectInjectionWorld.EntityManager;
+        var em = ECSUtility.EntityManager;
         var query = em.CreateEntityQuery(typeof(Tags.EntityGridHolder));
         return em.GetBuffer<EntityBufferElement>(query.GetSingletonEntity());
     }

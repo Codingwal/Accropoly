@@ -28,7 +28,6 @@ namespace Systems
 
                 if (tile.tileType == TileType.Sapling && growingTile.age >= config.maxAge1)
                 {
-                    Debug.Log("!");
                     tile.tileType = TileType.GrowingForest;
                     MaterialsAndMeshesHolder.UpdateMeshAndMaterial(entity, TileType.GrowingForest);
                     ecb.AddComponent<NewTile>(entity);

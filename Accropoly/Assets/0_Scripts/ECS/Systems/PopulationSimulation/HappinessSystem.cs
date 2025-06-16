@@ -24,7 +24,7 @@ namespace Systems
             frame++;
             if (frame % 50 != 0) return;
 
-            var buffer = SystemAPI.GetBuffer<EntityBufferElement>(SystemAPI.GetSingletonEntity<EntityGridHolder>());
+            var buffer = TileGridUtility.GetEntityGrid();
             var config = SystemAPI.GetSingleton<ConfigComponents.Happiness>();
             var hasElectricityLookup = GetComponentLookup<HasElectricity>();
 

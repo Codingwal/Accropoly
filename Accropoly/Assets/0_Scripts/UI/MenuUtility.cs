@@ -47,8 +47,7 @@ public static class MenuUtility
     {
         Systems.WorldDataSystem.SaveWorldData();
 
-        EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-        entityManager.DestroyEntity(entityManager.CreateEntityQuery(typeof(Tags.RunGame)));
+        EntityManager.DestroyEntity(EntityManager.CreateEntityQuery(typeof(Tags.RunGame)));
 
         InputSystem.DisableMenuInputActions();
     }
@@ -101,6 +100,6 @@ public static class MenuUtility
     {
         return EntityManager.CreateEntityQuery(typeof(T)).GetSingleton<T>();
     }
-    private static EntityManager EntityManager => World.DefaultGameObjectInjectionWorld.EntityManager;
+    private static EntityManager EntityManager => ECSUtility.EntityManager;
     private static Systems.InputSystem InputSystem => World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<Systems.InputSystem>();
 }

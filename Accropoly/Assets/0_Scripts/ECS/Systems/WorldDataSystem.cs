@@ -62,7 +62,7 @@ namespace Systems
                 Debug.Log("Loading WorldData");
 
                 worldData = SaveSystem.Instance.GetWorldData();
-                World.DefaultGameObjectInjectionWorld.EntityManager.CreateSingleton(new GameInfo
+                state.EntityManager.CreateSingleton(new GameInfo
                 {
                     balance = worldData.balance,
                     time = worldData.time,
