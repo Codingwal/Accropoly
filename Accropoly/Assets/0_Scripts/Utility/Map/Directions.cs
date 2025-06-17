@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
 using Unity.Mathematics;
 
 public struct Direction : IEquatable<Direction>
@@ -75,6 +76,25 @@ public struct Direction : IEquatable<Direction>
 
     private static int Normalize(int value) { return (value + 100) % 4; }
     public static Direction Rotate(Direction direction, int rotation) { return (Direction)Normalize((int)direction + rotation); }
+
+    /// <summary>
+    /// Fills the first 4 slots of the container with the 4 directions
+    /// </summary>
+    public static void GetDirections(ref NativeArray<Direction> array)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            array[i] = (Direction)i;
+        }
+    }
+    public static void GetDirections(ref NativeList<Direction> list)
+    {
+        list.Clear();
+        for (int i = 0; i < 4; i++)
+        {
+            list.Add((Direction)i);
+        }
+    }
     public static DirectionEnumerable GetDirections()
     {
         return new DirectionEnumerable();

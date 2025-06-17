@@ -48,7 +48,7 @@ namespace Systems
                 }
                 else Debug.LogWarning($"Couldn't find path from {(int2)math.round(transform.Position.xz) / 2} to {traveller.destination}!");
                 ecb.SetComponentEnabled<WantsToTravel>(entity, false);
-            }).Schedule();
+            }).WithoutBurst().Schedule();
         }
 
         /// <remarks>Returns -1 if no path is found</remarks>
@@ -133,8 +133,7 @@ namespace Systems
                 // Get neighbours
                 if (node.pos.Equals(start))
                 {
-                    foreach (Direction dir in Direction.GetDirections())
-                        directions.Add(dir);
+                    Direction.GetDirections(ref directions);
                 }
                 else
                 {

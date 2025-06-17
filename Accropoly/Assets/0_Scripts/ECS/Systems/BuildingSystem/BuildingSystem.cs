@@ -30,6 +30,8 @@ namespace Systems
         {
             var ecb = SystemAPI.GetSingleton<EndCreationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
 
+            var entityGrid = TileGridUtility.GetEntityGrid();
+
             // Only execute if there is placementInput (can't use singleton functions bc of IEnableableComponent)
             if (placementInputDataQuery.IsEmpty)
                 return;
@@ -78,7 +80,7 @@ namespace Systems
                 Entities.WithAll<TileToPlace>().ForEach((in LocalTransform transform) =>
                 {
                     int2 pos = (int2)transform.Position.xz / 2;
-                    Entity tile = TileGridUtility.GetTile(pos);
+                    Entity tile = TileGridUtility.GetTile(pos, entityGrid);
 
                     // Get tile placing cost
                     TileType oldTileType = SystemAPI.GetComponent<Tile>(tile).tileType;

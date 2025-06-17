@@ -63,7 +63,7 @@ namespace Systems
                     break; // Stop searching for an employer if a valid employer has been found
                 }
             }).WithDisposeOnCompletion(employerEntities)
-            .Run(); // Must be executed on main thread because PathfindingSystem.CalculateTravelTime() is called (Unity throws errors if Schedule() is used)
+            .WithoutBurst().Run(); // Must be executed on main thread because PathfindingSystem.CalculateTravelTime() is called (Unity throws errors if Schedule() is used)
 
             // Remove people from their workplace if there is no valid path
             Entities.WithNone<Unemployed>().ForEach((Entity entity, ref Worker worker, in Person person) =>
@@ -84,7 +84,7 @@ namespace Systems
                 // Make person unemployed
                 ecb.AddComponent<Unemployed>(entity);
                 ecb.SetComponent(entity, new Worker { employer = -1, timeToWork = -1 });
-            }).Run(); // Must be executed on main thread because PathfindingSystem.CalculateTravelTime() is called (Unity throws errors if Schedule() is used)
+            }).WithoutBurst().Run(); // Must be executed on main thread because PathfindingSystem.CalculateTravelTime() is called (Unity throws errors if Schedule() is used)
         }
     }
 }

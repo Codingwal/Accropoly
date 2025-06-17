@@ -15,8 +15,7 @@ public static class TileGridUtility
     public static DynamicBuffer<EntityBufferElement> GetEntityGrid()
     {
         var em = ECSUtility.EntityManager;
-        var query = em.CreateEntityQuery(typeof(Tags.EntityGridHolder));
-        return em.GetBuffer<EntityBufferElement>(query.GetSingletonEntity());
+        return em.GetBuffer<EntityBufferElement>(ECSUtility.GetSingletonEntity<Tags.EntityGridHolder>());
     }
     public static int GetIndex(int2 pos, int totalMapSize)
     {

@@ -39,7 +39,7 @@ namespace Systems
 
                     if (worker.timeToWork == -1)
                         Debug.LogWarning($"Couldn't find path to work (travelTime=-1)! (employer={worker.employer}, homeTile={person.homeTile})");
-                }).Schedule();
+                }).WithoutBurst().Schedule();
             }
 
             Entities.WithDisabled<WantsToTravel, Travelling>().ForEach((Entity entity, ref Traveller traveller, in LocalTransform transform, in Person person, in Worker worker) =>

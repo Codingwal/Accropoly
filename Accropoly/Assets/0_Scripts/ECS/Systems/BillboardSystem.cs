@@ -19,7 +19,7 @@ namespace Systems
     public partial class BillboardSystem : SystemBase
     {
         private static NativeQueue<Entity> unusedBillboards;
-        private static EntityQuery tilesWithProblemsQuery;
+        private EntityQuery tilesWithProblemsQuery;
 
         protected override void OnCreate()
         {
@@ -57,14 +57,14 @@ namespace Systems
                 Entities.ForEach((ref BillboardOwner billboardOwner) =>
                 {
                     DisposeBillboardOwner(ref billboardOwner, ref ecb);
-                }).Schedule();
+                }).WithoutBurst().Schedule();
                 return;
             }
 
             Entities.WithAll<Replace>().ForEach((ref BillboardOwner billboardOwner) =>
             {
                 DisposeBillboardOwner(ref billboardOwner, ref ecb);
-            }).Run();
+            }).WithoutBurst().Run();
 
             // Make sure all tiles with problems have the BillboardOwner component, this simplifies the Entities.ForEach 
             ecb.AddComponent(tilesWithProblemsQuery, new BillboardOwner());
@@ -115,7 +115,7 @@ namespace Systems
 
                 // Update the component
                 ecb.SetComponent(entity, billboardOwner); // Needed because the data is passed to sub-functions (ref doesn't work as intended)
-            }).WithReadOnly(hasElectricityLookup).WithReadOnly(isConnectedLookup).Schedule();
+            }).WithReadOnly(hasElectricityLookup).WithReadOnly(isConnectedLookup).WithoutBurst().Schedule(); // Burst doesn't work because of static field
         }
 
         private static bool ContainsProblem(UnsafeList<BillboardInfo> billboards, Problems problem)

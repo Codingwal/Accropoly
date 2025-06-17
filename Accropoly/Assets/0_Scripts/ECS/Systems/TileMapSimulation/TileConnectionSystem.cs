@@ -3,6 +3,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using Components;
 using Tags;
+using Unity.Collections;
 
 namespace Systems
 {
@@ -21,6 +22,9 @@ namespace Systems
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
             var entityGrid = TileGridUtility.GetEntityGrid();
 
+            NativeArray<Direction> directions = new(4, Allocator.TempJob);
+            Direction.GetDirections(ref directions);
+
             // Connect new tiles with the ConnectingTile component
             // ConnectingTile, MapTileComponent & LocalTransform can't be passed as parameters because SystemAPI.GetComponent & SystemAPI.HasComponent are used
             Entities.WithAll<NewTile, ConnectingTile>().ForEach((Entity entity) =>
@@ -29,7 +33,7 @@ namespace Systems
                 Tile mapTileComponent = SystemAPI.GetComponent<Tile>(entity);
                 LocalTransform transform = SystemAPI.GetComponent<LocalTransform>(entity);
 
-                foreach (Direction direction in Direction.GetDirections())
+                foreach (Direction direction in directions)
                 {
                     if (!TileGridUtility.TryGetTile(mapTileComponent.pos + direction.DirectionVec, entityGrid, out Entity neighbour)) continue;
                     if (SystemAPI.HasComponent<ConnectingTile>(neighbour))
@@ -69,7 +73,7 @@ namespace Systems
             {
                 var mapTileComponent = SystemAPI.GetComponent<Tile>(entity);
 
-                foreach (Direction direction in Direction.GetDirections())
+                foreach (Direction direction in directions)
                 {
                     if (!TileGridUtility.TryGetTile(mapTileComponent.pos + direction.DirectionVec, entityGrid, out Entity neighbour)) continue;
                     if (SystemAPI.HasComponent<ConnectingTile>(neighbour))
@@ -94,7 +98,7 @@ namespace Systems
                 Entities.WithAll<ConnectingTile>().ForEach((Entity entity, ref Tile mapTileComponent, ref LocalTransform transform) =>
                 {
                     ConnectingTile connectingTile = SystemAPI.GetComponent<ConnectingTile>(entity);
-                    foreach (Direction direction in Direction.GetDirections())
+                    foreach (Direction direction in directions)
                     {
                         if (!TileGridUtility.TryGetTile(mapTileComponent.pos + direction.DirectionVec, entityGrid, out Entity neighbour)) continue;
                         if (SystemAPI.HasComponent<ConnectingTile>(neighbour))
@@ -115,6 +119,8 @@ namespace Systems
                     mapTileComponent.rotation = rotation;
                 }).Schedule();
             }
+
+            directions.Dispose(Dependency);
         }
     }
 }
