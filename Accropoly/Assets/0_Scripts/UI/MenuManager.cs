@@ -128,6 +128,7 @@ public class MenuManager : MonoBehaviour
         {
             SaveSystem.Instance.SaveTemplate(template.Value, template.Key);
         }
+        ReloadUI();
     }
     private void OnDeleteMap()
     {
