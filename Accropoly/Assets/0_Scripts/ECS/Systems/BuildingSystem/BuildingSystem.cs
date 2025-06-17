@@ -67,7 +67,7 @@ namespace Systems
                     Entity entity = EntityManager.Instantiate(prefab); // Inefficient but who cares
                     ecb.SetComponent(entity, LocalTransform.FromPositionRotation(new(pos.x, 0.3f, pos.y), quaternion.Euler(new(0, tileToPlaceInfo.rotation.ToRadians(), 0))));
                     ecb.AddComponent<TileToPlace>(entity);
-                    MaterialsAndMeshesHolder.UpdateMeshAndMaterial(entity, tileType);
+                    ECSUtility.World.GetExistingSystemManaged<AppearenceSystem>().UpdateAppearence(entity, tileType);
                 }
                 return;
             }
@@ -141,7 +141,7 @@ namespace Systems
             Entity entity = em.Instantiate(prefab);
             em.AddComponentData(entity, new TileToPlaceInfo { tileType = tileType });
             em.SetComponentData(entity, LocalTransform.FromPosition(0, -10, 0)); // Hide entity until the position is updated by UpdatePosition.cs
-            MaterialsAndMeshesHolder.UpdateMeshAndMaterial(entity, tileType);
+            ECSUtility.World.GetExistingSystemManaged<AppearenceSystem>().UpdateAppearence(entity, tileType);
         }
     }
 }

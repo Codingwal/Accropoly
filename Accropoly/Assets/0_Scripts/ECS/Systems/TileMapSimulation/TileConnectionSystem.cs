@@ -46,7 +46,6 @@ namespace Systems
                         if (!SystemAPI.HasComponent<NewTile>(neighbour))
                         {
                             SystemAPI.SetComponent(neighbour, neighbourConnectingTile); // Changes must be applied directly as they might be read in the same job
-                            MaterialsAndMeshesHolder.UpdateAppearence(neighbour, SystemAPI.GetComponent<Tile>(neighbour).tileType, neighbourConnectingTile);
                             var neighbourTransform = SystemAPI.GetComponent<LocalTransform>(neighbour);
                             neighbourTransform.Rotation = quaternion.EulerXYZ(0, neighbourConnectingTile.GetRotation().ToRadians(), 0);
                             ecb.SetComponent(neighbour, neighbourTransform);
@@ -57,9 +56,6 @@ namespace Systems
                 // Update ConnectingTile
                 ecb.SetComponent(entity, connectingTile);
 
-                // Update material and mesh
-                MaterialsAndMeshesHolder.UpdateAppearence(entity, mapTileComponent.tileType, connectingTile);
-
                 // Update rotation
                 Direction rotation = connectingTile.GetRotation();
                 transform.Rotation = quaternion.EulerXYZ(0, rotation.ToRadians(), 0);
@@ -68,7 +64,7 @@ namespace Systems
                 ecb.SetComponent(entity, mapTileComponent);
             }).Schedule();
 
-            // Disconnect new tiles with the ConnectingTile component
+            // Disconnect new tiles without the ConnectingTile component
             Entities.WithAll<NewTile>().WithNone<ConnectingTile>().ForEach((Entity entity) =>
             {
                 var mapTileComponent = SystemAPI.GetComponent<Tile>(entity);
@@ -83,9 +79,6 @@ namespace Systems
                         // Update neighbour ConnectingTile
                         neighbourConnectingTile.RemoveDirection(direction.Flip());
                         ecb.SetComponent(neighbour, neighbourConnectingTile);
-
-                        // Update neighbour material and mesh
-                        MaterialsAndMeshesHolder.UpdateAppearence(neighbour, SystemAPI.GetComponent<Tile>(neighbour).tileType, neighbourConnectingTile);
 
                         // Update neighbour rotation
                         var neighbourTransform = SystemAPI.GetComponent<LocalTransform>(neighbour);
@@ -115,9 +108,6 @@ namespace Systems
                     }
                     // Update ConnectingTile
                     ecb.SetComponent(entity, connectingTile);
-
-                    // Update material and mesh
-                    MaterialsAndMeshesHolder.UpdateAppearence(entity, mapTileComponent.tileType, connectingTile);
 
                     // Update rotation
                     Direction rotation = connectingTile.GetRotation();

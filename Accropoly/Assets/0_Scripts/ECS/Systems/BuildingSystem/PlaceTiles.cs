@@ -35,9 +35,6 @@ namespace Systems
 
                 // Set the transform rotation according to the rotation of tileToPlace
                 transform.Rotation = quaternion.EulerXYZ(0, tileToPlaceInfo.rotation.ToRadians(), 0);
-
-                // Set mesh & material according to the new tileType
-                MaterialsAndMeshesHolder.UpdateMeshAndMaterial(entity, newTileType);
             }).WithStructuralChanges().Run();
         }
     }

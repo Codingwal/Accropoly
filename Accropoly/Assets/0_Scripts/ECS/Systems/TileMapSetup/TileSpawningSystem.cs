@@ -4,6 +4,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using Components;
 using Unity.Rendering;
+using Authoring;
 
 namespace Systems
 {
@@ -28,6 +29,8 @@ namespace Systems
 
             TileGridUtility.CreateEntityGridBuffer();
 
+            AppearenceSystem appearenceSystem = state.World.GetOrCreateSystemManaged<AppearenceSystem>();
+
             var tiles = worldData.map.tiles;
             for (int x = 0; x < tiles.GetLength(0); x++)
             {
@@ -40,26 +43,24 @@ namespace Systems
                     // Add all serialized components with their value to the entity
                     TilePlacingUtility.UpdateEntity(entity, tiles[x, y].components, ecb);
 
-                    // Get MapTileComponent and try to get ConnectingTile
-                    Tile mapTileComponent = new();
+                    // Get tile and try to get ConnectingTile
+                    Tile tile = new();
                     foreach (var (component, _) in tiles[x, y].components)
                         if (component.GetType() == typeof(Tile))
-                            mapTileComponent = (Tile)component;
+                            tile = (Tile)component;
 
 
-                    // Set LocalTransform of the new tile using the MapTileComponent data
-                    quaternion rotation = quaternion.EulerXYZ(0, math.radians((uint)mapTileComponent.rotation * 90), 0);
+                    // Set LocalTransform of the new tile using the tile data
+                    quaternion rotation = quaternion.EulerXYZ(0, math.radians((uint)tile.rotation * 90), 0);
                     ecb.SetComponent(entity, LocalTransform.FromPositionRotation(2 * new float3(x, 0, y), rotation));
 
                     // The tile meshes are 2 units large -> the render bounds need to be extended from 0.5 to 1
                     ecb.SetComponent(entity, new RenderBounds() { Value = new AABB() { Extents = new(1, 1, 1) } });
 
-                    // Set mesh using MapTileComponent.tileType
-                    MaterialsAndMeshesHolder.UpdateMeshAndMaterial(entity, mapTileComponent.tileType);
-
-
                     // Store the entity in a buffer for future access
                     TileGridUtility.GetEntityGrid().Add(entity);
+
+                    appearenceSystem.UpdateAppearence(entity, tile.tileType);
                 }
             }
         }

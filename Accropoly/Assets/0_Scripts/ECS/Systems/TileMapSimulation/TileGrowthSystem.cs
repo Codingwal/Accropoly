@@ -29,13 +29,11 @@ namespace Systems
                 if (tile.tileType == TileType.Sapling && growingTile.age >= config.maxAge1)
                 {
                     tile.tileType = TileType.GrowingForest;
-                    MaterialsAndMeshesHolder.UpdateMeshAndMaterial(entity, TileType.GrowingForest);
                     ecb.AddComponent<NewTile>(entity);
                 }
                 else if (tile.tileType == TileType.GrowingForest && growingTile.age >= config.maxAge2)
                 {
                     tile.tileType = TileType.Forest;
-                    MaterialsAndMeshesHolder.UpdateMeshAndMaterial(entity, TileType.Forest);
                     ecb.RemoveComponent<GrowingTile>(entity);
                     ecb.AddComponent<NewTile>(entity);
                 }
