@@ -3,27 +3,27 @@ using Components;
 using ConfigComponents;
 using Unity.Rendering;
 using Tags;
+using UnityEngine;
 
 [UpdateInGroup(typeof(LateSimulationSystemGroup))]
 public partial class AppearenceSystem : SystemBase
 {
     private Appearence configCopy; // Needed so that the unmanaged data structures can be disposed
     private bool firstUpdate = true;
-    protected override void OnCreate()
-    {
-        RequireForUpdate<RunGame>();
-        RequireForUpdate<Tile>();
-        RequireForUpdate<Appearence>();
-    }
     protected override void OnUpdate()
     {
-        Appearence config = SystemAPI.GetSingleton<Appearence>();
-
         if (firstUpdate)
         {
-            configCopy = config;
+            Appearence data = Authoring.Appearence.CreateAppearenceConfig();
+            EntityManager.CreateSingleton(data);
+            configCopy = data;
             firstUpdate = false;
         }
+
+        if (!SystemAPI.HasSingleton<RunGame>())
+            return;
+
+        Appearence config = SystemAPI.GetSingleton<Appearence>();
 
         Entities.WithChangeFilter<Tile>().WithNone<ConnectingTile>().ForEach((ref MaterialMeshInfo data, in Tile tile) =>
         {

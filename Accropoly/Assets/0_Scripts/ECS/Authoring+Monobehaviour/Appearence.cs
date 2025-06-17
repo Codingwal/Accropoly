@@ -10,56 +10,56 @@ namespace Authoring
 {
     public class Appearence : MonoBehaviour
     {
+        private static Appearence instance;
         [SerializeField] private SerializableDictionary<TileType, MaterialMeshPair> simpleTiles = new();
         [SerializeField] private SerializableDictionary<TileType, MaterialMeshPairSet> connectingTiles = new();
-
-        public class Baker : Baker<Appearence>
+        private void Awake()
         {
-            public override void Bake(Appearence authoring)
+            instance = this;
+        }
+
+        public static ConfigComponents.Appearence CreateAppearenceConfig()
+        {
+            var graphicsSystem = ECSUtility.World.GetOrCreateSystemManaged<EntitiesGraphicsSystem>();
+
+            ConfigComponents.Appearence data = new()
             {
-                Entity entity = GetEntity(TransformUsageFlags.None);
+                simpleTiles = new(4, Allocator.Persistent),
+                connectingTiles = new(1, Allocator.Persistent)
+            };
 
-                var graphicsSystem = ECSUtility.World.GetOrCreateSystemManaged<EntitiesGraphicsSystem>();
+            // Copy simpleTiles
+            foreach ((TileType tileType, MaterialMeshPair pair) in instance.simpleTiles)
+            {
+                Debug.Assert(pair.material != null, $"Material for tileType {tileType} is null");
+                Debug.Assert(pair.mesh != null, $"Mesh for tileType {tileType} is null");
 
-                ConfigComponents.Appearence data = new()
+                BatchMaterialID matID = graphicsSystem.RegisterMaterial(pair.material);
+                BatchMeshID meshID = graphicsSystem.RegisterMesh(pair.mesh);
+
+                data.simpleTiles.Add((int)tileType, new(matID, meshID));
+            }
+
+            // Copy connectingTiles
+            foreach ((TileType tileType, MaterialMeshPairSet managedSet) in instance.connectingTiles)
+            {
+                MaterialMeshInfoSet set = new(6, Allocator.Persistent);
+                for (int i = 0; i < 6; i++)
                 {
-                    simpleTiles = new(4, Allocator.Persistent),
-                    connectingTiles = new(1, Allocator.Persistent)
-                };
+                    MaterialMeshPair pair = managedSet.pairs[i];
 
-                // Copy simpleTiles
-                foreach ((TileType tileType, MaterialMeshPair pair) in authoring.simpleTiles)
-                {
                     Debug.Assert(pair.material != null, $"Material for tileType {tileType} is null");
                     Debug.Assert(pair.mesh != null, $"Mesh for tileType {tileType} is null");
 
                     BatchMaterialID matID = graphicsSystem.RegisterMaterial(pair.material);
                     BatchMeshID meshID = graphicsSystem.RegisterMesh(pair.mesh);
 
-                    data.simpleTiles.Add((int)tileType, new(matID, meshID));
+                    set.pairs.Add(new(matID, meshID));
                 }
-
-                // Copy connectingTiles
-                foreach ((TileType tileType, MaterialMeshPairSet managedSet) in authoring.connectingTiles)
-                {
-                    MaterialMeshInfoSet set = new(6, Allocator.Persistent);
-                    for (int i = 0; i < 6; i++)
-                    {
-                        MaterialMeshPair pair = managedSet.pairs[i];
-
-                        Debug.Assert(pair.material != null, $"Material for tileType {tileType} is null");
-                        Debug.Assert(pair.mesh != null, $"Mesh for tileType {tileType} is null");
-
-                        BatchMaterialID matID = graphicsSystem.RegisterMaterial(pair.material);
-                        BatchMeshID meshID = graphicsSystem.RegisterMesh(pair.mesh);
-
-                        set.pairs.Add(new(matID, meshID));
-                    }
-                    data.connectingTiles.Add((int)tileType, set);
-                }
-
-                AddComponent(entity, data);
+                data.connectingTiles.Add((int)tileType, set);
             }
+
+            return data;
         }
     }
 }
