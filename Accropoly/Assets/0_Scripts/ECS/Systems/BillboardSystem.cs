@@ -20,6 +20,7 @@ namespace Systems
     {
         private static NativeQueue<Entity> unusedBillboards;
         private EntityQuery tilesWithProblemsQuery;
+        private bool firstUpdate = true;
 
         protected override void OnCreate()
         {
@@ -50,6 +51,25 @@ namespace Systems
         {
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
             var config = SystemAPI.GetSingleton<Billboarding>();
+
+            // Load materials if this is the first update (Can't be done in baker bc a system is referenced)
+            if (firstUpdate)
+            {
+                var entitiesGraphicsSystem = World.GetOrCreateSystemManaged<EntitiesGraphicsSystem>();
+                var materials = BillboardMaterials.Materials;
+                foreach (var pair in materials)
+                {
+                    int index = (int)pair.key;
+
+                    // Change the length (if necessary) so that the element can be added at the correct positon
+                    if (index >= config.materialIDs.Length)
+                        config.materialIDs.Length = index + 1;
+
+                    config.materialIDs[(int)pair.key] = entitiesGraphicsSystem.RegisterMaterial(pair.value);
+                }
+                SystemAPI.SetSingleton(config);
+                firstUpdate = false;
+            }
 
             if (SystemAPI.HasSingleton<SaveGame>())
             {
@@ -133,7 +153,9 @@ namespace Systems
 
             // Get an entity and update its appearence (transform is handled later)
             Entity billboard = unusedBillboards.Dequeue();
-            ecb.SetComponent(billboard, new MaterialMeshInfo(config.materialIDs[(int)problem], config.meshID));
+            var info = ECSUtility.EntityManager.GetComponentData<MaterialMeshInfo>(billboard);
+            info.MaterialID = config.materialIDs[(int)problem];
+            ecb.SetComponent(billboard, info);
 
             billboardOwner.billboards.Add(new BillboardInfo(billboard, problem));
 

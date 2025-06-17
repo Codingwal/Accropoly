@@ -1463,6 +1463,7 @@ GameObject:
   - component: {fileID: 309032823}
   - component: {fileID: 309032824}
   - component: {fileID: 309032825}
+  - component: {fileID: 309032826}
   m_Layer: 0
   m_Name: Config
   m_TagString: Untagged
@@ -1582,6 +1583,24 @@ MonoBehaviour:
           mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
         - material: {fileID: 2100000, guid: 568e6c2e52511a141bbdd5aa361fc116, type: 2}
           mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
+--- !u!114 &309032826
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 309032821}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5240e6024717e1459b20ad4841c4299, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  materials:
+    dictionary:
+    - key: 0
+      value: {fileID: 2100000, guid: 6e1c2e32957fac94ba5022870dd9df6d, type: 2}
+    - key: 1
+      value: {fileID: 2100000, guid: 57f722e1070edfd429e9b90304d56165, type: 2}
 --- !u!1 &417060385
 GameObject:
   m_ObjectHideFlags: 0
