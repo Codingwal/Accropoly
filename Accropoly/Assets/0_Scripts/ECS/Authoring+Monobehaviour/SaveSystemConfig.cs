@@ -13,7 +13,7 @@ public class SaveSystemConfig : MonoBehaviour
     [SerializeField] private bool deleteSaves;
     public static bool DeleteSaves { get { return instance.deleteSaves; } }
 
-    private void Start()
+    private void Awake()
     {
         instance = this;
         SaveSystem.Initialize();

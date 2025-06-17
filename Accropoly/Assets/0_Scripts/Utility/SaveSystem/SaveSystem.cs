@@ -26,10 +26,6 @@ public class SaveSystem : FileHandler
         {
             {"UserData/userdata", UserData.Default},
         };
-        foreach (KeyValuePair<string, MapData> keyValuePair in MapTemplates.mapTemplates)
-        {
-            requiredFiles.Add("Templates/" + keyValuePair.Key, keyValuePair.Value);
-        }
 
         if (SaveSystemConfig.DeleteTemplates)
             DeleteDirectoryContent("Templates");
