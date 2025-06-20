@@ -33,6 +33,7 @@ public static class TilePlacingUtility
             TileType.WindTurbine => new() { (new ElectricityProducer { production = 50 }, true), (new Polluter { pollution = 2 }, true),
                                            (new Employer {totalSpace = 2}, true) },
             TileType.GrowingForest => new() { (new GrowingTile { age = rnd.Next(tileGrowingConfig.maxAge1, tileGrowingConfig.maxAge2) }, true) },
+            TileType.Bitumen => new() { },
             _ => throw new($"Missing componentTypes for tileType {tileType}")
         };
         components.Add((new Tile { tileType = tileType, pos = pos, rotation = rotation }, true));
@@ -121,6 +122,8 @@ public static class TilePlacingUtility
                 TileType.Hut => (TileType.Hut, 50),
                 TileType.Office => (TileType.Office, 500),
                 TileType.WindTurbine => (TileType.WindTurbine, 1000),
+                TileType.Bitumen => (TileType.Bitumen, 20),
+
                 _ => INVALID
             };
         }

@@ -1551,6 +1551,10 @@ MonoBehaviour:
       value:
         material: {fileID: 4294785487790623469, guid: 46937985c73a0bd4b9eaf5d99614e60a, type: 3}
         mesh: {fileID: -2432090755550338912, guid: 46937985c73a0bd4b9eaf5d99614e60a, type: 3}
+    - key: 20
+      value:
+        material: {fileID: 1713882856736492615, guid: ef8713bd14e80ff418c13884331ba054, type: 3}
+        mesh: {fileID: -2432090755550338912, guid: ef8713bd14e80ff418c13884331ba054, type: 3}
   connectingTiles:
     dictionary:
     - key: 4
@@ -1575,6 +1579,21 @@ MonoBehaviour:
           mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
         - material: {fileID: 2100000, guid: 8474be1d0b42edc4ab8b806315f42c86, type: 2}
           mesh: {fileID: 4300000, guid: 83f4b4326f7431c4dbd81bc5bba037fc, type: 2}
+        - material: {fileID: 6049343089193441797, guid: 4fe7dc7345d3e5b4a91a8f9b188ba483, type: 3}
+          mesh: {fileID: -2432090755550338912, guid: 4fe7dc7345d3e5b4a91a8f9b188ba483, type: 3}
+        - material: {fileID: 6049343089193441797, guid: c26fac64b2455034d816cb1d5d3d506e, type: 3}
+          mesh: {fileID: -2432090755550338912, guid: c26fac64b2455034d816cb1d5d3d506e, type: 3}
+        - material: {fileID: 6049343089193441797, guid: 1b853dc10c0d7c048bc73e4fb781b1e0, type: 3}
+          mesh: {fileID: -2432090755550338912, guid: 1b853dc10c0d7c048bc73e4fb781b1e0, type: 3}
+        - material: {fileID: 6049343089193441797, guid: 572d895072d0e2145b23eb043720edc8, type: 3}
+          mesh: {fileID: -2432090755550338912, guid: 572d895072d0e2145b23eb043720edc8, type: 3}
+    - key: 21
+      value:
+        pairs:
+        - material: {fileID: 1713882856736492615, guid: 96450ec332be9fe4c87f961a72feab4c, type: 3}
+          mesh: {fileID: -2432090755550338912, guid: 96450ec332be9fe4c87f961a72feab4c, type: 3}
+        - material: {fileID: 1713882856736492615, guid: ffc084c4f2658974badd1717df265999, type: 3}
+          mesh: {fileID: -2432090755550338912, guid: ffc084c4f2658974badd1717df265999, type: 3}
         - material: {fileID: 6049343089193441797, guid: 4fe7dc7345d3e5b4a91a8f9b188ba483, type: 3}
           mesh: {fileID: -2432090755550338912, guid: 4fe7dc7345d3e5b4a91a8f9b188ba483, type: 3}
         - material: {fileID: 6049343089193441797, guid: c26fac64b2455034d816cb1d5d3d506e, type: 3}

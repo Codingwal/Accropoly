@@ -42,4 +42,8 @@ public enum TileType
     // Energy production
     SolarPanel = 6,
     WindTurbine = 11,
+
+    // City
+    Bitumen = 20,
+    CityStreet = 21
 }
