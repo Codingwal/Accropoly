@@ -60,7 +60,7 @@ namespace Systems
                     sprint = inGameActions.CameraSprint.IsPressed(),
                     scroll = inGameActions.CameraScroll.ReadValue<float>(),
                     rotate = inGameActions.CameraRotation.ReadValue<float>(),
-                    look = inGameActions.CameraLook.IsPressed(),
+                    look = inGameActions.CameraLook.IsPressed() || inGameActions.Shift.IsPressed(),
                 },
                 mouseMove = inGameActions.MouseMove.ReadValue<Vector2>(),
                 mousePos = inGameActions.MousePos.ReadValue<Vector2>(),

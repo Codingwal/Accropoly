@@ -13,6 +13,7 @@ CREATE TILE (3D):
 - Add to the placeable tiles (?)                    0_Scripts\UI\MenuManager.cs
 - Import .obj, .mtl and .png      
 - Add material and mesh to MaterialsAndMeshes       GameObject "Config"
+- Modelscale to 8
 
 TEXTURE (png):
 - Set Texture-Type to "Sprite (2D and UI)"
