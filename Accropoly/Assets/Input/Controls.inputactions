@@ -419,6 +419,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "HideUI",
+                    "type": "Button",
+                    "id": "d3c48cba-d5b5-4cc4-b869-53a23ad7a8dc",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Fullscreen",
+                    "type": "Button",
+                    "id": "240a7187-9422-43da-a53e-e44ed18ff265",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -509,7 +527,7 @@
                     "action": "Hotkey7",
                     "isComposite": false,
                     "isPartOfComposite": false
-                },,
+                },
                 {
                     "name": "",
                     "id": "492990fe-1d85-4cdd-9bab-0988c2593f21",
@@ -520,7 +538,7 @@
                     "action": "Hotkey8",
                     "isComposite": false,
                     "isPartOfComposite": false
-                },,
+                },
                 {
                     "name": "",
                     "id": "492990fe-1d85-4cdd-9bab-0988c2593f22",
@@ -540,6 +558,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Clear",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "87fbe81a-9df2-49ed-a0fe-bca7446644d4",
+                    "path": "<Keyboard>/f11",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Fullscreen",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4a87fe86-4e5d-4dbd-831d-7da36e277d8b",
+                    "path": "<Keyboard>/f1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HideUI",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

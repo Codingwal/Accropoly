@@ -441,6 +441,24 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""HideUI"",
+                    ""type"": ""Button"",
+                    ""id"": ""d3c48cba-d5b5-4cc4-b869-53a23ad7a8dc"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Fullscreen"",
+                    ""type"": ""Button"",
+                    ""id"": ""240a7187-9422-43da-a53e-e44ed18ff265"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -564,6 +582,28 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""action"": ""Clear"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""87fbe81a-9df2-49ed-a0fe-bca7446644d4"",
+                    ""path"": ""<Keyboard>/f11"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Fullscreen"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4a87fe86-4e5d-4dbd-831d-7da36e277d8b"",
+                    ""path"": ""<Keyboard>/f1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HideUI"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -624,6 +664,8 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         m_UI_Hotkey7 = m_UI.FindAction("Hotkey7", throwIfNotFound: true);
         m_UI_Hotkey8 = m_UI.FindAction("Hotkey8", throwIfNotFound: true);
         m_UI_Hotkey9 = m_UI.FindAction("Hotkey9", throwIfNotFound: true);
+        m_UI_HideUI = m_UI.FindAction("HideUI", throwIfNotFound: true);
+        m_UI_Fullscreen = m_UI.FindAction("Fullscreen", throwIfNotFound: true);
         // Menu
         m_Menu = asset.FindActionMap("Menu", throwIfNotFound: true);
         m_Menu_Escape = m_Menu.FindAction("Escape", throwIfNotFound: true);
@@ -825,6 +867,8 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     private readonly InputAction m_UI_Hotkey7;
     private readonly InputAction m_UI_Hotkey8;
     private readonly InputAction m_UI_Hotkey9;
+    private readonly InputAction m_UI_HideUI;
+    private readonly InputAction m_UI_Fullscreen;
     public struct UIActions
     {
         private @Controls m_Wrapper;
@@ -840,6 +884,8 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         public InputAction @Hotkey7 => m_Wrapper.m_UI_Hotkey7;
         public InputAction @Hotkey8 => m_Wrapper.m_UI_Hotkey8;
         public InputAction @Hotkey9 => m_Wrapper.m_UI_Hotkey9;
+        public InputAction @HideUI => m_Wrapper.m_UI_HideUI;
+        public InputAction @Fullscreen => m_Wrapper.m_UI_Fullscreen;
         public InputActionMap Get() { return m_Wrapper.m_UI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -882,6 +928,12 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Hotkey9.started += instance.OnHotkey9;
             @Hotkey9.performed += instance.OnHotkey9;
             @Hotkey9.canceled += instance.OnHotkey9;
+            @HideUI.started += instance.OnHideUI;
+            @HideUI.performed += instance.OnHideUI;
+            @HideUI.canceled += instance.OnHideUI;
+            @Fullscreen.started += instance.OnFullscreen;
+            @Fullscreen.performed += instance.OnFullscreen;
+            @Fullscreen.canceled += instance.OnFullscreen;
         }
 
         private void UnregisterCallbacks(IUIActions instance)
@@ -913,6 +965,18 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Hotkey7.started -= instance.OnHotkey7;
             @Hotkey7.performed -= instance.OnHotkey7;
             @Hotkey7.canceled -= instance.OnHotkey7;
+            @Hotkey8.started -= instance.OnHotkey8;
+            @Hotkey8.performed -= instance.OnHotkey8;
+            @Hotkey8.canceled -= instance.OnHotkey8;
+            @Hotkey9.started -= instance.OnHotkey9;
+            @Hotkey9.performed -= instance.OnHotkey9;
+            @Hotkey9.canceled -= instance.OnHotkey9;
+            @HideUI.started -= instance.OnHideUI;
+            @HideUI.performed -= instance.OnHideUI;
+            @HideUI.canceled -= instance.OnHideUI;
+            @Fullscreen.started -= instance.OnFullscreen;
+            @Fullscreen.performed -= instance.OnFullscreen;
+            @Fullscreen.canceled -= instance.OnFullscreen;
         }
 
         public void RemoveCallbacks(IUIActions instance)
@@ -1003,6 +1067,8 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         void OnHotkey7(InputAction.CallbackContext context);
         void OnHotkey8(InputAction.CallbackContext context);
         void OnHotkey9(InputAction.CallbackContext context);
+        void OnHideUI(InputAction.CallbackContext context);
+        void OnFullscreen(InputAction.CallbackContext context);
     }
     public interface IMenuActions
     {
