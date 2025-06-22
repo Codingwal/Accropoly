@@ -38,7 +38,7 @@ namespace Components
 
         public readonly float3 TravelOnTile(Direction entryDirection, Direction exitDirection, float timeOnTile, out bool reachedDest)
         {
-            Debug.Assert(tile.ValueRO.tileType == TileType.Street || tile.ValueRO.tileType == TileType.CityStreet);
+            Debug.Assert(tile.ValueRO.tileType == TileType.Street || tile.ValueRO.tileType == TileType.CityStreet || tile.ValueRO.tileType == TileType.ForestStreet);
 
             // Calculate the rotation needed so that entryDirection is south
             int rotation = Direction.GetRotation(entryDirection, Directions.South);

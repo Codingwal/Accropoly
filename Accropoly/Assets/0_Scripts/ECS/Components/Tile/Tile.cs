@@ -45,5 +45,6 @@ public enum TileType
 
     // City
     Bitumen = 20,
-    CityStreet = 21
+    CityStreet = 21,
+    ForestStreet = 22,
 }
