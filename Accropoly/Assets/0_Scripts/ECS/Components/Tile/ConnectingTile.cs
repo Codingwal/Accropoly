@@ -100,6 +100,7 @@ public enum ConnectingTileGroup
     Street,
     Lake,
     River,
+    CityStreet,
 }
 namespace Tags
 {

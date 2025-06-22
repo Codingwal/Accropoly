@@ -34,6 +34,7 @@ public static class TilePlacingUtility
                                            (new Employer {totalSpace = 2}, true) },
             TileType.GrowingForest => new() { (new GrowingTile { age = rnd.Next(tileGrowingConfig.maxAge1, tileGrowingConfig.maxAge2) }, true) },
             TileType.Bitumen => new() { },
+            TileType.CityStreet => new() { (new ConnectingTile(ConnectingTileGroup.CityStreet), true), (new BuildingConnector(), true), (new TransportTile(10), true) },
             _ => throw new($"Missing componentTypes for tileType {tileType}")
         };
         components.Add((new Tile { tileType = tileType, pos = pos, rotation = rotation }, true));
@@ -140,6 +141,11 @@ public static class TilePlacingUtility
             case TileType.House:
                 if (oldType == TileType.Forest)
                     return (TileType.Hut, 50);
+                else
+                    return INVALID;
+            case TileType.Street:
+                if (oldType == TileType.Bitumen)
+                    return (TileType.CityStreet, 20);
                 else
                     return INVALID;
             default:
