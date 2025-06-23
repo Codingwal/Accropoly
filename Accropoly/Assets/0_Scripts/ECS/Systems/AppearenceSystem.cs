@@ -32,7 +32,7 @@ public partial class AppearenceSystem : SystemBase
             data = config.simpleTiles[(int)tile.tileType];
         }).Schedule();
 
-        Entities.WithChangeFilter<Tile, ConnectingTile>().ForEach((ref LocalTransform transform, ref MaterialMeshInfo data, in Tile tile, in ConnectingTile connectingTile) =>
+        Entities.ForEach((ref LocalTransform transform, ref MaterialMeshInfo data, in Tile tile, in ConnectingTile connectingTile) =>
         {
             int index = connectingTile.GetIndex();
             if (index == 5 && tile.tileType == TileType.Lake)

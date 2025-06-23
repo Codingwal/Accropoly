@@ -78,8 +78,8 @@ public static class TileGridUtility
         var buffer = GetEntityGrid();
         return new Entity[4]
         {
-            buffer[GetIndex(pos + new int2(1, 1), buffer.Length)],
             buffer[GetIndex(pos + new int2(-1, 1), buffer.Length)],
+            buffer[GetIndex(pos + new int2(1, 1), buffer.Length)],
             buffer[GetIndex(pos + new int2(1, -1), buffer.Length)],
             buffer[GetIndex(pos + new int2(-1, -1), buffer.Length)],
         };
