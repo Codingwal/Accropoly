@@ -49,20 +49,37 @@ namespace Components
 
             // The tile is assumed to face south
 
+            int waypointIndex;
             if (index == ConnectingTile.straight)
             {
-                int waypointIndex = AddWaypoint(new(-offsetFromCenter, defaultVerticalOffset, 0), ref waypoints);
-                AddConnection(new(-offsetFromCenter, defaultVerticalOffset, -1), waypointIndex, true, ref connections);
-                AddConnection(new(-offsetFromCenter, defaultVerticalOffset, 1), waypointIndex, false, ref connections);
-
+                // south -> north
                 waypointIndex = AddWaypoint(new(offsetFromCenter, defaultVerticalOffset, 0), ref waypoints);
                 AddConnection(new(offsetFromCenter, defaultVerticalOffset, 1), waypointIndex, true, ref connections);
                 AddConnection(new(offsetFromCenter, defaultVerticalOffset, -1), waypointIndex, false, ref connections);
+
+                // north -> south
+                waypointIndex = AddWaypoint(new(-offsetFromCenter, defaultVerticalOffset, 0), ref waypoints);
+                AddConnection(new(-offsetFromCenter, defaultVerticalOffset, -1), waypointIndex, true, ref connections);
+                AddConnection(new(-offsetFromCenter, defaultVerticalOffset, 1), waypointIndex, false, ref connections);
+
+            }
+            else if (index == ConnectingTile.curve)
+            {
+                // south -> west
+                waypointIndex = AddWaypoint(new(offsetFromCenter, defaultVerticalOffset, offsetFromCenter), ref waypoints);
+                AddConnection(new(-1, defaultVerticalOffset, offsetFromCenter), waypointIndex, true, ref connections);
+                AddConnection(new(offsetFromCenter, defaultVerticalOffset, -1), waypointIndex, false, ref connections);
+
+                // west -> south
+                waypointIndex = AddWaypoint(new(-offsetFromCenter, defaultVerticalOffset, -offsetFromCenter), ref waypoints);
+                AddConnection(new(-offsetFromCenter, defaultVerticalOffset, -1), waypointIndex, true, ref connections);
+                AddConnection(new(-1, defaultVerticalOffset, -offsetFromCenter), waypointIndex, false, ref connections);
             }
         }
         private int AddWaypoint(float3 pos, ref NativeList<Waypoint> waypoints)
         {
-            pos = math.rotate(transform.ValueRO.Rotation, pos); // Rotate
+            Debug.Log($"rotation: {tile.ValueRO.rotation}");
+            pos = math.rotate(quaternion.EulerXYZ(0, tile.ValueRO.rotation.Flip().ToRadians(), 0), pos); // Rotate
             pos += transform.ValueRO.Position; // Convert to world space
             Waypoint waypoint = new(pos);
             waypoints.Add(waypoint);
@@ -70,7 +87,8 @@ namespace Components
         }
         private void AddConnection(float3 pos, int connectedWaypoint, bool output, ref NativeList<WaypointSystem.Connection> connections)
         {
-            pos = math.rotate(transform.ValueRO.Rotation, pos); // Rotate
+            // Debug.Log($"rotation: {tile.ValueRO.rotation}");
+            pos = math.rotate(quaternion.EulerXYZ(0, tile.ValueRO.rotation.Flip().ToRadians(), 0), pos); // Rotate
             pos += transform.ValueRO.Position; // Convert to world space
             WaypointSystem.Connection connection = new(pos, connectedWaypoint, output);
             connections.Add(connection);

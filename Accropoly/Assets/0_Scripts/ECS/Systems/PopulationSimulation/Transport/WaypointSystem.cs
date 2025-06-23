@@ -1,4 +1,3 @@
-using System;
 using Components;
 using Unity.Collections;
 using Unity.Entities;
@@ -7,6 +6,7 @@ using UnityEngine;
 
 namespace Systems
 {
+    [UpdateInGroup(typeof(LateSimulationSystemGroup))]
     public partial class WaypointSystem : SystemBase
     {
         public static NativeList<Waypoint> waypoints;
@@ -18,7 +18,6 @@ namespace Systems
         }
         protected override void OnUpdate()
         {
-
             NativeList<Connection> connectionsTmp = new(4, Allocator.TempJob);
             Entities.WithChangeFilter<ConnectingTile>().ForEach((TransportTileAspect transportTileAspect, in Tile tile) =>
             {
