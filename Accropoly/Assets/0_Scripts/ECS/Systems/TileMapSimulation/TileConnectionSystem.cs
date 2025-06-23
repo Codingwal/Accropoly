@@ -50,9 +50,14 @@ namespace Systems
                         if (!SystemAPI.HasComponent<NewTile>(neighbour))
                         {
                             SystemAPI.SetComponent(neighbour, neighbourConnectingTile); // Changes must be applied directly as they might be read in the same job
+
                             var neighbourTransform = SystemAPI.GetComponent<LocalTransform>(neighbour);
                             neighbourTransform.Rotation = quaternion.EulerXYZ(0, neighbourConnectingTile.GetRotation().ToRadians(), 0);
-                            ecb.SetComponent(neighbour, neighbourTransform);
+                            SystemAPI.SetComponent(neighbour, neighbourTransform);
+
+                            var neighbourTile = SystemAPI.GetComponent<Tile>(neighbour);
+                            neighbourTile.rotation = neighbourConnectingTile.GetRotation();
+                            SystemAPI.SetComponent(neighbour, neighbourTile); // Changes must be applied directly because the data might be updated in the same frame again
                         }
                     }
                 }
@@ -64,8 +69,8 @@ namespace Systems
                 Direction rotation = connectingTile.GetRotation();
                 transform.Rotation = quaternion.EulerXYZ(0, rotation.ToRadians(), 0);
                 mapTileComponent.rotation = rotation;
-                ecb.SetComponent(entity, transform);
-                ecb.SetComponent(entity, mapTileComponent);
+                SystemAPI.SetComponent(entity, transform);
+                SystemAPI.SetComponent(entity, mapTileComponent); // Changes must be applied directly because the data might be updated in the same frame again
             }).Schedule();
 
             // Disconnect new tiles without the ConnectingTile component
