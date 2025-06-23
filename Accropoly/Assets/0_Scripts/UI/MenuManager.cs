@@ -158,6 +158,12 @@ public class MenuManager : MonoBehaviour
                     MenuUtility.PauseGame();
 
                 break;
+            case UIAction.HideUI:
+                if (statisticsDisplay.activeSelf)
+                    statisticsDisplay.SetActive(false);
+                else
+                    statisticsDisplay.SetActive(true);
+                break;
             case UIAction.Clear:
                 MenuUtility.PlaceTile(TileType.Plains);
                 break;

@@ -28,7 +28,8 @@ namespace Components
             Clear,
             Menu,
             Escape,
-            Hotkey
+            HideUI,
+            Hotkey,
         }
         public Action action;
         public int hotkey;

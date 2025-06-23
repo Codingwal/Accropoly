@@ -18,6 +18,7 @@ namespace Systems
         private Entity inputDataHolder;
 
         public static Action<UIInputData> uiInput;
+        public bool uihidden = false;
 
         protected override void OnCreate()
         {
@@ -47,6 +48,7 @@ namespace Systems
             inputActions.UI.Hotkey9.performed += (ctx) => OnUIAction(UIAction.Hotkey, 9); ;
             inputActions.UI.Fullscreen.performed += (ctx) => Screen.fullScreen = !Screen.fullScreen; ;
             inputActions.Menu.Escape.performed += (ctx) => OnUIAction(UIAction.Escape); ;
+            inputActions.UI.HideUI.performed += (ctx) => OnUIAction(UIAction.HideUI); ;
         }
         protected override void OnUpdate()
         {
