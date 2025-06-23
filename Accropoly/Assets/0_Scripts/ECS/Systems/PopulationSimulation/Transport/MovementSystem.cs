@@ -20,6 +20,7 @@ namespace Systems
         }
         protected override void OnUpdate()
         {
+            /*
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
             var buffer = SystemAPI.GetBuffer<EntityBufferElement>(SystemAPI.GetSingletonEntity<EntityGridHolder>());
             WorldTime time = SystemAPI.GetSingleton<GameInfo>().time;
@@ -67,6 +68,7 @@ namespace Systems
                 transform.Position = pos;
                 ecb.SetComponent(entity, transform);
             }).WithBurst(Unity.Burst.FloatMode.Fast, Unity.Burst.FloatPrecision.Low).Schedule();
+            */
         }
     }
 }

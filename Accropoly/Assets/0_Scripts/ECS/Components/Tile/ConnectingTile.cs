@@ -27,17 +27,26 @@ namespace Components
         {
             connectableSides[(uint)direction] = false;
         }
+        public const int notConnected = 0;
+        public const int deadEnd = 1;
+        public const int straight = 2;
+        public const int curve = 3;
+        public const int tJunction = 4;
+        public const int junction = 5;
         ///  <remarks>This doesn't contain the full component information! This is only used to select a MeshMaterialPair</remarks>
-        ///  <returns>0=>not connected; 1=>dead end; 2=>street; 3=>curve; 4=>T-junction; 5=>junction</returns>
         public readonly int GetIndex()
         {
             Direction rotation = GetRotation();
             ConnectingTile endrotatedRotation = Rotate(-(int)(uint)rotation);
-            if (endrotatedRotation.CountConnectableSides() == 0) return 0;
-            else if (endrotatedRotation.CountConnectableSides() == 1) return 1;
-            else if (endrotatedRotation.CountConnectableSides() == 2) return endrotatedRotation.connectableSides[1] ? 3 : 2;
-            else if (endrotatedRotation.CountConnectableSides() == 3) return 4;
-            else return 5;
+            return endrotatedRotation.CountConnectableSides() switch
+            {
+                0 => notConnected,
+                1 => deadEnd,
+                2 => endrotatedRotation.connectableSides[1] ? curve : straight,
+                3 => tJunction,
+                _ => junction
+            };
+
         }
         public readonly Direction GetRotation()
         {

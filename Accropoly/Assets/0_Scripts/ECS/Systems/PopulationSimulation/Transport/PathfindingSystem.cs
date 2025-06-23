@@ -54,6 +54,8 @@ namespace Systems
         /// <remarks>Returns -1 if no path is found</remarks>
         public static float CalculateTravelTime(int2 start, int2 dest, in DynamicBuffer<EntityBufferElement> entityGrid)
         {
+            return -1;
+            /*
             UnsafeList<Waypoint> path = new(10, Allocator.TempJob);
             float travelTime = 0;
 
@@ -71,12 +73,15 @@ namespace Systems
 
             path.Dispose();
             return travelTime;
+            */
         }
         /// <summary>Finds the shortest path using A* pathfinding from start to dest and stores it in waypoints.</summary>
         /// <param name="buffer">The buffer containing the tile grid</param>
         /// <returns>Returns true if a path was found</returns>
         private static bool FindPath(ref UnsafeList<Waypoint> waypoints, int2 start, int2 dest, in DynamicBuffer<EntityBufferElement> entityGrid)
         {
+            return false;
+            /*
             Debug.Assert(!start.Equals(dest), $"Start must not equal destination (start and dest are {start})");
             Debug.Assert(waypoints.IsCreated, "The UnsafeList<Waypoint> has not been created");
 
@@ -177,6 +182,7 @@ namespace Systems
             var cheapestNode = openList[cheapestIndex];
             openList.RemoveAtSwapBack(cheapestIndex);
             return cheapestNode;
+            */
         }
         private static float CalculateCost(int2 pos, int2 previousPos, float previousCost, int2 dest, float tileSpeed)
         {

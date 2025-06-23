@@ -67,7 +67,7 @@ public partial class Deserializer
     }
     public Waypoint Deserialize(Waypoint data)
     {
-        data.pos = Deserialize(new int2());
+        // data.pos = Deserialize(new int2());
         return data;
     }
     public MapData Deserialize(MapData data)
