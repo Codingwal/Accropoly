@@ -1,6 +1,7 @@
 using Systems;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Entities.UniversalDelegates;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
@@ -47,48 +48,140 @@ namespace Components
 
             int index = connectingTile.ValueRO.GetIndex();
 
-            // The tile is assumed to face south
+            // The tile is assumed to face north
 
-            int waypointIndex;
+            if (index == ConnectingTile.notConnected)
+            {
+                return;
+            }
+            if (index == ConnectingTile.deadEnd)
+            {
+                // north -> center
+                int w1 = AddWaypoint(new(-offsetFromCenter, defaultVerticalOffset, 0), ref waypoints);
+                AddConnection(new(-offsetFromCenter, defaultVerticalOffset, 1), w1, false, ref connections); // north entry
+
+                // center -> north
+                int w2 = AddWaypoint(new(offsetFromCenter, defaultVerticalOffset, 0), ref waypoints);
+                AddConnection(new(offsetFromCenter, defaultVerticalOffset, 1), w2, true, ref connections); // north exit
+
+                LinkWaypoints(w1, w2, ref waypoints);
+
+                return;
+            }
             if (index == ConnectingTile.straight)
             {
-                // south -> north
-                waypointIndex = AddWaypoint(new(offsetFromCenter, defaultVerticalOffset, 0), ref waypoints);
-                AddConnection(new(offsetFromCenter, defaultVerticalOffset, 1), waypointIndex, true, ref connections);
-                AddConnection(new(offsetFromCenter, defaultVerticalOffset, -1), waypointIndex, false, ref connections);
-
                 // north -> south
-                waypointIndex = AddWaypoint(new(-offsetFromCenter, defaultVerticalOffset, 0), ref waypoints);
-                AddConnection(new(-offsetFromCenter, defaultVerticalOffset, -1), waypointIndex, true, ref connections);
-                AddConnection(new(-offsetFromCenter, defaultVerticalOffset, 1), waypointIndex, false, ref connections);
+                int w1 = AddWaypoint(new(-offsetFromCenter, defaultVerticalOffset, 0), ref waypoints);
+                AddConnection(new(-offsetFromCenter, defaultVerticalOffset, -1), w1, true, ref connections); // south exit
+                AddConnection(new(-offsetFromCenter, defaultVerticalOffset, 1), w1, false, ref connections); // north entry
 
+                // south -> north
+                int w2 = AddWaypoint(new(offsetFromCenter, defaultVerticalOffset, 0), ref waypoints);
+                AddConnection(new(offsetFromCenter, defaultVerticalOffset, 1), w2, true, ref connections); // north exit
+                AddConnection(new(offsetFromCenter, defaultVerticalOffset, -1), w2, false, ref connections); // south entry
+                return;
             }
-            else if (index == ConnectingTile.curve)
+            if (index == ConnectingTile.curve)
             {
-                // south -> west
-                waypointIndex = AddWaypoint(new(offsetFromCenter, defaultVerticalOffset, offsetFromCenter), ref waypoints);
-                AddConnection(new(-1, defaultVerticalOffset, offsetFromCenter), waypointIndex, true, ref connections);
-                AddConnection(new(offsetFromCenter, defaultVerticalOffset, -1), waypointIndex, false, ref connections);
+                // north -> east (outer curve)
 
-                // west -> south
-                waypointIndex = AddWaypoint(new(-offsetFromCenter, defaultVerticalOffset, -offsetFromCenter), ref waypoints);
-                AddConnection(new(-offsetFromCenter, defaultVerticalOffset, -1), waypointIndex, true, ref connections);
-                AddConnection(new(-1, defaultVerticalOffset, -offsetFromCenter), waypointIndex, false, ref connections);
+                int w1 = AddWaypoint(new(-offsetFromCenter, defaultVerticalOffset, 0), ref waypoints); // Before corner
+                int w2 = AddWaypoint(new(0, defaultVerticalOffset, -offsetFromCenter), ref waypoints); // After corner
+
+                LinkWaypoints(w1, w2, ref waypoints);
+
+                AddConnection(new(-offsetFromCenter, defaultVerticalOffset, 1), w1, false, ref connections); // north entry
+                AddConnection(new(1, defaultVerticalOffset, -offsetFromCenter), w2, true, ref connections); // east exit
+
+                // east -> north (inner curve)
+
+                int w3 = AddWaypoint(new(0.5f, defaultVerticalOffset, offsetFromCenter), ref waypoints); // Before corner
+                int w4 = AddWaypoint(new(offsetFromCenter, defaultVerticalOffset, 0.5f), ref waypoints); // After corner
+
+                LinkWaypoints(w3, w4, ref waypoints);
+
+                AddConnection(new(1, defaultVerticalOffset, offsetFromCenter), w3, false, ref connections); // east entry
+                AddConnection(new(offsetFromCenter, defaultVerticalOffset, 1), w4, true, ref connections); // north exit
+                return;
             }
+            if (index == ConnectingTile.tJunction)
+            {
+                (int northEntry, int northExit) = EdgeToCenter(Directions.North, ref waypoints, ref connections);
+                (int eastEntry, int eastExit) = EdgeToCenter(Directions.East, ref waypoints, ref connections);
+                (int southEntry, int southExit) = EdgeToCenter(Directions.South, ref waypoints, ref connections);
+
+                LinkWaypoints(northEntry, eastExit, ref waypoints);
+                LinkWaypoints(northEntry, southExit, ref waypoints);
+
+                LinkWaypoints(eastEntry, northExit, ref waypoints);
+                LinkWaypoints(eastEntry, southExit, ref waypoints);
+
+                LinkWaypoints(southEntry, northExit, ref waypoints);
+                LinkWaypoints(southEntry, eastExit, ref waypoints);
+
+                return;
+            }
+            if (index == ConnectingTile.junction)
+            {
+                (int northEntry, int northExit) = EdgeToCenter(Directions.North, ref waypoints, ref connections);
+                (int eastEntry, int eastExit) = EdgeToCenter(Directions.East, ref waypoints, ref connections);
+                (int southEntry, int southExit) = EdgeToCenter(Directions.South, ref waypoints, ref connections);
+                (int westEntry, int westExit) = EdgeToCenter(Directions.West, ref waypoints, ref connections);
+
+                LinkWaypoints(northEntry, eastExit, ref waypoints);
+                LinkWaypoints(northEntry, southExit, ref waypoints);
+                LinkWaypoints(northEntry, westExit, ref waypoints);
+
+                LinkWaypoints(eastEntry, northExit, ref waypoints);
+                LinkWaypoints(eastEntry, southExit, ref waypoints);
+                LinkWaypoints(eastEntry, westExit, ref waypoints);
+
+                LinkWaypoints(southEntry, northExit, ref waypoints);
+                LinkWaypoints(southEntry, eastExit, ref waypoints);
+                LinkWaypoints(southEntry, westExit, ref waypoints);
+
+                LinkWaypoints(westEntry, northExit, ref waypoints);
+                LinkWaypoints(westEntry, eastExit, ref waypoints);
+                LinkWaypoints(westEntry, southExit, ref waypoints);
+
+                return;
+            }
+
+            Debug.LogError("Unhandled case");
+        }
+        private (int, int) EdgeToCenter(Direction edge, ref NativeList<Waypoint> waypoints, ref NativeList<WaypointSystem.Connection> connections)
+        {
+            // north -> center
+            float3 pos = math.rotate(quaternion.EulerXYZ(0, edge.ToRadians(), 0), new(-offsetFromCenter, defaultVerticalOffset, 0.5f));
+            int junctionEntry = AddWaypoint(pos, ref waypoints);
+            pos = math.rotate(quaternion.EulerXYZ(0, edge.ToRadians(), 0), new(-offsetFromCenter, defaultVerticalOffset, 1));
+            AddConnection(pos, junctionEntry, false, ref connections);
+
+            // center -> north
+            pos = math.rotate(quaternion.EulerXYZ(0, edge.ToRadians(), 0), new(offsetFromCenter, defaultVerticalOffset, 0.5f));
+            int junctionExit = AddWaypoint(pos, ref waypoints);
+            pos = math.rotate(quaternion.EulerXYZ(0, edge.ToRadians(), 0), new(offsetFromCenter, defaultVerticalOffset, 1));
+            AddConnection(pos, junctionExit, true, ref connections);
+
+            return (junctionEntry, junctionExit);
+        }
+        private void LinkWaypoints(int from, int to, ref NativeList<Waypoint> waypoints)
+        {
+            waypoints.ElementAt(from).AddNext(to);
+            waypoints.ElementAt(to).AddPrevious(from);
         }
         private int AddWaypoint(float3 pos, ref NativeList<Waypoint> waypoints)
         {
-            Debug.Log($"rotation: {tile.ValueRO.rotation}");
-            pos = math.rotate(quaternion.EulerXYZ(0, tile.ValueRO.rotation.Flip().ToRadians(), 0), pos); // Rotate
+            pos = math.rotate(quaternion.EulerXYZ(0, tile.ValueRO.rotation.ToRadians(), 0), pos); // Rotate
             pos += transform.ValueRO.Position; // Convert to world space
             Waypoint waypoint = new(pos);
             waypoints.Add(waypoint);
+            // TODO: Update transportTile.waypoints
             return waypoints.Length - 1;
         }
         private void AddConnection(float3 pos, int connectedWaypoint, bool output, ref NativeList<WaypointSystem.Connection> connections)
         {
-            // Debug.Log($"rotation: {tile.ValueRO.rotation}");
-            pos = math.rotate(quaternion.EulerXYZ(0, tile.ValueRO.rotation.Flip().ToRadians(), 0), pos); // Rotate
+            pos = math.rotate(quaternion.EulerXYZ(0, tile.ValueRO.rotation.ToRadians(), 0), pos); // Rotate
             pos += transform.ValueRO.Position; // Convert to world space
             WaypointSystem.Connection connection = new(pos, connectedWaypoint, output);
             connections.Add(connection);

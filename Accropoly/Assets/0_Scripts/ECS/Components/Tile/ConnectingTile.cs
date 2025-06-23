@@ -55,7 +55,7 @@ namespace Components
             if (connectableSidesCount == 0 || connectableSidesCount == 4) return Directions.North;
 
             // Find the combination with the lowest sum. This basically finds the completely left shifted variant
-            uint bestRotation = 100;
+            uint bestRotation = int.MaxValue;
             int bestValue = int.MaxValue;
             for (uint i = 0; i < 4; i++)
             {
@@ -71,6 +71,7 @@ namespace Components
                     bestRotation = i;
                 }
             }
+            Debug.Assert(bestRotation != int.MaxValue);
 
             return (Direction)bestRotation;
         }
