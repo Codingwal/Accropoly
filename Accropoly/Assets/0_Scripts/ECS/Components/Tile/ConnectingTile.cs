@@ -38,6 +38,7 @@ namespace Components
             else if (endrotatedRotation.CountConnectableSides() == 2) return endrotatedRotation.connectableSides[1] ? 3 : 2;
             else if (endrotatedRotation.CountConnectableSides() == 3) return 4;
             else return 5;
+
         }
         public readonly Direction GetRotation()
         {
@@ -95,6 +96,7 @@ namespace Components
         }
     }
 }
+
 public enum ConnectingTileGroup
 {
     Street,

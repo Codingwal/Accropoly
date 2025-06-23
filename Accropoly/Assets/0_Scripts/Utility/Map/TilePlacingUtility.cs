@@ -116,6 +116,7 @@ public static class TilePlacingUtility
             return newType switch
             {
                 TileType.River => (TileType.River, 100), // TEMPORARY
+                TileType.Lake => (TileType.Lake, 10),
 
                 TileType.Sapling => (TileType.Sapling, 10),
                 TileType.House => (TileType.House, 200),

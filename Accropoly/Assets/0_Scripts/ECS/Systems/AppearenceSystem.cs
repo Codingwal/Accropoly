@@ -4,6 +4,8 @@ using ConfigComponents;
 using Unity.Rendering;
 using Tags;
 using UnityEngine;
+using Unity.Transforms;
+using Unity.Mathematics;
 
 [UpdateInGroup(typeof(LateSimulationSystemGroup))]
 public partial class AppearenceSystem : SystemBase
@@ -30,11 +32,26 @@ public partial class AppearenceSystem : SystemBase
             data = config.simpleTiles[(int)tile.tileType];
         }).Schedule();
 
-        Entities.WithChangeFilter<Tile, ConnectingTile>().ForEach((ref MaterialMeshInfo data, in Tile tile, in ConnectingTile connectingTile) =>
+        Entities.WithChangeFilter<Tile, ConnectingTile>().ForEach((ref LocalTransform transform, ref MaterialMeshInfo data, in Tile tile, in ConnectingTile connectingTile) =>
         {
             int index = connectingTile.GetIndex();
+            if (index == 5 && tile.tileType == TileType.Lake)
+            {
+                var tileedges = TileGridUtility.GetSquareEdgeTiles(tile.pos);
+                for (int i = 0; i < 4; i++)
+                {
+                    var edge = tileedges[i];
+                    Tile edgetile = SystemAPI.GetComponent<Tile>(edge);
+                    if (edgetile.tileType != TileType.Lake)
+                    {
+                        index = 6;
+                        transform.Rotation = quaternion.EulerXYZ(0, ((Direction)i).ToRadians(), 0);
+                        break;
+                    }
+                }
+            }
             data = config.connectingTiles[(int)tile.tileType].pairs[index];
-        }).Schedule();
+        }).Run();
     }
     protected override void OnDestroy()
     {

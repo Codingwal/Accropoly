@@ -169,7 +169,7 @@ public class MenuManager : MonoBehaviour
                     3 => TileType.SolarPanel,
                     4 => TileType.Street,
                     5 => TileType.River,
-                    6 => TileType.Hut,
+                    6 => TileType.Lake,
                     7 => TileType.Office,
                     8 => TileType.WindTurbine,
                     9 => TileType.Bitumen,

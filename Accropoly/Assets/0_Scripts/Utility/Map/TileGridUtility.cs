@@ -73,4 +73,15 @@ public static class TileGridUtility
             buffer[GetIndex(pos + new int2(0, -1), buffer.Length)],
         };
     }
+    public static Entity[] GetSquareEdgeTiles(int2 pos)
+    {
+        var buffer = GetEntityGrid();
+        return new Entity[4]
+        {
+            buffer[GetIndex(pos + new int2(1, 1), buffer.Length)],
+            buffer[GetIndex(pos + new int2(-1, 1), buffer.Length)],
+            buffer[GetIndex(pos + new int2(1, -1), buffer.Length)],
+            buffer[GetIndex(pos + new int2(-1, -1), buffer.Length)],
+        };
+    }
 }
