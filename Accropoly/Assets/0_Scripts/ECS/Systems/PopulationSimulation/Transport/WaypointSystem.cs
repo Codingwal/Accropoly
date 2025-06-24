@@ -21,7 +21,7 @@ namespace Systems
             NativeList<Connection> connectionsTmp = new(4, Allocator.TempJob);
             Entities.WithChangeFilter<ConnectingTile>().ForEach((TransportTileAspect transportTileAspect, in Tile tile) =>
             {
-                // Delete all waypoints owned by this tile
+                // Delete all waypoints and connections owned by this tile
                 unsafe
                 {
                     for (int i = 0; i < TransportTile.maxWaypoints; i++)
@@ -29,6 +29,12 @@ namespace Systems
                         int waypointIndex = transportTileAspect.TransportTile.GetWaypoint(i);
                         if (waypointIndex == -1) continue;
                         DeleteWaypoint(waypointIndex, ref waypoints);
+                    }
+                    for (int i = 0; i < TransportTile.maxConnections; i++)
+                    {
+                        float3 connection = transportTileAspect.TransportTile.GetConnection(i);
+                        if (connection.x == -1) continue;
+                        connectionPoints.Remove(connection);
                     }
                 }
 

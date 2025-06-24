@@ -174,10 +174,14 @@ namespace Components
         {
             pos = math.rotate(quaternion.EulerXYZ(0, tile.ValueRO.rotation.ToRadians(), 0), pos); // Rotate
             pos += transform.ValueRO.Position; // Convert to world space
+
             Waypoint waypoint = new(pos);
             waypoints.Add(waypoint);
-            // TODO: Update transportTile.waypoints
-            return waypoints.Length - 1;
+            int waypointIndex = waypoints.Length - 1;
+
+            transportTile.ValueRW.AddWaypoint(waypointIndex);
+
+            return waypointIndex;
         }
         private void AddConnection(float3 pos, int connectedWaypoint, bool output, ref NativeList<WaypointSystem.Connection> connections)
         {
@@ -185,6 +189,7 @@ namespace Components
             pos += transform.ValueRO.Position; // Convert to world space
             WaypointSystem.Connection connection = new(pos, connectedWaypoint, output);
             connections.Add(connection);
+            transportTile.ValueRW.AddConnection(pos);
         }
 
     }
