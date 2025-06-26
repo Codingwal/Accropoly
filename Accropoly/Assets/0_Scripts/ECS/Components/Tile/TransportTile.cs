@@ -1,57 +1,41 @@
 using Unity.Entities;
-using Unity.Entities.UniversalDelegates;
 using Unity.Mathematics;
 
 namespace Components
 {
     public unsafe struct TransportTile : IComponentData
     {
-        public const int maxWaypoints = 10;
-        public const int maxConnections = 8;
         public float speed;
-        public fixed int waypoints[maxWaypoints];
-        public fixed float connections[maxConnections * 3]; // float3 connections[maxConnections]
+        public FixedFloat3Array10 waypoints;
+        public FixedFloat3Array10 connections;
         public TransportTile(float speed)
         {
             this.speed = speed;
 
-            for (int i = 0; i < maxWaypoints; i++)
-                waypoints[i] = -1;
-
-            for (int i = 0; i < maxConnections * 3; i++)
-                connections[i] = -1;
+            waypoints.Initialize(float.NaN);
+            connections.Initialize(float.NaN);
         }
-        public void AddWaypoint(int waypointIndex)
+        public void AddWaypoint(float3 pos)
         {
-            for (int i = 0; i < maxWaypoints; i++)
+            for (int i = 0; i < waypoints.Size; i++)
             {
-                if (waypoints[i] == -1)
+                if (math.isnan(waypoints[i].x))
                 {
-                    waypoints[i] = waypointIndex;
+                    waypoints[i] = pos;
                     return;
                 }
             }
         }
-        public int GetWaypoint(int index)
+        public void AddConnection(float3 pos)
         {
-            return waypoints[index];
-        }
-        public void AddConnection(float3 connectionPos)
-        {
-            for (int i = 0; i < maxConnections * 3; i += 3)
+            for (int i = 0; i < connections.Size; i++)
             {
-                if (connections[i] == -1)
+                if (math.isnan(connections[i].x))
                 {
-                    connections[i] = connectionPos.x;
-                    connections[i] = connectionPos.y;
-                    connections[i] = connectionPos.z;
+                    connections[i] = pos;
                     return;
                 }
             }
-        }
-        public float3 GetConnection(int index)
-        {
-            return new(connections[index * 3], connections[index * 3 + 1], connections[index * 3 + 2]);
         }
     }
 }

@@ -9,11 +9,11 @@ namespace Systems
     [UpdateInGroup(typeof(LateSimulationSystemGroup))]
     public partial class WaypointSystem : SystemBase
     {
-        public static NativeList<Waypoint> waypoints;
+        public static NativeHashMap<float3, Waypoint> waypoints;
         public static NativeHashMap<float3, Connection> connectionPoints;
         protected override void OnCreate()
         {
-            waypoints = new(Allocator.Persistent);
+            waypoints = new(30, Allocator.Persistent);
             connectionPoints = new(30, Allocator.Persistent);
         }
         protected override void OnUpdate()
@@ -24,16 +24,16 @@ namespace Systems
                 // Delete all waypoints and connections owned by this tile
                 unsafe
                 {
-                    for (int i = 0; i < TransportTile.maxWaypoints; i++)
+                    for (int i = 0; i < transportTileAspect.TransportTile.waypoints.Size; i++)
                     {
-                        int waypointIndex = transportTileAspect.TransportTile.GetWaypoint(i);
-                        if (waypointIndex == -1) continue;
-                        DeleteWaypoint(waypointIndex, ref waypoints);
+                        float3 waypoint = transportTileAspect.TransportTile.waypoints[i];
+                        if (!waypoints.ContainsKey(waypoint)) continue;
+                        DeleteWaypoint(waypoint, ref waypoints);
                     }
-                    for (int i = 0; i < TransportTile.maxConnections; i++)
+                    for (int i = 0; i < transportTileAspect.TransportTile.connections.Size; i++)
                     {
-                        float3 connection = transportTileAspect.TransportTile.GetConnection(i);
-                        if (connection.x == -1) continue;
+                        float3 connection = transportTileAspect.TransportTile.connections[i];
+                        if (!connectionPoints.ContainsKey(connection)) continue;
                         connectionPoints.Remove(connection);
                     }
                 }
@@ -55,15 +55,27 @@ namespace Systems
                         // Connect tiles
                         if (connection.output) // this -> other
                         {
-                            // Use ElementAt as the element needs to be modified
-                            waypoints.ElementAt(connection.waypointIndex).AddNext(other.waypointIndex);
-                            waypoints.ElementAt(other.waypointIndex).AddPrevious(connection.waypointIndex);
+                            // All of this copying is needed as AddNext modifies the data
+
+                            Waypoint copy = waypoints[connection.waypoint];
+                            copy.AddNext(other.waypoint);
+                            waypoints[connection.waypoint] = copy;
+
+                            copy = waypoints[other.waypoint];
+                            copy.AddPrevious(connection.waypoint);
+                            waypoints[other.waypoint] = copy;
                         }
                         else // other -> this
                         {
-                            // Use ElementAt as the element needs to be modified
-                            waypoints.ElementAt(other.waypointIndex).AddNext(connection.waypointIndex);
-                            waypoints.ElementAt(connection.waypointIndex).AddPrevious(other.waypointIndex);
+                            // All of this copying is needed as AddNext modifies the data
+
+                            Waypoint copy = waypoints[other.waypoint];
+                            copy.AddNext(connection.waypoint);
+                            waypoints[other.waypoint] = copy;
+
+                            copy = waypoints[connection.waypoint];
+                            copy.AddPrevious(other.waypoint);
+                            waypoints[connection.waypoint] = copy;
                         }
                     }
                 }
@@ -81,17 +93,18 @@ namespace Systems
         {
             // Draw waypoints and connections inbetween
             Gizmos.color = Color.blue;
-            foreach (var waypoint in waypoints)
+            foreach (var pair in waypoints)
             {
+                Waypoint waypoint = pair.Value;
                 Gizmos.DrawSphere(waypoint.pos, 0.15f);
 
                 unsafe
                 {
-                    for (int i = 0; i < Waypoint.maxConnections; i++)
+                    for (int i = 0; i < waypoint.next.Size; i++)
                     {
-                        int nextIndex = waypoint.next[i];
-                        if (nextIndex != -1)
-                            Gizmos.DrawLine(waypoint.pos, waypoints[nextIndex].pos);
+                        float3 nextPos = waypoint.next[i];
+                        if (!math.isnan(nextPos.x))
+                            Gizmos.DrawLine(waypoint.pos, nextPos);
                     }
                 }
             }
@@ -111,50 +124,46 @@ namespace Systems
             }
         }
 
-        private static unsafe void UpdateNext(int waypointIndex, int newIndex, ref NativeList<Waypoint> waypoints)
+        private static unsafe void UpdateNext(float3 pos, ref NativeHashMap<float3, Waypoint> waypoints, ref NativeHashMap<float3, Connection> connections)
         {
-            Waypoint waypoint = waypoints[waypointIndex];
-            for (int i = 0; i < Waypoint.maxConnections; i++)
+            Waypoint waypoint = waypoints[pos];
+            for (int i = 0; i < waypoint.next.Size; i++)
             {
-                int nextIndex = waypoint.next[i];
-                if (nextIndex == -1) continue;
-                waypoints[nextIndex].UpdatePrevious(waypointIndex, newIndex);
+                float3 nextPos = waypoint.next[i];
+                if (!waypoints.ContainsKey(nextPos)) continue;
+                waypoints[nextPos].RemovePrevious(pos);
+                waypoints[nextPos].GetConnections( ref connections);
             }
         }
-        private static unsafe void UpdatePrevious(int waypointIndex, int newIndex, ref NativeList<Waypoint> waypoints)
+        private static unsafe void UpdatePrevious(float3 pos, ref NativeHashMap<float3, Waypoint> waypoints)
         {
-            Waypoint waypoint = waypoints[waypointIndex];
-            for (int i = 0; i < Waypoint.maxConnections; i++)
+            Waypoint waypoint = waypoints[pos];
+            for (int i = 0; i < waypoint.next.Size; i++)
             {
-                int prevIndex = waypoint.previous[i];
-                if (prevIndex == -1) continue;
-                waypoints[prevIndex].UpdateNext(waypointIndex, newIndex);
+                float3 prevPos = waypoint.previous[i];
+                if (!waypoints.ContainsKey(prevPos)) continue;
+                waypoints[prevPos].RemoveNext(pos);
             }
         }
-        private static void DeleteWaypoint(int waypointIndex, ref NativeList<Waypoint> waypoints)
+        private static void DeleteWaypoint(float3 pos, ref NativeHashMap<float3, Waypoint> waypoints)
         {
             // Remove connections to waypoint
-            UpdateNext(waypointIndex, -1, ref waypoints);
-            UpdatePrevious(waypointIndex, -1, ref waypoints);
-
-            // Move references of the last waypoint to the index of the one getting deleted (preperation for next step)
-            int lastWaypointIndex = waypoints.Length - 1;
-            UpdateNext(lastWaypointIndex, waypointIndex, ref waypoints);
-            UpdatePrevious(lastWaypointIndex, waypointIndex, ref waypoints);
+            UpdateNext(pos, ref waypoints);
+            UpdatePrevious(pos, ref waypoints);
 
             // Remove waypoint and copy the last one to that position (references to last waypoint have already been updated)
-            waypoints.RemoveAtSwapBack(waypointIndex);
+            waypoints.Remove(pos);
         }
 
         public struct Connection
         {
             public float3 pos;
-            public int waypointIndex;
+            public float3 waypoint;
             public bool output; // false => input
-            public Connection(float3 pos, int waypointIndex, bool output)
+            public Connection(float3 pos, float3 waypoint, bool output)
             {
                 this.pos = pos;
-                this.waypointIndex = waypointIndex;
+                this.waypoint = waypoint;
                 this.output = output;
             }
         }

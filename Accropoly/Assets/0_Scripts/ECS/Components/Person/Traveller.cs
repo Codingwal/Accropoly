@@ -15,51 +15,47 @@ namespace Components
 }
 public unsafe struct Waypoint
 {
-    public const int maxConnections = 5;
     public float3 pos;
-    public fixed int next[maxConnections];
-    public fixed int previous[maxConnections];
+    public FixedFloat3Array10 next;
+    public FixedFloat3Array10 previous;
     public Waypoint(float3 pos)
     {
         this.pos = pos;
 
-        for (int i = 0; i < maxConnections; i++)
-            next[i] = -1;
-
-        for (int i = 0; i < maxConnections; i++)
-            previous[i] = -1;
+        next.Initialize(float.NaN);
+        previous.Initialize(float.NaN);
     }
-    public void UpdateNext(int index, int newIndex)
+    public void RemoveNext(float3 pos)
     {
-        for (int i = 0; i < maxConnections; i++)
-            if (next[i] == index)
-                next[i] = newIndex;
+        for (int i = 0; i < next.Size; i++)
+            if (next[i].Equals(pos))
+                next[i] = float.NaN;
     }
-    public void UpdatePrevious(int index, int newIndex)
+    public void RemovePrevious(float3 pos)
     {
-        for (int i = 0; i < maxConnections; i++)
-            if (previous[i] == index)
-                previous[i] = newIndex;
+        for (int i = 0; i < previous.Size; i++)
+            if (previous[i].Equals(pos))
+                previous[i] = float.NaN;
     }
-    public void AddNext(int index)
+    public void AddNext(float3 pos)
     {
-        for (int i = 0; i < maxConnections; i++)
+        for (int i = 0; i < next.Size; i++)
         {
-            if (next[i] == -1)
+            if (math.isnan(next[i].x))
             {
-                next[i] = index;
+                next[i] = pos;
                 return;
             }
         }
         Debug.LogError("No slot left");
     }
-    public void AddPrevious(int index)
+    public void AddPrevious(float3 pos)
     {
-        for (int i = 0; i < maxConnections; i++)
+        for (int i = 0; i < previous.Size; i++)
         {
-            if (previous[i] == -1)
+            if (math.isnan(previous[i].x))
             {
-                previous[i] = index;
+                previous[i] = pos;
                 return;
             }
         }
