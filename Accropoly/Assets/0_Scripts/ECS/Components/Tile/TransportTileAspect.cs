@@ -42,6 +42,8 @@ namespace Components
             Debug.Assert(tile.ValueRO.tileType == TileType.Street);
             Debug.Assert(connectingTile.IsValid);
 
+            Debug.Log($"rotation: {tile.ValueRO.rotation}");
+
             int index = connectingTile.ValueRO.GetIndex();
 
             // The tile is assumed to face north
@@ -195,13 +197,6 @@ namespace Components
         {
             pos = math.rotate(quaternion.EulerXYZ(0, tile.ValueRO.rotation.ToRadians(), 0), pos);
             pos += transform.ValueRO.Position;
-            pos = math.round(pos * 100) / 100; // Round to precision of 0.01
-            return pos;
-        }
-        private float3 FromWorldSpace(float3 pos)
-        {
-            pos -= transform.ValueRO.Position;
-            pos = math.rotate(quaternion.EulerXYZ(0, -tile.ValueRO.rotation.ToRadians(), 0), pos);
             pos = math.round(pos * 100) / 100; // Round to precision of 0.01
             return pos;
         }

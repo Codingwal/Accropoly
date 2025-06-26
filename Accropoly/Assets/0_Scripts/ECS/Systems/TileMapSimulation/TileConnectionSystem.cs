@@ -89,10 +89,13 @@ namespace Systems
                         neighbourConnectingTile.RemoveDirection(direction.Flip());
                         ecb.SetComponent(neighbour, neighbourConnectingTile);
 
-                        // Update neighbour rotation
                         var neighbourTransform = SystemAPI.GetComponent<LocalTransform>(neighbour);
                         neighbourTransform.Rotation = quaternion.EulerXYZ(0, neighbourConnectingTile.GetRotation().ToRadians(), 0);
-                        ecb.SetComponent(neighbour, neighbourTransform);
+                        SystemAPI.SetComponent(neighbour, neighbourTransform);
+
+                        var neighbourTile = SystemAPI.GetComponent<Tile>(neighbour);
+                        neighbourTile.rotation = neighbourConnectingTile.GetRotation();
+                        SystemAPI.SetComponent(neighbour, neighbourTile); // Changes must be applied directly because the data might be updated in the same frame again
                     }
                 }
             }).Schedule();

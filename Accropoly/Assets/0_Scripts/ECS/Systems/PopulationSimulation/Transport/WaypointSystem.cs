@@ -1,4 +1,5 @@
 using Components;
+using Tags;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -18,7 +19,12 @@ namespace Systems
         }
         protected override void OnUpdate()
         {
-            Entities.WithChangeFilter<ConnectingTile>().ForEach((TransportTileAspect transportTileAspect, in Tile tile) =>
+            Entities.WithAll<Replace>().ForEach((TransportTileAspect transportTileAspect) =>
+            {
+                DeleteTileWaypoints(ref transportTileAspect.transportTile.ValueRW.waypoints);
+            }).Schedule();
+
+            Entities.WithNone<Replace>().WithChangeFilter<ConnectingTile>().ForEach((TransportTileAspect transportTileAspect) =>
             {
                 DeleteTileWaypoints(ref transportTileAspect.transportTile.ValueRW.waypoints);
 
@@ -43,19 +49,16 @@ namespace Systems
                         // Waypoints are extremely close together and should get connected
                         Debug.Assert(pair.Value.exit != otherPair.Value.exit, "Can't connect two exits/entries");
                         if (pair.Value.exit) // this -> other
-                        {
                             LinkWaypoints(pos, otherPos);
-                        }
                         else // other -> this
-                        {
                             LinkWaypoints(otherPos, pos);
-                        }
+
                         break;
                     }
                 }
 
                 waypointsTmp.Clear();
-            }).WithoutBurst().Run();
+            }).WithoutBurst().Schedule();
         }
         protected override void OnDestroy()
         {
