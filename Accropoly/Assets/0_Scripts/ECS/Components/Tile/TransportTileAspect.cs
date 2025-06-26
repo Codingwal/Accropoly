@@ -42,8 +42,6 @@ namespace Components
             Debug.Assert(tile.ValueRO.tileType == TileType.Street);
             Debug.Assert(connectingTile.IsValid);
 
-            Debug.Log($"rotation: {tile.ValueRO.rotation}");
-
             int index = connectingTile.ValueRO.GetIndex();
 
             // The tile is assumed to face north

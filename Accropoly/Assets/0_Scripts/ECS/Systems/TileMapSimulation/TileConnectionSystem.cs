@@ -87,7 +87,7 @@ namespace Systems
 
                         // Update neighbour ConnectingTile
                         neighbourConnectingTile.RemoveDirection(direction.Flip());
-                        ecb.SetComponent(neighbour, neighbourConnectingTile);
+                        SystemAPI.SetComponent(neighbour, neighbourConnectingTile);
 
                         var neighbourTransform = SystemAPI.GetComponent<LocalTransform>(neighbour);
                         neighbourTransform.Rotation = quaternion.EulerXYZ(0, neighbourConnectingTile.GetRotation().ToRadians(), 0);
