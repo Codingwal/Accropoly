@@ -16,14 +16,17 @@ namespace Components
 public unsafe struct Waypoint
 {
     public float3 pos;
-    public FixedFloat3Array10 next;
-    public FixedFloat3Array10 previous;
-    public Waypoint(float3 pos)
+    public FixedFloat3Array5 next;
+    public FixedFloat3Array5 previous;
+    public bool exit; // Only important if at the tile's edge. false => entry
+    public Waypoint(float3 pos, bool exit)
     {
         this.pos = pos;
 
-        next.Initialize(float.NaN);
-        previous.Initialize(float.NaN);
+        next.Clear(float.NaN);
+        previous.Clear(float.NaN);
+
+        this.exit = exit;
     }
     public void RemoveNext(float3 pos)
     {

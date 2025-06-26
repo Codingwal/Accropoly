@@ -1,19 +1,18 @@
 using Unity.Entities;
 using Unity.Mathematics;
+using UnityEngine;
 
 namespace Components
 {
     public unsafe struct TransportTile : IComponentData
     {
         public float speed;
-        public FixedFloat3Array10 waypoints;
-        public FixedFloat3Array10 connections;
+        public FixedFloat3Array20 waypoints;
         public TransportTile(float speed)
         {
             this.speed = speed;
 
-            waypoints.Initialize(float.NaN);
-            connections.Initialize(float.NaN);
+            waypoints.Clear(float.NaN);
         }
         public void AddWaypoint(float3 pos)
         {
@@ -25,17 +24,7 @@ namespace Components
                     return;
                 }
             }
-        }
-        public void AddConnection(float3 pos)
-        {
-            for (int i = 0; i < connections.Size; i++)
-            {
-                if (math.isnan(connections[i].x))
-                {
-                    connections[i] = pos;
-                    return;
-                }
-            }
+            Debug.LogError("Reached the limit of waypoints per tile");
         }
     }
 }
