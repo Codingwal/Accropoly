@@ -186,7 +186,7 @@ namespace Components
         {
             pos = ToWorldSpace(pos);
 
-            Waypoint waypoint = new(pos, exit);
+            Waypoint waypoint = new(pos, 1, exit);
             waypoints.Add(waypoint.pos, waypoint);
 
             transportTile.ValueRW.AddWaypoint(pos);

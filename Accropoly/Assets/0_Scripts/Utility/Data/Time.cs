@@ -5,9 +5,14 @@ public struct WorldTime
     public int hours;
     public int day;
     public readonly float TimeOfDayInSeconds => hours * 3600 + minutes * 60 + seconds;
+
+    private bool newHour;
+    public readonly bool NewHour => newHour;
     public static float HoursToSeconds(int hours) { return hours * 3600; }
     public void Advance(float deltaTime, out bool newDay)
     {
+        newHour = false;
+
         seconds += deltaTime;
         if (seconds >= 60)
         {
@@ -17,6 +22,7 @@ public struct WorldTime
             {
                 minutes -= 60;
                 hours++;
+                newHour = true;
                 if (hours >= 24)
                 {
                     hours -= 24;

@@ -8,20 +8,23 @@ namespace Components
     public struct Traveller : IComponentData
     {
         public int2 destination;
-        public float timeOnTile;
+        public float3 velocity;
+        public float maxAcceleration;
         public int nextWaypointIndex;
-        public UnsafeList<Waypoint> waypoints;
+        public UnsafeList<float3> waypoints;
     }
 }
 public unsafe struct Waypoint
 {
     public float3 pos;
+    public float velocity;
     public FixedFloat3Array5 next;
     public FixedFloat3Array5 previous;
     public bool exit; // Only important if at the tile's edge. false => entry
-    public Waypoint(float3 pos, bool exit)
+    public Waypoint(float3 pos, float velocity, bool exit)
     {
         this.pos = pos;
+        this.velocity = velocity;
 
         next.Clear(float.NaN);
         previous.Clear(float.NaN);

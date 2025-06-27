@@ -5,6 +5,7 @@ using Components;
 using Tags;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Rendering.VirtualTexturing;
 
 namespace Systems
 {
@@ -22,8 +23,10 @@ namespace Systems
         }
         protected override void OnUpdate()
         {
-            var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
+            var gameInfo = SystemAPI.GetSingleton<GameInfo>();
+            if (!gameInfo.time.NewHour) return;
 
+            var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
             var entityGrid = TileGridUtility.GetEntityGrid();
 
             NativeList<Entity> employerEntities = employersWithSpaceQuery.ToEntityListAsync(Allocator.TempJob, out var handle);

@@ -55,7 +55,7 @@ public partial class Deserializer
                 PersonComponents.Traveller => new Traveller()
                 {
                     nextWaypointIndex = br.ReadInt32(),
-                    waypoints = Deserialize(new UnsafeList<Waypoint>()),
+                    waypoints = Deserialize(new UnsafeList<float3>()),
                 },
                 PersonComponents.Travelling => new Travelling(),
                 PersonComponents.WantsToTravel => new WantsToTravel(),

@@ -20,55 +20,63 @@ namespace Systems
         }
         protected override void OnUpdate()
         {
-            /*
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
             var buffer = SystemAPI.GetBuffer<EntityBufferElement>(SystemAPI.GetSingletonEntity<EntityGridHolder>());
-            WorldTime time = SystemAPI.GetSingleton<GameInfo>().time;
-            float deltaTime = SystemAPI.GetSingleton<GameInfo>().deltaTime;
+            GameInfo gameInfo = SystemAPI.GetSingleton<GameInfo>();
+            float deltaTime = gameInfo.deltaTime / 500;
 
-            Entities.WithAll<Travelling>().ForEach((Entity entity, ref Traveller traveller) =>
+            Entities.WithAll<Travelling>().ForEach((Entity entity, ref Traveller traveller, ref LocalTransform transform) =>
             {
-                LocalTransform transform = SystemAPI.GetComponent<LocalTransform>(entity);
-                Waypoint waypoint = traveller.waypoints[traveller.nextWaypointIndex];
+                float3 nextPos = traveller.waypoints[traveller.nextWaypointIndex];
+                Waypoint nextWaypoint;
+                if (((int2)nextPos.xz / 2).Equals(traveller.destination))
+                    nextWaypoint = new(nextPos, 1, false);
+                else
+                    nextWaypoint = WaypointSystem.waypoints[nextPos];
 
-                // If this is the destination waypoint, jump directly on the destination tile
-                if (traveller.nextWaypointIndex + 1 == traveller.waypoints.Length)
+                float3 targetDir = nextPos - transform.Position;
+                float t = 1 / (1 + math.distance(transform.Position, nextPos));
+                float targetVel = math.lerp(math.length(traveller.velocity), nextWaypoint.velocity, t);
+
+                float3 acceleration = (targetVel * targetDir) - traveller.velocity;
+
+                if (math.length(acceleration) > traveller.maxAcceleration)
                 {
-                    transform.Position.xz = waypoint.pos * 2;
-                    ecb.SetComponent(entity, transform);
-                    ecb.SetComponentEnabled<Travelling>(entity, false);
-                    return;
+                    Debug.Log("!");
+                    acceleration = math.normalize(acceleration) * traveller.maxAcceleration;
                 }
 
-                // Calculate the side on which the tile will be entered and exited using the previous and next waypoint
-                Waypoint previousWaypoint = traveller.waypoints[traveller.nextWaypointIndex - 1];
-                Direction entryDir = new(previousWaypoint.pos - waypoint.pos);
-                Waypoint nextWaypoint = traveller.waypoints[traveller.nextWaypointIndex + 1];
-                Direction exitDir = new(nextWaypoint.pos - waypoint.pos);
+                // Debug.Log($"old: v={traveller.velocity}, p={transform.Position}");
 
-                // Make sure the tile contains all TransportTileAspect component
-                Debug.Assert(SystemAPI.HasComponent<TransportTile>(TileGridUtility.GetTile(waypoint.pos, buffer)), "Expected a transport tile");
+                traveller.velocity += acceleration * deltaTime;
+                transform.Position += traveller.velocity * deltaTime;
 
-                // Calculate the position using the TransportTileAspect of the current tile
-                var transportTileAspect = SystemAPI.GetAspect<TransportTileAspect>(TileGridUtility.GetTile(waypoint.pos, buffer));
-                float3 pos = transportTileAspect.TravelOnTile(entryDir, exitDir, traveller.timeOnTile, out bool reachedTileEnd);
+                // Debug.Log($"nP={nextPos}, tD={targetDir}, t={t}, tV={targetVel}, a={acceleration}, v={traveller.velocity}, p={transform.Position}");
 
-                // Update the time spent on the current tile
-                traveller.timeOnTile += deltaTime;
-
-                // Move on to the next tile if the current tile has been completely traversed
-                if (reachedTileEnd)
+                if (math.distancesq(transform.Position, nextPos) < 0.1f)
                 {
                     traveller.nextWaypointIndex++;
-                    traveller.timeOnTile = 0;
-                    waypoint = traveller.waypoints[traveller.nextWaypointIndex];
+                    if (traveller.nextWaypointIndex == traveller.waypoints.Length) // Reached destination
+                    {
+                        Debug.Log("Reached destination");
+                        transform.Position.xz = traveller.destination * 2;
+                        ecb.SetComponentEnabled<Travelling>(entity, false);
+                    }
                 }
+            }).Schedule();
+        }
 
-                // Update and store the transform
-                transform.Position = pos;
-                ecb.SetComponent(entity, transform);
-            }).WithBurst(Unity.Burst.FloatMode.Fast, Unity.Burst.FloatPrecision.Low).Schedule();
-            */
+        public void DrawGizmos()
+        {
+            Gizmos.color = Color.green;
+
+            Entities.WithAll<Travelling>().ForEach((in Traveller traveller) =>
+            {
+                for (int i = 1; i < traveller.waypoints.Length; i++)
+                {
+                    Gizmos.DrawLine(traveller.waypoints[i - 1], traveller.waypoints[i]);
+                }
+            }).Run();
         }
     }
 }

@@ -30,7 +30,7 @@ namespace Systems
             var gameInfo = SystemAPI.GetSingleton<GameInfo>();
             int hours = gameInfo.time.hours;
 
-            if (hours == 3)
+            if (hours == 3 && gameInfo.time.NewHour)
             {
                 Entities.ForEach((ref Worker worker, in Person person) =>
                 {
@@ -61,8 +61,10 @@ namespace Systems
                     if (worker.timeToWork == -1) return; // Skip people without valid path to work
                     if (pos.Equals(worker.employer)) return; // Skip people that are already at work
 
+
                     if (gameInfo.time.TimeOfDayInSeconds + worker.timeToWork >= WorldTime.HoursToSeconds(8))
                     {
+                        Debug.LogWarning($"Sending person to work. pos={pos} ({transform.Position}), empl={worker.employer}");
                         traveller.destination = worker.employer;
                         ecb.SetComponentEnabled<WantsToTravel>(entity, true);
                     }

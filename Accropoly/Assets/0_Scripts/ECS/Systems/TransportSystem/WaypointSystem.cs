@@ -10,7 +10,7 @@ namespace Systems
     [UpdateInGroup(typeof(LateSimulationSystemGroup))]
     public partial class WaypointSystem : SystemBase
     {
-        private static NativeHashMap<float3, Waypoint> waypoints;
+        public static NativeHashMap<float3, Waypoint> waypoints;
         private static NativeHashMap<float3, Waypoint> waypointsTmp; // Only declared here for efficiency
         protected override void OnCreate()
         {
