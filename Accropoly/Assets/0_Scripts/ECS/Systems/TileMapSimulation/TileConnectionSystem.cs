@@ -19,7 +19,7 @@ namespace Systems
         }
         protected override void OnUpdate()
         {
-            var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
+            var ecb = SystemAPI.GetSingleton<PreLateSimulationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
             var entityGrid = TileGridUtility.GetEntityGrid();
 
             NativeArray<Direction> directions = new(4, Allocator.TempJob);

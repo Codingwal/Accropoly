@@ -21,8 +21,6 @@ namespace Systems
         }
         protected override void OnUpdate()
         {
-            Debug.LogWarning("WaypointSystem");
-
             if (SystemAPI.HasSingleton<SaveGame>())
             {
                 waypoints.Clear();
@@ -38,7 +36,6 @@ namespace Systems
                 DeleteTileWaypoints(ref transportTileAspect.transportTile.ValueRW.waypoints);
 
                 transportTileAspect.GetPoints(ref waypointsTmp);
-                Debug.Log($"Adding {waypointsTmp.Count} waypoints");
 
                 foreach (var pair in waypointsTmp)
                 {
@@ -68,9 +65,7 @@ namespace Systems
                 }
 
                 waypointsTmp.Clear();
-            }).WithoutBurst().Run();
-
-            Debug.Log($"WaypointSystem: {waypoints.Count}");
+            }).WithoutBurst().Schedule();
         }
         protected override void OnDestroy()
         {

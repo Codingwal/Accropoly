@@ -7,9 +7,11 @@ namespace Components
     {
         private fixed bool connectableSides[4];
         public ConnectingTileGroup group;
+        public int index; // Debug info
         public ConnectingTile(ConnectingTileGroup group, params Direction[] connectableDirections)
         {
             this.group = group;
+            index = 0;
             foreach (var direction in connectableDirections)
             {
                 AddDirection(direction);
@@ -22,10 +24,12 @@ namespace Components
         public void AddDirection(Direction direction)
         {
             connectableSides[(uint)direction] = true;
+            index = GetIndex();
         }
         public void RemoveDirection(Direction direction)
         {
             connectableSides[(uint)direction] = false;
+            index = GetIndex();
         }
         public const int notConnected = 0;
         public const int deadEnd = 1;

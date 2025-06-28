@@ -3,7 +3,6 @@ using Components;
 using ConfigComponents;
 using Unity.Rendering;
 using Tags;
-using UnityEngine;
 
 [UpdateInGroup(typeof(LateSimulationSystemGroup))]
 public partial class AppearenceSystem : SystemBase
@@ -20,7 +19,7 @@ public partial class AppearenceSystem : SystemBase
             firstUpdate = false;
         }
 
-        if (!SystemAPI.HasSingleton<RunGame>())
+        if (!(SystemAPI.HasSingleton<RunGame>() || SystemAPI.HasSingleton<LoadGame>()))
             return;
 
         Appearence config = SystemAPI.GetSingleton<Appearence>();
