@@ -139,10 +139,10 @@ namespace Components
             }
             if (index == ConnectingTile.junction)
             {
-                (float3 northEntry, float3 northExit) = EdgeToCenter(Directions.North, JunctionData.None, ref waypoints);
-                (float3 eastEntry, float3 eastExit) = EdgeToCenter(Directions.East, JunctionData.None, ref waypoints);
-                (float3 southEntry, float3 southExit) = EdgeToCenter(Directions.South, JunctionData.None, ref waypoints);
-                (float3 westEntry, float3 westExit) = EdgeToCenter(Directions.West, JunctionData.None, ref waypoints);
+                (float3 northEntry, float3 northExit) = EdgeToCenter(Directions.North, JunctionData.Priority, ref waypoints);
+                (float3 eastEntry, float3 eastExit) = EdgeToCenter(Directions.East, JunctionData.GiveWay, ref waypoints);
+                (float3 southEntry, float3 southExit) = EdgeToCenter(Directions.South, JunctionData.Priority, ref waypoints);
+                (float3 westEntry, float3 westExit) = EdgeToCenter(Directions.West, JunctionData.GiveWay, ref waypoints);
 
                 LinkWaypoints(northEntry, eastExit, ref waypoints);
                 LinkWaypoints(northEntry, southExit, ref waypoints);

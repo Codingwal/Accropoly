@@ -87,7 +87,7 @@ namespace Systems
 
                 if (waypoint.registeredObjects > 0)
                     Gizmos.color = Color.green;
-                else if (waypoint.stop)
+                if (waypoint.stop)
                     Gizmos.color = Color.red;
 
                 Gizmos.DrawSphere(waypoint.pos, 0.15f);

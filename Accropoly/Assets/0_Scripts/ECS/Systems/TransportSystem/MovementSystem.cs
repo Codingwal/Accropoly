@@ -87,7 +87,7 @@ namespace Systems
 
             Entities.WithAll<Travelling>().ForEach((in Traveller traveller) =>
             {
-                for (int i = 1; i < traveller.waypoints.Length; i++)
+                for (int i = traveller.nextWaypointIndex; i < traveller.waypoints.Length; i++)
                 {
                     Gizmos.DrawLine(traveller.waypoints[i - 1], traveller.waypoints[i]);
                 }
