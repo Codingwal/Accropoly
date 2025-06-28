@@ -64,7 +64,6 @@ namespace Systems
 
                     if (gameInfo.time.TimeOfDayInSeconds + worker.timeToWork >= WorldTime.HoursToSeconds(8))
                     {
-                        Debug.LogWarning($"Sending person to work. pos={pos} ({transform.Position}), empl={worker.employer}");
                         traveller.destination = worker.employer;
                         ecb.SetComponentEnabled<WantsToTravel>(entity, true);
                     }

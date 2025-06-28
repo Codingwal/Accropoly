@@ -77,9 +77,9 @@ namespace Components
                 // north -> east (outer curve)
                 float3 northEntry = new(-offsetFromCenter, defaultVerticalOffset, 0.95f);
                 AddWaypoint(northEntry, ref waypoints);
-                float3 beforeCorner = new(-offsetFromCenter, defaultVerticalOffset, 0);
+                float3 beforeCorner = new(-offsetFromCenter, defaultVerticalOffset, offsetFromCenter);
                 AddWaypoint(beforeCorner, ref waypoints);
-                float3 afterCorner = new(0, defaultVerticalOffset, -offsetFromCenter);
+                float3 afterCorner = new(offsetFromCenter, defaultVerticalOffset, -offsetFromCenter);
                 AddWaypoint(afterCorner, ref waypoints);
                 float3 eastExit = new(0.95f, defaultVerticalOffset, -offsetFromCenter);
                 AddWaypoint(eastExit, ref waypoints, true);

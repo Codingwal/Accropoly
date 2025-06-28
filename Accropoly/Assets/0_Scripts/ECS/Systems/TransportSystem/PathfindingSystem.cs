@@ -41,7 +41,7 @@ namespace Systems
                 if (FindPath(ref traveller.waypoints, (int2)math.round(transform.Position.xz / 2), traveller.destination, entityGrid))
                 {
                     traveller.nextWaypointIndex = 1; // waypoints[0] is start
-                    traveller.maxAcceleration = 5;
+                    traveller.maxAcceleration = 2.7f;
                     traveller.velocity = float3.zero;
                     ecb.SetComponentEnabled<Travelling>(entity, true);
                 }
@@ -88,8 +88,6 @@ namespace Systems
                 closedList.Dispose();
                 directions.Dispose();
             }
-
-            Debug.Log($"FindPath: Starting at tile {startTile} (pos = {start}). Destination is tile {destTile} (pos = {dest})");
 
             // The journey can start on all waypoints on adjacent street tiles
             foreach (Direction dir in directions)
@@ -199,16 +197,8 @@ namespace Systems
         }
         private static Entity GetTile(float3 pos, in DynamicBuffer<EntityBufferElement> entityGrid)
         {
-            try
-            {
-                int2 tilePos = (int2)math.round(pos.xz / 2);
-                return TileGridUtility.GetTile(tilePos, entityGrid);
-            }
-            catch (Exception)
-            {
-                Debug.LogError($"Invalid position. ({(int2)math.round(pos.xz / 2)} / {pos})");
-                throw new();
-            }
+            int2 tilePos = (int2)math.round(pos.xz / 2);
+            return TileGridUtility.GetTile(tilePos, entityGrid);
         }
         private struct VisitedNode
         {

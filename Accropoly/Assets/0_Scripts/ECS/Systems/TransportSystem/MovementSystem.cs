@@ -1,5 +1,6 @@
 using Components;
 using Tags;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -15,7 +16,10 @@ namespace Systems
     {
         protected override void OnCreate()
         {
-            RequireForUpdate<Traveller>();
+            var builder = new EntityQueryBuilder(Allocator.Temp).WithAll<Travelling>();
+            RequireForUpdate(GetEntityQuery(builder));
+            builder.Dispose();
+
             RequireForUpdate<RunGame>();
         }
         protected override void OnUpdate()
@@ -23,42 +27,38 @@ namespace Systems
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
             var buffer = SystemAPI.GetBuffer<EntityBufferElement>(SystemAPI.GetSingletonEntity<EntityGridHolder>());
             GameInfo gameInfo = SystemAPI.GetSingleton<GameInfo>();
-            float deltaTime = gameInfo.deltaTime / 500;
+            float deltaTime = gameInfo.deltaTime / 1000;
 
             Entities.WithAll<Travelling>().ForEach((Entity entity, ref Traveller traveller, ref LocalTransform transform) =>
             {
                 float3 nextPos = traveller.waypoints[traveller.nextWaypointIndex];
-                Waypoint nextWaypoint;
+                float nextVelocity;
+
                 if (((int2)nextPos.xz / 2).Equals(traveller.destination))
-                    nextWaypoint = new(nextPos, 1, false);
+                    nextVelocity = 1;
                 else
-                    nextWaypoint = WaypointSystem.waypoints[nextPos];
+                    nextVelocity = WaypointSystem.waypoints[nextPos].velocity;
 
-                float3 targetDir = nextPos - transform.Position;
-                float t = 1 / (1 + math.distance(transform.Position, nextPos));
-                float targetVel = math.lerp(math.length(traveller.velocity), nextWaypoint.velocity, t);
+                float3 targetDirection = math.normalize(nextPos - transform.Position);
+                float targetSpeed = math.lerp(math.length(traveller.velocity), nextVelocity, 1 / (1 + math.distance(transform.Position, nextPos)));
 
-                float3 acceleration = (targetVel * targetDir) - traveller.velocity;
+                float3 acceleration = (targetSpeed * targetDirection) - traveller.velocity;
+                acceleration /= deltaTime;
 
-                if (math.length(acceleration) > traveller.maxAcceleration)
+                if (math.lengthsq(acceleration) > math.square(traveller.maxAcceleration))
                 {
-                    Debug.Log("!");
+                    Debug.Log("Clamping acceleration");
                     acceleration = math.normalize(acceleration) * traveller.maxAcceleration;
                 }
-
-                // Debug.Log($"old: v={traveller.velocity}, p={transform.Position}");
 
                 traveller.velocity += acceleration * deltaTime;
                 transform.Position += traveller.velocity * deltaTime;
 
-                // Debug.Log($"nP={nextPos}, tD={targetDir}, t={t}, tV={targetVel}, a={acceleration}, v={traveller.velocity}, p={transform.Position}");
-
-                if (math.distancesq(transform.Position, nextPos) < 0.1f)
+                if (math.distancesq(transform.Position, nextPos) < math.square(0.1f))
                 {
                     traveller.nextWaypointIndex++;
                     if (traveller.nextWaypointIndex == traveller.waypoints.Length) // Reached destination
                     {
-                        Debug.Log("Reached destination");
                         transform.Position.xz = traveller.destination * 2;
                         ecb.SetComponentEnabled<Travelling>(entity, false);
                     }
