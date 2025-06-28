@@ -138,6 +138,8 @@ public static class TilePlacingUtility
             case TileType.Sapling:
                 if (oldType == TileType.House)
                     return (TileType.Hut, 10);
+                if (oldType == TileType.Street)
+                    return (TileType.ForestStreet, 10);
                 else
                     return INVALID;
             case TileType.House:
@@ -147,9 +149,14 @@ public static class TilePlacingUtility
                     return INVALID;
             case TileType.Street:
                 if (oldType == TileType.Bitumen)
-                    return (TileType.CityStreet, 20);
+                    return (TileType.CityStreet, 50);
                 else if (oldType == TileType.Forest)
-                    return (TileType.ForestStreet, 20);
+                    return (TileType.ForestStreet, 50);
+                else
+                    return INVALID;
+            case TileType.Bitumen:
+                if (oldType == TileType.Street)
+                    return (TileType.CityStreet, 20);
                 else
                     return INVALID;
             default:
