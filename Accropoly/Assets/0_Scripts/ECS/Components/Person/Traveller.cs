@@ -16,8 +16,8 @@ namespace Components
 }
 public unsafe struct Waypoint
 {
-    public float3 pos;
-    public float velocity;
+    public float3 pos; // world space
+    public float velocity; // in m/s
     public FixedFloat3Array5 next;
     public FixedFloat3Array5 previous;
     public bool exit; // Only important if at the tile's edge. false => entry

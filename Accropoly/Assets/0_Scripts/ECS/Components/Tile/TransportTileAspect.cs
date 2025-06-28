@@ -58,16 +58,16 @@ namespace Components
             {
                 // north -> south
                 float3 northEntry = new(-offsetFromCenter, defaultVerticalOffset, 0.95f);
-                AddWaypoint(northEntry, ref waypoints);
+                AddWaypoint(northEntry, 17, ref waypoints);
                 float3 southExit = new(-offsetFromCenter, defaultVerticalOffset, -0.95f);
-                AddWaypoint(southExit, ref waypoints, true);
+                AddWaypoint(southExit, 17, ref waypoints, true);
                 LinkWaypoints(northEntry, southExit, ref waypoints);
 
                 // south -> north
                 float3 southEntry = new(offsetFromCenter, defaultVerticalOffset, -0.95f);
-                AddWaypoint(southEntry, ref waypoints);
+                AddWaypoint(southEntry, 17, ref waypoints);
                 float3 northExit = new(offsetFromCenter, defaultVerticalOffset, 0.95f);
-                AddWaypoint(northExit, ref waypoints, true);
+                AddWaypoint(northExit, 17, ref waypoints, true);
                 LinkWaypoints(southEntry, northExit, ref waypoints);
 
                 return;
@@ -76,13 +76,13 @@ namespace Components
             {
                 // north -> east (outer curve)
                 float3 northEntry = new(-offsetFromCenter, defaultVerticalOffset, 0.95f);
-                AddWaypoint(northEntry, ref waypoints);
+                AddWaypoint(northEntry, 17, ref waypoints);
                 float3 beforeCorner = new(-offsetFromCenter, defaultVerticalOffset, offsetFromCenter);
-                AddWaypoint(beforeCorner, ref waypoints);
+                AddWaypoint(beforeCorner, 11, ref waypoints);
                 float3 afterCorner = new(offsetFromCenter, defaultVerticalOffset, -offsetFromCenter);
-                AddWaypoint(afterCorner, ref waypoints);
+                AddWaypoint(afterCorner, 11, ref waypoints);
                 float3 eastExit = new(0.95f, defaultVerticalOffset, -offsetFromCenter);
-                AddWaypoint(eastExit, ref waypoints, true);
+                AddWaypoint(eastExit, 17, ref waypoints, true);
 
                 LinkWaypoints(northEntry, beforeCorner, ref waypoints);
                 LinkWaypoints(beforeCorner, afterCorner, ref waypoints);
@@ -90,13 +90,13 @@ namespace Components
 
                 // east -> north (inner curve)
                 float3 eastEntry = new(0.95f, defaultVerticalOffset, offsetFromCenter);
-                AddWaypoint(eastEntry, ref waypoints);
+                AddWaypoint(eastEntry, 17, ref waypoints);
                 beforeCorner = new(0.5f, defaultVerticalOffset, offsetFromCenter);
-                AddWaypoint(beforeCorner, ref waypoints);
+                AddWaypoint(beforeCorner, 11, ref waypoints);
                 afterCorner = new(offsetFromCenter, defaultVerticalOffset, 0.5f);
-                AddWaypoint(afterCorner, ref waypoints);
+                AddWaypoint(afterCorner, 11, ref waypoints);
                 float3 northExit = new(offsetFromCenter, defaultVerticalOffset, 0.95f);
-                AddWaypoint(northExit, ref waypoints, true);
+                AddWaypoint(northExit, 17, ref waypoints, true);
 
                 LinkWaypoints(eastEntry, beforeCorner, ref waypoints);
                 LinkWaypoints(beforeCorner, afterCorner, ref waypoints);
@@ -153,17 +153,17 @@ namespace Components
         {
             // edge -> center
             float3 edgeEntry = math.rotate(quaternion.EulerXYZ(0, edge.ToRadians(), 0), new(-offsetFromCenter, defaultVerticalOffset, 0.95f));
-            AddWaypoint(edgeEntry, ref waypoints);
+            AddWaypoint(edgeEntry, 17, ref waypoints);
             float3 junctionEntry = math.rotate(quaternion.EulerXYZ(0, edge.ToRadians(), 0), new(-offsetFromCenter, defaultVerticalOffset, 0.5f));
-            AddWaypoint(junctionEntry, ref waypoints);
+            AddWaypoint(junctionEntry, 8, ref waypoints);
 
             LinkWaypoints(edgeEntry, junctionEntry, ref waypoints);
 
             // center -> edge
             float3 junctionExit = math.rotate(quaternion.EulerXYZ(0, edge.ToRadians(), 0), new(offsetFromCenter, defaultVerticalOffset, 0.5f));
-            AddWaypoint(junctionExit, ref waypoints);
+            AddWaypoint(junctionExit, 11, ref waypoints);
             float3 edgeExit = math.rotate(quaternion.EulerXYZ(0, edge.ToRadians(), 0), new(offsetFromCenter, defaultVerticalOffset, 0.95f));
-            AddWaypoint(edgeExit, ref waypoints, true);
+            AddWaypoint(edgeExit, 17, ref waypoints, true);
 
             LinkWaypoints(junctionExit, edgeExit, ref waypoints);
 
@@ -182,11 +182,11 @@ namespace Components
             copy.AddPrevious(from);
             waypoints[to] = copy;
         }
-        private void AddWaypoint(float3 pos, ref NativeHashMap<float3, Waypoint> waypoints, bool exit = false)
+        private void AddWaypoint(float3 pos, float velocity, ref NativeHashMap<float3, Waypoint> waypoints, bool exit = false)
         {
             pos = ToWorldSpace(pos);
 
-            Waypoint waypoint = new(pos, 1, exit);
+            Waypoint waypoint = new(pos, velocity, exit);
             waypoints.Add(waypoint.pos, waypoint);
 
             transportTile.ValueRW.AddWaypoint(pos);

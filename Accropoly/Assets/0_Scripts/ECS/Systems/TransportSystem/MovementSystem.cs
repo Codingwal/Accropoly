@@ -27,7 +27,7 @@ namespace Systems
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
             var buffer = SystemAPI.GetBuffer<EntityBufferElement>(SystemAPI.GetSingletonEntity<EntityGridHolder>());
             GameInfo gameInfo = SystemAPI.GetSingleton<GameInfo>();
-            float deltaTime = gameInfo.deltaTime / 1000;
+            float deltaTime = gameInfo.deltaTime / 8000;
 
             Entities.WithAll<Travelling>().ForEach((Entity entity, ref Traveller traveller, ref LocalTransform transform) =>
             {
@@ -35,7 +35,7 @@ namespace Systems
                 float nextVelocity;
 
                 if (((int2)nextPos.xz / 2).Equals(traveller.destination))
-                    nextVelocity = 1;
+                    nextVelocity = 5;
                 else
                     nextVelocity = WaypointSystem.waypoints[nextPos].velocity;
 
@@ -43,15 +43,11 @@ namespace Systems
                 float targetSpeed = math.lerp(math.length(traveller.velocity), nextVelocity, 1 / (1 + math.distance(transform.Position, nextPos)));
 
                 float3 acceleration = (targetSpeed * targetDirection) - traveller.velocity;
-                acceleration /= deltaTime;
 
                 if (math.lengthsq(acceleration) > math.square(traveller.maxAcceleration))
-                {
-                    Debug.Log("Clamping acceleration");
                     acceleration = math.normalize(acceleration) * traveller.maxAcceleration;
-                }
 
-                traveller.velocity += acceleration * deltaTime;
+                traveller.velocity += acceleration;
                 transform.Position += traveller.velocity * deltaTime;
 
                 if (math.distancesq(transform.Position, nextPos) < math.square(0.1f))

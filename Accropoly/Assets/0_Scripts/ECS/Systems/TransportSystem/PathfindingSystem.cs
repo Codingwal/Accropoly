@@ -41,7 +41,7 @@ namespace Systems
                 if (FindPath(ref traveller.waypoints, (int2)math.round(transform.Position.xz / 2), traveller.destination, entityGrid))
                 {
                     traveller.nextWaypointIndex = 1; // waypoints[0] is start
-                    traveller.maxAcceleration = 2.7f;
+                    traveller.maxAcceleration = 0.7f;
                     traveller.velocity = float3.zero;
                     ecb.SetComponentEnabled<Travelling>(entity, true);
                 }
