@@ -57,6 +57,9 @@ public partial class Serializer
                 bw.Write((int)PersonComponents.Traveller);
                 Traveller componentData = (Traveller)component;
 
+                Serialize(componentData.destination);
+                Serialize(componentData.velocity);
+                bw.Write(componentData.maxAcceleration);
                 bw.Write(componentData.nextWaypointIndex);
                 Serialize(componentData.waypoints);
             }

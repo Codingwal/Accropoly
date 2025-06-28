@@ -4,7 +4,6 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using Components;
 using Unity.Rendering;
-using Authoring;
 
 namespace Systems
 {
@@ -43,7 +42,7 @@ namespace Systems
                     // Add all serialized components with their value to the entity
                     TilePlacingUtility.UpdateEntity(entity, tiles[x, y].components, ecb);
 
-                    // Get tile and try to get ConnectingTile
+                    // Get tile component
                     Tile tile = new();
                     foreach (var (component, _) in tiles[x, y].components)
                         if (component.GetType() == typeof(Tile))

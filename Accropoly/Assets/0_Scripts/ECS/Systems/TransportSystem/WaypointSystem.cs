@@ -16,9 +16,18 @@ namespace Systems
         {
             waypoints = new(30, Allocator.Persistent);
             waypointsTmp = new(10, Allocator.Persistent);
+
+            RequireForUpdate<TransportTile>();
         }
         protected override void OnUpdate()
         {
+            Debug.LogWarning("WaypointSystem");
+
+            if (SystemAPI.HasSingleton<SaveGame>())
+            {
+                waypoints.Clear();
+            }
+
             Entities.WithAll<Replace>().ForEach((TransportTileAspect transportTileAspect) =>
             {
                 DeleteTileWaypoints(ref transportTileAspect.transportTile.ValueRW.waypoints);
@@ -29,6 +38,7 @@ namespace Systems
                 DeleteTileWaypoints(ref transportTileAspect.transportTile.ValueRW.waypoints);
 
                 transportTileAspect.GetPoints(ref waypointsTmp);
+                Debug.Log($"Adding {waypointsTmp.Count} waypoints");
 
                 foreach (var pair in waypointsTmp)
                 {
@@ -58,7 +68,9 @@ namespace Systems
                 }
 
                 waypointsTmp.Clear();
-            }).WithoutBurst().Schedule();
+            }).WithoutBurst().Run();
+
+            Debug.Log($"WaypointSystem: {waypoints.Count}");
         }
         protected override void OnDestroy()
         {
