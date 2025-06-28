@@ -54,8 +54,11 @@ public partial class Deserializer
                 },
                 PersonComponents.Traveller => new Traveller()
                 {
+                    destination = Deserialize(new int2()),
+                    velocity = Deserialize(new float3()),
+                    maxAcceleration = br.ReadSingle(),
                     nextWaypointIndex = br.ReadInt32(),
-                    waypoints = Deserialize(new UnsafeList<Waypoint>()),
+                    waypoints = Deserialize(new UnsafeList<float3>()),
                 },
                 PersonComponents.Travelling => new Travelling(),
                 PersonComponents.WantsToTravel => new WantsToTravel(),
@@ -63,11 +66,6 @@ public partial class Deserializer
             };
             data.components.Add((component, isEnabled));
         }
-        return data;
-    }
-    public Waypoint Deserialize(Waypoint data)
-    {
-        data.pos = Deserialize(new int2());
         return data;
     }
     public MapData Deserialize(MapData data)
@@ -126,10 +124,7 @@ public partial class Deserializer
                     totalSpace = br.ReadInt32(),
                     freeSpace = br.ReadInt32()
                 },
-                TileComponents.TransportTile => new TransportTile()
-                {
-                    speed = br.ReadSingle()
-                },
+                TileComponents.TransportTile => new TransportTile(br.ReadSingle()),
 
                 TileComponents.IsConnectedTag => new IsConnected(),
                 TileComponents.ActiveTileTag => new ActiveTile(),

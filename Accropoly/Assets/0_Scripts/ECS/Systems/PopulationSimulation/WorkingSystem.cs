@@ -30,7 +30,7 @@ namespace Systems
             var gameInfo = SystemAPI.GetSingleton<GameInfo>();
             int hours = gameInfo.time.hours;
 
-            if (hours == 3)
+            if (hours == 3 && gameInfo.time.NewHour)
             {
                 Entities.ForEach((ref Worker worker, in Person person) =>
                 {
@@ -60,6 +60,8 @@ namespace Systems
                     if (person.homeTile.Equals(new(-1, -1))) return; // Skip homeless people
                     if (worker.timeToWork == -1) return; // Skip people without valid path to work
                     if (pos.Equals(worker.employer)) return; // Skip people that are already at work
+
+                    Debug.Log($"{gameInfo.time.TimeOfDayInSeconds} + {worker.timeToWork} >= {WorldTime.HoursToSeconds(8)}");
 
                     if (gameInfo.time.TimeOfDayInSeconds + worker.timeToWork >= WorldTime.HoursToSeconds(8))
                     {

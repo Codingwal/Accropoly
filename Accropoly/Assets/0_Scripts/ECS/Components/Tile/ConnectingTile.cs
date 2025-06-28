@@ -7,9 +7,11 @@ namespace Components
     {
         private fixed bool connectableSides[4];
         public ConnectingTileGroup group;
+        public int index; // Debug info
         public ConnectingTile(ConnectingTileGroup group, params Direction[] connectableDirections)
         {
             this.group = group;
+            index = 0;
             foreach (var direction in connectableDirections)
             {
                 AddDirection(direction);
@@ -22,23 +24,32 @@ namespace Components
         public void AddDirection(Direction direction)
         {
             connectableSides[(uint)direction] = true;
+            index = GetIndex();
         }
         public void RemoveDirection(Direction direction)
         {
             connectableSides[(uint)direction] = false;
+            index = GetIndex();
         }
+        public const int notConnected = 0;
+        public const int deadEnd = 1;
+        public const int straight = 2;
+        public const int curve = 3;
+        public const int tJunction = 4;
+        public const int junction = 5;
         ///  <remarks>This doesn't contain the full component information! This is only used to select a MeshMaterialPair</remarks>
-        ///  <returns>0=>not connected; 1=>dead end; 2=>street; 3=>curve; 4=>T-junction; 5=>junction</returns>
         public readonly int GetIndex()
         {
             Direction rotation = GetRotation();
             ConnectingTile endrotatedRotation = Rotate(-(int)(uint)rotation);
-            if (endrotatedRotation.CountConnectableSides() == 0) return 0;
-            else if (endrotatedRotation.CountConnectableSides() == 1) return 1;
-            else if (endrotatedRotation.CountConnectableSides() == 2) return endrotatedRotation.connectableSides[1] ? 3 : 2;
-            else if (endrotatedRotation.CountConnectableSides() == 3) return 4;
-            else return 5;
-
+            return endrotatedRotation.CountConnectableSides() switch
+            {
+                0 => notConnected,
+                1 => deadEnd,
+                2 => endrotatedRotation.connectableSides[1] ? curve : straight,
+                3 => tJunction,
+                _ => junction
+            };
         }
         public readonly Direction GetRotation()
         {
@@ -47,7 +58,7 @@ namespace Components
             if (connectableSidesCount == 0 || connectableSidesCount == 4) return Directions.North;
 
             // Find the combination with the lowest sum. This basically finds the completely left shifted variant
-            uint bestRotation = 100;
+            uint bestRotation = int.MaxValue;
             int bestValue = int.MaxValue;
             for (uint i = 0; i < 4; i++)
             {
@@ -63,6 +74,7 @@ namespace Components
                     bestRotation = i;
                 }
             }
+            Debug.Assert(bestRotation != int.MaxValue);
 
             return (Direction)bestRotation;
         }

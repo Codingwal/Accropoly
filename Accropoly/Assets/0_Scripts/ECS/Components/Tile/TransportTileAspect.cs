@@ -1,21 +1,21 @@
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Transforms;
 using UnityEngine;
 
 namespace Components
 {
     public readonly partial struct TransportTileAspect : IAspect
     {
-        private readonly RefRO<TransportTile> transportTile;
+        public readonly RefRW<TransportTile> transportTile;
         private readonly RefRO<Tile> tile;
         [Optional] private readonly RefRO<ConnectingTile> connectingTile;
+        private readonly RefRO<LocalTransform> transform;
 
         private const float offsetFromCenter = 0.25f;
         public const float travelSecondsPerSecond = 0.007f; // Slow down travel time. If cars would use the normal timeSpeed, they would be way too fast.
         public const float defaultVerticalOffset = 0.8f;
-
-        public float Speed => transportTile.ValueRO.speed;
 
         /// <summary>
         /// Get all directions a car can travel to (from this tile)
@@ -36,65 +36,181 @@ namespace Components
                 throw new();
         }
 
-        public readonly float3 TravelOnTile(Direction entryDirection, Direction exitDirection, float timeOnTile, out bool reachedDest)
+        public readonly void GetPoints(ref NativeHashMap<float3, Waypoint> waypoints)
         {
             Debug.Assert(tile.ValueRO.tileType == TileType.Street || tile.ValueRO.tileType == TileType.CityStreet || tile.ValueRO.tileType == TileType.ForestStreet);
+            Debug.Assert(connectingTile.IsValid);
 
-            // Calculate the rotation needed so that entryDirection is south
-            int rotation = Direction.GetRotation(entryDirection, Directions.South);
+            int index = connectingTile.ValueRO.GetIndex();
 
-            float time = timeOnTile * transportTile.ValueRO.speed / 20 * travelSecondsPerSecond; // A tile is 20 meters big, speed is in m/s, timeOnTile in s
+            // The tile is assumed to face north
 
-            // Calculate the position with south as the entry direction
-            float3 pos = GetPosOnTileIgnoreRotation(exitDirection.Rotate(rotation), time);
+            if (index == ConnectingTile.notConnected)
+            {
+                return;
+            }
+            if (index == ConnectingTile.deadEnd)
+            {
+                // north -> center
+                float3 northEntry = new(-offsetFromCenter, defaultVerticalOffset, 0.95f);
+                AddWaypoint(northEntry, 15, ref waypoints);
+                float3 centerEntry = new(-offsetFromCenter, defaultVerticalOffset, 0);
+                AddWaypoint(centerEntry, 6, ref waypoints);
 
-            // Check if the destination has been reached
-            reachedDest = time >= 1;
+                // center -> north
+                float3 centerExit = new(offsetFromCenter, defaultVerticalOffset, 0);
+                AddWaypoint(centerExit, 6, ref waypoints);
+                float3 northExit = new(offsetFromCenter, defaultVerticalOffset, 0.95f);
+                AddWaypoint(northExit, 15, ref waypoints, true);
 
-            // Rotate position "back"
-            float3 rotatedPos = math.rotate(quaternion.EulerXYZ(0, -((Direction)rotation).ToRadians(), 0), pos);
+                LinkWaypoints(northEntry, centerEntry, ref waypoints);
+                LinkWaypoints(centerEntry, centerExit, ref waypoints);
+                LinkWaypoints(centerExit, northExit, ref waypoints);
 
-            // Return the position (range -1 to 1) but add the tile position to convert to world space
-            return rotatedPos + new float3(tile.ValueRO.pos.x, 0, tile.ValueRO.pos.y) * 2;
+                return;
+            }
+            if (index == ConnectingTile.straight)
+            {
+                // north -> south
+                float3 northEntry = new(-offsetFromCenter, defaultVerticalOffset, 0.95f);
+                AddWaypoint(northEntry, 17, ref waypoints);
+                float3 southExit = new(-offsetFromCenter, defaultVerticalOffset, -0.95f);
+                AddWaypoint(southExit, 17, ref waypoints, true);
+                LinkWaypoints(northEntry, southExit, ref waypoints);
+
+                // south -> north
+                float3 southEntry = new(offsetFromCenter, defaultVerticalOffset, -0.95f);
+                AddWaypoint(southEntry, 17, ref waypoints);
+                float3 northExit = new(offsetFromCenter, defaultVerticalOffset, 0.95f);
+                AddWaypoint(northExit, 17, ref waypoints, true);
+                LinkWaypoints(southEntry, northExit, ref waypoints);
+
+                return;
+            }
+            if (index == ConnectingTile.curve)
+            {
+                // north -> east (outer curve)
+                float3 northEntry = new(-offsetFromCenter, defaultVerticalOffset, 0.95f);
+                AddWaypoint(northEntry, 17, ref waypoints);
+                float3 beforeCorner = new(-offsetFromCenter, defaultVerticalOffset, offsetFromCenter);
+                AddWaypoint(beforeCorner, 11, ref waypoints);
+                float3 afterCorner = new(offsetFromCenter, defaultVerticalOffset, -offsetFromCenter);
+                AddWaypoint(afterCorner, 11, ref waypoints);
+                float3 eastExit = new(0.95f, defaultVerticalOffset, -offsetFromCenter);
+                AddWaypoint(eastExit, 17, ref waypoints, true);
+
+                LinkWaypoints(northEntry, beforeCorner, ref waypoints);
+                LinkWaypoints(beforeCorner, afterCorner, ref waypoints);
+                LinkWaypoints(afterCorner, eastExit, ref waypoints);
+
+                // east -> north (inner curve)
+                float3 eastEntry = new(0.95f, defaultVerticalOffset, offsetFromCenter);
+                AddWaypoint(eastEntry, 17, ref waypoints);
+                beforeCorner = new(0.5f, defaultVerticalOffset, offsetFromCenter);
+                AddWaypoint(beforeCorner, 11, ref waypoints);
+                afterCorner = new(offsetFromCenter, defaultVerticalOffset, 0.5f);
+                AddWaypoint(afterCorner, 11, ref waypoints);
+                float3 northExit = new(offsetFromCenter, defaultVerticalOffset, 0.95f);
+                AddWaypoint(northExit, 17, ref waypoints, true);
+
+                LinkWaypoints(eastEntry, beforeCorner, ref waypoints);
+                LinkWaypoints(beforeCorner, afterCorner, ref waypoints);
+                LinkWaypoints(afterCorner, northExit, ref waypoints);
+
+                return;
+            }
+            if (index == ConnectingTile.tJunction)
+            {
+                (float3 northEntry, float3 northExit) = EdgeToCenter(Directions.North, ref waypoints);
+                (float3 eastEntry, float3 eastExit) = EdgeToCenter(Directions.East, ref waypoints);
+                (float3 southEntry, float3 southExit) = EdgeToCenter(Directions.South, ref waypoints);
+
+                LinkWaypoints(northEntry, eastExit, ref waypoints);
+                LinkWaypoints(northEntry, southExit, ref waypoints);
+
+                LinkWaypoints(eastEntry, northExit, ref waypoints);
+                LinkWaypoints(eastEntry, southExit, ref waypoints);
+
+                LinkWaypoints(southEntry, northExit, ref waypoints);
+                LinkWaypoints(southEntry, eastExit, ref waypoints);
+
+                return;
+            }
+            if (index == ConnectingTile.junction)
+            {
+                (float3 northEntry, float3 northExit) = EdgeToCenter(Directions.North, ref waypoints);
+                (float3 eastEntry, float3 eastExit) = EdgeToCenter(Directions.East, ref waypoints);
+                (float3 southEntry, float3 southExit) = EdgeToCenter(Directions.South, ref waypoints);
+                (float3 westEntry, float3 westExit) = EdgeToCenter(Directions.West, ref waypoints);
+
+                LinkWaypoints(northEntry, eastExit, ref waypoints);
+                LinkWaypoints(northEntry, southExit, ref waypoints);
+                LinkWaypoints(northEntry, westExit, ref waypoints);
+
+                LinkWaypoints(eastEntry, northExit, ref waypoints);
+                LinkWaypoints(eastEntry, southExit, ref waypoints);
+                LinkWaypoints(eastEntry, westExit, ref waypoints);
+
+                LinkWaypoints(southEntry, northExit, ref waypoints);
+                LinkWaypoints(southEntry, eastExit, ref waypoints);
+                LinkWaypoints(southEntry, westExit, ref waypoints);
+
+                LinkWaypoints(westEntry, northExit, ref waypoints);
+                LinkWaypoints(westEntry, eastExit, ref waypoints);
+                LinkWaypoints(westEntry, southExit, ref waypoints);
+
+                return;
+            }
+
+            Debug.LogError("Unhandled case");
         }
-
-        /// <remarks>entryDirection is always south</remarks>
-        private readonly float3 GetPosOnTileIgnoreRotation(Direction exitDirection, float time)
+        private (float3, float3) EdgeToCenter(Direction edge, ref NativeHashMap<float3, Waypoint> waypoints)
         {
-            Debug.Assert(exitDirection != Directions.South);
+            // edge -> center
+            float3 edgeEntry = math.rotate(quaternion.EulerXYZ(0, edge.ToRadians(), 0), new(-offsetFromCenter, defaultVerticalOffset, 0.95f));
+            AddWaypoint(edgeEntry, 17, ref waypoints);
+            float3 junctionEntry = math.rotate(quaternion.EulerXYZ(0, edge.ToRadians(), 0), new(-offsetFromCenter, defaultVerticalOffset, 0.5f));
+            AddWaypoint(junctionEntry, 8, ref waypoints);
 
-            float3 pos = new(float.NaN); // Placeholder value, will be overwritten
+            LinkWaypoints(edgeEntry, junctionEntry, ref waypoints);
 
-            if (exitDirection == Directions.North)
-            {
-                // move straight
-                pos.x = offsetFromCenter;
-                pos.z = math.lerp(-1, 1, time);
-                pos.y = defaultVerticalOffset;
-            }
-            else if (exitDirection == Directions.East)
-            {
-                // move diagonal
-                pos.x = math.lerp(offsetFromCenter, 1, time);
-                pos.z = math.lerp(-1, -offsetFromCenter, time);
-                pos.y = defaultVerticalOffset;
-            }
-            else
-            {
-                // move diagonal but add small straights close to the edge
-                if (time < 0.25f)
-                    pos.x = offsetFromCenter;
-                else
-                    pos.x = math.lerp(offsetFromCenter, -1, (time - 0.25f) / 0.75f);
+            // center -> edge
+            float3 junctionExit = math.rotate(quaternion.EulerXYZ(0, edge.ToRadians(), 0), new(offsetFromCenter, defaultVerticalOffset, 0.5f));
+            AddWaypoint(junctionExit, 11, ref waypoints);
+            float3 edgeExit = math.rotate(quaternion.EulerXYZ(0, edge.ToRadians(), 0), new(offsetFromCenter, defaultVerticalOffset, 0.95f));
+            AddWaypoint(edgeExit, 17, ref waypoints, true);
 
-                if (time > 0.75f)
-                    pos.z = offsetFromCenter;
-                else
-                    pos.z = math.lerp(-1, offsetFromCenter, time / 0.75f);
+            LinkWaypoints(junctionExit, edgeExit, ref waypoints);
 
-                pos.y = defaultVerticalOffset;
-            }
+            return (junctionEntry, junctionExit);
+        }
+        private void LinkWaypoints(float3 from, float3 to, ref NativeHashMap<float3, Waypoint> waypoints)
+        {
+            from = ToWorldSpace(from);
+            to = ToWorldSpace(to);
 
+            Waypoint copy = waypoints[from];
+            copy.AddNext(to);
+            waypoints[from] = copy;
+
+            copy = waypoints[to];
+            copy.AddPrevious(from);
+            waypoints[to] = copy;
+        }
+        private void AddWaypoint(float3 pos, float velocity, ref NativeHashMap<float3, Waypoint> waypoints, bool exit = false)
+        {
+            pos = ToWorldSpace(pos);
+
+            Waypoint waypoint = new(pos, velocity, exit);
+            waypoints.Add(waypoint.pos, waypoint);
+
+            transportTile.ValueRW.AddWaypoint(pos);
+        }
+        private float3 ToWorldSpace(float3 pos)
+        {
+            pos = math.rotate(quaternion.EulerXYZ(0, tile.ValueRO.rotation.ToRadians(), 0), pos);
+            pos += transform.ValueRO.Position;
+            pos = math.round(pos * 100) / 100; // Round to precision of 0.01
             return pos;
         }
     }
