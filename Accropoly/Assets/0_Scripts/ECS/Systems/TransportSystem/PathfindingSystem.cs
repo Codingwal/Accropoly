@@ -58,7 +58,14 @@ namespace Systems
 
             if (FindPath(ref path, start, dest, entityGrid))
             {
-                travelTime = 1;
+                for (int i = 2; i < path.Length - 1; i++) // Skip start and dest
+                {
+                    float speedA = WaypointSystem.waypoints[path[i - 1]].velocity;
+                    float speedB = WaypointSystem.waypoints[path[i]].velocity;
+                    float distance = math.distance(path[i - 1], path[i]);
+                    float averageSpeed = (speedA + speedB) * 0.5f;
+                    travelTime += distance / averageSpeed * MovementSystem.gameSecondsPerMovementSecond;
+                }
             }
             else travelTime = -1; // If there is no path
 

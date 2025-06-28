@@ -14,6 +14,7 @@ namespace Systems
     /// </summary>
     public partial class MovementSystem : SystemBase
     {
+        public const float gameSecondsPerMovementSecond = 8000;
         protected override void OnCreate()
         {
             var builder = new EntityQueryBuilder(Allocator.Temp).WithAll<Travelling>();
@@ -27,17 +28,19 @@ namespace Systems
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
             var buffer = SystemAPI.GetBuffer<EntityBufferElement>(SystemAPI.GetSingletonEntity<EntityGridHolder>());
             GameInfo gameInfo = SystemAPI.GetSingleton<GameInfo>();
-            float deltaTime = gameInfo.deltaTime / 8000;
+            float deltaTime = gameInfo.deltaTime / gameSecondsPerMovementSecond;
 
             Entities.WithAll<Travelling>().ForEach((Entity entity, ref Traveller traveller, ref LocalTransform transform) =>
             {
-                float3 nextPos = traveller.waypoints[traveller.nextWaypointIndex];
-                float nextVelocity;
+                // Instantly teleport to first waypoint
+                if (traveller.nextWaypointIndex == 1)
+                {
+                    transform.Position = traveller.waypoints[1];
+                    traveller.nextWaypointIndex = 2;
+                }
 
-                if (((int2)nextPos.xz / 2).Equals(traveller.destination))
-                    nextVelocity = 5;
-                else
-                    nextVelocity = WaypointSystem.waypoints[nextPos].velocity;
+                float3 nextPos = traveller.waypoints[traveller.nextWaypointIndex];
+                float nextVelocity = WaypointSystem.waypoints[nextPos].velocity;
 
                 float3 targetDirection = math.normalize(nextPos - transform.Position);
                 float targetSpeed = math.lerp(math.length(traveller.velocity), nextVelocity, 1 / (1 + math.distance(transform.Position, nextPos)));
@@ -53,9 +56,9 @@ namespace Systems
                 if (math.distancesq(transform.Position, nextPos) < math.square(0.1f))
                 {
                     traveller.nextWaypointIndex++;
-                    if (traveller.nextWaypointIndex == traveller.waypoints.Length) // Reached destination
+                    if (traveller.nextWaypointIndex == traveller.waypoints.Length - 1) // Reached last waypoint
                     {
-                        transform.Position.xz = traveller.destination * 2;
+                        transform.Position.xz = traveller.destination * 2; // Teleport to destination
                         ecb.SetComponentEnabled<Travelling>(entity, false);
                     }
                 }

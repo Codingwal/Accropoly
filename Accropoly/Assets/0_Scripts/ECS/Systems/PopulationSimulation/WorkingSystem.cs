@@ -61,6 +61,7 @@ namespace Systems
                     if (worker.timeToWork == -1) return; // Skip people without valid path to work
                     if (pos.Equals(worker.employer)) return; // Skip people that are already at work
 
+                    Debug.Log($"{gameInfo.time.TimeOfDayInSeconds} + {worker.timeToWork} >= {WorldTime.HoursToSeconds(8)}");
 
                     if (gameInfo.time.TimeOfDayInSeconds + worker.timeToWork >= WorldTime.HoursToSeconds(8))
                     {
