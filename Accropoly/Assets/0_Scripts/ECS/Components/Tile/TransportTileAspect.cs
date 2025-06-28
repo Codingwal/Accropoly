@@ -52,6 +52,22 @@ namespace Components
             }
             if (index == ConnectingTile.deadEnd)
             {
+                // north -> center
+                float3 northEntry = new(-offsetFromCenter, defaultVerticalOffset, 0.95f);
+                AddWaypoint(northEntry, 15, ref waypoints);
+                float3 centerEntry = new(-offsetFromCenter, defaultVerticalOffset, 0);
+                AddWaypoint(centerEntry, 6, ref waypoints);
+
+                // center -> north
+                float3 centerExit = new(offsetFromCenter, defaultVerticalOffset, 0);
+                AddWaypoint(centerExit, 6, ref waypoints);
+                float3 northExit = new(offsetFromCenter, defaultVerticalOffset, 0.95f);
+                AddWaypoint(northExit, 15, ref waypoints, true);
+
+                LinkWaypoints(northEntry, centerEntry, ref waypoints);
+                LinkWaypoints(centerEntry, centerExit, ref waypoints);
+                LinkWaypoints(centerExit, northExit, ref waypoints);
+
                 return;
             }
             if (index == ConnectingTile.straight)
