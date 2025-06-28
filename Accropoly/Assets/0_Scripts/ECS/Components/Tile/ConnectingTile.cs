@@ -50,7 +50,6 @@ namespace Components
                 3 => tJunction,
                 _ => junction
             };
-
         }
         public readonly Direction GetRotation()
         {
@@ -109,6 +108,7 @@ namespace Components
         }
     }
 }
+
 public enum ConnectingTileGroup
 {
     Street,

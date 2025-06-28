@@ -158,6 +158,12 @@ public class MenuManager : MonoBehaviour
                     MenuUtility.PauseGame();
 
                 break;
+            case UIAction.HideUI:
+                if (statisticsDisplay.activeSelf)
+                    statisticsDisplay.SetActive(false);
+                else
+                    statisticsDisplay.SetActive(true);
+                break;
             case UIAction.Clear:
                 MenuUtility.PlaceTile(TileType.Plains);
                 break;
@@ -169,9 +175,10 @@ public class MenuManager : MonoBehaviour
                     3 => TileType.SolarPanel,
                     4 => TileType.Street,
                     5 => TileType.River,
-                    6 => TileType.Hut,
+                    6 => TileType.Lake,
                     7 => TileType.Office,
                     8 => TileType.WindTurbine,
+                    9 => TileType.Bitumen,
                     _ => throw new()
                 });
                 break;

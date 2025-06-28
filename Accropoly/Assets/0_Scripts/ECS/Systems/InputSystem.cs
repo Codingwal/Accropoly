@@ -18,6 +18,7 @@ namespace Systems
         private Entity inputDataHolder;
 
         public static Action<UIInputData> uiInput;
+        public bool uihidden = false;
 
         protected override void OnCreate()
         {
@@ -45,7 +46,9 @@ namespace Systems
             inputActions.UI.Hotkey7.performed += (ctx) => OnUIAction(UIAction.Hotkey, 7); ;
             inputActions.UI.Hotkey8.performed += (ctx) => OnUIAction(UIAction.Hotkey, 8); ;
             inputActions.UI.Hotkey9.performed += (ctx) => OnUIAction(UIAction.Hotkey, 9); ;
+            inputActions.UI.Fullscreen.performed += (ctx) => Screen.fullScreen = !Screen.fullScreen; ;
             inputActions.Menu.Escape.performed += (ctx) => OnUIAction(UIAction.Escape); ;
+            inputActions.UI.HideUI.performed += (ctx) => OnUIAction(UIAction.HideUI); ;
         }
         protected override void OnUpdate()
         {
@@ -60,7 +63,7 @@ namespace Systems
                     sprint = inGameActions.CameraSprint.IsPressed(),
                     scroll = inGameActions.CameraScroll.ReadValue<float>(),
                     rotate = inGameActions.CameraRotation.ReadValue<float>(),
-                    look = inGameActions.CameraLook.IsPressed(),
+                    look = inGameActions.CameraLook.IsPressed() || inGameActions.Shift.IsPressed(),
                 },
                 mouseMove = inGameActions.MouseMove.ReadValue<Vector2>(),
                 mousePos = inGameActions.MousePos.ReadValue<Vector2>(),

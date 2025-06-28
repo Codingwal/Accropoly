@@ -43,8 +43,8 @@ namespace Authoring
             // Copy connectingTiles
             foreach ((TileType tileType, MaterialMeshPairSet managedSet) in instance.connectingTiles)
             {
-                MaterialMeshInfoSet set = new(6, Allocator.Persistent);
-                for (int i = 0; i < 6; i++)
+                MaterialMeshInfoSet set = new(7, Allocator.Persistent);
+                for (int i = 0; i < 7; i++)
                 {
                     MaterialMeshPair pair = managedSet.pairs[i];
 
@@ -72,7 +72,7 @@ public struct MaterialMeshPair
 [Serializable]
 public class MaterialMeshPairSet
 {
-    public MaterialMeshPair[] pairs = new MaterialMeshPair[6];
+    public MaterialMeshPair[] pairs = new MaterialMeshPair[7];
 }
 
 public struct MaterialMeshInfoSet

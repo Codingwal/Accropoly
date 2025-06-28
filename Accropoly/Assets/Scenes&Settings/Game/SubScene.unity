@@ -286,6 +286,10 @@ MonoBehaviour:
       value: 500
     - key: 11
       value: 1000
+    - key: 20
+      value: 20
+    - key: 7
+      value: 20
 --- !u!114 &903553022
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -312,13 +316,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefab: {fileID: 1061788756884513946, guid: 8b03c98019ed2a042aa908561c34fb07, type: 3}
-  mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
-  materials:
-    dictionary:
-    - key: 0
-      value: {fileID: 2100000, guid: 6e1c2e32957fac94ba5022870dd9df6d, type: 2}
-    - key: 1
-      value: {fileID: 2100000, guid: 57f722e1070edfd429e9b90304d56165, type: 2}
   billboardHeightOffset: 2.5
 --- !u!1 &1407001049
 GameObject:

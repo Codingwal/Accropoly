@@ -38,7 +38,7 @@ namespace Components
 
         public readonly void GetPoints(ref NativeHashMap<float3, Waypoint> waypoints)
         {
-            Debug.Assert(tile.ValueRO.tileType == TileType.Street);
+            Debug.Assert(tile.ValueRO.tileType == TileType.Street || tile.ValueRO.tileType == TileType.CityStreet || tile.ValueRO.tileType == TileType.ForestStreet);
             Debug.Assert(connectingTile.IsValid);
 
             int index = connectingTile.ValueRO.GetIndex();
