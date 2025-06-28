@@ -37,10 +37,16 @@ namespace Systems
                 {
                     transform.Position = traveller.waypoints[1];
                     traveller.nextWaypointIndex = 2;
+
+                    float3 nextPosTmp = traveller.waypoints[traveller.nextWaypointIndex];
+                    Waypoint tmp = WaypointSystem.waypoints[nextPosTmp];
+                    tmp.registeredObjects++;
+                    WaypointSystem.waypoints[nextPosTmp] = tmp;
                 }
 
                 float3 nextPos = traveller.waypoints[traveller.nextWaypointIndex];
-                float nextVelocity = WaypointSystem.waypoints[nextPos].velocity;
+                Waypoint nextWaypoint = WaypointSystem.waypoints[nextPos];
+                float nextVelocity = nextWaypoint.stop ? 0 : nextWaypoint.velocity;
 
                 float3 targetDirection = math.normalize(nextPos - transform.Position);
                 float targetSpeed = math.lerp(math.length(traveller.velocity), nextVelocity, 1 / (1 + math.distance(transform.Position, nextPos)));
@@ -55,11 +61,21 @@ namespace Systems
 
                 if (math.distancesq(transform.Position, nextPos) < math.square(0.1f))
                 {
+                    nextWaypoint.registeredObjects--;
+                    WaypointSystem.waypoints[nextPos] = nextWaypoint;
+
                     traveller.nextWaypointIndex++;
                     if (traveller.nextWaypointIndex == traveller.waypoints.Length - 1) // Reached last waypoint
                     {
                         transform.Position.xz = traveller.destination * 2; // Teleport to destination
                         ecb.SetComponentEnabled<Travelling>(entity, false);
+                    }
+                    else
+                    {
+                        nextPos = traveller.waypoints[traveller.nextWaypointIndex];
+                        Waypoint tmp = WaypointSystem.waypoints[nextPos];
+                        tmp.registeredObjects++;
+                        WaypointSystem.waypoints[nextPos] = tmp;
                     }
                 }
             }).Schedule();

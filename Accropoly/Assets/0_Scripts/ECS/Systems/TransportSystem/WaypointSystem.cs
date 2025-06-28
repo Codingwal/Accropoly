@@ -80,10 +80,15 @@ namespace Systems
             {
                 Waypoint waypoint = pair.Value;
 
+                Gizmos.color = Color.blue;
+
                 if (waypoint.exit)
                     Gizmos.color = Color.cyan;
-                else
-                    Gizmos.color = Color.blue;
+
+                if (waypoint.registeredObjects > 0)
+                    Gizmos.color = Color.green;
+                else if (waypoint.stop)
+                    Gizmos.color = Color.red;
 
                 Gizmos.DrawSphere(waypoint.pos, 0.15f);
 

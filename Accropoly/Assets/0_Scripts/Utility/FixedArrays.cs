@@ -1,7 +1,8 @@
+using System.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 
-public unsafe struct FixedFloat3Array5
+public unsafe struct FixedFloat3Array5 : IEnumerable
 {
     private const int size = 5;
     private fixed float array[size * 3];
@@ -44,9 +45,42 @@ public unsafe struct FixedFloat3Array5
         }
         return false;
     }
+
+    public IEnumerator GetEnumerator()
+    {
+        fixed (float* arrayPtr = &array[0])
+        {
+            return new Enumerator(arrayPtr, Size);
+        }
+    }
+
+    public unsafe struct Enumerator : IEnumerator
+    {
+        private readonly float* arrayPtr;
+        private readonly int size;
+        private int index;
+        public readonly object Current => new float3(arrayPtr[index * 3], arrayPtr[index * 3 + 1], arrayPtr[index * 3 + 2]);
+
+        public Enumerator(float* arrayPtr, int size)
+        {
+            this.arrayPtr = arrayPtr;
+            this.size = size;
+            index = -1;
+        }
+        public bool MoveNext()
+        {
+            index++;
+            return index < size;
+        }
+
+        public void Reset()
+        {
+            index = -1;
+        }
+    }
 }
 
-public unsafe struct FixedFloat3Array10
+public unsafe struct FixedFloat3Array10 : IEnumerable
 {
     private const int size = 10;
     private fixed float array[size * 3];
@@ -89,9 +123,42 @@ public unsafe struct FixedFloat3Array10
         }
         return false;
     }
+
+    public IEnumerator GetEnumerator()
+    {
+        fixed (float* arrayPtr = &array[0])
+        {
+            return new Enumerator(arrayPtr, Size);
+        }
+    }
+
+    public unsafe struct Enumerator : IEnumerator
+    {
+        private readonly float* arrayPtr;
+        private readonly int size;
+        private int index;
+        public readonly object Current => new float3(arrayPtr[index * 3], arrayPtr[index * 3 + 1], arrayPtr[index * 3 + 2]);
+
+        public Enumerator(float* arrayPtr, int size)
+        {
+            this.arrayPtr = arrayPtr;
+            this.size = size;
+            index = -1;
+        }
+        public bool MoveNext()
+        {
+            index++;
+            return index < size;
+        }
+
+        public void Reset()
+        {
+            index = -1;
+        }
+    }
 }
 
-public unsafe struct FixedFloat3Array20
+public unsafe struct FixedFloat3Array20 : IEnumerable
 {
     private const int size = 20;
     private fixed float array[size * 3];
@@ -133,5 +200,38 @@ public unsafe struct FixedFloat3Array20
                 return true;
         }
         return false;
+    }
+
+    public IEnumerator GetEnumerator()
+    {
+        fixed (float* arrayPtr = &array[0])
+        {
+            return new Enumerator(arrayPtr, Size);
+        }
+    }
+
+    public unsafe struct Enumerator : IEnumerator
+    {
+        private readonly float* arrayPtr;
+        private readonly int size;
+        private int index;
+        public readonly object Current => new float3(arrayPtr[index * 3], arrayPtr[index * 3 + 1], arrayPtr[index * 3 + 2]);
+
+        public Enumerator(float* arrayPtr, int size)
+        {
+            this.arrayPtr = arrayPtr;
+            this.size = size;
+            index = -1;
+        }
+        public bool MoveNext()
+        {
+            index++;
+            return index < size;
+        }
+
+        public void Reset()
+        {
+            index = -1;
+        }
     }
 }

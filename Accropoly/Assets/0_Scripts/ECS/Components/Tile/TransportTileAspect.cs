@@ -3,6 +3,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
+using JunctionData = Waypoint.JunctionData;
 
 namespace Components
 {
@@ -61,7 +62,7 @@ namespace Components
                 float3 centerExit = new(offsetFromCenter, defaultVerticalOffset, 0);
                 AddWaypoint(centerExit, 6, ref waypoints);
                 float3 northExit = new(offsetFromCenter, defaultVerticalOffset, 0.95f);
-                AddWaypoint(northExit, 15, ref waypoints, true);
+                AddWaypoint(northExit, 15, ref waypoints, exit: true);
 
                 LinkWaypoints(northEntry, centerEntry, ref waypoints);
                 LinkWaypoints(centerEntry, centerExit, ref waypoints);
@@ -75,14 +76,14 @@ namespace Components
                 float3 northEntry = new(-offsetFromCenter, defaultVerticalOffset, 0.95f);
                 AddWaypoint(northEntry, 17, ref waypoints);
                 float3 southExit = new(-offsetFromCenter, defaultVerticalOffset, -0.95f);
-                AddWaypoint(southExit, 17, ref waypoints, true);
+                AddWaypoint(southExit, 17, ref waypoints, exit: true);
                 LinkWaypoints(northEntry, southExit, ref waypoints);
 
                 // south -> north
                 float3 southEntry = new(offsetFromCenter, defaultVerticalOffset, -0.95f);
                 AddWaypoint(southEntry, 17, ref waypoints);
                 float3 northExit = new(offsetFromCenter, defaultVerticalOffset, 0.95f);
-                AddWaypoint(northExit, 17, ref waypoints, true);
+                AddWaypoint(northExit, 17, ref waypoints, exit: true);
                 LinkWaypoints(southEntry, northExit, ref waypoints);
 
                 return;
@@ -97,7 +98,7 @@ namespace Components
                 float3 afterCorner = new(offsetFromCenter, defaultVerticalOffset, -offsetFromCenter);
                 AddWaypoint(afterCorner, 11, ref waypoints);
                 float3 eastExit = new(0.95f, defaultVerticalOffset, -offsetFromCenter);
-                AddWaypoint(eastExit, 17, ref waypoints, true);
+                AddWaypoint(eastExit, 17, ref waypoints, exit: true);
 
                 LinkWaypoints(northEntry, beforeCorner, ref waypoints);
                 LinkWaypoints(beforeCorner, afterCorner, ref waypoints);
@@ -111,7 +112,7 @@ namespace Components
                 afterCorner = new(offsetFromCenter, defaultVerticalOffset, 0.5f);
                 AddWaypoint(afterCorner, 11, ref waypoints);
                 float3 northExit = new(offsetFromCenter, defaultVerticalOffset, 0.95f);
-                AddWaypoint(northExit, 17, ref waypoints, true);
+                AddWaypoint(northExit, 17, ref waypoints, exit: true);
 
                 LinkWaypoints(eastEntry, beforeCorner, ref waypoints);
                 LinkWaypoints(beforeCorner, afterCorner, ref waypoints);
@@ -121,9 +122,9 @@ namespace Components
             }
             if (index == ConnectingTile.tJunction)
             {
-                (float3 northEntry, float3 northExit) = EdgeToCenter(Directions.North, ref waypoints);
-                (float3 eastEntry, float3 eastExit) = EdgeToCenter(Directions.East, ref waypoints);
-                (float3 southEntry, float3 southExit) = EdgeToCenter(Directions.South, ref waypoints);
+                (float3 northEntry, float3 northExit) = EdgeToCenter(Directions.North, JunctionData.Priority, ref waypoints);
+                (float3 eastEntry, float3 eastExit) = EdgeToCenter(Directions.East, JunctionData.GiveWay, ref waypoints);
+                (float3 southEntry, float3 southExit) = EdgeToCenter(Directions.South, JunctionData.Priority, ref waypoints);
 
                 LinkWaypoints(northEntry, eastExit, ref waypoints);
                 LinkWaypoints(northEntry, southExit, ref waypoints);
@@ -138,10 +139,10 @@ namespace Components
             }
             if (index == ConnectingTile.junction)
             {
-                (float3 northEntry, float3 northExit) = EdgeToCenter(Directions.North, ref waypoints);
-                (float3 eastEntry, float3 eastExit) = EdgeToCenter(Directions.East, ref waypoints);
-                (float3 southEntry, float3 southExit) = EdgeToCenter(Directions.South, ref waypoints);
-                (float3 westEntry, float3 westExit) = EdgeToCenter(Directions.West, ref waypoints);
+                (float3 northEntry, float3 northExit) = EdgeToCenter(Directions.North, JunctionData.None, ref waypoints);
+                (float3 eastEntry, float3 eastExit) = EdgeToCenter(Directions.East, JunctionData.None, ref waypoints);
+                (float3 southEntry, float3 southExit) = EdgeToCenter(Directions.South, JunctionData.None, ref waypoints);
+                (float3 westEntry, float3 westExit) = EdgeToCenter(Directions.West, JunctionData.None, ref waypoints);
 
                 LinkWaypoints(northEntry, eastExit, ref waypoints);
                 LinkWaypoints(northEntry, southExit, ref waypoints);
@@ -164,13 +165,13 @@ namespace Components
 
             Debug.LogError("Unhandled case");
         }
-        private (float3, float3) EdgeToCenter(Direction edge, ref NativeHashMap<float3, Waypoint> waypoints)
+        private (float3, float3) EdgeToCenter(Direction edge, JunctionData junctionData, ref NativeHashMap<float3, Waypoint> waypoints)
         {
             // edge -> center
             float3 edgeEntry = math.rotate(quaternion.EulerXYZ(0, edge.ToRadians(), 0), new(-offsetFromCenter, defaultVerticalOffset, 0.95f));
             AddWaypoint(edgeEntry, 17, ref waypoints);
             float3 junctionEntry = math.rotate(quaternion.EulerXYZ(0, edge.ToRadians(), 0), new(-offsetFromCenter, defaultVerticalOffset, 0.5f));
-            AddWaypoint(junctionEntry, 8, ref waypoints);
+            AddWaypoint(junctionEntry, 8, ref waypoints, junctionData: junctionData);
 
             LinkWaypoints(edgeEntry, junctionEntry, ref waypoints);
 
@@ -178,7 +179,7 @@ namespace Components
             float3 junctionExit = math.rotate(quaternion.EulerXYZ(0, edge.ToRadians(), 0), new(offsetFromCenter, defaultVerticalOffset, 0.5f));
             AddWaypoint(junctionExit, 11, ref waypoints);
             float3 edgeExit = math.rotate(quaternion.EulerXYZ(0, edge.ToRadians(), 0), new(offsetFromCenter, defaultVerticalOffset, 0.95f));
-            AddWaypoint(edgeExit, 17, ref waypoints, true);
+            AddWaypoint(edgeExit, 17, ref waypoints, exit: true);
 
             LinkWaypoints(junctionExit, edgeExit, ref waypoints);
 
@@ -197,11 +198,11 @@ namespace Components
             copy.AddPrevious(from);
             waypoints[to] = copy;
         }
-        private void AddWaypoint(float3 pos, float velocity, ref NativeHashMap<float3, Waypoint> waypoints, bool exit = false)
+        private void AddWaypoint(float3 pos, float velocity, ref NativeHashMap<float3, Waypoint> waypoints, JunctionData junctionData = JunctionData.None, bool exit = false)
         {
             pos = ToWorldSpace(pos);
 
-            Waypoint waypoint = new(pos, velocity, exit);
+            Waypoint waypoint = new(pos, velocity, junctionData, exit);
             waypoints.Add(waypoint.pos, waypoint);
 
             transportTile.ValueRW.AddWaypoint(pos);

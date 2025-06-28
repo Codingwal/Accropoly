@@ -7,10 +7,12 @@ namespace Components
     public unsafe struct TransportTile : IComponentData
     {
         public float speed;
+        public float timer; // Used by JunctionSystem
         public FixedFloat3Array20 waypoints;
         public TransportTile(float speed)
         {
             this.speed = speed;
+            timer = 0;
 
             waypoints.Clear(float.NaN);
         }

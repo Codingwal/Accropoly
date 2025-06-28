@@ -18,18 +18,23 @@ public unsafe struct Waypoint
 {
     public float3 pos; // world space
     public float velocity; // in m/s
+    public bool stop; // Should object stop at this waypoint? (managed by JunctionSystem)
+    public int registeredObjects; // Count of objects that are currently moving to this waypoint
+    public JunctionData junctionData;
+    public bool exit; // Only important if at the tile's edge. false => entry
     public FixedFloat3Array5 next;
     public FixedFloat3Array5 previous;
-    public bool exit; // Only important if at the tile's edge. false => entry
-    public Waypoint(float3 pos, float velocity, bool exit)
+    public Waypoint(float3 pos, float velocity, JunctionData junctionData, bool exit)
     {
         this.pos = pos;
         this.velocity = velocity;
+        stop = false;
+        registeredObjects = 0;
+        this.junctionData = junctionData;
+        this.exit = exit;
 
         next.Clear(float.NaN);
         previous.Clear(float.NaN);
-
-        this.exit = exit;
     }
     public void RemoveNext(float3 pos)
     {
@@ -66,6 +71,14 @@ public unsafe struct Waypoint
             }
         }
         Debug.LogError("No slot left");
+    }
+
+    public enum JunctionData
+    {
+        None, // Not part of the junction
+        Default,
+        Priority,
+        GiveWay,
     }
 }
 namespace Tags
