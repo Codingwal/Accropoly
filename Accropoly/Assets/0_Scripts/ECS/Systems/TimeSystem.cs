@@ -22,7 +22,7 @@ namespace Systems
             var config = SystemAPI.GetSingleton<ConfigComponents.Time>();
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
 
-            ecb.DestroyEntity(newDayTagQuery, EntityQueryCaptureMode.AtRecord); // Delete old tag if present
+            ecb.DestroyEntity(newDayTagQuery, EntityQueryCaptureMode.AtPlayback); // Delete old tag if present
 
             var gameInfo = SystemAPI.GetSingleton<Components.GameInfo>();
 

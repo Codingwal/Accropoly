@@ -29,7 +29,7 @@ namespace Systems
             Random rnd = new((uint)UnityEngine.Random.Range(1, 1000));
             float deltaTime = SystemAPI.Time.DeltaTime;
             var ecb = SystemAPI.GetSingleton<EndCreationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
-            Entity prefab = SystemAPI.GetSingleton<ConfigComponents.PrefabEntity>();
+            Entity prefab = SystemAPI.GetSingleton<ConfigComponents.PrefabEntity>().personPrefab;
 
             NativeArray<Entity> homelessEntities = GetEntityQuery(typeof(Homeless)).ToEntityArray(Allocator.TempJob);
             NativeArray<Person> homelessPersonComponents = GetEntityQuery(typeof(Homeless), typeof(Person)).ToComponentDataArray<Person>(Allocator.TempJob);

@@ -25,7 +25,7 @@ namespace Systems
         public void OnUpdate(ref SystemState state)
         {
             var ecb = SystemAPI.GetSingleton<EndCreationECBSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
-            Entity prefab = SystemAPI.GetSingleton<ConfigComponents.PrefabEntity>();
+            Entity prefab = SystemAPI.GetSingleton<ConfigComponents.PrefabEntity>().personPrefab;
 
             WorldData worldData = WorldDataSystem.worldData;
 

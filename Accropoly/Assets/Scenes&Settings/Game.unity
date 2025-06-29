@@ -2486,6 +2486,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debugWaypoints: 1
   debugTravelling: 1
+  debugCollisions: 1
 --- !u!1 &596032858
 GameObject:
   m_ObjectHideFlags: 0

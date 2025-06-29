@@ -24,7 +24,7 @@ namespace Systems
         {
             // Ignore all rendering and transform related components
             var prefab = SystemAPI.GetSingleton<ConfigComponents.PrefabEntity>();
-            NativeArray<ComponentType> typesToIgnore = state.EntityManager.GetChunk(prefab.prefab).Archetype.GetComponentTypes();
+            NativeArray<ComponentType> typesToIgnore = state.EntityManager.GetChunk(prefab.personPrefab).Archetype.GetComponentTypes();
 
             // Convert to HashSet for faster search
             HashSet<ComponentType> typesToIgnoreSet = new();

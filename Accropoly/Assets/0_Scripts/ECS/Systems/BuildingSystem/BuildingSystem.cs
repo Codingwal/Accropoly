@@ -65,7 +65,7 @@ namespace Systems
                     if (tileType == TileType.None)
                         return;
 
-                    var prefab = SystemAPI.GetSingleton<PrefabEntity>();
+                    var prefab = SystemAPI.GetSingleton<PrefabEntity>().tilePrefab;
                     Entity entity = EntityManager.Instantiate(prefab); // Inefficient but who cares
                     ecb.SetComponent(entity, LocalTransform.FromPositionRotation(new(pos.x, 0.3f, pos.y), quaternion.Euler(new(0, tileToPlaceInfo.rotation.ToRadians(), 0))));
                     ecb.AddComponent<TileToPlace>(entity);
@@ -139,7 +139,7 @@ namespace Systems
             }
 
             // Create a tileToPlaceInfo singleton entity and set mesh & material
-            var prefab = ECSUtility.GetSingleton<PrefabEntity>();
+            var prefab = ECSUtility.GetSingleton<PrefabEntity>().tilePrefab;
             Entity entity = em.Instantiate(prefab);
             em.AddComponentData(entity, new TileToPlaceInfo { tileType = tileType });
             em.SetComponentData(entity, LocalTransform.FromPosition(0, -10, 0)); // Hide entity until the position is updated by UpdatePosition.cs
