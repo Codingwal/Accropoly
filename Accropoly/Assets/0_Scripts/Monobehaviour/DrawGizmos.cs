@@ -4,8 +4,12 @@ using UnityEngine;
 
 public class DrawGizmos : MonoBehaviour
 {
+    [Header("Waypoint system")]
     [SerializeField] private bool debugWaypoints;
-    [SerializeField] private bool debugTravelling;
+
+    [Header("Movement system")]
+    [SerializeField] private bool debugPath;
+    [SerializeField] private bool debugRaycasts;
 
     WaypointSystem waypointSystem = null;
     MovementSystem movementSystem = null;
@@ -27,7 +31,6 @@ public class DrawGizmos : MonoBehaviour
         if (debugWaypoints)
             waypointSystem.DrawGizmos();
 
-        if (debugTravelling)
-            movementSystem.DrawGizmos();
+        movementSystem.DrawGizmos(debugPath, debugRaycasts);
     }
 }

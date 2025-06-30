@@ -140,31 +140,36 @@ namespace Systems
             raycasts.Dispose();
         }
 
-        public void DrawGizmos()
+        public void DrawGizmos(bool debugPath, bool debugRaycasts)
         {
-            Gizmos.color = Color.green;
-
-            Entities.WithAll<Travelling>().ForEach((in Traveller traveller) =>
+            if (debugPath)
             {
-                for (int i = traveller.nextWaypointIndex; i < traveller.waypoints.Length; i++)
+                Gizmos.color = Color.green;
+                Entities.WithAll<Travelling>().ForEach((in Traveller traveller) =>
                 {
-                    Gizmos.DrawLine(traveller.waypoints[i - 1], traveller.waypoints[i]);
-                }
-            }).Run();
+                    for (int i = traveller.nextWaypointIndex; i < traveller.waypoints.Length; i++)
+                    {
+                        Gizmos.DrawLine(traveller.waypoints[i - 1], traveller.waypoints[i]);
+                    }
+                }).Run();
+            }
 
-            foreach (RaycastData data in raycasts)
+            if (debugRaycasts)
             {
-                if (data.hit)
+                foreach (RaycastData data in raycasts)
                 {
-                    Gizmos.color = Color.green;
-                    Gizmos.DrawLine(data.raycastInput.Start, data.closestHit.Position);
-                    Gizmos.color = Color.red;
-                    Gizmos.DrawLine(data.closestHit.Position, data.raycastInput.End);
-                }
-                else
-                {
-                    Gizmos.color = Color.green;
-                    Gizmos.DrawLine(data.raycastInput.Start, data.raycastInput.End);
+                    if (data.hit)
+                    {
+                        Gizmos.color = Color.green;
+                        Gizmos.DrawLine(data.raycastInput.Start, data.closestHit.Position);
+                        Gizmos.color = Color.red;
+                        Gizmos.DrawLine(data.closestHit.Position, data.raycastInput.End);
+                    }
+                    else
+                    {
+                        Gizmos.color = Color.green;
+                        Gizmos.DrawLine(data.raycastInput.Start, data.raycastInput.End);
+                    }
                 }
             }
         }
