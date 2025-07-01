@@ -27,6 +27,7 @@ namespace Systems
             var gameInfo = SystemAPI.GetSingleton<Components.GameInfo>();
 
             gameInfo.deltaTime = SystemAPI.Time.DeltaTime * config.TimeSpeed;
+            gameInfo.fixedDeltaTime = SystemAPI.Time.fixedDeltaTime * config.TimeSpeed;
             gameInfo.time.Advance(gameInfo.deltaTime, out bool newDay);
 
             if (newDay)

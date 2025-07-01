@@ -14,6 +14,7 @@ namespace Systems
     /// Move people that are currently travelling (Travelling tag)
     /// Does not calculate the path, only moves the person along the waypoints managed by PathfindingSystem
     /// </summary>
+    [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
     public partial class MovementSystem : SystemBase
     {
         public const float gameSecondsPerMovementSecond = 8000;
@@ -34,7 +35,7 @@ namespace Systems
             var buffer = SystemAPI.GetBuffer<EntityBufferElement>(SystemAPI.GetSingletonEntity<EntityGridHolder>());
             var physicsWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().CollisionWorld;
             GameInfo gameInfo = SystemAPI.GetSingleton<GameInfo>();
-            float deltaTime = gameInfo.deltaTime / gameSecondsPerMovementSecond;
+            float deltaTime = gameInfo.fixedDeltaTime / gameSecondsPerMovementSecond;
 
             raycasts.Clear();
 
@@ -80,19 +81,22 @@ namespace Systems
                 // Get data related to the next waypoint
                 float3 nextPos = traveller.waypoints[traveller.nextWaypointIndex];
                 Waypoint nextWaypoint = WaypointSystem.waypoints[nextPos];
-                float nextVelocity = nextWaypoint.stop ? 0 : nextWaypoint.velocity;
+                float nextVelocity = nextWaypoint.velocity;
 
+                // Calculate ideal velocity (won't be reached as acceleration is clamped)
                 float3 targetDirection = math.normalize(nextPos - transform.Position);
-                float targetSpeed = math.lerp(math.length(traveller.velocity), nextVelocity, 1 / (1 + math.distance(transform.Position, nextPos)));
+                float targetSpeed = math.lerp(math.length(traveller.velocity), nextVelocity, 1 / (1 + math.distance(transform.Position, nextPos))); // Slowly reach target speed
+
+                // Stop at red lights / give way
+                if (nextWaypoint.stop)
+                    targetSpeed = 0;
 
                 // Prevent collisions with other cars directly in front of this one
                 var raycastData = CastRay(transform, physicsWorld);
                 if (raycastData.hit)
-                {
                     targetSpeed = 0;
-                    Debug.Log("Hit, waiting!");
-                }
 
+                // Calculate ideal acceleration
                 float3 acceleration = (targetSpeed * targetDirection) - traveller.velocity;
 
                 // Clamp acceleration
@@ -104,14 +108,13 @@ namespace Systems
                 transform.Position += traveller.velocity * deltaTime;
 
                 // Update rotation
-                if (!traveller.velocity.xz.Equals(0))
+                if (math.lengthsq(traveller.velocity.xz) > math.square(0.1)) // Only update if the car is moving (preserve current state otherwise)
                 {
-                    float3 v = traveller.velocity;
-                    float rotY = math.atan(v.x / (v.z + 0.00001f));
+                    float rotY = math.atan2(traveller.velocity.x, traveller.velocity.z + 0.00001f);
                     transform.Rotation = quaternion.EulerXYZ(0, rotY, 0);
                 }
 
-                if (math.distancesq(transform.Position, nextPos) < math.square(0.1f)) // Reached waypoint
+                if (math.distancesq(transform.Position, nextPos) < math.square(0.3f)) // Reached waypoint
                 {
                     // de-register from now reached waypoint
                     nextWaypoint.registeredObjects--;
@@ -119,7 +122,7 @@ namespace Systems
 
                     traveller.nextWaypointIndex++; // Update targeted waypoint
 
-                    if (traveller.nextWaypointIndex == traveller.waypoints.Length - 1) // Reached last waypoint
+                    if (traveller.nextWaypointIndex == traveller.waypoints.Length - 2) // Reached last street waypoint (last one is the destination)
                     {
                         transform.Position.xz = traveller.destination * 2; // Teleport to destination
                         ecb.SetComponentEnabled<Travelling>(entity, false);
@@ -133,7 +136,7 @@ namespace Systems
                         WaypointSystem.waypoints[nextPos] = tmp;
                     }
                 }
-            }).WithName("movementJob").Schedule();
+            }).Schedule();
         }
         protected override void OnDestroy()
         {
@@ -181,7 +184,7 @@ namespace Systems
                 RaycastInput raycastInput = new()
                 {
                     Start = transform.Position + 0.15f * transform.Forward(),
-                    End = transform.Position + 1 * transform.Forward(),
+                    End = transform.Position + 0.6f * transform.Forward(),
                     Filter = new()
                     {
                         BelongsTo = (uint)CollisionLayers.CarRays,

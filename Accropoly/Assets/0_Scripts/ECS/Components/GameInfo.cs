@@ -6,6 +6,7 @@ namespace Components
     {
         public float balance;
         public float deltaTime;
+        public float fixedDeltaTime;
         public WorldTime time;
     }
 }

@@ -80,18 +80,17 @@ namespace Systems
             {
                 Waypoint waypoint = pair.Value;
 
+                // Draw waypoint
                 Gizmos.color = Color.blue;
-
                 if (waypoint.exit)
                     Gizmos.color = Color.cyan;
-
                 if (waypoint.registeredObjects > 0)
                     Gizmos.color = Color.green;
                 if (waypoint.stop)
                     Gizmos.color = Color.red;
+                Gizmos.DrawSphere(waypoint.pos, 0.1f);
 
-                Gizmos.DrawSphere(waypoint.pos, 0.15f);
-
+                // Draw connections
                 Gizmos.color = Color.blue;
                 for (int i = 0; i < waypoint.next.Size; i++)
                 {

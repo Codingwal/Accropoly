@@ -32,7 +32,7 @@ namespace Systems
             List<PersonData> populationData = worldData.population;
             foreach (PersonData personData in populationData)
             {
-                Entity entity = ecb.Instantiate(prefab); // Entity needs to be created on main thread so that a valid value is stored in the buffer
+                Entity entity = ecb.Instantiate(prefab);
 
                 float3 pos = new();
                 foreach (var (component, enabled) in personData.components)
