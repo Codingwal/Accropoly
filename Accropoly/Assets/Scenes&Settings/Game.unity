@@ -1529,15 +1529,15 @@ MonoBehaviour:
         mesh: {fileID: -2432090755550338912, guid: 7874a407e1295984381ca0dadf5624b1, type: 3}
     - key: 5
       value:
-        material: {fileID: 7027120250061356557, guid: b8c8728121a5c8243b04832db3e69a37, type: 3}
+        material: {fileID: 2100000, guid: be0102b529f35834bac9473fd56abee7, type: 2}
         mesh: {fileID: -2432090755550338912, guid: b8c8728121a5c8243b04832db3e69a37, type: 3}
     - key: 6
       value:
-        material: {fileID: -8589965782984495478, guid: 5247728bd7d65144a8b357d918b28d6f, type: 3}
+        material: {fileID: 2100000, guid: 74393c454e73f1b40b37e4a70c0450ac, type: 2}
         mesh: {fileID: -2432090755550338912, guid: 5247728bd7d65144a8b357d918b28d6f, type: 3}
     - key: 9
       value:
-        material: {fileID: 4294785487790623469, guid: c028689085f5a274bb4c5a7ad7983653, type: 3}
+        material: {fileID: 2100000, guid: 2c8f9c70509ae3c42be91a445b6f5e9e, type: 2}
         mesh: {fileID: -2432090755550338912, guid: c028689085f5a274bb4c5a7ad7983653, type: 3}
     - key: 10
       value:
@@ -2484,9 +2484,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdb9099aa8c7dae4a9c350a2b9a7ab76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugWaypoints: 1
+  debugWaypoints: 0
   debugPath: 0
-  debugRaycasts: 1
+  debugRaycasts: 0
 --- !u!1 &596032858
 GameObject:
   m_ObjectHideFlags: 0
