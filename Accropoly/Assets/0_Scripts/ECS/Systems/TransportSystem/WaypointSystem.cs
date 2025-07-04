@@ -17,7 +17,7 @@ namespace Systems
         private EntityQuery tileWithReplaceTag;
         protected override void OnCreate()
         {
-            waypointsTmp = new(10, Allocator.TempJob);
+            waypointsTmp = new(10, Allocator.Persistent); 
 
             tilesToUpdate = new EntityQueryBuilder(Allocator.Temp)
                 .WithAspect<TransportTileAspect>()
@@ -61,6 +61,10 @@ namespace Systems
                 data = waypointsData,
                 waypointsTmp = waypointsTmp,
             }.Schedule(tilesToUpdate);
+        }
+        protected override void OnDestroy()
+        {
+            waypointsTmp.Dispose();
         }
         public void DrawGizmos()
         {
