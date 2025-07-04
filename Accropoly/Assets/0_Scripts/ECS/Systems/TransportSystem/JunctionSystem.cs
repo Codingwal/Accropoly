@@ -1,5 +1,7 @@
 using Components;
 using Tags;
+using Unity.Burst;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
@@ -16,10 +18,20 @@ namespace Systems
         }
         protected override void OnUpdate()
         {
-            float deltaTime = SystemAPI.GetSingleton<GameInfo>().deltaTime;
-            deltaTime /= MovementSystem.gameSecondsPerMovementSecond;
+            new UpdateJunctionsJob()
+            {
+                waypointsData = SystemAPI.GetSingletonRW<WaypointsData>(),
+                deltaTime = SystemAPI.GetSingleton<GameInfo>().deltaTime / MovementSystem.gameSecondsPerMovementSecond
+            }.Schedule();
+        }
 
-            Entities.ForEach((ref TransportTile transportTile, in ConnectingTile connectingTile) =>
+        [BurstCompile]
+        private partial struct UpdateJunctionsJob : IJobEntity
+        {
+            [NativeDisableUnsafePtrRestriction]
+            public RefRW<WaypointsData> waypointsData;
+            public float deltaTime;
+            public void Execute(ref TransportTile transportTile, in ConnectingTile connectingTile)
             {
                 int index = connectingTile.GetIndex();
                 if (!(index == ConnectingTile.tJunction || index == ConnectingTile.junction))
@@ -31,7 +43,7 @@ namespace Systems
                 foreach (float3 waypointPos in transportTile.waypoints)
                 {
                     if (math.isnan(waypointPos.x)) continue;
-                    Waypoint waypoint = WaypointSystem.waypoints[waypointPos];
+                    Waypoint waypoint = waypointsData.ValueRO.waypoints[waypointPos];
                     if (waypoint.junctionData == JunctionData.None) continue;
                     Debug.Assert(waypoint.junctionData != JunctionData.Default);
 
@@ -59,7 +71,7 @@ namespace Systems
                 foreach (float3 waypointPos in transportTile.waypoints)
                 {
                     if (math.isnan(waypointPos.x)) continue;
-                    Waypoint waypoint = WaypointSystem.waypoints[waypointPos];
+                    Waypoint waypoint = waypointsData.ValueRO.waypoints[waypointPos];
                     if (waypoint.junctionData == JunctionData.None) continue;
                     Debug.Assert(waypoint.junctionData != JunctionData.Default);
 
@@ -67,9 +79,9 @@ namespace Systems
                     {
                         waypoint.stop = priorityObject; // Stop if there is a priority object
                     }
-                    WaypointSystem.waypoints[waypointPos] = waypoint;
+                    waypointsData.ValueRW.waypoints[waypointPos] = waypoint;
                 }
-            }).Schedule();
+            }
         }
     }
 }

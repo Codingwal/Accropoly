@@ -47,7 +47,7 @@ namespace Systems
                 }
                 else Debug.LogWarning($"Couldn't find path from {(int2)math.round(transform.Position.xz) / 2} to {traveller.destination}!");
                 ecb.SetComponentEnabled<WantsToTravel>(entity, false);
-            }).WithoutBurst().Schedule();
+            }).WithoutBurst().Run();
         }
 
         /// <remarks>Returns -1 if no path is found</remarks>
@@ -58,10 +58,11 @@ namespace Systems
 
             if (FindPath(ref path, start, dest, entityGrid))
             {
+                var waypointsData = ECSUtility.GetSingleton<WaypointsData>();
                 for (int i = 2; i < path.Length - 1; i++) // Skip start and dest
                 {
-                    float speedA = WaypointSystem.waypoints[path[i - 1]].velocity;
-                    float speedB = WaypointSystem.waypoints[path[i]].velocity;
+                    float speedA = waypointsData.waypoints[path[i - 1]].velocity;
+                    float speedB = waypointsData.waypoints[path[i]].velocity;
                     float distance = math.distance(path[i - 1], path[i]);
                     float averageSpeed = (speedA + speedB) * 0.5f;
                     travelTime += distance / averageSpeed * MovementSystem.gameSecondsPerMovementSecond;
@@ -79,7 +80,7 @@ namespace Systems
             Debug.Assert(!startTile.Equals(destTile), $"Start must not equal destination (start and dest are {startTile})");
             Debug.Assert(path.IsCreated, "The UnsafeList<Waypoint> has not been created");
 
-            var waypoints = WaypointSystem.waypoints.AsReadOnly();
+            WaypointsData waypointsData = ECSUtility.GetSingleton<WaypointsData>();
             float3 start = new(startTile.x * 2, 0.8f, startTile.y * 2);
             float3 dest = new(destTile.x * 2, 0.8f, destTile.y * 2);
 
@@ -145,8 +146,7 @@ namespace Systems
                 }
 
                 // Get neighbours
-                Waypoint waypoint = waypoints[node.pos];
-
+                Waypoint waypoint = waypointsData.waypoints[node.pos];
 
                 // Add neighbours to openList (if they are valid)
                 for (int i = 0; i < waypoint.next.Size; i++)
