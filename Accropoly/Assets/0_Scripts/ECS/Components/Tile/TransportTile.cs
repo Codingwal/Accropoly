@@ -1,5 +1,4 @@
 using Unity.Entities;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace Components
@@ -8,21 +7,21 @@ namespace Components
     {
         public float speed;
         public float timer; // Used by JunctionSystem
-        public FixedFloat3Array20 waypoints;
+        public FixedEntityArray20 waypoints;
         public TransportTile(float speed)
         {
             this.speed = speed;
             timer = 0;
 
-            waypoints.Clear(float.NaN);
+            waypoints.Clear(Entity.Null);
         }
-        public void AddWaypoint(float3 pos)
+        public void AddWaypoint(Entity entity)
         {
             for (int i = 0; i < waypoints.Size; i++)
             {
-                if (math.isnan(waypoints[i].x))
+                if (waypoints[i] == Entity.Null)
                 {
-                    waypoints[i] = pos;
+                    waypoints[i] = entity;
                     return;
                 }
             }

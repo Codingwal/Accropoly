@@ -1,10 +1,12 @@
 using Components;
+using Components.WaypointComponents;
 using Tags;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Transforms;
 using UnityEngine;
 
 namespace Systems
@@ -12,13 +14,10 @@ namespace Systems
     [UpdateInGroup(typeof(LateSimulationSystemGroup))]
     public partial class WaypointSystem : SystemBase
     {
-        private NativeHashMap<float3, Waypoint> waypointsTmp;
         private EntityQuery tilesToUpdate;
         private EntityQuery tileWithReplaceTag;
         protected override void OnCreate()
         {
-            waypointsTmp = new(10, Allocator.Persistent); 
-
             tilesToUpdate = new EntityQueryBuilder(Allocator.Temp)
                 .WithAspect<TransportTileAspect>()
                 .WithNone<Replace>()
@@ -49,51 +48,123 @@ namespace Systems
             if (!(SystemAPI.HasSingleton<RunGame>() || SystemAPI.HasSingleton<LoadGame>()))
                 return;
 
+            var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
             RefRW<WaypointsData> waypointsData = SystemAPI.GetSingletonRW<WaypointsData>();
+
+            // Add new waypoints to waypoints lookup
+            foreach (var (transform, entity) in SystemAPI.Query<RefRO<LocalTransform>>().WithAll<NewWaypoint>().WithEntityAccess())
+            {
+                waypointsData.ValueRW.waypoints.Add(transform.ValueRO.Position, entity);
+            }
+
+            // Needed by jobs
+            JobUtility jobUtility = new JobUtility()
+            {
+                connectionsLookup = SystemAPI.GetComponentLookup<Connections>(),
+                transformLookup = SystemAPI.GetComponentLookup<LocalTransform>(),
+                ecb = ecb,
+                data = waypointsData
+            };
+
+            new InitializeNewWaypoints()
+            {
+                ecb = ecb,
+                data = waypointsData,
+                tileGrid = TileGridUtility.GetEntityGrid(),
+                transportTileLookup = SystemAPI.GetComponentLookup<TransportTile>(),
+                connectionsLookup = SystemAPI.GetComponentLookup<Connections>(),
+            }.Schedule();
 
             new ClearReplaceTilesJob()
             {
-                data = waypointsData
+                jobUtility = jobUtility
             }.Schedule(tileWithReplaceTag);
 
             new UpdateTilesJob()
             {
-                data = waypointsData,
-                waypointsTmp = waypointsTmp,
+                ecb = ecb,
+                jobUtility = jobUtility,
             }.Schedule(tilesToUpdate);
-        }
-        protected override void OnDestroy()
-        {
-            waypointsTmp.Dispose();
         }
         public void DrawGizmos()
         {
-            if (!ECSUtility.TryGetSingleton(out WaypointsData data))
-                return;
-
-            // Draw waypoints and connections in between
-            foreach (var pair in data.waypoints)
+            foreach (var (transform, junction, connections) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<Junction>, RefRO<Connections>>().WithAll<Waypoint>())
             {
-                Waypoint waypoint = pair.Value;
-
                 // Draw waypoint
                 Gizmos.color = Color.blue;
-                if (waypoint.exit)
-                    Gizmos.color = Color.cyan;
-                if (waypoint.registeredObjects > 0)
+                if (junction.ValueRO.registeredObjects > 0)
                     Gizmos.color = Color.green;
-                if (waypoint.stop)
+                if (junction.ValueRO.stop)
                     Gizmos.color = Color.red;
-                Gizmos.DrawSphere(waypoint.pos, 0.1f);
+                Gizmos.DrawSphere(transform.ValueRO.Position, 0.1f);
 
                 // Draw connections
                 Gizmos.color = Color.blue;
-                for (int i = 0; i < waypoint.next.Size; i++)
+                foreach (Entity nextEntity in connections.ValueRO.next)
                 {
-                    float3 nextPos = waypoint.next[i];
-                    if (!math.isnan(nextPos.x))
-                        Gizmos.DrawLine(waypoint.pos, nextPos);
+                    if (nextEntity == Entity.Null)
+                        continue;
+
+                    float3 nextPos = SystemAPI.GetComponent<LocalTransform>(nextEntity).Position;
+                    Gizmos.DrawLine(transform.ValueRO.Position, nextPos);
                 }
+            }
+        }
+
+        [BurstCompile]
+        private partial struct InitializeNewWaypoints : IJobEntity
+        {
+            public EntityCommandBuffer ecb;
+            public RefRW<WaypointsData> data;
+            public DynamicBuffer<EntityBufferElement> tileGrid;
+            public ComponentLookup<TransportTile> transportTileLookup;
+            public ComponentLookup<Connections> connectionsLookup;
+            public void Execute(Entity entity, ref Connections connections, in NewWaypoint newWaypoint, in LocalTransform transform)
+            {
+                // Add to waypoint list of the tile this waypoint belongs to
+                int2 tilePos = (int2)math.round(transform.Position.xz / 2) * 2;
+                Entity tile = TileGridUtility.GetTile(tilePos, tileGrid);
+                transportTileLookup.GetRefRW(tile).ValueRW.AddWaypoint(entity);
+
+                // Create connections
+                foreach (float3 nextPos in newWaypoint.nextWaypoints)
+                {
+                    Entity next = data.ValueRW.waypoints[nextPos];
+                    connections.AddNext(nextPos);
+                    connectionsLookup.GetRefRW(next).ValueRW.AddPrevious(transform.Position);
+                }
+
+                // Connect with close waypoints
+                foreach (var pair in data.ValueRO.waypoints)
+                {
+                    float3 otherPos = pair.Key;
+                    Entity other = pair.Value;
+
+                    // Skip self
+                    if (otherPos.Equals(transform.Position))
+                        continue;
+
+                    // Skip if not close enough
+                    if (math.lengthsq(transform.Position - otherPos) > 0.05)
+                        continue;
+
+                    // Connect
+                    var connectionsOther = connectionsLookup.GetRefRW(other);
+                    if (connections.exit && !connectionsOther.ValueRO.exit) // this -> other
+                    {
+                        connections.AddNext(otherPos);
+                        connectionsOther.ValueRW.AddPrevious(transform.Position);
+                    }
+                    else if (!connections.exit && connectionsOther.ValueRO.exit) // other -> this
+                    {
+                        connectionsOther.ValueRW.AddNext(transform.Position);
+                        connections.AddPrevious(otherPos);
+                    }
+                    else // Both are exits / entries
+                        throw new();
+                }
+
+                ecb.RemoveComponent<NewWaypoint>(entity);
             }
         }
 
@@ -103,11 +174,10 @@ namespace Systems
         [BurstCompile]
         private partial struct ClearReplaceTilesJob : IJobEntity
         {
-            [NativeDisableUnsafePtrRestriction]
-            public RefRW<WaypointsData> data;
+            public JobUtility jobUtility;
             public void Execute(TransportTileAspect transportTileAspect)
             {
-                DeleteTileWaypoints(ref transportTileAspect.transportTile.ValueRW.waypoints, data);
+                jobUtility.DeleteTileWaypoints(ref transportTileAspect.transportTile.ValueRW.waypoints);
             }
         }
 
@@ -118,98 +188,66 @@ namespace Systems
         [WithChangeFilter(typeof(ConnectingTile), typeof(Tile))] // For performance reasons: Only execute when a relevant component changed
         private partial struct UpdateTilesJob : IJobEntity
         {
-            [NativeDisableUnsafePtrRestriction]
-            public RefRW<WaypointsData> data;
-            public NativeHashMap<float3, Waypoint> waypointsTmp;
+            public EntityCommandBuffer ecb;
+            public JobUtility jobUtility;
             public void Execute(TransportTileAspect transportTileAspect)
             {
                 // Delete all waypoints owned by this tile
-                DeleteTileWaypoints(ref transportTileAspect.transportTile.ValueRW.waypoints, data);
+                jobUtility.DeleteTileWaypoints(ref transportTileAspect.transportTile.ValueRW.waypoints);
 
-                transportTileAspect.GetPoints(ref waypointsTmp);
-
-                foreach (var pair in waypointsTmp)
-                {
-                    data.ValueRW.waypoints.Add(pair.Key, pair.Value);
-                    float3 pos = pair.Key;
-
-                    foreach (var otherPair in data.ValueRO.waypoints)
-                    {
-                        float3 otherPos = otherPair.Key;
-
-                        // Skip yourself
-                        if (otherPos.Equals(pos))
-                            continue;
-
-                        if (math.lengthsq(pos - otherPos) > 0.05)
-                            continue;
-
-                        // Waypoints are extremely close together and should get connected
-                        Debug.Assert(pair.Value.exit != otherPair.Value.exit, "Can't connect two exits/entries");
-                        if (pair.Value.exit) // this -> other
-                            LinkWaypoints(pos, otherPos, data);
-                        else // other -> this
-                            LinkWaypoints(otherPos, pos, data);
-
-                        break;
-                    }
-                }
-
-                waypointsTmp.Clear();
+                // Create new waypoints
+                transportTileAspect.GetPoints(ecb);
             }
         }
 
-        private static void DeleteTileWaypoints(ref FixedFloat3Array20 tileWaypoints, RefRW<WaypointsData> data)
+        private struct JobUtility
         {
-            for (int i = 0; i < tileWaypoints.Size; i++)
+            public ComponentLookup<Connections> connectionsLookup;
+            public ComponentLookup<LocalTransform> transformLookup;
+            public EntityCommandBuffer ecb;
+            [NativeDisableUnsafePtrRestriction] public RefRW<WaypointsData> data;
+            public void DeleteTileWaypoints(ref FixedEntityArray20 tileWaypoints)
             {
-                float3 pos = tileWaypoints[i];
-                if (math.isnan(pos.x)) continue;
-                Waypoint waypoint = data.ValueRO.waypoints[pos];
-
-                // Update next
-                for (int j = 0; j < waypoint.next.Size; j++)
+                foreach (Entity entity in tileWaypoints)
                 {
-                    float3 other = waypoint.next[j];
-                    if (math.isnan(other.x)) continue;
+                    if (entity == Entity.Null) continue;
 
-                    // All waypoints of this tile will get deleted => updating them is unneccessary
-                    if (tileWaypoints.Contains(other))
-                        continue;
+                    float3 pos = transformLookup.GetRefRO(entity).ValueRO.Position;
+                    RefRO<Connections> connections = connectionsLookup.GetRefRO(entity);
 
-                    Waypoint tmp = data.ValueRO.waypoints[other];
-                    tmp.RemovePrevious(pos);
-                    data.ValueRW.waypoints[other] = tmp;
+                    // Update next
+                    foreach (Entity other in connections.ValueRO.next)
+                    {
+                        if (other == Entity.Null) continue;
+
+                        // All waypoints of this tile will get deleted => updating them is unneccessary
+                        if (tileWaypoints.Contains(other))
+                            continue;
+
+                        // Update other
+                        RefRW<Connections> connectionsOther = connectionsLookup.GetRefRW(other);
+                        connectionsOther.ValueRW.RemovePrevious(pos);
+                    }
+
+                    // Update previous
+                    foreach (Entity other in connections.ValueRO.previous)
+                    {
+                        if (other == Entity.Null) continue;
+
+                        // All waypoints of this tile will get deleted => updating them is unneccessary
+                        if (tileWaypoints.Contains(other))
+                            continue;
+
+                        // Update other
+                        RefRW<Connections> connectionsOther = connectionsLookup.GetRefRW(other);
+                        connectionsOther.ValueRW.RemoveNext(pos);
+                    }
+
+                    ecb.DestroyEntity(entity);
+                    data.ValueRW.waypoints.Remove(pos);
                 }
-
-                // Update previous
-                for (int j = 0; j < waypoint.previous.Size; j++)
-                {
-                    float3 other = waypoint.previous[j];
-                    if (math.isnan(other.x)) continue;
-
-                    // All waypoints of this tile will get deleted => updating them is unneccessary
-                    if (tileWaypoints.Contains(other))
-                        continue;
-
-                    Waypoint tmp = data.ValueRO.waypoints[other];
-                    tmp.RemoveNext(pos);
-                    data.ValueRW.waypoints[other] = tmp;
-                }
-
-                data.ValueRW.waypoints.Remove(pos);
+                tileWaypoints.Clear(Entity.Null);
             }
-            tileWaypoints.Clear(float.NaN);
-        }
-        private static void LinkWaypoints(float3 from, float3 to, RefRW<WaypointsData> data)
-        {
-            Waypoint copy = data.ValueRO.waypoints[from];
-            copy.AddNext(to);
-            data.ValueRW.waypoints[from] = copy;
-
-            copy = data.ValueRO.waypoints[to];
-            copy.AddPrevious(from);
-            data.ValueRW.waypoints[to] = copy;
         }
     }
 }
