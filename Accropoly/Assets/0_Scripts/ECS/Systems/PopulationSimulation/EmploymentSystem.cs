@@ -6,6 +6,8 @@ using Tags;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Rendering.VirtualTexturing;
+using Unity.Transforms;
+using Components.WaypointComponents;
 
 namespace Systems
 {
@@ -32,6 +34,15 @@ namespace Systems
             NativeList<Entity> employerEntities = employersWithSpaceQuery.ToEntityListAsync(Allocator.TempJob, out var handle);
             handle.Complete();
 
+            var pathfindingUtility = new PathfindingUtility()
+            {
+                entityGrid = entityGrid,
+                transportTileLookup = SystemAPI.GetComponentLookup<TransportTile>(),
+                transformLookup = SystemAPI.GetComponentLookup<LocalTransform>(),
+                connectionsLookup = SystemAPI.GetComponentLookup<Connections>(),
+                waypointLookup = SystemAPI.GetComponentLookup<Waypoint>(),
+            };
+
             // Employ people
             Entities.WithAll<Unemployed>().ForEach((Entity entity, ref Worker worker, in Person person) =>
             {
@@ -47,7 +58,7 @@ namespace Systems
                     if (employer.freeSpace == 0) // HasSpace tag might still be present because the employer was filled in this frame
                         Debug.LogError("!");
 
-                    if (PathfindingSystem.CalculateTravelTime(person.homeTile, employerPos, entityGrid) == -1) // No valid path to the employer
+                    if (pathfindingUtility.CalculateTravelTime(person.homeTile, employerPos) == -1) // No valid path to the employer
                         continue;
 
                     // Update employer
@@ -71,7 +82,7 @@ namespace Systems
             // Remove people from their workplace if there is no valid path
             Entities.WithNone<Unemployed>().ForEach((Entity entity, ref Worker worker, in Person person) =>
             {
-                if (PathfindingSystem.CalculateTravelTime(person.homeTile, worker.employer, entityGrid) != -1) // Valid path to employer
+                if (pathfindingUtility.CalculateTravelTime(person.homeTile, worker.employer) != -1) // Valid path to employer
                     return;
 
                 // Remove person from the workplace

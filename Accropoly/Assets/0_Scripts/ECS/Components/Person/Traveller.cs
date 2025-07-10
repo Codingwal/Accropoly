@@ -12,6 +12,7 @@ namespace Components
         public float maxAcceleration;
         public int nextWaypointIndex;
         public UnsafeList<Entity> waypoints;
+        public Entity NextWaypoint => waypoints[nextWaypointIndex];
     }
 }
 namespace Tags

@@ -1,11 +1,11 @@
 using Components;
+using Components.WaypointComponents;
 using Tags;
 using Unity.Burst;
-using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
-using JunctionData = Waypoint.JunctionData;
+using JunctionData = Components.WaypointComponents.Junction.JunctionData;
 
 namespace Systems
 {
@@ -20,36 +20,42 @@ namespace Systems
         {
             new UpdateJunctionsJob()
             {
-                waypointsData = SystemAPI.GetSingletonRW<WaypointsData>(),
-                deltaTime = SystemAPI.GetSingleton<GameInfo>().deltaTime / MovementSystem.gameSecondsPerMovementSecond
+                deltaTime = SystemAPI.GetSingleton<GameInfo>().deltaTime / MovementSystem.gameSecondsPerMovementSecond,
+                junctionLookup = SystemAPI.GetComponentLookup<Junction>()
             }.Schedule();
         }
 
         [BurstCompile]
         private partial struct UpdateJunctionsJob : IJobEntity
         {
-            [NativeDisableUnsafePtrRestriction]
-            public RefRW<WaypointsData> waypointsData;
             public float deltaTime;
+            public ComponentLookup<Junction> junctionLookup;
             public void Execute(ref TransportTile transportTile, in ConnectingTile connectingTile)
             {
                 int index = connectingTile.GetIndex();
                 if (!(index == ConnectingTile.tJunction || index == ConnectingTile.junction))
                     return;
 
-                bool priorityObject = false;
+                bool priorityObject = false; // Is there an object others should give way to?
 
-                // Collect data
-                foreach (float3 waypointPos in transportTile.waypoints)
+                // Collect data (iterate over waypoints)
+                foreach (Entity waypoint in transportTile.waypoints)
                 {
-                    if (math.isnan(waypointPos.x)) continue;
-                    Waypoint waypoint = waypointsData.ValueRO.waypoints[waypointPos];
-                    if (waypoint.junctionData == JunctionData.None) continue;
-                    Debug.Assert(waypoint.junctionData != JunctionData.Default);
+                    if (waypoint == Entity.Null) continue;
 
-                    if (waypoint.junctionData == JunctionData.Priority)
+                    // Skip waypoints that are not part of the junction
+                    if (!junctionLookup.HasComponent(waypoint))
+                        continue;
+
+                    var junction = junctionLookup.GetRefRW(waypoint);
+                    JunctionData junctionData = junction.ValueRO.junctionData;
+
+                    if (junctionData == JunctionData.None) continue;
+                    Debug.Assert(junctionData != JunctionData.Default);
+
+                    if (junctionData == JunctionData.Priority)
                     {
-                        if (waypoint.registeredObjects > 0)
+                        if (junction.ValueRO.registeredObjects > 0)
                         {
                             priorityObject = true;
                             break;
@@ -68,18 +74,24 @@ namespace Systems
                 }
 
                 // Update waypoints
-                foreach (float3 waypointPos in transportTile.waypoints)
+                foreach (Entity waypoint in transportTile.waypoints)
                 {
-                    if (math.isnan(waypointPos.x)) continue;
-                    Waypoint waypoint = waypointsData.ValueRO.waypoints[waypointPos];
-                    if (waypoint.junctionData == JunctionData.None) continue;
-                    Debug.Assert(waypoint.junctionData != JunctionData.Default);
+                    if (waypoint == Entity.Null) continue;
 
-                    if (waypoint.junctionData == JunctionData.GiveWay)
+                    // Skip waypoints that are not part of the junction
+                    if (!junctionLookup.HasComponent(waypoint))
+                        continue;
+
+                    var junction = junctionLookup.GetRefRW(waypoint);
+                    JunctionData junctionData = junction.ValueRO.junctionData;
+
+                    if (junctionData == JunctionData.None) continue;
+                    Debug.Assert(junctionData != JunctionData.Default);
+
+                    if (junctionData == JunctionData.GiveWay)
                     {
-                        waypoint.stop = priorityObject; // Stop if there is a priority object
+                        junction.ValueRW.stop = priorityObject; // Stop if there is a priority object
                     }
-                    waypointsData.ValueRW.waypoints[waypointPos] = waypoint;
                 }
             }
         }

@@ -62,46 +62,46 @@ namespace Components
         }
         public struct Connections : IComponentData // Always present
         {
-            public FixedFloat3Array5 next;
-            public FixedFloat3Array5 previous;
+            public FixedEntityArray5 next;
+            public FixedEntityArray5 previous;
             public bool exit; // Only important if at the tile's edge. false => entry
             public Connections(bool exit)
             {
-                next.Clear(float.NaN);
-                previous.Clear(float.NaN);
+                next.Clear(Entity.Null);
+                previous.Clear(Entity.Null);
                 this.exit = exit;
             }
-            public void RemoveNext(float3 pos)
+            public void RemoveNext(Entity entity)
             {
                 for (int i = 0; i < next.Size; i++)
-                    if (next[i].Equals(pos))
-                        next[i] = float.NaN;
+                    if (next[i].Equals(entity))
+                        next[i] = Entity.Null;
             }
-            public void RemovePrevious(float3 pos)
+            public void RemovePrevious(Entity entity)
             {
                 for (int i = 0; i < previous.Size; i++)
-                    if (previous[i].Equals(pos))
-                        previous[i] = float.NaN;
+                    if (previous[i].Equals(entity))
+                        previous[i] = Entity.Null;
             }
-            public void AddNext(float3 pos)
+            public void AddNext(Entity entity)
             {
                 for (int i = 0; i < next.Size; i++)
                 {
-                    if (math.isnan(next[i].x))
+                    if (next[i] == Entity.Null)
                     {
-                        next[i] = pos;
+                        next[i] = entity;
                         return;
                     }
                 }
                 Debug.LogError("No slot left");
             }
-            public void AddPrevious(float3 pos)
+            public void AddPrevious(Entity entity)
             {
                 for (int i = 0; i < previous.Size; i++)
                 {
-                    if (math.isnan(previous[i].x))
+                    if (previous[i] == Entity.Null)
                     {
-                        previous[i] = pos;
+                        previous[i] = entity;
                         return;
                     }
                 }

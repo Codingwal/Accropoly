@@ -20,8 +20,10 @@ namespace Systems
         {
             tilesToUpdate = new EntityQueryBuilder(Allocator.Temp)
                 .WithAspect<TransportTileAspect>()
+                .WithAll<ConnectingTile>() // Needed for SetChangedVersionFilter
                 .WithNone<Replace>()
                 .Build(this);
+            tilesToUpdate.SetChangedVersionFilter(new ComponentType[] { typeof(ConnectingTile), typeof(Tile) });
 
             tileWithReplaceTag = new EntityQueryBuilder(Allocator.Temp)
                 .WithAll<Replace>()
@@ -62,7 +64,7 @@ namespace Systems
             {
                 connectionsLookup = SystemAPI.GetComponentLookup<Connections>(),
                 transformLookup = SystemAPI.GetComponentLookup<LocalTransform>(),
-                ecb = ecb,
+                ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged), // Needs a seperate ecb
                 data = waypointsData
             };
 
@@ -88,14 +90,21 @@ namespace Systems
         }
         public void DrawGizmos()
         {
-            foreach (var (transform, junction, connections) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<Junction>, RefRO<Connections>>().WithAll<Waypoint>())
+            foreach (var (transform, connections, entity) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<Connections>>().WithEntityAccess())
             {
                 // Draw waypoint
                 Gizmos.color = Color.blue;
-                if (junction.ValueRO.registeredObjects > 0)
-                    Gizmos.color = Color.green;
-                if (junction.ValueRO.stop)
-                    Gizmos.color = Color.red;
+
+                // Display additional data for junctions (by changing the colour)
+                if (SystemAPI.HasComponent<Junction>(entity))
+                {
+                    var junction = SystemAPI.GetComponentRO<Junction>(entity);
+                    if (junction.ValueRO.registeredObjects > 0)
+                        Gizmos.color = Color.green;
+                    if (junction.ValueRO.stop)
+                        Gizmos.color = Color.red;
+                }
+
                 Gizmos.DrawSphere(transform.ValueRO.Position, 0.1f);
 
                 // Draw connections
@@ -115,23 +124,26 @@ namespace Systems
         private partial struct InitializeNewWaypoints : IJobEntity
         {
             public EntityCommandBuffer ecb;
-            public RefRW<WaypointsData> data;
+            [NativeDisableUnsafePtrRestriction] public RefRW<WaypointsData> data;
             public DynamicBuffer<EntityBufferElement> tileGrid;
             public ComponentLookup<TransportTile> transportTileLookup;
             public ComponentLookup<Connections> connectionsLookup;
-            public void Execute(Entity entity, ref Connections connections, in NewWaypoint newWaypoint, in LocalTransform transform)
+            public void Execute(Entity entity, in NewWaypoint newWaypoint, in LocalTransform transform)
             {
+                var connections = connectionsLookup.GetRefRW(entity); // Can't pass as param because of connectionsLookup
+
                 // Add to waypoint list of the tile this waypoint belongs to
-                int2 tilePos = (int2)math.round(transform.Position.xz / 2) * 2;
+                int2 tilePos = (int2)math.round(transform.Position.xz / 2);
                 Entity tile = TileGridUtility.GetTile(tilePos, tileGrid);
                 transportTileLookup.GetRefRW(tile).ValueRW.AddWaypoint(entity);
 
                 // Create connections
                 foreach (float3 nextPos in newWaypoint.nextWaypoints)
                 {
+                    if (math.isnan(nextPos.x)) continue;
                     Entity next = data.ValueRW.waypoints[nextPos];
-                    connections.AddNext(nextPos);
-                    connectionsLookup.GetRefRW(next).ValueRW.AddPrevious(transform.Position);
+                    connections.ValueRW.AddNext(next);
+                    connectionsLookup.GetRefRW(next).ValueRW.AddPrevious(entity);
                 }
 
                 // Connect with close waypoints
@@ -150,15 +162,15 @@ namespace Systems
 
                     // Connect
                     var connectionsOther = connectionsLookup.GetRefRW(other);
-                    if (connections.exit && !connectionsOther.ValueRO.exit) // this -> other
+                    if (connections.ValueRO.exit && !connectionsOther.ValueRO.exit) // this -> other
                     {
-                        connections.AddNext(otherPos);
-                        connectionsOther.ValueRW.AddPrevious(transform.Position);
+                        connections.ValueRW.AddNext(other);
+                        connectionsOther.ValueRW.AddPrevious(entity);
                     }
-                    else if (!connections.exit && connectionsOther.ValueRO.exit) // other -> this
+                    else if (!connections.ValueRO.exit && connectionsOther.ValueRO.exit) // other -> this
                     {
-                        connectionsOther.ValueRW.AddNext(transform.Position);
-                        connections.AddPrevious(otherPos);
+                        connectionsOther.ValueRW.AddNext(entity);
+                        connections.ValueRW.AddPrevious(other);
                     }
                     else // Both are exits / entries
                         throw new();
@@ -203,7 +215,7 @@ namespace Systems
         private struct JobUtility
         {
             public ComponentLookup<Connections> connectionsLookup;
-            public ComponentLookup<LocalTransform> transformLookup;
+            [NativeDisableContainerSafetyRestriction] public ComponentLookup<LocalTransform> transformLookup;
             public EntityCommandBuffer ecb;
             [NativeDisableUnsafePtrRestriction] public RefRW<WaypointsData> data;
             public void DeleteTileWaypoints(ref FixedEntityArray20 tileWaypoints)
@@ -226,7 +238,7 @@ namespace Systems
 
                         // Update other
                         RefRW<Connections> connectionsOther = connectionsLookup.GetRefRW(other);
-                        connectionsOther.ValueRW.RemovePrevious(pos);
+                        connectionsOther.ValueRW.RemovePrevious(entity);
                     }
 
                     // Update previous
@@ -240,7 +252,7 @@ namespace Systems
 
                         // Update other
                         RefRW<Connections> connectionsOther = connectionsLookup.GetRefRW(other);
-                        connectionsOther.ValueRW.RemoveNext(pos);
+                        connectionsOther.ValueRW.RemoveNext(entity);
                     }
 
                     ecb.DestroyEntity(entity);

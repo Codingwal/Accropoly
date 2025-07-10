@@ -1,4 +1,5 @@
 using Components;
+using Components.WaypointComponents;
 using Tags;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -30,12 +31,21 @@ namespace Systems
             var gameInfo = SystemAPI.GetSingleton<GameInfo>();
             int hours = gameInfo.time.hours;
 
+            var pathfindingUtility = new PathfindingUtility()
+            {
+                entityGrid = entityGrid,
+                transportTileLookup = SystemAPI.GetComponentLookup<TransportTile>(),
+                transformLookup = SystemAPI.GetComponentLookup<LocalTransform>(),
+                connectionsLookup = SystemAPI.GetComponentLookup<Connections>(),
+                waypointLookup = SystemAPI.GetComponentLookup<Waypoint>(),
+            };
+
             if (hours == 3 && gameInfo.time.NewHour)
             {
                 Entities.ForEach((ref Worker worker, in Person person) =>
                 {
                     if (worker.employer.Equals(new(-1, -1))) return; // skip unemployed people
-                    worker.timeToWork = PathfindingSystem.CalculateTravelTime(person.homeTile, worker.employer, entityGrid);
+                    worker.timeToWork = pathfindingUtility.CalculateTravelTime(person.homeTile, worker.employer);
 
                     if (worker.timeToWork == -1)
                         Debug.LogWarning($"Couldn't find path to work (travelTime=-1)! (employer={worker.employer}, homeTile={person.homeTile})");

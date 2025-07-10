@@ -1,9 +1,11 @@
 using System;
 using Components;
+using Components.WaypointComponents;
 using Tags;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
+using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
@@ -16,20 +18,23 @@ namespace Systems
     /// </summary>
     public partial class PathfindingSystem : SystemBase
     {
-        private static ComponentLookup<TransportTile> transportTilesLookup;
         protected override void OnCreate()
         {
             RequireForUpdate<Traveller>();
             RequireForUpdate<RunGame>();
-
-            transportTilesLookup = GetComponentLookup<TransportTile>(isReadOnly: true);
         }
         protected override void OnUpdate()
         {
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
-            var entityGrid = SystemAPI.GetBuffer<EntityBufferElement>(SystemAPI.GetSingletonEntity<EntityGridHolder>());
 
-            transportTilesLookup.Update(this);
+            var utility = new PathfindingUtility()
+            {
+                entityGrid = SystemAPI.GetBuffer<EntityBufferElement>(SystemAPI.GetSingletonEntity<EntityGridHolder>()),
+                transportTileLookup = SystemAPI.GetComponentLookup<TransportTile>(),
+                transformLookup = SystemAPI.GetComponentLookup<LocalTransform>(),
+                connectionsLookup = SystemAPI.GetComponentLookup<Connections>(),
+                waypointLookup = SystemAPI.GetComponentLookup<Waypoint>(),
+            };
 
             Entities.WithAll<WantsToTravel>().ForEach((Entity entity, ref Traveller traveller, in LocalTransform transform) =>
             {
@@ -38,9 +43,9 @@ namespace Systems
                 else
                     traveller.waypoints = new(8, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
 
-                if (FindPath(ref traveller.waypoints, (int2)math.round(transform.Position.xz / 2), traveller.destination, entityGrid))
+                if (utility.FindPath(ref traveller.waypoints, (int2)math.round(transform.Position.xz / 2), traveller.destination))
                 {
-                    traveller.nextWaypointIndex = 1; // waypoints[0] is start
+                    traveller.nextWaypointIndex = 0;
                     traveller.maxAcceleration = 10;
                     traveller.velocity = float3.zero;
                     ecb.SetComponentEnabled<Travelling>(entity, true);
@@ -49,22 +54,34 @@ namespace Systems
                 ecb.SetComponentEnabled<WantsToTravel>(entity, false);
             }).WithoutBurst().Run();
         }
+    }
+
+    public partial struct PathfindingUtility
+    {
+        public DynamicBuffer<EntityBufferElement> entityGrid;
+        public ComponentLookup<TransportTile> transportTileLookup;
+        public ComponentLookup<LocalTransform> transformLookup;
+        public ComponentLookup<Connections> connectionsLookup;
+        public ComponentLookup<Waypoint> waypointLookup;
 
         /// <remarks>Returns -1 if no path is found</remarks>
-        public static float CalculateTravelTime(int2 start, int2 dest, in DynamicBuffer<EntityBufferElement> entityGrid)
+        public float CalculateTravelTime(int2 start, int2 dest)
         {
-            UnsafeList<float3> path = new(10, Allocator.TempJob);
+            UnsafeList<Entity> path = new(10, Allocator.TempJob);
             float travelTime = 0;
 
-            if (FindPath(ref path, start, dest, entityGrid))
+            if (FindPath(ref path, start, dest))
             {
-                var waypointsData = ECSUtility.GetSingleton<WaypointsData>();
-                for (int i = 2; i < path.Length - 1; i++) // Skip start and dest
+                for (int i = 1; i < path.Length; i++)
                 {
-                    float speedA = waypointsData.waypoints[path[i - 1]].velocity;
-                    float speedB = waypointsData.waypoints[path[i]].velocity;
-                    float distance = math.distance(path[i - 1], path[i]);
+                    float3 posA = transformLookup.GetRefRO(path[i - 1]).ValueRO.Position;
+                    float3 posB = transformLookup.GetRefRO(path[i]).ValueRO.Position;
+                    float distance = math.distance(posA, posB);
+
+                    float speedA = waypointLookup.GetRefRO(path[i - 1]).ValueRO.velocity;
+                    float speedB = waypointLookup.GetRefRO(path[i]).ValueRO.velocity;
                     float averageSpeed = (speedA + speedB) * 0.5f;
+
                     travelTime += distance / averageSpeed * MovementSystem.gameSecondsPerMovementSecond;
                 }
             }
@@ -73,19 +90,20 @@ namespace Systems
             path.Dispose();
             return travelTime;
         }
+
         /// <summary>Finds the shortest path using A* pathfinding from start to dest and stores it in waypoints.</summary>
+        /// <remarks>The path does not include start and destination</remarks>
         /// <returns>Returns true if a path was found</returns>
-        private static bool FindPath(ref UnsafeList<float3> path, int2 startTile, int2 destTile, in DynamicBuffer<EntityBufferElement> entityGrid)
+        public bool FindPath(ref UnsafeList<Entity> path, int2 startTile, int2 destTile)
         {
             Debug.Assert(!startTile.Equals(destTile), $"Start must not equal destination (start and dest are {startTile})");
             Debug.Assert(path.IsCreated, "The UnsafeList<Waypoint> has not been created");
 
-            WaypointsData waypointsData = ECSUtility.GetSingleton<WaypointsData>();
             float3 start = new(startTile.x * 2, 0.8f, startTile.y * 2);
             float3 dest = new(destTile.x * 2, 0.8f, destTile.y * 2);
 
             NativeList<(float, NodeToVisit)> openList = new(8, Allocator.TempJob); // (cost, info)
-            NativeHashMap<float3, VisitedNode> closedList = new(8, Allocator.TempJob); // (pos, info)
+            NativeHashMap<Entity, VisitedNode> closedList = new(8, Allocator.TempJob); // (entity, info)
 
             NativeList<Direction> directions = new(4, Allocator.TempJob); // Contains the four directions
             Direction.GetDirections(ref directions);
@@ -102,14 +120,14 @@ namespace Systems
             {
                 if (!TileGridUtility.TryGetTile(startTile + dir.DirectionVec, entityGrid, out Entity tile))
                     continue;
-                if (!transportTilesLookup.TryGetComponent(tile, out var transportTile))
+                if (!transportTileLookup.TryGetComponent(tile, out var transportTile))
                     continue;
 
                 for (int i = 0; i < transportTile.waypoints.Size; i++)
                 {
-                    float3 waypoint = transportTile.waypoints[i];
-                    if (math.isnan(waypoint.x)) continue;
-                    openList.Add((0, new(waypoint, start)));
+                    Entity waypoint = transportTile.waypoints[i];
+                    if (waypoint == Entity.Null) continue;
+                    openList.Add((0, new(waypoint, Entity.Null)));
                 }
             }
 
@@ -119,43 +137,43 @@ namespace Systems
             while (openList.Length != 0)
             {
                 var (cost, node) = PopCheapest(openList);
-                if (closedList.ContainsKey(node.pos)) continue; // Skip already visited nodes
-                closedList.Add(node.pos, new(node.previous));
+                if (closedList.ContainsKey(node.entity)) continue; // Skip already visited nodes
+                closedList.Add(node.entity, new(node.previous));
+
+                float3 pos = transformLookup.GetRefRO(node.entity).ValueRO.Position;
 
                 // If this tile is next to the destination, create waypoint list and return
-                if (IsAdjacent((int2)math.round(node.pos.xz / 2), destTile))
+                if (IsAdjacent((int2)math.round(pos.xz / 2), destTile))
                 {
                     // Get path
-                    NativeList<float3> reversedPath = new(Allocator.TempJob);
-                    float3 currentPos = node.pos;
-                    while (!currentPos.Equals(start))
+                    NativeList<Entity> reversedPath = new(Allocator.TempJob);
+                    Entity current = node.entity;
+                    while (current != Entity.Null)
                     {
-                        reversedPath.Add(currentPos);
-                        currentPos = closedList[currentPos].previous;
+                        reversedPath.Add(current);
+                        current = closedList[current].previous;
                     }
 
                     // Reverse path
-                    path.Add(start);
                     for (int i = reversedPath.Length - 1; i >= 0; i--)
                         path.Add(reversedPath[i]);
                     reversedPath.Dispose();
 
-                    path.Add(dest);
                     Dispose();
                     return true;
                 }
 
                 // Get neighbours
-                Waypoint waypoint = waypointsData.waypoints[node.pos];
+                RefRO<Connections> connections = connectionsLookup.GetRefRO(node.entity);
 
                 // Add neighbours to openList (if they are valid)
-                for (int i = 0; i < waypoint.next.Size; i++)
+                foreach (Entity next in connections.ValueRO.next)
                 {
-                    float3 next = waypoint.next[i];
-                    if (math.isnan(next.x)) continue;
+                    if (next == Entity.Null) continue;
 
-                    float speed = transportTilesLookup.GetRefRO(GetTile(next, entityGrid)).ValueRO.speed;
-                    openList.Add((CalculateCost(next, node.pos, cost, dest, speed), new(next, node.pos)));
+                    float speed = waypointLookup.GetRefRO(next).ValueRO.velocity;
+                    float3 nextPos = transformLookup.GetRefRO(next).ValueRO.Position;
+                    openList.Add((CalculateCost(nextPos, pos, cost, dest, speed), new(next, node.entity)));
                 }
                 directions.Clear();
 
@@ -209,19 +227,19 @@ namespace Systems
         }
         private struct VisitedNode
         {
-            public float3 previous;
-            public VisitedNode(float3 previous)
+            public Entity previous;
+            public VisitedNode(Entity previous)
             {
                 this.previous = previous;
             }
         }
         private struct NodeToVisit
         {
-            public float3 pos;
-            public float3 previous;
-            public NodeToVisit(float3 pos, float3 previous)
+            public Entity entity;
+            public Entity previous;
+            public NodeToVisit(Entity entity, Entity previous)
             {
-                this.pos = pos;
+                this.entity = entity;
                 this.previous = previous;
             }
         }
