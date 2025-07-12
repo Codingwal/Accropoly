@@ -69,10 +69,15 @@ namespace Systems
                 });
                 state.EntityManager.CreateSingleton<LoadGame>();
             }
+            if (SystemAPI.HasSingleton<PreSaveGame>())
+            {
+                state.EntityManager.DestroyEntity(SystemAPI.GetSingletonEntity<PreSaveGame>());
+                state.EntityManager.CreateSingleton<SaveGame>();
+            }
             if (saveGame)
             {
                 saveGame = false;
-                state.EntityManager.CreateSingleton<SaveGame>();
+                state.EntityManager.CreateSingleton<PreSaveGame>();
             }
         }
         public static void LoadWorldData()

@@ -11,7 +11,10 @@ using UnityEngine;
 
 namespace Systems
 {
-    [UpdateInGroup(typeof(LateSimulationSystemGroup))]
+    /// <summary>
+    /// Manages all waypoints (creation, deletion, updating)
+    /// </summary>
+    [UpdateAfter(typeof(TileConnectionSystem))]
     public partial class WaypointSystem : SystemBase
     {
         private EntityQuery tilesToUpdate;
@@ -45,6 +48,7 @@ namespace Systems
                 RefRW<WaypointsData> data = SystemAPI.GetComponentRW<WaypointsData>(dataHolder);
                 data.ValueRW.waypoints.Dispose();
                 EntityManager.DestroyEntity(dataHolder);
+                EntityManager.DestroyEntity(GetEntityQuery(typeof(Waypoint)));
             }
 
             if (!(SystemAPI.HasSingleton<RunGame>() || SystemAPI.HasSingleton<LoadGame>()))
@@ -60,7 +64,7 @@ namespace Systems
             }
 
             // Needed by jobs
-            JobUtility jobUtility = new JobUtility()
+            JobUtility jobUtility = new()
             {
                 connectionsLookup = SystemAPI.GetComponentLookup<Connections>(),
                 transformLookup = SystemAPI.GetComponentLookup<LocalTransform>(),
@@ -72,7 +76,7 @@ namespace Systems
             {
                 ecb = ecb,
                 data = waypointsData,
-                tileGrid = TileGridUtility.GetEntityGrid(),
+                tileGrid = SystemAPI.GetSingletonBuffer<EntityBufferElement>(),
                 transportTileLookup = SystemAPI.GetComponentLookup<TransportTile>(),
                 connectionsLookup = SystemAPI.GetComponentLookup<Connections>(),
             }.Schedule();
@@ -81,6 +85,9 @@ namespace Systems
             {
                 jobUtility = jobUtility
             }.Schedule(tileWithReplaceTag);
+
+            // Garantuee that all connecting tiles have been updated
+            World.GetExistingSystemManaged<TileConnectionSystem>().CheckedStateRef.Dependency.Complete();
 
             new UpdateTilesJob()
             {
@@ -197,7 +204,6 @@ namespace Systems
         /// Update tiles that should have waypoints (e.g. streets) (delete old waypoints if present, create new waypoints)
         /// </summary>
         [BurstCompile]
-        [WithChangeFilter(typeof(ConnectingTile), typeof(Tile))] // For performance reasons: Only execute when a relevant component changed
         private partial struct UpdateTilesJob : IJobEntity
         {
             public EntityCommandBuffer ecb;

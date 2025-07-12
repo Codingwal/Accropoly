@@ -71,7 +71,7 @@ public static class MenuUtility
     public static void PauseGame()
     {
         Time.timeScale = 0;
-        EntityManager.DestroyEntity(EntityManager.CreateEntityQuery(typeof(Tags.RunGame)));
+        EntityManager.DestroyEntity(ECSUtility.GetSingletonEntity<Tags.RunGame>());
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         InputSystem.DisableGameplayInputActions();

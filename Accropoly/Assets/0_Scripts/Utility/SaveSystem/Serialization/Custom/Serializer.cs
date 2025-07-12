@@ -61,7 +61,13 @@ public partial class Serializer
                 Serialize(componentData.velocity);
                 bw.Write(componentData.maxAcceleration);
                 bw.Write(componentData.nextWaypointIndex);
-                // Serialize(componentData.waypoints);
+            }
+            else if (type == typeof(TravellerWaypointsSerializable))
+            {
+                bw.Write((int)PersonComponents.TravellerWaypointsSerializable);
+                var componentData = (TravellerWaypointsSerializable)component;
+
+                Serialize(componentData.waypoints);
             }
             else if (type == typeof(Travelling)) bw.Write((int)PersonComponents.Travelling);
             else if (type == typeof(WantsToTravel)) bw.Write((int)PersonComponents.WantsToTravel);

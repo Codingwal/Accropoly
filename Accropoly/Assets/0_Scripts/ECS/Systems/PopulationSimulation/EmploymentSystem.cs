@@ -5,7 +5,6 @@ using Components;
 using Tags;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Rendering.VirtualTexturing;
 using Unity.Transforms;
 using Components.WaypointComponents;
 

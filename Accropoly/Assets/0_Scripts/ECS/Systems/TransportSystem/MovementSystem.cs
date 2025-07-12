@@ -1,10 +1,8 @@
-using System;
 using Components;
 using Components.WaypointComponents;
 using Tags;
 using Unity.Burst;
 using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
@@ -79,18 +77,21 @@ namespace Systems
 
         public void DrawGizmos(bool debugPath, bool debugRaycasts)
         {
+            if (!SystemAPI.HasSingleton<RunGame>())
+                return;
+
             if (debugPath)
             {
                 Gizmos.color = Color.green;
-                Entities.WithAll<Travelling>().ForEach((in Traveller traveller) =>
+                foreach (RefRO<Traveller> traveller in SystemAPI.Query<RefRO<Traveller>>().WithAll<Travelling>())
                 {
-                    for (int i = math.max(traveller.nextWaypointIndex, 1); i < traveller.waypoints.Length; i++) // Force a minimum start index of 1
+                    for (int i = math.max(traveller.ValueRO.nextWaypointIndex, 1); i < traveller.ValueRO.waypoints.Length; i++) // Force a minimum start index of 1
                     {
-                        float3 from = SystemAPI.GetComponent<LocalTransform>(traveller.waypoints[i - 1]).Position;
-                        float3 to = SystemAPI.GetComponent<LocalTransform>(traveller.waypoints[i]).Position;
+                        float3 from = SystemAPI.GetComponent<LocalTransform>(traveller.ValueRO.waypoints[i - 1]).Position;
+                        float3 to = SystemAPI.GetComponent<LocalTransform>(traveller.ValueRO.waypoints[i]).Position;
                         Gizmos.DrawLine(from, to);
                     }
-                }).Run();
+                }
             }
 
             if (debugRaycasts)
@@ -142,6 +143,8 @@ namespace Systems
             public NativeList<RaycastData> raycastsInfo; // For debugging
             public void Execute(Entity entity, ref Traveller traveller)
             {
+                Debug.Log("Moving");
+
                 ref LocalTransform transform = ref transformLookup.GetRefRW(entity).ValueRW;
 
                 // Instantly teleport to first waypoint

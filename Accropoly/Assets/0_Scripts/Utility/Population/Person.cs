@@ -13,6 +13,7 @@ public enum PersonComponents : int
     Person = 1,
     Worker = 2,
     Traveller = 3,
+    TravellerWaypointsSerializable = 4, // Only used for serialization
 
     // Tags
     Travelling = 100,

@@ -49,6 +49,7 @@ namespace Components
 
             if (index == ConnectingTile.notConnected)
             {
+                Debug.LogWarning("!!!");
                 return;
             }
             if (index == ConnectingTile.deadEnd)

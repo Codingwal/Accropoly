@@ -1,4 +1,3 @@
-using System;
 using Components;
 using Components.WaypointComponents;
 using Tags;
@@ -16,16 +15,58 @@ namespace Systems
     /// Calculates the path for people with the WantsToTravel tag (from current pos to traveller.destination)
     /// After the path is calculated and stored in traveller.waypoints, the person is set to travelling (Travelling tag)
     /// </summary>
+    [UpdateAfter(typeof(WaypointSystem))]
     public partial class PathfindingSystem : SystemBase
     {
         protected override void OnCreate()
         {
             RequireForUpdate<Traveller>();
-            RequireForUpdate<RunGame>();
         }
         protected override void OnUpdate()
         {
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
+
+            // Prepare traveller data for serialization (waypoints can't be serialized directly because entity ids might differ after restarting)
+            if (SystemAPI.HasSingleton<PreSaveGame>())
+            {
+                Entities.ForEach((Entity entity, ref Traveller traveller) =>
+                {
+                    Debug.Log($"Saving");
+
+                    TravellerWaypointsSerializable waypoints = new()
+                    {
+                        waypoints = new(8, Allocator.Persistent, NativeArrayOptions.UninitializedMemory)
+                    };
+                    foreach (Entity waypoint in traveller.waypoints)
+                    {
+                        float3 waypointPos = SystemAPI.GetComponent<LocalTransform>(waypoint).Position;
+                        waypoints.waypoints.Add(waypointPos);
+                    }
+                    traveller.waypoints.Dispose();
+                    ecb.AddComponent(entity, waypoints);
+                    ecb.SetComponentEnabled<Travelling>(entity, false);
+                }).Schedule();
+            }
+
+            if (!SystemAPI.HasSingleton<RunGame>())
+                return;
+
+            // Recreate waypoints list from serialization container (can't be serialized directly because entity ids might differ after restarting)
+            var waypointsData = SystemAPI.GetSingleton<WaypointsData>();
+            Entities.ForEach((Entity entity, ref Traveller traveller, ref TravellerWaypointsSerializable waypoints) =>
+            {
+                Debug.Log($"Loading");
+
+                traveller.waypoints = new(8, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+                foreach (float3 waypointPos in waypoints.waypoints)
+                {
+                    Entity waypoint = waypointsData.waypoints[waypointPos];
+                    traveller.waypoints.Add(waypoint);
+                }
+                waypoints.waypoints.Dispose();
+                ecb.RemoveComponent<TravellerWaypointsSerializable>(entity);
+                ecb.SetComponentEnabled<Travelling>(entity, true);
+            }).Run();
 
             var utility = new PathfindingUtility()
             {

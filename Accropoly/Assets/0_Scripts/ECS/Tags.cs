@@ -4,6 +4,7 @@ namespace Tags
 {
     // Singletons
     public struct RunGame : IComponentData { }
+    public struct PreSaveGame : IComponentData { }
     public struct SaveGame : IComponentData { }
     public struct LoadGame : IComponentData { }
     public struct NewDay : IComponentData { }

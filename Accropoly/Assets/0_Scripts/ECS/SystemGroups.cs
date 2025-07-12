@@ -12,6 +12,6 @@ public partial class CreationSystemGroup : ComponentSystemGroup { } // Place til
 public partial class ComponentInitializationSystemGroup : ComponentSystemGroup { } // Create tag components, set default values
 
 [UpdateInGroup(typeof(InitializationSystemGroup), OrderLast = true)]
-public partial class LateInitializationSystemGroup : ComponentSystemGroup { } // prepare for input -> reset inputData, delete tags
+public partial class LateInitializationSystemGroup : ComponentSystemGroup { } // reset inputData, delete tags, update waypoints
 
 // most systems are executed in SimulationSystemGroup

@@ -4,12 +4,12 @@ using Unity.Transforms;
 using Components;
 using Tags;
 using Unity.Collections;
+using UnityEngine;
 
 namespace Systems
 {
     /// <summary>
     /// Handle connections between ConnectingTile tiles (streets, rivers, ...)
-    /// and update their appearence accordingly
     /// </summary>
     public partial class TileConnectionSystem : SystemBase
     {
@@ -105,24 +105,22 @@ namespace Systems
                 // ConnectingTile can't be passed as a parameter because SystemAPI.GetComponent & SystemAPI.HasComponent are used
                 Entities.WithAll<ConnectingTile>().ForEach((Entity entity, ref Tile mapTileComponent, ref LocalTransform transform) =>
                 {
-                    ConnectingTile connectingTile = SystemAPI.GetComponent<ConnectingTile>(entity);
+                    var connectingTile = SystemAPI.GetComponentRW<ConnectingTile>(entity);
                     foreach (Direction direction in directions)
                     {
                         if (!TileGridUtility.TryGetTile(mapTileComponent.pos + direction.DirectionVec, entityGrid, out Entity neighbour)) continue;
                         if (SystemAPI.HasComponent<ConnectingTile>(neighbour))
                         {
                             var neighbourConnectingTile = SystemAPI.GetComponent<ConnectingTile>(neighbour);
-                            if (neighbourConnectingTile.group != connectingTile.group) continue;
+                            if (neighbourConnectingTile.group != connectingTile.ValueRO.group) continue;
 
                             // Update self
-                            connectingTile.AddDirection(direction);
+                            connectingTile.ValueRW.AddDirection(direction);
                         }
                     }
-                    // Update ConnectingTile
-                    ecb.SetComponent(entity, connectingTile);
 
                     // Update rotation
-                    Direction rotation = connectingTile.GetRotation();
+                    Direction rotation = connectingTile.ValueRO.GetRotation();
                     transform.Rotation = quaternion.EulerXYZ(0, rotation.ToRadians(), 0);
                     mapTileComponent.rotation = rotation;
                 }).Schedule();

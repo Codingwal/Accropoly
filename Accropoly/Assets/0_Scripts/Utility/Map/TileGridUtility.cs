@@ -11,8 +11,14 @@ public static class TileGridUtility
         em.AddComponent<Tags.EntityGridHolder>(entity);
         return em.AddBuffer<EntityBufferElement>(entity);
     }
-    /// <remarks>Can't be used in jobs!</remarks>
+    /// <remarks>Can't be used in jobs! Read-only!</remarks>
     public static DynamicBuffer<EntityBufferElement> GetEntityGrid()
+    {
+        var em = ECSUtility.EntityManager;
+        return em.GetBuffer<EntityBufferElement>(ECSUtility.GetSingletonEntity<Tags.EntityGridHolder>(), isReadOnly: true);
+    }
+    /// <remarks>Can't be used in jobs!</remarks>
+    public static DynamicBuffer<EntityBufferElement> GetEntityGridRW()
     {
         var em = ECSUtility.EntityManager;
         return em.GetBuffer<EntityBufferElement>(ECSUtility.GetSingletonEntity<Tags.EntityGridHolder>());
