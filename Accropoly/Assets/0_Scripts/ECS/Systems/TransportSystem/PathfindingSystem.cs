@@ -71,18 +71,13 @@ namespace Systems
                 waypointLookup = SystemAPI.GetComponentLookup<Waypoint>(),
             };
 
+            // Handle objects requesting a path
             Entities.WithAll<WantsToTravel>().ForEach((Entity entity, ref Traveller traveller, in LocalTransform transform) =>
             {
-                if (traveller.waypoints.IsCreated)
-                    traveller.waypoints.Clear();
-                else
-                    traveller.waypoints = new(8, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+                traveller.Reset();
 
                 if (utility.FindPath(ref traveller.waypoints, (int2)math.round(transform.Position.xz / 2), traveller.destination))
                 {
-                    traveller.nextWaypointIndex = 0;
-                    traveller.maxAcceleration = 10;
-                    traveller.velocity = float3.zero;
                     ecb.SetComponentEnabled<Travelling>(entity, true);
                 }
                 else Debug.LogWarning($"Couldn't find path from {(int2)math.round(transform.Position.xz) / 2} to {traveller.destination}!");
@@ -129,12 +124,11 @@ namespace Systems
         /// <summary>Finds the shortest path using A* pathfinding from start to dest and stores it in waypoints.</summary>
         /// <remarks>The path does not include start and destination</remarks>
         /// <returns>Returns true if a path was found</returns>
-        public bool FindPath(ref UnsafeList<Entity> path, int2 startTile, int2 destTile)
+        public bool FindPath(ref UnsafeList<Entity> path, int2 startTile, int2 destTile, TravelObjects useableVehicles = TravelObjects.Standard)
         {
             Debug.Assert(!startTile.Equals(destTile), $"Start must not equal destination (start and dest are {startTile})");
             Debug.Assert(path.IsCreated, "The UnsafeList<Waypoint> has not been created");
 
-            float3 start = new(startTile.x * 2, 0.8f, startTile.y * 2);
             float3 dest = new(destTile.x * 2, 0.8f, destTile.y * 2);
 
             NativeList<(float, NodeToVisit)> openList = new(8, Allocator.TempJob); // (cost, info)
@@ -206,9 +200,15 @@ namespace Systems
                 {
                     if (next == Entity.Null) continue;
 
-                    float speed = waypointLookup.GetRefRO(next).ValueRO.velocity;
+                    var waypointData = waypointLookup.GetRefRO(next);
+
+                    // Check if this waypoint is accessible
+                    if ((waypointData.ValueRO.allowedObjects & useableVehicles) == TravelObjects.None)
+                        continue;
+
+                    float speed = waypointData.ValueRO.velocity;
                     float3 nextPos = transformLookup.GetRefRO(next).ValueRO.Position;
-                    openList.Add((CalculateCost(nextPos, pos, cost, dest, speed), new(next, node.entity)));
+                    openList.Add((CalculateCost(nextPos, pos, cost, dest, speed), new NodeToVisit(next, node.entity)));
                 }
                 directions.Clear();
 
@@ -254,11 +254,6 @@ namespace Systems
         {
             float3 v = math.abs(dest - pos);
             return v.x + v.y + v.z;
-        }
-        private static Entity GetTile(float3 pos, in DynamicBuffer<EntityBufferElement> entityGrid)
-        {
-            int2 tilePos = (int2)math.round(pos.xz / 2);
-            return TileGridUtility.GetTile(tilePos, entityGrid);
         }
         private struct VisitedNode
         {

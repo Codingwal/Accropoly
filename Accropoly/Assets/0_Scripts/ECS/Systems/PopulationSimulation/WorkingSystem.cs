@@ -60,7 +60,7 @@ namespace Systems
                     if (pos.Equals(person.homeTile)) return; // Skip people that are already at home
                     if (person.homeTile.Equals(new(-1, -1))) return; // Skip homeless people
 
-                    traveller.destination = person.homeTile;
+                    traveller.SetJourneyData(person.homeTile, TravelObjects.Standard);
                     ecb.SetComponentEnabled<WantsToTravel>(entity, true);
 
                 }
@@ -73,7 +73,7 @@ namespace Systems
 
                     if (gameInfo.time.TimeOfDayInSeconds + worker.timeToWork >= WorldTime.HoursToSeconds(8))
                     {
-                        traveller.destination = worker.employer;
+                        traveller.SetJourneyData(worker.employer, TravelObjects.Standard);
                         ecb.SetComponentEnabled<WantsToTravel>(entity, true);
                     }
                 }

@@ -2,6 +2,7 @@ using Unity.Entities;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
+using System;
 
 namespace Components
 {
@@ -54,9 +55,11 @@ namespace Components
         }
         public struct Waypoint : IComponentData // Always present
         {
-            public float velocity; // in m/s
-            public Waypoint(float velocity)
+            public TravelObjects allowedObjects;
+            public float velocity; // the highest allowed velocity in m/s
+            public Waypoint(TravelObjects allowedObjects, float velocity)
             {
+                this.allowedObjects = allowedObjects;
                 this.velocity = velocity;
             }
         }
@@ -127,6 +130,30 @@ namespace Components
                 Priority,
                 GiveWay,
             }
+        }
+
+
+        /// <summary>
+        /// A "bitmap" enum containing all forms of travel. <para/>
+        /// Used to specify the allowed objects on a waypoint / the useable objects for a journey
+        /// </summary>
+        [Flags]
+        public enum TravelObjects
+        {
+            None = 0,
+            Car = 1 << 0,
+            Pedestrian = 1 << 1,
+            ServiceVehicle = 1 << 2, // Garbage vehicles, ...
+            Truck = 1 << 3,
+            EmergencyVehicle = 1 << 4,
+
+            // Use these for waypoints
+            Street = Car,
+            Sidewalk = Pedestrian,
+            PedestrianZone = Pedestrian | ServiceVehicle | EmergencyVehicle | Truck,
+
+            // Use these to specify the allowed vehicles on a journey
+            Standard = Pedestrian | Car, // For normal civilian journeys
         }
     }
 }

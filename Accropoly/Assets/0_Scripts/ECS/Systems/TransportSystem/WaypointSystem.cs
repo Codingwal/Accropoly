@@ -95,15 +95,23 @@ namespace Systems
                 jobUtility = jobUtility,
             }.Schedule(tilesToUpdate);
         }
-        public void DrawGizmos()
+        public void DrawGizmos(bool highlightTileExits, bool displayJunctionInfo)
         {
-            foreach (var (transform, connections, entity) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<Connections>>().WithEntityAccess())
+            foreach (var (transform, connections, waypoint, entity) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<Connections>, RefRO<Waypoint>>().WithEntityAccess())
             {
-                // Draw waypoint
-                Gizmos.color = Color.blue;
+                // Select color depending on waypoint type
+                Gizmos.color = waypoint.ValueRO.allowedObjects switch
+                {
+                    TravelObjects.Street => Color.blue,
+                    TravelObjects.Sidewalk => Color.cyan,
+                    _ => Color.magenta
+                };
+
+                if (highlightTileExits && connections.ValueRO.exit)
+                    Gizmos.color = Color.gray;
 
                 // Display additional data for junctions (by changing the colour)
-                if (SystemAPI.HasComponent<Junction>(entity))
+                if (displayJunctionInfo && SystemAPI.HasComponent<Junction>(entity))
                 {
                     var junction = SystemAPI.GetComponentRO<Junction>(entity);
                     if (junction.ValueRO.registeredObjects > 0)
@@ -164,7 +172,7 @@ namespace Systems
                         continue;
 
                     // Skip if not close enough
-                    if (math.lengthsq(transform.Position - otherPos) > 0.05)
+                    if (math.lengthsq(transform.Position - otherPos) > math.square(0.15))
                         continue;
 
                     // Connect
@@ -224,7 +232,7 @@ namespace Systems
             [NativeDisableContainerSafetyRestriction] public ComponentLookup<LocalTransform> transformLookup;
             public EntityCommandBuffer ecb;
             [NativeDisableUnsafePtrRestriction] public RefRW<WaypointsData> data;
-            public void DeleteTileWaypoints(ref FixedEntityArray20 tileWaypoints)
+            public void DeleteTileWaypoints(ref FixedEntityArray30 tileWaypoints)
             {
                 foreach (Entity entity in tileWaypoints)
                 {

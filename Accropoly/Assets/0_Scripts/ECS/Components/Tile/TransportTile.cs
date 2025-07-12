@@ -7,7 +7,7 @@ namespace Components
     {
         public float speed;
         public float timer; // Used by JunctionSystem
-        public FixedEntityArray20 waypoints;
+        public FixedEntityArray30 waypoints;
         public TransportTile(float speed)
         {
             this.speed = speed;

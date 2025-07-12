@@ -15,7 +15,8 @@ namespace Components
         [Optional] private readonly RefRO<ConnectingTile> connectingTile;
         private readonly RefRO<LocalTransform> transform;
 
-        private const float offsetFromCenter = 0.25f;
+        private const float streetOffset = 0.25f;
+        private const float sidewalkOffset = 0.7f;
         public const float travelSecondsPerSecond = 0.007f; // Slow down travel time. If cars would use the normal timeSpeed, they would be way too fast.
         public const float defaultVerticalOffset = 0.8f;
 
@@ -45,96 +46,138 @@ namespace Components
 
             int index = connectingTile.ValueRO.GetIndex();
 
-            // The tile is assumed to face north
+            const float straightSpeed = 17;
+            const float curveSpeed = 11;
+            const float junctionEntrySpeed = 8;
+            const float junctionExitSpeed = 11;
+            const float pedestrianSpeed = 3;
+
+            // The tile is assumed to face north (other entries/exits follow clockwise)
 
             if (index == ConnectingTile.notConnected)
             {
-                Debug.LogWarning("!!!");
                 return;
             }
             if (index == ConnectingTile.deadEnd)
             {
-                float3 northEntry = new(-offsetFromCenter, defaultVerticalOffset, 0.95f);
-                float3 centerEntry = new(-offsetFromCenter, defaultVerticalOffset, 0);
-                float3 centerExit = new(offsetFromCenter, defaultVerticalOffset, 0);
-                float3 northExit = new(offsetFromCenter, defaultVerticalOffset, 0.95f);
+                // Street
+                float3 northEntry = new(-streetOffset, defaultVerticalOffset, 0.95f);
+                float3 centerEntry = new(-streetOffset, defaultVerticalOffset, -streetOffset);
+                float3 centerExit = new(streetOffset, defaultVerticalOffset, -streetOffset);
+                float3 northExit = new(streetOffset, defaultVerticalOffset, 0.95f);
+                AddWaypoint(northEntry, TravelObjects.Street, straightSpeed, new(centerEntry), ecb);
+                AddWaypoint(centerEntry, TravelObjects.Street, junctionEntrySpeed, new(centerExit), ecb);
+                AddWaypoint(centerExit, TravelObjects.Street, junctionEntrySpeed, new(northExit), ecb);
+                AddWaypoint(northExit, TravelObjects.Street, straightSpeed, NewWaypoint.Default, ecb, exit: true);
 
-                AddWaypoint(northEntry, 15, new(centerEntry), ecb);
-                AddWaypoint(centerEntry, 6, new(centerExit), ecb);
-                AddWaypoint(centerExit, 6, new(northExit), ecb);
-                AddWaypoint(northExit, 15, NewWaypoint.Default, ecb, exit: true);
+                // Sidewalks
+                northEntry = new(-sidewalkOffset, defaultVerticalOffset, 0.95f);
+                centerEntry = new(-sidewalkOffset, defaultVerticalOffset, -sidewalkOffset);
+                centerExit = new(sidewalkOffset, defaultVerticalOffset, -sidewalkOffset);
+                northExit = new(sidewalkOffset, defaultVerticalOffset, 0.95f);
+                AddWaypoint(northEntry, TravelObjects.Sidewalk, pedestrianSpeed, new(centerEntry), ecb);
+                AddWaypoint(centerEntry, TravelObjects.Sidewalk, pedestrianSpeed, new(centerExit), ecb);
+                AddWaypoint(centerExit, TravelObjects.Sidewalk, pedestrianSpeed, new(northExit), ecb);
+                AddWaypoint(northExit, TravelObjects.Sidewalk, pedestrianSpeed, NewWaypoint.Default, ecb, exit: true);
 
                 return;
             }
             if (index == ConnectingTile.straight)
             {
                 // north -> south
-                float3 northEntry = new(-offsetFromCenter, defaultVerticalOffset, 0.95f);
-                float3 southExit = new(-offsetFromCenter, defaultVerticalOffset, -0.95f);
-                AddWaypoint(northEntry, 17, new(southExit), ecb);
-                AddWaypoint(southExit, 17, NewWaypoint.Default, ecb, exit: true);
+                float3 northEntry = new(-streetOffset, defaultVerticalOffset, 0.95f);
+                float3 southExit = new(-streetOffset, defaultVerticalOffset, -0.95f);
+                AddWaypoint(northEntry, TravelObjects.Street, straightSpeed, new(southExit), ecb);
+                AddWaypoint(southExit, TravelObjects.Street, straightSpeed, NewWaypoint.Default, ecb, exit: true);
 
                 // south -> north
-                float3 southEntry = new(offsetFromCenter, defaultVerticalOffset, -0.95f);
-                float3 northExit = new(offsetFromCenter, defaultVerticalOffset, 0.95f);
-                AddWaypoint(southEntry, 17, new(northExit), ecb);
-                AddWaypoint(northExit, 17, NewWaypoint.Default, ecb, exit: true);
+                float3 southEntry = new(streetOffset, defaultVerticalOffset, -0.95f);
+                float3 northExit = new(streetOffset, defaultVerticalOffset, 0.95f);
+                AddWaypoint(southEntry, TravelObjects.Street, straightSpeed, new(northExit), ecb);
+                AddWaypoint(northExit, TravelObjects.Street, straightSpeed, NewWaypoint.Default, ecb, exit: true);
+
+                // Sidewalks
+                AddSidewalkStraight(Directions.East, pedestrianSpeed, ecb);
+                AddSidewalkStraight(Directions.West, pedestrianSpeed, ecb);
 
                 return;
             }
             if (index == ConnectingTile.curve)
             {
                 // north -> east (outer curve)
-                float3 northEntry = new(-offsetFromCenter, defaultVerticalOffset, 0.95f);
-                float3 beforeCorner = new(-offsetFromCenter, defaultVerticalOffset, offsetFromCenter);
-                float3 afterCorner = new(offsetFromCenter, defaultVerticalOffset, -offsetFromCenter);
-                float3 eastExit = new(0.95f, defaultVerticalOffset, -offsetFromCenter);
-                AddWaypoint(northEntry, 17, new(beforeCorner), ecb);
-                AddWaypoint(beforeCorner, 11, new(afterCorner), ecb);
-                AddWaypoint(afterCorner, 11, new(eastExit), ecb);
-                AddWaypoint(eastExit, 17, NewWaypoint.Default, ecb, exit: true);
+                float3 northEntry = new(-streetOffset, defaultVerticalOffset, 0.95f);
+                float3 beforeCorner = new(-streetOffset, defaultVerticalOffset, streetOffset);
+                float3 afterCorner = new(streetOffset, defaultVerticalOffset, -streetOffset);
+                float3 eastExit = new(0.95f, defaultVerticalOffset, -streetOffset);
+                AddWaypoint(northEntry, TravelObjects.Street, straightSpeed, new(beforeCorner), ecb);
+                AddWaypoint(beforeCorner, TravelObjects.Street, curveSpeed, new(afterCorner), ecb);
+                AddWaypoint(afterCorner, TravelObjects.Street, curveSpeed, new(eastExit), ecb);
+                AddWaypoint(eastExit, TravelObjects.Street, straightSpeed, NewWaypoint.Default, ecb, exit: true);
+
+                // Sidewalk
+                northEntry = new(-sidewalkOffset, defaultVerticalOffset, 0.95f);
+                beforeCorner = new(-sidewalkOffset, defaultVerticalOffset, 0);
+                afterCorner = new(0, defaultVerticalOffset, -sidewalkOffset);
+                eastExit = new(0.95f, defaultVerticalOffset, -sidewalkOffset);
+                AddWaypoint(northEntry, TravelObjects.Sidewalk, pedestrianSpeed, new(beforeCorner), ecb);
+                AddWaypoint(beforeCorner, TravelObjects.Sidewalk, pedestrianSpeed, new(afterCorner), ecb);
+                AddWaypoint(afterCorner, TravelObjects.Sidewalk, pedestrianSpeed, new(eastExit), ecb);
+                AddWaypoint(eastExit, TravelObjects.Sidewalk, pedestrianSpeed, NewWaypoint.Default, ecb, exit: true);
 
                 // east -> north (inner curve)
-                float3 eastEntry = new(0.95f, defaultVerticalOffset, offsetFromCenter);
-                beforeCorner = new(0.5f, defaultVerticalOffset, offsetFromCenter);
-                afterCorner = new(offsetFromCenter, defaultVerticalOffset, 0.5f);
-                float3 northExit = new(offsetFromCenter, defaultVerticalOffset, 0.95f);
-                AddWaypoint(eastEntry, 17, new(beforeCorner), ecb);
-                AddWaypoint(beforeCorner, 11, new(afterCorner), ecb);
-                AddWaypoint(afterCorner, 11, new(northExit), ecb);
-                AddWaypoint(northExit, 17, NewWaypoint.Default, ecb, exit: true);
+                float3 eastEntry = new(0.95f, defaultVerticalOffset, streetOffset);
+                beforeCorner = new(0.5f, defaultVerticalOffset, streetOffset);
+                afterCorner = new(streetOffset, defaultVerticalOffset, 0.5f);
+                float3 northExit = new(streetOffset, defaultVerticalOffset, 0.95f);
+                AddWaypoint(eastEntry, TravelObjects.Street, straightSpeed, new(beforeCorner), ecb);
+                AddWaypoint(beforeCorner, TravelObjects.Street, curveSpeed, new(afterCorner), ecb);
+                AddWaypoint(afterCorner, TravelObjects.Street, curveSpeed, new(northExit), ecb);
+                AddWaypoint(northExit, TravelObjects.Street, straightSpeed, NewWaypoint.Default, ecb, exit: true);
+
+                // Sidewalk
+                eastEntry = new(0.95f, defaultVerticalOffset, sidewalkOffset);
+                northExit = new(sidewalkOffset, defaultVerticalOffset, 0.95f);
+                AddWaypoint(eastEntry, TravelObjects.Street, straightSpeed, new(northExit), ecb);
+                AddWaypoint(northExit, TravelObjects.Street, straightSpeed, NewWaypoint.Default, ecb, exit: true);
 
                 return;
             }
             if (index == ConnectingTile.tJunction)
             {
-                CreateJunction(3, ecb);
+                CreateJunction(3, straightSpeed, junctionEntrySpeed, junctionExitSpeed, ecb);
+                AddSidewalkStraight(Directions.West, pedestrianSpeed, ecb);
+                AddSidewalkCorner(Directions.North, pedestrianSpeed, ecb); // north-east corner
+                AddSidewalkCorner(Directions.East, pedestrianSpeed, ecb); // east-south corner
                 return;
             }
             if (index == ConnectingTile.junction)
             {
-                CreateJunction(4, ecb);
+                CreateJunction(4, straightSpeed, junctionEntrySpeed, junctionExitSpeed, ecb);
+                AddSidewalkCorner(Directions.North, pedestrianSpeed, ecb);
+                AddSidewalkCorner(Directions.East, pedestrianSpeed, ecb);
+                AddSidewalkCorner(Directions.South, pedestrianSpeed, ecb);
+                AddSidewalkCorner(Directions.West, pedestrianSpeed, ecb);
                 return;
             }
 
             Debug.LogError("Unhandled case");
         }
-        private void CreateJunction(int dirCount, EntityCommandBuffer ecb)
+        private void CreateJunction(int dirCount, float straightSpeed, float jEntrySpeed, float jExitSpeed, EntityCommandBuffer ecb)
         {
             for (int i = 0; i < dirCount; i++) // Iterate over sides
             {
                 // Calculate waypoint position
                 Direction dir = (Direction)i;
-                (float3 tileEntry, float3 tileExit) = GetTileEntryExit(dir);
+                (float3 tileEntry, float3 tileExit) = GetStreetEntryExit(dir);
                 (float3 junctionEntry, float3 junctionExit) = GetJunctionEntryExit(dir);
 
                 // North and south have priority, east and west need to give way (temporary solution)
                 JunctionData junctionData = (dir == Directions.North || dir == Directions.South) ? JunctionData.Priority : JunctionData.GiveWay;
 
                 // Create tileEntry, tileExit and junctionExit waypoints
-                AddWaypoint(tileEntry, 17, new(junctionEntry), ecb);
-                AddWaypoint(tileExit, 17, NewWaypoint.Default, ecb, exit: true);
-                AddWaypoint(junctionExit, 11, new(tileExit), ecb);
+                AddWaypoint(tileEntry, TravelObjects.Street, straightSpeed, new(junctionEntry), ecb);
+                AddWaypoint(tileExit, TravelObjects.Street, straightSpeed, NewWaypoint.Default, ecb, exit: true);
+                AddWaypoint(junctionExit, TravelObjects.Street, jExitSpeed, new(tileExit), ecb);
 
                 // Create junctionEntry waypoint (and add all junctionExits as next waypoints)
                 NewWaypoint data = NewWaypoint.Default;
@@ -144,29 +187,46 @@ namespace Components
                     (_, float3 exit) = GetJunctionEntryExit((Direction)j);
                     data.AddNext(exit); // Add junction exit to nextWaypoints
                 }
-                AddWaypoint(junctionEntry, 8, data, ecb, junctionData: junctionData);
+                AddWaypoint(junctionEntry, TravelObjects.Street, jEntrySpeed, data, ecb, junctionData: junctionData);
             }
         }
-        private (float3, float3) GetTileEntryExit(Direction dir)
+        private void AddSidewalkStraight(Direction dir, float pedestrianSpeed, EntityCommandBuffer ecb)
         {
-            float3 tileEntry = math.rotate(quaternion.EulerXYZ(0, dir.ToRadians(), 0), new(-offsetFromCenter, defaultVerticalOffset, 0.95f));
-            float3 tileExit = math.rotate(quaternion.EulerXYZ(0, dir.ToRadians(), 0), new(offsetFromCenter, defaultVerticalOffset, 0.95f));
+            float3 eastEntry = math.rotate(quaternion.EulerXYZ(0, dir.ToRadians(), 0), new(0.95f, defaultVerticalOffset, sidewalkOffset));
+            float3 westExit = math.rotate(quaternion.EulerXYZ(0, dir.ToRadians(), 0), new(-0.95f, defaultVerticalOffset, sidewalkOffset));
+            AddWaypoint(eastEntry, TravelObjects.Sidewalk, pedestrianSpeed, new NewWaypoint(westExit), ecb);
+            AddWaypoint(westExit, TravelObjects.Sidewalk, pedestrianSpeed, NewWaypoint.Default, ecb, exit: true);
+        }
+        /// <remarks>dir=north is interpreted as north-east corner</remarks>
+        private void AddSidewalkCorner(Direction dir, float pedestrianSpeed, EntityCommandBuffer ecb)
+        {
+            float3 eastEntry = math.rotate(quaternion.EulerXYZ(0, dir.ToRadians(), 0), new(0.95f, defaultVerticalOffset, sidewalkOffset));
+            float3 center = math.rotate(quaternion.EulerXYZ(0, dir.ToRadians(), 0), new(sidewalkOffset, defaultVerticalOffset, sidewalkOffset));
+            float3 northExit = math.rotate(quaternion.EulerXYZ(0, dir.ToRadians(), 0), new(sidewalkOffset, defaultVerticalOffset, 0.95f));
+            AddWaypoint(eastEntry, TravelObjects.Sidewalk, pedestrianSpeed, new NewWaypoint(center), ecb);
+            AddWaypoint(center, TravelObjects.Sidewalk, pedestrianSpeed, new NewWaypoint(northExit), ecb);
+            AddWaypoint(northExit, TravelObjects.Sidewalk, pedestrianSpeed, NewWaypoint.Default, ecb, exit: true);
+        }
+        private (float3, float3) GetStreetEntryExit(Direction dir)
+        {
+            float3 tileEntry = math.rotate(quaternion.EulerXYZ(0, dir.ToRadians(), 0), new(-streetOffset, defaultVerticalOffset, 0.95f));
+            float3 tileExit = math.rotate(quaternion.EulerXYZ(0, dir.ToRadians(), 0), new(streetOffset, defaultVerticalOffset, 0.95f));
             return (tileEntry, tileExit);
         }
         private (float3, float3) GetJunctionEntryExit(Direction dir)
         {
-            float3 junctionEntry = math.rotate(quaternion.EulerXYZ(0, dir.ToRadians(), 0), new(-offsetFromCenter, defaultVerticalOffset, 0.5f));
-            float3 junctionExit = math.rotate(quaternion.EulerXYZ(0, dir.ToRadians(), 0), new(offsetFromCenter, defaultVerticalOffset, 0.5f));
+            float3 junctionEntry = math.rotate(quaternion.EulerXYZ(0, dir.ToRadians(), 0), new(-streetOffset, defaultVerticalOffset, 0.5f));
+            float3 junctionExit = math.rotate(quaternion.EulerXYZ(0, dir.ToRadians(), 0), new(streetOffset, defaultVerticalOffset, 0.5f));
             return (junctionEntry, junctionExit);
         }
-        private void AddWaypoint(float3 pos, float velocity, NewWaypoint newWaypointData, EntityCommandBuffer ecb,
+        private void AddWaypoint(float3 pos, TravelObjects TravelObjects, float velocity, NewWaypoint newWaypointData, EntityCommandBuffer ecb,
             JunctionData junctionData = JunctionData.None, bool exit = false)
         {
             pos = ToWorldSpace(pos);
 
             Entity entity = ecb.CreateEntity();
             ecb.AddComponent(entity, LocalTransform.FromPosition(pos));
-            ecb.AddComponent(entity, new Waypoint(velocity));
+            ecb.AddComponent(entity, new Waypoint(TravelObjects, velocity));
             ecb.AddComponent(entity, new Connections(exit));
             if (junctionData != JunctionData.None)
                 ecb.AddComponent(entity, new Junction(junctionData));

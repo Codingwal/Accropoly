@@ -6,6 +6,8 @@ public class DrawGizmos : MonoBehaviour
 {
     [Header("Waypoint system")]
     [SerializeField] private bool debugWaypoints;
+    [SerializeField] private bool highlightTileExits;
+    [SerializeField] private bool displayJunctionInfo;
 
     [Header("Movement system")]
     [SerializeField] private bool debugPath;
@@ -29,7 +31,7 @@ public class DrawGizmos : MonoBehaviour
         if (movementSystem == null) return;
 
         if (debugWaypoints)
-            waypointSystem.DrawGizmos();
+            waypointSystem.DrawGizmos(highlightTileExits, displayJunctionInfo);
 
         movementSystem.DrawGizmos(debugPath, debugRaycasts);
     }

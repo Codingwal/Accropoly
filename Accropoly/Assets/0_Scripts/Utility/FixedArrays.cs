@@ -247,10 +247,10 @@ public unsafe struct FixedEntityArray10 : IEnumerable
     public unsafe IEnumerator GetEnumerator() => data.GetEnumerator();
 }
 
-public unsafe struct FixedEntityArray20Helper : IFixedArrayHelper<Entity>
+public unsafe struct FixedEntityArray30Helper : IFixedArrayHelper<Entity>
 {
-    public fixed int array[20 * 2];
-    public int Size => 20;
+    public fixed int array[30 * 2];
+    public int Size => 30;
     public int ElementSize => 2;
 
     public Entity this[int index]
@@ -263,9 +263,9 @@ public unsafe struct FixedEntityArray20Helper : IFixedArrayHelper<Entity>
         }
     }
 }
-public unsafe struct FixedEntityArray20 : IEnumerable
+public unsafe struct FixedEntityArray30 : IEnumerable
 {
-    private FixedArray<FixedEntityArray20Helper, Entity> data;
+    private FixedArray<FixedEntityArray30Helper, Entity> data;
     public int Size => data.Size;
     public Entity this[int index]
     {
