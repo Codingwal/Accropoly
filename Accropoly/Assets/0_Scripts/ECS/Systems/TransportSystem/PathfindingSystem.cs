@@ -31,8 +31,6 @@ namespace Systems
             {
                 Entities.ForEach((Entity entity, ref Traveller traveller) =>
                 {
-                    Debug.Log($"Saving");
-
                     TravellerWaypointsSerializable waypoints = new()
                     {
                         waypoints = new(8, Allocator.Persistent, NativeArrayOptions.UninitializedMemory)
@@ -44,7 +42,6 @@ namespace Systems
                     }
                     traveller.waypoints.Dispose();
                     ecb.AddComponent(entity, waypoints);
-                    ecb.SetComponentEnabled<Travelling>(entity, false);
                 }).Schedule();
             }
 
@@ -55,8 +52,6 @@ namespace Systems
             var waypointsData = SystemAPI.GetSingleton<WaypointsData>();
             Entities.ForEach((Entity entity, ref Traveller traveller, ref TravellerWaypointsSerializable waypoints) =>
             {
-                Debug.Log($"Loading");
-
                 traveller.waypoints = new(8, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
                 foreach (float3 waypointPos in waypoints.waypoints)
                 {
@@ -65,7 +60,6 @@ namespace Systems
                 }
                 waypoints.waypoints.Dispose();
                 ecb.RemoveComponent<TravellerWaypointsSerializable>(entity);
-                ecb.SetComponentEnabled<Travelling>(entity, true);
             }).Run();
 
             var utility = new PathfindingUtility()
@@ -93,7 +87,7 @@ namespace Systems
                 }
                 else Debug.LogWarning($"Couldn't find path from {(int2)math.round(transform.Position.xz) / 2} to {traveller.destination}!");
                 ecb.SetComponentEnabled<WantsToTravel>(entity, false);
-            }).WithoutBurst().Run();
+            }).Schedule();
         }
     }
 
@@ -101,7 +95,7 @@ namespace Systems
     {
         public DynamicBuffer<EntityBufferElement> entityGrid;
         public ComponentLookup<TransportTile> transportTileLookup;
-        public ComponentLookup<LocalTransform> transformLookup;
+        [NativeDisableContainerSafetyRestriction] public ComponentLookup<LocalTransform> transformLookup;
         public ComponentLookup<Connections> connectionsLookup;
         public ComponentLookup<Waypoint> waypointLookup;
 

@@ -25,6 +25,7 @@ namespace Systems
         {
             travellingObjects = new EntityQueryBuilder(Allocator.Temp)
                 .WithAll<Travelling, Traveller, LocalTransform>()
+                .WithNone<TravellerWaypointsSerializable>() // Wait until the data has been fully loaded
                 .Build(this);
 
             RequireForUpdate(travellingObjects);
@@ -143,8 +144,6 @@ namespace Systems
             public NativeList<RaycastData> raycastsInfo; // For debugging
             public void Execute(Entity entity, ref Traveller traveller)
             {
-                Debug.Log("Moving");
-
                 ref LocalTransform transform = ref transformLookup.GetRefRW(entity).ValueRW;
 
                 // Instantly teleport to first waypoint
