@@ -228,14 +228,10 @@ namespace Systems
             openList.RemoveAtSwapBack(cheapestIndex);
             return cheapestNode;
         }
-        private static bool IsAdjacent(int2 a, int2 b)
-        {
-            return ManhattanDistance(a, b) == 1;
-        }
         private static float CalculateCost(float3 pos, float3 previousPos, float previousCost, float3 dest, float tileSpeed)
         {
             // prevCost + (movementCost + dist(currPos) - dist(prevPos))
-            return previousCost + 1 / tileSpeed + ManhattanDistance(pos, dest) - ManhattanDistance(previousPos, dest);
+            return previousCost + ManhattanDistance(pos, previousPos) / tileSpeed + ManhattanDistance(pos, dest) - ManhattanDistance(previousPos, dest);
         }
         private static float ManhattanDistance(int2 pos, int2 dest)
         {

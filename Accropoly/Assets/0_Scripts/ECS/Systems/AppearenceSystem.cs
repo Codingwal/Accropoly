@@ -53,7 +53,7 @@ public partial class AppearenceSystem : SystemBase
             }
             Debug.Assert(config.connectingTiles.ContainsKey((int)tile.tileType), $"{tile.tileType} is not a connecting tile.");
             data = config.connectingTiles[(int)tile.tileType].pairs[index];
-        }).Run();
+        }).WithoutBurst().Run();
     }
     protected override void OnDestroy()
     {
