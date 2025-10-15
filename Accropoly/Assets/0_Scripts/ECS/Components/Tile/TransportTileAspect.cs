@@ -137,8 +137,8 @@ namespace Components
                 // Sidewalk
                 eastEntry = new(0.95f, defaultVerticalOffset, sidewalkOffset);
                 northExit = new(sidewalkOffset, defaultVerticalOffset, 0.95f);
-                AddWaypoint(eastEntry, TravelObjects.Street, straightSpeed, new(northExit), ecb);
-                AddWaypoint(northExit, TravelObjects.Street, straightSpeed, NewWaypoint.Default, ecb, exit: true);
+                AddWaypoint(eastEntry, TravelObjects.Sidewalk, straightSpeed, new(northExit), ecb);
+                AddWaypoint(northExit, TravelObjects.Sidewalk, straightSpeed, NewWaypoint.Default, ecb, exit: true);
 
                 return;
             }

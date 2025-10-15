@@ -85,6 +85,10 @@ namespace Systems
                     {
                         var neighbourConnectingTile = SystemAPI.GetComponent<ConnectingTile>(neighbour);
 
+                        // Skip if the neighbour wasn't connected
+                        if (!neighbourConnectingTile.IsConnected(direction.Flip()))
+                            continue;
+
                         // Update neighbour ConnectingTile
                         neighbourConnectingTile.RemoveDirection(direction.Flip());
                         SystemAPI.SetComponent(neighbour, neighbourConnectingTile);
