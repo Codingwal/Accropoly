@@ -152,10 +152,8 @@ namespace Systems
                 if (!transportTileLookup.TryGetComponent(tile, out var transportTile))
                     continue;
 
-                for (int i = 0; i < transportTile.waypoints.Size; i++)
+                foreach (Entity waypoint in transportTile.waypoints)
                 {
-                    Entity waypoint = transportTile.waypoints[i];
-                    if (waypoint == Entity.Null) continue;
                     openList.Add((0, new(waypoint, Entity.Null)));
                 }
             }

@@ -152,7 +152,7 @@ public partial class Serializer
                 bw.Write((int)TileComponents.TransportTile);
 
                 TransportTile componentData = (TransportTile)component;
-                bw.Write(componentData.speed);
+                bw.Write(componentData.timer);
             }
             else if (type == typeof(IsConnected)) bw.Write((int)TileComponents.IsConnectedTag);
             else if (type == typeof(ActiveTile)) bw.Write((int)TileComponents.ActiveTileTag);

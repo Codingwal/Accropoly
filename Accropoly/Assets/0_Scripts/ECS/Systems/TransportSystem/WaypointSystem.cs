@@ -21,6 +21,7 @@ namespace Systems
         private EntityQuery tileWithReplaceTag;
         protected override void OnCreate()
         {
+            // Contains all TransportTiles where relevant data changed (including all NewTiles) (includes all TransportTiles at world loading)
             tilesToUpdate = new EntityQueryBuilder(Allocator.Temp)
                 .WithAspect<TransportTileAspect>()
                 .WithAll<ConnectingTile>() // Needed for SetChangedVersionFilter
@@ -43,12 +44,20 @@ namespace Systems
             }
             else if (SystemAPI.HasSingleton<SaveGame>())
             {
-                // Dispose data
+                // Dispose and destroy WaypointsData
                 Entity dataHolder = SystemAPI.GetSingletonEntity<WaypointsData>();
                 RefRW<WaypointsData> data = SystemAPI.GetComponentRW<WaypointsData>(dataHolder);
                 data.ValueRW.waypoints.Dispose();
                 EntityManager.DestroyEntity(dataHolder);
+
+                // Destroy waypoints
                 EntityManager.DestroyEntity(GetEntityQuery(typeof(Waypoint)));
+
+                // Dispose TransportTile data
+                foreach (var transportTile in SystemAPI.Query<RefRW<TransportTile>>())
+                {
+                    transportTile.ValueRW.waypoints.Dispose();
+                }
             }
 
             if (!(SystemAPI.HasSingleton<RunGame>() || SystemAPI.HasSingleton<LoadGame>()))
@@ -86,7 +95,7 @@ namespace Systems
                 jobUtility = jobUtility
             }.Schedule(tileWithReplaceTag);
 
-            // Garantuee that all connecting tiles have been updated
+            // Garantee that all connecting tiles have been updated
             World.GetExistingSystemManaged<TileConnectionSystem>().CheckedStateRef.Dependency.Complete();
 
             new UpdateTilesJob()
@@ -150,7 +159,7 @@ namespace Systems
                 // Add to waypoint list of the tile this waypoint belongs to
                 int2 tilePos = (int2)math.round(transform.Position.xz / 2);
                 Entity tile = TileGridUtility.GetTile(tilePos, tileGrid);
-                transportTileLookup.GetRefRW(tile).ValueRW.AddWaypoint(entity);
+                transportTileLookup.GetRefRW(tile).ValueRW.waypoints.Add(entity);
 
                 // Create connections
                 foreach (float3 nextPos in newWaypoint.nextWaypoints)
@@ -205,6 +214,7 @@ namespace Systems
             public void Execute(TransportTileAspect transportTileAspect)
             {
                 jobUtility.DeleteTileWaypoints(ref transportTileAspect.transportTile.ValueRW.waypoints);
+                transportTileAspect.transportTile.ValueRW.waypoints.Dispose();
             }
         }
 
@@ -232,12 +242,10 @@ namespace Systems
             [NativeDisableContainerSafetyRestriction] public ComponentLookup<LocalTransform> transformLookup;
             public EntityCommandBuffer ecb;
             [NativeDisableUnsafePtrRestriction] public RefRW<WaypointsData> data;
-            public void DeleteTileWaypoints(ref FixedEntityArray30 tileWaypoints)
+            public void DeleteTileWaypoints(ref UnsafeList<Entity> tileWaypoints)
             {
                 foreach (Entity entity in tileWaypoints)
                 {
-                    if (entity == Entity.Null) continue;
-
                     float3 pos = transformLookup.GetRefRO(entity).ValueRO.Position;
                     RefRO<Connections> connections = connectionsLookup.GetRefRO(entity);
 
@@ -272,7 +280,7 @@ namespace Systems
                     ecb.DestroyEntity(entity);
                     data.ValueRW.waypoints.Remove(pos);
                 }
-                tileWaypoints.Clear(Entity.Null);
+                tileWaypoints.Clear();
             }
         }
     }
