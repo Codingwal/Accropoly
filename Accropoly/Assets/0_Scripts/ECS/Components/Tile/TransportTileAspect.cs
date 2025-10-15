@@ -41,11 +41,6 @@ namespace Components
 
         public readonly void GetPoints(EntityCommandBuffer ecb)
         {
-            Debug.Assert(tile.ValueRO.tileType == TileType.Street || tile.ValueRO.tileType == TileType.CityStreet || tile.ValueRO.tileType == TileType.ForestStreet);
-            Debug.Assert(connectingTile.IsValid);
-
-            int index = connectingTile.ValueRO.GetIndex();
-
             const float straightSpeed = 17;
             const float curveSpeed = 11;
             const float junctionEntrySpeed = 8;
@@ -53,6 +48,20 @@ namespace Components
             const float pedestrianSpeed = 3;
 
             // The tile is assumed to face north (other entries/exits follow clockwise)
+
+            // Handle buildings with waypoints (habitats, employers, ...)
+            if (!(tile.ValueRO.tileType == TileType.Street || tile.ValueRO.tileType == TileType.CityStreet || tile.ValueRO.tileType == TileType.ForestStreet))
+            {
+                float3 center = new(0, defaultVerticalOffset, 0);
+                float3 edge = new(0, defaultVerticalOffset, 0.95f);
+                AddWaypoint(center, TravelObjects.Sidewalk, pedestrianSpeed, new(edge), ecb);
+                AddWaypoint(edge, TravelObjects.Sidewalk, pedestrianSpeed, new(center), ecb, entry: true, exit: true);
+                return;
+            }
+
+            Debug.Assert(connectingTile.IsValid);
+
+            int index = connectingTile.ValueRO.GetIndex();
 
             if (index == ConnectingTile.notConnected)
             {

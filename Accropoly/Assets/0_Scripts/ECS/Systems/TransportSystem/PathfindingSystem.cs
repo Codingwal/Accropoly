@@ -1,3 +1,4 @@
+using System.Linq;
 using Components;
 using Components.WaypointComponents;
 using Tags;
@@ -15,7 +16,6 @@ namespace Systems
     /// Calculates the path for people with the WantsToTravel tag (from current pos to traveller.destination)
     /// After the path is calculated and stored in traveller.waypoints, the person is set to travelling (Travelling tag)
     /// </summary>
-    [UpdateAfter(typeof(WaypointSystem))]
     public partial class PathfindingSystem : SystemBase
     {
         protected override void OnCreate()
@@ -50,25 +50,27 @@ namespace Systems
 
             // Recreate waypoints list from serialization container (can't be serialized directly because entity ids might differ after restarting)
             var waypointsData = SystemAPI.GetSingleton<WaypointsData>();
-            Entities.ForEach((Entity entity, ref Traveller traveller, ref TravellerWaypointsSerializable waypoints) =>
+            if (!waypointsData.waypoints.IsEmpty)
             {
-                traveller.waypoints = new(8, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
-                foreach (float3 waypointPos in waypoints.waypoints)
+                Entities.ForEach((Entity entity, ref Traveller traveller, ref TravellerWaypointsSerializable waypoints) =>
                 {
-                    Entity waypoint = waypointsData.waypoints[waypointPos];
-                    traveller.waypoints.Add(waypoint);
-                }
-                waypoints.waypoints.Dispose();
-                ecb.RemoveComponent<TravellerWaypointsSerializable>(entity);
-            }).Run();
+                    traveller.waypoints = new(8, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+                    foreach (float3 waypointPos in waypoints.waypoints)
+                    {
+                        Entity waypoint = waypointsData.waypoints[waypointPos];
+                        traveller.waypoints.Add(waypoint);
+                    }
+                    waypoints.waypoints.Dispose();
+                    ecb.RemoveComponent<TravellerWaypointsSerializable>(entity);
+                }).Run();
+            }
 
             var utility = new PathfindingUtility()
             {
-                entityGrid = SystemAPI.GetBuffer<EntityBufferElement>(SystemAPI.GetSingletonEntity<EntityGridHolder>()),
-                transportTileLookup = SystemAPI.GetComponentLookup<TransportTile>(),
                 transformLookup = SystemAPI.GetComponentLookup<LocalTransform>(),
                 connectionsLookup = SystemAPI.GetComponentLookup<Connections>(),
                 waypointLookup = SystemAPI.GetComponentLookup<Waypoint>(),
+                waypointsData = waypointsData,
             };
 
             // Handle objects requesting a path
@@ -76,11 +78,13 @@ namespace Systems
             {
                 traveller.Reset();
 
-                if (utility.FindPath(ref traveller.waypoints, (int2)math.round(transform.Position.xz / 2), traveller.destination))
+                float3 dest = new(traveller.destination.x * 2, 0.8f, traveller.destination.y * 2);
+
+                if (utility.FindPath(ref traveller.waypoints, transform.Position, dest))
                 {
                     ecb.SetComponentEnabled<Travelling>(entity, true);
                 }
-                else Debug.LogWarning($"Couldn't find path from {(int2)math.round(transform.Position.xz) / 2} to {traveller.destination}!");
+                else Debug.LogWarning($"Couldn't find path from {transform.Position} to {dest}!");
                 ecb.SetComponentEnabled<WantsToTravel>(entity, false);
             }).Schedule();
         }
@@ -88,15 +92,17 @@ namespace Systems
 
     public partial struct PathfindingUtility
     {
-        public DynamicBuffer<EntityBufferElement> entityGrid;
-        public ComponentLookup<TransportTile> transportTileLookup;
         [NativeDisableContainerSafetyRestriction] public ComponentLookup<LocalTransform> transformLookup;
         public ComponentLookup<Connections> connectionsLookup;
         public ComponentLookup<Waypoint> waypointLookup;
+        public WaypointsData waypointsData;
 
         /// <remarks>Returns -1 if no path is found</remarks>
-        public float CalculateTravelTime(int2 start, int2 dest)
+        public float CalculateTravelTime(int2 startTile, int2 destTile)
         {
+            float3 start = new(startTile.x * 2, 0.8f, startTile.y * 2);
+            float3 dest = new(destTile.x * 2, 0.8f, destTile.y * 2);
+
             UnsafeList<Entity> path = new(10, Allocator.TempJob);
             float travelTime = 0;
 
@@ -124,12 +130,11 @@ namespace Systems
         /// <summary>Finds the shortest path using A* pathfinding from start to dest and stores it in waypoints.</summary>
         /// <remarks>The path does not include start and destination</remarks>
         /// <returns>Returns true if a path was found</returns>
-        public bool FindPath(ref UnsafeList<Entity> path, int2 startTile, int2 destTile, TravelObjects useableVehicles = TravelObjects.Standard)
+        public bool FindPath(ref UnsafeList<Entity> path, float3 start, float3 dest, TravelObjects useableVehicles = TravelObjects.Standard)
         {
-            Debug.Assert(!startTile.Equals(destTile), $"Start must not equal destination (start and dest are {startTile})");
-            Debug.Assert(path.IsCreated, "The UnsafeList<Waypoint> has not been created");
-
-            float3 dest = new(destTile.x * 2, 0.8f, destTile.y * 2);
+            Debug.Assert(path.IsCreated, "The path list has not been created");
+            Debug.Assert(path.IsEmpty, "The path list must be empty");
+            Debug.Assert(!start.Equals(dest), $"Start must not equal destination (start and dest are {start})");
 
             NativeList<(float, NodeToVisit)> openList = new(8, Allocator.TempJob); // (cost, info)
             NativeHashMap<Entity, VisitedNode> closedList = new(8, Allocator.TempJob); // (entity, info)
@@ -144,21 +149,8 @@ namespace Systems
                 directions.Dispose();
             }
 
-            // The journey can start on all waypoints on adjacent street tiles
-            foreach (Direction dir in directions)
-            {
-                if (!TileGridUtility.TryGetTile(startTile + dir.DirectionVec, entityGrid, out Entity tile))
-                    continue;
-                if (!transportTileLookup.TryGetComponent(tile, out var transportTile))
-                    continue;
-
-                float3 requiredPos = math.rotate(quaternion.EulerXYZ(0, dir.Flip().ToRadians(), 0), new(0, 0, 0.95f)) + transformLookup.GetRefRO(tile).ValueRO.Position;
-                foreach (Entity waypoint in transportTile.waypoints)
-                {
-                    if (transformLookup.GetRefRO(waypoint).ValueRO.Position.xz.Equals(requiredPos.xz))
-                        openList.Add((0, new(waypoint, Entity.Null)));
-                }
-            }
+            Debug.Assert(waypointsData.waypoints.TryGetValue(start, out Entity startWaypoint), $"There is no waypoint at the start pos {start}");
+            openList.Add((0, new(startWaypoint, Entity.Null)));
 
             int iteration = 0;
 
@@ -171,8 +163,8 @@ namespace Systems
 
                 float3 pos = transformLookup.GetRefRO(node.entity).ValueRO.Position;
 
-                // If this tile is next to the destination, create waypoint list and return
-                if (IsAdjacent((int2)math.round(pos.xz / 2), destTile))
+                // If this tile is the destination, create waypoint list and return
+                if (pos.Equals(dest))
                 {
                     // Get path
                     NativeList<Entity> reversedPath = new(Allocator.TempJob);
@@ -183,7 +175,7 @@ namespace Systems
                         current = closedList[current].previous;
                     }
 
-                    // Reverse path
+                    // Reverse path (can't use linq with unmanaged stuff / burst (?))
                     for (int i = reversedPath.Length - 1; i >= 0; i--)
                         path.Add(reversedPath[i]);
                     reversedPath.Dispose();
