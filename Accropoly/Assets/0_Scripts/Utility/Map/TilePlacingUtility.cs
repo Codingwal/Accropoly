@@ -150,7 +150,7 @@ public static class TilePlacingUtility
             case TileType.Street:
                 if (oldType == TileType.Bitumen)
                     return (TileType.CityStreet, 50);
-                else if (oldType == TileType.Forest)
+                else if (oldType == TileType.Sapling || oldType == TileType.GrowingForest || oldType == TileType.Forest)
                     return (TileType.ForestStreet, 50);
                 else
                     return INVALID;
