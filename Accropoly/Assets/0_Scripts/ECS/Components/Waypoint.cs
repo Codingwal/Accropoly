@@ -67,11 +67,13 @@ namespace Components
         {
             public FixedEntityArray5 next;
             public FixedEntityArray5 previous;
-            public bool exit; // Only important if at the tile's edge. false => entry
-            public Connections(bool exit)
+            public bool entry; // Only important if at the tile's edge
+            public bool exit; // Only important if at the tile's edge
+            public Connections(bool entry, bool exit)
             {
                 next.Clear(Entity.Null);
                 previous.Clear(Entity.Null);
+                this.entry = entry;
                 this.exit = exit;
             }
             public void RemoveNext(Entity entity)

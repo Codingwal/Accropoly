@@ -152,9 +152,11 @@ namespace Systems
                 if (!transportTileLookup.TryGetComponent(tile, out var transportTile))
                     continue;
 
+                float3 requiredPos = math.rotate(quaternion.EulerXYZ(0, dir.Flip().ToRadians(), 0), new(0, 0, 0.95f)) + transformLookup.GetRefRO(tile).ValueRO.Position;
                 foreach (Entity waypoint in transportTile.waypoints)
                 {
-                    openList.Add((0, new(waypoint, Entity.Null)));
+                    if (transformLookup.GetRefRO(waypoint).ValueRO.Position.xz.Equals(requiredPos.xz))
+                        openList.Add((0, new(waypoint, Entity.Null)));
                 }
             }
 

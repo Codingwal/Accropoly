@@ -186,18 +186,18 @@ namespace Systems
 
                     // Connect
                     var connectionsOther = connectionsLookup.GetRefRW(other);
-                    if (connections.ValueRO.exit && !connectionsOther.ValueRO.exit) // this -> other
+                    if (connections.ValueRO.entry) // other -> this
                     {
-                        connections.ValueRW.AddNext(other);
-                        connectionsOther.ValueRW.AddPrevious(entity);
-                    }
-                    else if (!connections.ValueRO.exit && connectionsOther.ValueRO.exit) // other -> this
-                    {
+                        Debug.Assert(connectionsOther.ValueRO.exit);
                         connectionsOther.ValueRW.AddNext(entity);
                         connections.ValueRW.AddPrevious(other);
                     }
-                    else // Both are exits / entries
-                        throw new();
+                    if (connections.ValueRO.exit) // this -> other
+                    {
+                        Debug.Assert(connectionsOther.ValueRO.entry);
+                        connections.ValueRW.AddNext(other);
+                        connectionsOther.ValueRW.AddPrevious(entity);
+                    }
                 }
 
                 ecb.RemoveComponent<NewWaypoint>(entity);
