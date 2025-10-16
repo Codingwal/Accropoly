@@ -49,6 +49,22 @@ namespace Components
 
             // The tile is assumed to face north (other entries/exits follow clockwise)
 
+            // Handle footpath (bitumen for now)
+            if (tile.ValueRO.tileType == TileType.Bitumen)
+            {
+                float3 center = new(0, defaultHeight, 0);
+                float3 north = new(0, defaultHeight, 0.95f);
+                float3 east = new(0.95f, defaultHeight, 0);
+                float3 south = new(0, defaultHeight, -0.95f);
+                float3 west = new(-0.95f, defaultHeight, 0);
+                AddWaypoint(center, TravelObjects.Sidewalk, pedestrianSpeed, new(north, east, south, west), ecb);
+                AddWaypoint(north, TravelObjects.Sidewalk, pedestrianSpeed, new(center), ecb, entry: true, exit: true);
+                AddWaypoint(east, TravelObjects.Sidewalk, pedestrianSpeed, new(center), ecb, entry: true, exit: true);
+                AddWaypoint(south, TravelObjects.Sidewalk, pedestrianSpeed, new(center), ecb, entry: true, exit: true);
+                AddWaypoint(west, TravelObjects.Sidewalk, pedestrianSpeed, new(center), ecb, entry: true, exit: true);
+                return;
+            }
+
             // Handle buildings with waypoints (habitats, employers, ...)
             if (!(tile.ValueRO.tileType == TileType.Street || tile.ValueRO.tileType == TileType.CityStreet || tile.ValueRO.tileType == TileType.ForestStreet))
             {

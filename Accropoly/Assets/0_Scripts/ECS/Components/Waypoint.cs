@@ -34,6 +34,14 @@ namespace Components
                 nextWaypoints[1] = b;
                 nextWaypoints[2] = c;
             }
+            public NewWaypoint(float3 a, float3 b, float3 c, float3 d)
+            {
+                nextWaypoints.Clear(float.NaN);
+                nextWaypoints[0] = a;
+                nextWaypoints[1] = b;
+                nextWaypoints[2] = c;
+                nextWaypoints[3] = d;
+            }
             public static NewWaypoint Default
             {
                 get
