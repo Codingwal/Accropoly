@@ -181,6 +181,7 @@ namespace Systems
                 foreach (float3 nextPos in newWaypoint.nextWaypoints)
                 {
                     if (math.isnan(nextPos.x)) continue;
+                    Debug.Assert(waypoints.ContainsKey(nextPos), $"Connection to non-existent waypoint found (from {transform.Position} to {nextPos})");
                     Entity next = waypoints[nextPos];
                     connections.ValueRW.AddNext(next);
                     connectionsLookup.GetRefRW(next).ValueRW.AddPrevious(entity);
