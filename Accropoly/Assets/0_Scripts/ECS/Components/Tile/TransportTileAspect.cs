@@ -103,13 +103,13 @@ namespace Components
                 centerExit = new(sidewalkOffset, defaultHeight, -sidewalkOffset);
                 float3 exitMiddle = new(sidewalkOffset, defaultHeight, 0);
                 northExit = new(sidewalkOffset, defaultHeight, 0.95f);
-                AddWaypoint(northEntry, TravelObjects.Sidewalk, pedestrianSpeed, new(entryMiddle), ecb, entry: true);
-                AddWaypoint(entryMiddle, TravelObjects.Sidewalk, pedestrianSpeed, new(centerEntry, AddSidewalkExit(Directions.West, pedestrianSpeed, ecb)), ecb);
-                AddWaypoint(centerEntry, TravelObjects.Sidewalk, pedestrianSpeed, new(centerMiddle), ecb);
-                AddWaypoint(centerMiddle, TravelObjects.Sidewalk, pedestrianSpeed, new(centerExit, AddSidewalkExit(Directions.South, pedestrianSpeed, ecb)), ecb);
-                AddWaypoint(centerExit, TravelObjects.Sidewalk, pedestrianSpeed, new(exitMiddle), ecb);
-                AddWaypoint(exitMiddle, TravelObjects.Sidewalk, pedestrianSpeed, new(northExit, AddSidewalkExit(Directions.East, pedestrianSpeed, ecb)), ecb);
-                AddWaypoint(northExit, TravelObjects.Sidewalk, pedestrianSpeed, NewWaypoint.Default, ecb, exit: true);
+                AddWaypoint(northEntry, TravelObjects.Sidewalk, pedestrianSpeed, new(entryMiddle), ecb, entry: true, exit: true);
+                AddWaypoint(entryMiddle, TravelObjects.Sidewalk, pedestrianSpeed, new(northEntry, centerEntry, AddSidewalkExit(Directions.West, pedestrianSpeed, ecb)), ecb);
+                AddWaypoint(centerEntry, TravelObjects.Sidewalk, pedestrianSpeed, new(entryMiddle, centerMiddle), ecb);
+                AddWaypoint(centerMiddle, TravelObjects.Sidewalk, pedestrianSpeed, new(centerEntry, centerExit, AddSidewalkExit(Directions.South, pedestrianSpeed, ecb)), ecb);
+                AddWaypoint(centerExit, TravelObjects.Sidewalk, pedestrianSpeed, new(centerMiddle, exitMiddle), ecb);
+                AddWaypoint(exitMiddle, TravelObjects.Sidewalk, pedestrianSpeed, new(centerExit, northExit, AddSidewalkExit(Directions.East, pedestrianSpeed, ecb)), ecb);
+                AddWaypoint(northExit, TravelObjects.Sidewalk, pedestrianSpeed, new(exitMiddle), ecb, entry: true, exit: true);
             }
             else if (index == ConnectingTile.straight)
             {
@@ -126,8 +126,8 @@ namespace Components
                 AddWaypoint(northExit, TravelObjects.Street, straightSpeed, new(new(sidewalkOffset, defaultHeight, 0.95f)), ecb, exit: true);
 
                 // Sidewalks
-                AddSidewalkStraight(Directions.East, pedestrianSpeed, ecb);
-                AddSidewalkStraight(Directions.West, pedestrianSpeed, ecb);
+                AddSidewalkStraight(Directions.East, pedestrianSpeed, ecb, crosswalk: true);
+                AddSidewalkStraight(Directions.West, pedestrianSpeed, ecb, crosswalk: true);
             }
             else if (index == ConnectingTile.curve)
             {
@@ -146,10 +146,10 @@ namespace Components
                 beforeCorner = new(-sidewalkOffset, defaultHeight, 0);
                 afterCorner = new(0, defaultHeight, -sidewalkOffset);
                 eastExit = new(0.95f, defaultHeight, -sidewalkOffset);
-                AddWaypoint(northEntry, TravelObjects.Sidewalk, pedestrianSpeed, new(beforeCorner), ecb, entry: true);
-                AddWaypoint(beforeCorner, TravelObjects.Sidewalk, pedestrianSpeed, new(afterCorner, AddSidewalkExit(Directions.West, pedestrianSpeed, ecb)), ecb);
-                AddWaypoint(afterCorner, TravelObjects.Sidewalk, pedestrianSpeed, new(eastExit, AddSidewalkExit(Directions.South, pedestrianSpeed, ecb)), ecb);
-                AddWaypoint(eastExit, TravelObjects.Sidewalk, pedestrianSpeed, NewWaypoint.Default, ecb, exit: true);
+                AddWaypoint(northEntry, TravelObjects.Sidewalk, pedestrianSpeed, new(beforeCorner), ecb, entry: true, exit: true);
+                AddWaypoint(beforeCorner, TravelObjects.Sidewalk, pedestrianSpeed, new(northEntry, afterCorner, AddSidewalkExit(Directions.West, pedestrianSpeed, ecb)), ecb);
+                AddWaypoint(afterCorner, TravelObjects.Sidewalk, pedestrianSpeed, new(beforeCorner, eastExit, AddSidewalkExit(Directions.South, pedestrianSpeed, ecb)), ecb);
+                AddWaypoint(eastExit, TravelObjects.Sidewalk, pedestrianSpeed, new(afterCorner), ecb, entry: true, exit: true);
 
                 // east -> north (inner curve)
                 float3 eastEntry = new(0.95f, defaultHeight, streetOffset);
@@ -164,8 +164,8 @@ namespace Components
                 // Sidewalk
                 eastEntry = new(0.95f, defaultHeight, sidewalkOffset);
                 northExit = new(sidewalkOffset, defaultHeight, 0.95f);
-                AddWaypoint(eastEntry, TravelObjects.Sidewalk, straightSpeed, new(northExit), ecb, entry: true);
-                AddWaypoint(northExit, TravelObjects.Sidewalk, straightSpeed, NewWaypoint.Default, ecb, exit: true);
+                AddWaypoint(eastEntry, TravelObjects.Sidewalk, straightSpeed, new(northExit), ecb, entry: true, exit: true);
+                AddWaypoint(northExit, TravelObjects.Sidewalk, straightSpeed, new(eastEntry), ecb, entry: true, exit: true);
             }
             else if (index == ConnectingTile.tJunction)
             {
@@ -229,16 +229,26 @@ namespace Components
             return (junctionEntry, junctionExit);
         }
 
-        private void AddSidewalkStraight(Direction dir, float pedestrianSpeed, EntityCommandBuffer ecb)
+        private void AddSidewalkStraight(Direction dir, float pedestrianSpeed, EntityCommandBuffer ecb, bool crosswalk = false)
         {
             quaternion rotation = quaternion.EulerXYZ(0, dir.ToRadians(), 0);
             float3 eastEntry = math.rotate(rotation, new(0.95f, defaultHeight, sidewalkOffset));
             float3 middle = math.rotate(rotation, new(0, defaultHeight, sidewalkOffset));
             float3 westExit = math.rotate(rotation, new(-0.95f, defaultHeight, sidewalkOffset));
             float3 streetToConnect = math.rotate(rotation, new(-0.95f, defaultHeight, streetOffset)); // Connect to road -> parking 
-            AddWaypoint(eastEntry, TravelObjects.Sidewalk, pedestrianSpeed, new(middle), ecb, entry: true);
-            AddWaypoint(middle, TravelObjects.Sidewalk, pedestrianSpeed, new(westExit, AddSidewalkExit(Direction.Rotate(Directions.North, (int)dir), pedestrianSpeed, ecb)), ecb);
-            AddWaypoint(westExit, TravelObjects.Sidewalk, pedestrianSpeed, new(streetToConnect), ecb, exit: true);
+            AddWaypoint(eastEntry, TravelObjects.Sidewalk, pedestrianSpeed, new(middle), ecb, entry: true, exit: true);
+
+            if (crosswalk)
+            {
+                float3 otherMiddle = math.rotate(rotation, new(0, defaultHeight, -sidewalkOffset));
+                AddWaypoint(middle, TravelObjects.Sidewalk, pedestrianSpeed, new(eastEntry, westExit, otherMiddle, AddSidewalkExit(Direction.Rotate(Directions.North, (int)dir), pedestrianSpeed, ecb)), ecb);
+            }
+            else
+            {
+                AddWaypoint(middle, TravelObjects.Sidewalk, pedestrianSpeed, new(eastEntry, westExit, AddSidewalkExit(Direction.Rotate(Directions.North, (int)dir), pedestrianSpeed, ecb)), ecb);
+            }
+
+            AddWaypoint(westExit, TravelObjects.Sidewalk, pedestrianSpeed, new(middle, streetToConnect), ecb, entry: true, exit: true);
         }
 
         /// <remarks>dir=north is interpreted as north-east corner</remarks>
@@ -248,9 +258,9 @@ namespace Components
             float3 eastEntry = math.rotate(rotation, new(0.95f, defaultHeight, sidewalkOffset));
             float3 center = math.rotate(rotation, new(sidewalkOffset, defaultHeight, sidewalkOffset));
             float3 northExit = math.rotate(rotation, new(sidewalkOffset, defaultHeight, 0.95f));
-            AddWaypoint(eastEntry, TravelObjects.Sidewalk, pedestrianSpeed, new(center), ecb, entry: true);
-            AddWaypoint(center, TravelObjects.Sidewalk, pedestrianSpeed, new(northExit), ecb);
-            AddWaypoint(northExit, TravelObjects.Sidewalk, pedestrianSpeed, NewWaypoint.Default, ecb, exit: true);
+            AddWaypoint(eastEntry, TravelObjects.Sidewalk, pedestrianSpeed, new(center), ecb, entry: true, exit: true);
+            AddWaypoint(center, TravelObjects.Sidewalk, pedestrianSpeed, new(eastEntry, northExit), ecb);
+            AddWaypoint(northExit, TravelObjects.Sidewalk, pedestrianSpeed, new(center), ecb, entry: true, exit: true);
         }
 
         /// <remarks>Add the return value to the middle sidewalk waypoint on that side</remarks>
