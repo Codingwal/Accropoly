@@ -127,7 +127,10 @@ public partial class Deserializer
                     totalSpace = br.ReadInt32(),
                     freeSpace = br.ReadInt32()
                 },
-                TileComponents.TransportTile => new TransportTile(br.ReadSingle()),
+                TileComponents.TransportTile => new TransportTile(10)
+                {
+                    timer = br.ReadSingle()
+                },
 
                 TileComponents.IsConnectedTag => new IsConnected(),
                 TileComponents.ActiveTileTag => new ActiveTile(),

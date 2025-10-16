@@ -35,11 +35,10 @@ namespace Systems
 
             var pathfindingUtility = new PathfindingUtility()
             {
-                entityGrid = entityGrid,
-                transportTileLookup = SystemAPI.GetComponentLookup<TransportTile>(),
                 transformLookup = SystemAPI.GetComponentLookup<LocalTransform>(),
                 connectionsLookup = SystemAPI.GetComponentLookup<Connections>(),
                 waypointLookup = SystemAPI.GetComponentLookup<Waypoint>(),
+                waypointsData = SystemAPI.GetSingleton<WaypointsData>(),
             };
 
             // Employ people

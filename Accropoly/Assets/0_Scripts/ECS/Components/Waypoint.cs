@@ -2,6 +2,7 @@ using Unity.Entities;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
+using System;
 
 namespace Components
 {
@@ -33,6 +34,14 @@ namespace Components
                 nextWaypoints[1] = b;
                 nextWaypoints[2] = c;
             }
+            public NewWaypoint(float3 a, float3 b, float3 c, float3 d)
+            {
+                nextWaypoints.Clear(float.NaN);
+                nextWaypoints[0] = a;
+                nextWaypoints[1] = b;
+                nextWaypoints[2] = c;
+                nextWaypoints[3] = d;
+            }
             public static NewWaypoint Default
             {
                 get
@@ -54,9 +63,11 @@ namespace Components
         }
         public struct Waypoint : IComponentData // Always present
         {
-            public float velocity; // in m/s
-            public Waypoint(float velocity)
+            public TravelObjects allowedObjects;
+            public float velocity; // the highest allowed velocity in m/s
+            public Waypoint(TravelObjects allowedObjects, float velocity)
             {
+                this.allowedObjects = allowedObjects;
                 this.velocity = velocity;
             }
         }
@@ -64,11 +75,13 @@ namespace Components
         {
             public FixedEntityArray5 next;
             public FixedEntityArray5 previous;
-            public bool exit; // Only important if at the tile's edge. false => entry
-            public Connections(bool exit)
+            public bool entry; // Only important if at the tile's edge
+            public bool exit; // Only important if at the tile's edge
+            public Connections(bool entry, bool exit)
             {
                 next.Clear(Entity.Null);
                 previous.Clear(Entity.Null);
+                this.entry = entry;
                 this.exit = exit;
             }
             public void RemoveNext(Entity entity)
@@ -127,6 +140,30 @@ namespace Components
                 Priority,
                 GiveWay,
             }
+        }
+
+
+        /// <summary>
+        /// A "bitmap" enum containing all forms of travel. <para/>
+        /// Used to specify the allowed objects on a waypoint / the useable objects for a journey
+        /// </summary>
+        [Flags]
+        public enum TravelObjects
+        {
+            None = 0,
+            Car = 1 << 0,
+            Pedestrian = 1 << 1,
+            ServiceVehicle = 1 << 2, // Garbage vehicles, ...
+            Truck = 1 << 3,
+            EmergencyVehicle = 1 << 4,
+
+            // Use these for waypoints
+            Street = Car,
+            Sidewalk = Pedestrian,
+            PedestrianZone = Pedestrian | ServiceVehicle | EmergencyVehicle | Truck,
+
+            // Use these to specify the allowed vehicles on a journey
+            Standard = Pedestrian | Car, // For normal civilian journeys
         }
     }
 }

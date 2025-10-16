@@ -2485,6 +2485,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugWaypoints: 1
+  highlightTileExits: 0
+  displayJunctionInfo: 0
   debugPath: 1
   debugRaycasts: 1
 --- !u!1 &596032858

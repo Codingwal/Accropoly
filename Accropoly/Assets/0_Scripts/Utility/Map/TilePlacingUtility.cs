@@ -20,20 +20,20 @@ public static class TilePlacingUtility
             TileType.Forest => new() { },
             TileType.House => new() { (new Habitat {totalSpace = rnd.Next(2, 6)}, true),
                                       (new ElectricityConsumer { consumption = 2, disableIfElectroless = false }, true),
-                                      (new Polluter { pollution = 3 }, true), (new IsConnected(), false) },
+                                      (new Polluter { pollution = 3 }, true), (new IsConnected(), false), (new TransportTile(2), true) },
             TileType.SolarPanel => new() { (new ElectricityProducer { production = 10 }, true), (new Polluter { pollution = 1 }, true),
-                                           (new Employer{totalSpace = 1}, true) },
+                                           (new Employer{totalSpace = 1}, true), (new TransportTile(2), true) },
             TileType.Street => new() { (new ConnectingTile(ConnectingTileGroup.Street), true), (new BuildingConnector(), true), (new TransportTile(10), true) },
             TileType.Lake => new() { (new ConnectingTile(ConnectingTileGroup.Lake), true) },
             TileType.River => new() { (new ConnectingTile(ConnectingTileGroup.River), true) },
-            TileType.Hut => new() { (new Habitat { totalSpace = rnd.Next(1, 3) }, true) },
+            TileType.Hut => new() { (new Habitat { totalSpace = rnd.Next(1, 3) }, true), (new TransportTile(2), true) },
             TileType.Office => new() { (new ElectricityConsumer { consumption = 5, disableIfElectroless = true }, true),
-                                       (new Employer { totalSpace = 10 }, true),
+                                       (new Employer { totalSpace = 10 }, true), (new TransportTile(2), true),
                                        (new Polluter { pollution = 5 }, true), (new IsConnected(), false) },
             TileType.WindTurbine => new() { (new ElectricityProducer { production = 50 }, true), (new Polluter { pollution = 2 }, true),
-                                           (new Employer {totalSpace = 2}, true) },
+                                           (new Employer {totalSpace = 2}, true), (new TransportTile(2), true) },
             TileType.GrowingForest => new() { (new GrowingTile { age = rnd.Next(tileGrowingConfig.maxAge1, tileGrowingConfig.maxAge2) }, true) },
-            TileType.Bitumen => new() { },
+            TileType.Bitumen => new() { (new TransportTile(5), true) },
             TileType.CityStreet => new() { (new ConnectingTile(ConnectingTileGroup.Street), true), (new BuildingConnector(), true), (new TransportTile(10), true) },
             TileType.ForestStreet => new() { (new ConnectingTile(ConnectingTileGroup.Street), true), (new BuildingConnector(), true), (new TransportTile(10), true) },
             _ => throw new($"Missing componentTypes for tileType {tileType}")
@@ -43,7 +43,7 @@ public static class TilePlacingUtility
         components.Add((new NewTile(), true));
         return components;
     }
-    public static void UpdateEntity(Entity tile, List<(IComponentData, bool)> components, EntityCommandBuffer ecb)
+    public static void UpdateEntity(Entity tile, List<(IComponentData, bool)> components)
     {
         EntityManager em = ECSUtility.EntityManager;
 
@@ -68,9 +68,9 @@ public static class TilePlacingUtility
         // Local helper function
         void SetComponentData<T>(IComponentData component, bool enabled) where T : unmanaged, IComponentData
         {
-            ecb.SetComponent<T>(tile, (T)component);
+            em.SetComponentData<T>(tile, (T)component);
             if (component is IEnableableComponent)
-                ecb.SetComponentEnabled(tile, typeof(T), enabled);
+                em.SetComponentEnabled(tile, typeof(T), enabled);
         }
 
         // Set values for all components
@@ -79,7 +79,7 @@ public static class TilePlacingUtility
             Type type = component.GetType();
             if (new ComponentType(type).IsZeroSized) // Handle tag components
             {
-                if (new ComponentType(type).IsEnableable) ecb.SetComponentEnabled(tile, type, enabled);
+                if (new ComponentType(type).IsEnableable) em.SetComponentEnabled(tile, type, enabled);
             }
             else if (type == typeof(Tile)) SetComponentData<Tile>(component, enabled);
             else if (type == typeof(GrowingTile)) SetComponentData<GrowingTile>(component, enabled);
@@ -150,7 +150,7 @@ public static class TilePlacingUtility
             case TileType.Street:
                 if (oldType == TileType.Bitumen)
                     return (TileType.CityStreet, 50);
-                else if (oldType == TileType.Forest)
+                else if (oldType == TileType.Sapling || oldType == TileType.GrowingForest || oldType == TileType.Forest)
                     return (TileType.ForestStreet, 50);
                 else
                     return INVALID;

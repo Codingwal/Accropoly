@@ -5,6 +5,7 @@ using Unity.Rendering;
 using Tags;
 using Unity.Transforms;
 using Unity.Mathematics;
+using UnityEngine;
 
 [UpdateInGroup(typeof(LateSimulationSystemGroup))]
 public partial class AppearenceSystem : SystemBase
@@ -28,6 +29,7 @@ public partial class AppearenceSystem : SystemBase
 
         Entities.WithChangeFilter<Tile>().WithNone<ConnectingTile>().ForEach((ref MaterialMeshInfo data, in Tile tile) =>
         {
+            Debug.Assert(config.simpleTiles.ContainsKey((int)tile.tileType), $"{tile.tileType} is not a simple tile.");
             data = config.simpleTiles[(int)tile.tileType];
         }).Schedule();
 
@@ -49,8 +51,9 @@ public partial class AppearenceSystem : SystemBase
                     }
                 }
             }
+            Debug.Assert(config.connectingTiles.ContainsKey((int)tile.tileType), $"{tile.tileType} is not a connecting tile.");
             data = config.connectingTiles[(int)tile.tileType].pairs[index];
-        }).Run();
+        }).WithoutBurst().Run();
     }
     protected override void OnDestroy()
     {

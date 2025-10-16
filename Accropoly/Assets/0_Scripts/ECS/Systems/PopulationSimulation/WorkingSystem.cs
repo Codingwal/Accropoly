@@ -14,7 +14,7 @@ namespace Systems
     /// this script just enabled WantsToTravel and sets traveller.destination
     /// timeToWork is calculated at 3h and is used so that they arrive at 8h (earliest departure: 4h)
     /// People only go to work if they have already been employed at 3h
-    /// </summary>
+    /// </summary>    
     public partial class WorkingSystem : SystemBase
     {
         protected override void OnCreate()
@@ -33,11 +33,10 @@ namespace Systems
 
             var pathfindingUtility = new PathfindingUtility()
             {
-                entityGrid = entityGrid,
-                transportTileLookup = SystemAPI.GetComponentLookup<TransportTile>(),
                 transformLookup = SystemAPI.GetComponentLookup<LocalTransform>(),
                 connectionsLookup = SystemAPI.GetComponentLookup<Connections>(),
                 waypointLookup = SystemAPI.GetComponentLookup<Waypoint>(),
+                waypointsData = SystemAPI.GetSingleton<WaypointsData>(),
             };
 
             if (hours == 3 && gameInfo.time.NewHour)
@@ -60,7 +59,7 @@ namespace Systems
                     if (pos.Equals(person.homeTile)) return; // Skip people that are already at home
                     if (person.homeTile.Equals(new(-1, -1))) return; // Skip homeless people
 
-                    traveller.destination = person.homeTile;
+                    traveller.SetJourneyData(person.homeTile, TravelObjects.Standard);
                     ecb.SetComponentEnabled<WantsToTravel>(entity, true);
 
                 }
@@ -73,7 +72,7 @@ namespace Systems
 
                     if (gameInfo.time.TimeOfDayInSeconds + worker.timeToWork >= WorldTime.HoursToSeconds(8))
                     {
-                        traveller.destination = worker.employer;
+                        traveller.SetJourneyData(worker.employer, TravelObjects.Standard);
                         ecb.SetComponentEnabled<WantsToTravel>(entity, true);
                     }
                 }

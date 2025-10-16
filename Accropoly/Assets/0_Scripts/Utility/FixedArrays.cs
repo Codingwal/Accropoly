@@ -12,9 +12,7 @@ public unsafe interface IFixedArrayHelper<T> : IAspect where T : unmanaged
 public struct FixedArray<THelper, T> where THelper : unmanaged, IFixedArrayHelper<T> where T : unmanaged
 {
     private THelper helper;
-
     public int Size => helper.Size;
-
     public T this[int index]
     {
         get
@@ -29,18 +27,12 @@ public struct FixedArray<THelper, T> where THelper : unmanaged, IFixedArrayHelpe
         }
     }
 
-    /// <summary>
-    /// Initializes all elements to defaultValue
-    /// </summary>
     public FixedArray(T defaultValue)
     {
         helper = new();
         Clear(defaultValue);
     }
 
-    /// <summary>
-    /// Cleares all elements using the specified value
-    /// </summary>
     public void Clear(T value)
     {
         for (int i = 0; i < Size; i++)
@@ -57,7 +49,7 @@ public struct FixedArray<THelper, T> where THelper : unmanaged, IFixedArrayHelpe
         return false;
     }
 
-    public unsafe IEnumerator GetEnumerator()
+    public unsafe Enumerator GetEnumerator()
     {
         fixed (FixedArray<THelper, T>* ptr = &this)
         {
@@ -74,8 +66,8 @@ public struct FixedArray<THelper, T> where THelper : unmanaged, IFixedArrayHelpe
     {
         private readonly FixedArray<THelper, T>* data;
         private int index;
-        public readonly object Current => (*data)[index];
-
+        public readonly T Current => (*data)[index];
+        readonly object IEnumerator.Current => Current;
         public Enumerator(FixedArray<THelper, T>* data)
         {
             this.data = data;
@@ -86,7 +78,6 @@ public struct FixedArray<THelper, T> where THelper : unmanaged, IFixedArrayHelpe
             index++;
             return index < (*data).Size;
         }
-
         public void Reset()
         {
             index = -1;
@@ -97,8 +88,8 @@ public struct FixedArray<THelper, T> where THelper : unmanaged, IFixedArrayHelpe
 public unsafe struct FixedFloat3Array5Helper : IFixedArrayHelper<float3>
 {
     public fixed float array[5 * 3];
-    public int Size => 5;
-    public int ElementSize => 3;
+    public readonly int Size => 5;
+    public readonly int ElementSize => 3;
 
     public float3 this[int index]
     {
@@ -122,76 +113,15 @@ public unsafe struct FixedFloat3Array5 : IEnumerable
     }
     public void Clear(float3 value) => data.Clear(value);
     public bool Contains(float3 value) => data.Contains(value);
-    public unsafe IEnumerator GetEnumerator() => data.GetEnumerator();
-}
-
-public unsafe struct FixedFloat3Array10Helper : IFixedArrayHelper<float3>
-{
-    public fixed float array[10 * 3];
-    public int Size => 10;
-    public int ElementSize => 3;
-
-    public float3 this[int index]
-    {
-        get => new(array[index * 3], array[index * 3 + 1], array[index * 3 + 2]);
-        set
-        {
-            array[index * 3] = value.x;
-            array[index * 3 + 1] = value.y;
-            array[index * 3 + 2] = value.z;
-        }
-    }
-}
-public unsafe struct FixedFloat3Array10 : IEnumerable
-{
-    private FixedArray<FixedFloat3Array10Helper, float3> data;
-    public int Size => data.Size;
-    public float3 this[int index]
-    {
-        get => data[index];
-        set => data[index] = value;
-    }
-    public void Clear(float3 value) => data.Clear(value);
-    public bool Contains(float3 value) => data.Contains(value);
-    public unsafe IEnumerator GetEnumerator() => data.GetEnumerator();
-}
-
-public unsafe struct FixedFloat3Array20Helper : IFixedArrayHelper<float3>
-{
-    public fixed float array[20 * 3];
-    public int Size => 20;
-    public int ElementSize => 3;
-
-    public float3 this[int index]
-    {
-        get => new(array[index * 3], array[index * 3 + 1], array[index * 3 + 2]);
-        set
-        {
-            array[index * 3] = value.x;
-            array[index * 3 + 1] = value.y;
-            array[index * 3 + 2] = value.z;
-        }
-    }
-}
-public unsafe struct FixedFloat3Array20 : IEnumerable
-{
-    private FixedArray<FixedFloat3Array20Helper, float3> data;
-    public int Size => data.Size;
-    public float3 this[int index]
-    {
-        get => data[index];
-        set => data[index] = value;
-    }
-    public void Clear(float3 value) => data.Clear(value);
-    public bool Contains(float3 value) => data.Contains(value);
-    public unsafe IEnumerator GetEnumerator() => data.GetEnumerator();
+    public unsafe FixedArray<FixedFloat3Array5Helper, float3>.Enumerator GetEnumerator() => data.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
 
 public unsafe struct FixedEntityArray5Helper : IFixedArrayHelper<Entity>
 {
     public fixed int array[5 * 2];
-    public int Size => 5;
-    public int ElementSize => 2;
+    public readonly int Size => 5;
+    public readonly int ElementSize => 2;
 
     public Entity this[int index]
     {
@@ -214,65 +144,6 @@ public unsafe struct FixedEntityArray5 : IEnumerable
     }
     public void Clear(Entity value) => data.Clear(value);
     public bool Contains(Entity value) => data.Contains(value);
-    public unsafe IEnumerator GetEnumerator() => data.GetEnumerator();
-}
-
-public unsafe struct FixedEntityArray10Helper : IFixedArrayHelper<Entity>
-{
-    public fixed int array[10 * 2];
-    public int Size => 10;
-    public int ElementSize => 2;
-
-    public Entity this[int index]
-    {
-        get => new() { Index = array[index * 2], Version = array[index * 2 + 1] };
-        set
-        {
-            array[index * 2] = value.Index;
-            array[index * 2 + 1] = value.Version;
-        }
-    }
-}
-public unsafe struct FixedEntityArray10 : IEnumerable
-{
-    private FixedArray<FixedEntityArray10Helper, Entity> data;
-    public int Size => data.Size;
-    public Entity this[int index]
-    {
-        get => data[index];
-        set => data[index] = value;
-    }
-    public void Clear(Entity value) => data.Clear(value);
-    public bool Contains(Entity value) => data.Contains(value);
-    public unsafe IEnumerator GetEnumerator() => data.GetEnumerator();
-}
-
-public unsafe struct FixedEntityArray20Helper : IFixedArrayHelper<Entity>
-{
-    public fixed int array[20 * 2];
-    public int Size => 20;
-    public int ElementSize => 2;
-
-    public Entity this[int index]
-    {
-        get => new() { Index = array[index * 2], Version = array[index * 2 + 1] };
-        set
-        {
-            array[index * 2] = value.Index;
-            array[index * 2 + 1] = value.Version;
-        }
-    }
-}
-public unsafe struct FixedEntityArray20 : IEnumerable
-{
-    private FixedArray<FixedEntityArray20Helper, Entity> data;
-    public int Size => data.Size;
-    public Entity this[int index]
-    {
-        get => data[index];
-        set => data[index] = value;
-    }
-    public void Clear(Entity value) => data.Clear(value);
-    public bool Contains(Entity value) => data.Contains(value);
-    public unsafe IEnumerator GetEnumerator() => data.GetEnumerator();
+    public unsafe FixedArray<FixedEntityArray5Helper, Entity>.Enumerator GetEnumerator() => data.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

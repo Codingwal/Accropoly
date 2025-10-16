@@ -1,3 +1,4 @@
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 
 public static class ECSUtility
@@ -34,5 +35,29 @@ public static class ECSUtility
             Options = EntityQueryOptions.IncludeSystems
         };
         return EntityManager.CreateEntityQuery(desc).TryGetSingleton(out value);
+    }
+}
+public unsafe struct Ref<T> where T : unmanaged
+{
+    [NativeDisableUnsafePtrRestriction]
+    private readonly T* data;
+    public Ref(T* data)
+    {
+        this.data = data;
+    }
+    public readonly bool IsValid => data != null;
+    public ref T ValueRW
+    {
+        get
+        {
+            return ref UnsafeUtility.AsRef<T>(data);
+        }
+    }
+    public readonly ref readonly T ValueRO
+    {
+        get
+        {
+            return ref UnsafeUtility.AsRef<T>(data);
+        }
     }
 }
