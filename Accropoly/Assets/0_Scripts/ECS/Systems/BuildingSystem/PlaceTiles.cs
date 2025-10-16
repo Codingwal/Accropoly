@@ -3,6 +3,7 @@ using Components;
 using Unity.Mathematics;
 using Unity.Transforms;
 using Tags;
+using Unity.Collections;
 
 namespace Systems
 {
@@ -13,29 +14,35 @@ namespace Systems
     [UpdateBefore(typeof(BuildingSystem))]
     public partial class PlaceTiles : SystemBase
     {
+        EntityQuery entitiesToReplaceQuery;
         protected override void OnCreate()
         {
+            entitiesToReplaceQuery = new EntityQueryBuilder(Allocator.Temp)
+                .WithAll<Replace>().Build(this);
+
             RequireForUpdate<TileToPlaceInfo>();
-            RequireForUpdate<Replace>();
         }
         protected override void OnUpdate()
         {
             var ecb = SystemAPI.GetSingleton<EndCreationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
-
             var tileToPlaceInfo = SystemAPI.GetSingleton<TileToPlaceInfo>();
+            NativeArray<Entity> entitiesToReplace = entitiesToReplaceQuery.ToEntityArray(Allocator.Temp);
 
-            Entities.WithAll<Replace>().ForEach((Entity entity, ref LocalTransform transform, in Tile tile) =>
+            foreach (Entity entity in entitiesToReplace)
             {
+                Tile tile = SystemAPI.GetComponent<Tile>(entity);
+
                 (TileType newTileType, _) = TilePlacingUtility.GetPlacingData(tile.tileType, tileToPlaceInfo.tileType);
 
                 // Set the archetype to the archetype of the newTileType
                 var components = TilePlacingUtility.GetComponents(newTileType, tile.pos, tileToPlaceInfo.rotation);
 
-                TilePlacingUtility.UpdateEntity(entity, components, ecb);
+                TilePlacingUtility.UpdateEntity(entity, components);
 
                 // Set the transform rotation according to the rotation of tileToPlace
-                transform.Rotation = quaternion.EulerXYZ(0, tileToPlaceInfo.rotation.ToRadians(), 0);
-            }).WithStructuralChanges().Run();
+                RefRW<LocalTransform> transform = SystemAPI.GetComponentRW<LocalTransform>(entity);
+                transform.ValueRW.Rotation = quaternion.EulerXYZ(0, tileToPlaceInfo.rotation.ToRadians(), 0);
+            }
         }
     }
 }

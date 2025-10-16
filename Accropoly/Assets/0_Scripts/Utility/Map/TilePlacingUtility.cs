@@ -43,7 +43,7 @@ public static class TilePlacingUtility
         components.Add((new NewTile(), true));
         return components;
     }
-    public static void UpdateEntity(Entity tile, List<(IComponentData, bool)> components, EntityCommandBuffer ecb)
+    public static void UpdateEntity(Entity tile, List<(IComponentData, bool)> components)
     {
         EntityManager em = ECSUtility.EntityManager;
 
@@ -68,9 +68,9 @@ public static class TilePlacingUtility
         // Local helper function
         void SetComponentData<T>(IComponentData component, bool enabled) where T : unmanaged, IComponentData
         {
-            ecb.SetComponent<T>(tile, (T)component);
+            em.SetComponentData<T>(tile, (T)component);
             if (component is IEnableableComponent)
-                ecb.SetComponentEnabled(tile, typeof(T), enabled);
+                em.SetComponentEnabled(tile, typeof(T), enabled);
         }
 
         // Set values for all components
@@ -79,7 +79,7 @@ public static class TilePlacingUtility
             Type type = component.GetType();
             if (new ComponentType(type).IsZeroSized) // Handle tag components
             {
-                if (new ComponentType(type).IsEnableable) ecb.SetComponentEnabled(tile, type, enabled);
+                if (new ComponentType(type).IsEnableable) em.SetComponentEnabled(tile, type, enabled);
             }
             else if (type == typeof(Tile)) SetComponentData<Tile>(component, enabled);
             else if (type == typeof(GrowingTile)) SetComponentData<GrowingTile>(component, enabled);
