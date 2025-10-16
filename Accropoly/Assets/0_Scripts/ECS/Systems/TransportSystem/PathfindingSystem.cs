@@ -228,20 +228,14 @@ namespace Systems
             openList.RemoveAtSwapBack(cheapestIndex);
             return cheapestNode;
         }
-        private static float CalculateCost(float3 pos, float3 previousPos, float previousCost, float3 dest, float tileSpeed)
+        private static float CalculateCost(float3 pos, float3 previousPos, float previousCost, float3 dest, float speed)
         {
-            // prevCost + (movementCost + dist(currPos) - dist(prevPos))
-            return previousCost + ManhattanDistance(pos, previousPos) / tileSpeed + ManhattanDistance(pos, dest) - ManhattanDistance(previousPos, dest);
+            // prevCost + movementCost + estimated cost to dest
+            return previousCost + Distance(pos, previousPos) / speed + Distance(pos, dest) / 20;
         }
-        private static float ManhattanDistance(int2 pos, int2 dest)
+        private static float Distance(float3 pos, float3 dest)
         {
-            int2 v = math.abs(dest - pos);
-            return v.x + v.y;
-        }
-        private static float ManhattanDistance(float3 pos, float3 dest)
-        {
-            float3 v = math.abs(dest - pos);
-            return v.x + v.y + v.z;
+            return math.distance(pos, dest);
         }
         private struct VisitedNode
         {
