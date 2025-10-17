@@ -59,6 +59,7 @@ namespace Components
                     nextWaypoints[i] = value;
                     return;
                 }
+                Debug.LogError("Too many connections");
             }
         }
         public struct Waypoint : IComponentData // Always present
