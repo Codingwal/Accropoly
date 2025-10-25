@@ -165,23 +165,36 @@ namespace Systems
             {
                 ref LocalTransform transform = ref transformLookup.GetRefRW(entity).ValueRW;
 
+                // Check if destination still exists and stop otherwise
+                if (!WaypointExists(traveller.waypoints[^1]))
+                {
+                    Debug.LogWarning("Destination does not exist! Stopping.");
+                    return;
+                }
+
+                // Check if path is valid
+                for (int i = traveller.nextWaypointIndex; i < traveller.waypoints.Length; i++)
+                {
+                    float3 waypoint = traveller.waypoints[i];
+                    if (WaypointExists(waypoint)) continue;
+
+                    // If there is an invalid waypoint...
+
+                    // Find next valid waypoint
+                    while (!WaypointExists(traveller.NextWaypoint))
+                        traveller.nextWaypointIndex++;
+
+                    // Teleport to next waypoint and request a new path
+                    transform.Position = traveller.NextWaypoint;
+                    ecb.SetComponentEnabled<Travelling>(entity, false);
+                    ecb.SetComponentEnabled<WantsToTravel>(entity, true);
+                    return;
+                }
+
                 // Start with second waypoint as target (object starts at first waypoint)
                 if (traveller.nextWaypointIndex == 0)
                 {
                     traveller.nextWaypointIndex++;
-                    RegisterAtWaypoint(GetEntity(traveller.NextWaypoint));
-                }
-
-                if (!WaypointExists(traveller.NextWaypoint))
-                {
-                    while (!WaypointExists(traveller.NextWaypoint))
-                    {
-                        traveller.nextWaypointIndex++;
-
-                        // Return (don't move) if even the destination waypoint does not exist
-                        if (traveller.nextWaypointIndex == traveller.waypoints.Length)
-                            return;
-                    }
                     RegisterAtWaypoint(GetEntity(traveller.NextWaypoint));
                 }
 
@@ -264,7 +277,7 @@ namespace Systems
 
                     traveller.nextWaypointIndex++; // Update targeted waypoint
 
-                    if (traveller.nextWaypointIndex == traveller.waypoints.Length) // Reached last waypoint
+                    if (traveller.nextWaypointIndex == traveller.waypoints.Length - 1) // Reached second last waypoint
                     {
                         transform.Position = traveller.waypoints[^1]; // Teleport to destination
                         ecb.SetComponentEnabled<Travelling>(entity, false);
