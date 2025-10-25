@@ -62,9 +62,10 @@ namespace Systems
 
             new MoveObjectsJob()
             {
+                ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged),
+                waypointsData = SystemAPI.GetSingleton<WaypointsData>(),
                 collisionWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().CollisionWorld,
                 deltaTime = SystemAPI.GetSingleton<GameInfo>().fixedDeltaTime / gameSecondsPerMovementSecond,
-                ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged),
                 waypointLookup = SystemAPI.GetComponentLookup<Waypoint>(),
                 transformLookup = SystemAPI.GetComponentLookup<LocalTransform>(),
                 junctionLookup = SystemAPI.GetComponentLookup<Junction>(),
@@ -76,7 +77,7 @@ namespace Systems
             raycasts.Dispose();
         }
 
-        public void DrawGizmos(bool debugPath, bool debugRaycasts)
+        public void DrawGizmos(bool debugPath, bool debugRaycasts, bool debugCurrentTarget)
         {
             if (!SystemAPI.HasSingleton<RunGame>())
                 return;
@@ -86,12 +87,24 @@ namespace Systems
                 Gizmos.color = Color.green;
                 foreach (RefRO<Traveller> traveller in SystemAPI.Query<RefRO<Traveller>>().WithAll<Travelling>())
                 {
-                    for (int i = math.max(traveller.ValueRO.nextWaypointIndex, 1); i < traveller.ValueRO.waypoints.Length; i++) // Force a minimum start index of 1
+                    for (int i = traveller.ValueRO.nextWaypointIndex + 1; i < traveller.ValueRO.waypoints.Length; i++)
                     {
-                        float3 from = SystemAPI.GetComponent<LocalTransform>(traveller.ValueRO.waypoints[i - 1]).Position;
-                        float3 to = SystemAPI.GetComponent<LocalTransform>(traveller.ValueRO.waypoints[i]).Position;
+                        float3 from = traveller.ValueRO.waypoints[i - 1];
+                        float3 to = traveller.ValueRO.waypoints[i];
                         Gizmos.DrawLine(from, to);
                     }
+
+                }
+            }
+
+            if (debugCurrentTarget)
+            {
+                Gizmos.color = Color.yellow;
+                foreach (var (traveller, transform) in SystemAPI.Query<RefRO<Traveller>, RefRO<LocalTransform>>().WithAll<Travelling>())
+                {
+                    float3 from = transform.ValueRO.Position;
+                    float3 to = traveller.ValueRO.NextWaypoint;
+                    Gizmos.DrawLine(from, to);
                 }
             }
 
@@ -135,9 +148,10 @@ namespace Systems
         [BurstCompile]
         private partial struct MoveObjectsJob : IJobEntity
         {
+            public EntityCommandBuffer ecb;
+            public WaypointsData waypointsData;
             public CollisionWorld collisionWorld;
             public float deltaTime;
-            public EntityCommandBuffer ecb;
             public ComponentLookup<Waypoint> waypointLookup;
             public ComponentLookup<LocalTransform> transformLookup;
             public ComponentLookup<Junction> junctionLookup;
@@ -146,19 +160,28 @@ namespace Systems
             {
                 ref LocalTransform transform = ref transformLookup.GetRefRW(entity).ValueRW;
 
-                // Instantly teleport to first waypoint
+                // Start with second waypoint as target (object starts at first waypoint)
                 if (traveller.nextWaypointIndex == 0)
                 {
-                    transform.Position = transformLookup.GetRefRO(traveller.NextWaypoint).ValueRO.Position; // Teleport to waypoint
-                    traveller.nextWaypointIndex++; // Update traveller data
+                    traveller.nextWaypointIndex++;
+                    RegisterAtWaypoint(GetEntity(traveller.NextWaypoint));
+                }
 
-                    // Register at waypoint (if this waypoint is part of a junction)
-                    if (junctionLookup.HasComponent(traveller.NextWaypoint))
-                        junctionLookup.GetRefRW(traveller.NextWaypoint).ValueRW.registeredObjects++;
+                if (!WaypointExists(traveller.NextWaypoint))
+                {
+                    while (!WaypointExists(traveller.NextWaypoint))
+                    {
+                        traveller.nextWaypointIndex++;
+
+                        // Return (don't move) if even the destination waypoint does not exist
+                        if (traveller.nextWaypointIndex == traveller.waypoints.Length)
+                            return;
+                    }
+                    RegisterAtWaypoint(GetEntity(traveller.NextWaypoint));
                 }
 
                 // Get data related to the next waypoint
-                Entity nextWaypoint = traveller.NextWaypoint;
+                Entity nextWaypoint = GetEntity(traveller.NextWaypoint);
                 float nextVelocity = waypointLookup.GetRefRO(nextWaypoint).ValueRO.velocity;
                 float3 nextPos = transformLookup.GetRefRO(nextWaypoint).ValueRO.Position;
 
@@ -167,7 +190,7 @@ namespace Systems
                 float targetSpeed = math.lerp(math.length(traveller.velocity), nextVelocity, 1 / (1 + math.distance(transform.Position, nextPos))); // Slowly reach target speed
 
                 // Stop at red lights / give way
-                if (junctionLookup.HasComponent(traveller.NextWaypoint))
+                if (junctionLookup.HasComponent(nextWaypoint))
                 {
                     var junctionData = junctionLookup.GetRefRW(nextWaypoint);
                     if (junctionData.ValueRO.stop)
@@ -189,6 +212,14 @@ namespace Systems
                 HandlePhysics(ref traveller, ref transform, acceleration);
 
                 CheckIfWaypointReached(entity, ref traveller, ref transform, nextWaypoint, nextPos);
+            }
+            private Entity GetEntity(float3 pos)
+            {
+                return waypointsData.waypoints[pos];
+            }
+            private bool WaypointExists(float3 pos)
+            {
+                return waypointsData.waypoints.ContainsKey(pos);
             }
             private RaycastData CastRay(LocalTransform transform)
             {
@@ -224,24 +255,32 @@ namespace Systems
             {
                 if (math.distancesq(transform.Position, waypointPos) < math.square(0.3f)) // Reached waypoint
                 {
-                    // de-register from now reached waypoint
-                    if (junctionLookup.HasComponent(traveller.NextWaypoint))
-                        junctionLookup.GetRefRW(waypoint).ValueRW.registeredObjects--;
+                    DeregisterAtWaypoint(GetEntity(traveller.NextWaypoint));
 
                     traveller.nextWaypointIndex++; // Update targeted waypoint
 
-                    if (traveller.nextWaypointIndex == traveller.waypoints.Length - 1) // Reached last waypoint
+                    if (traveller.nextWaypointIndex == traveller.waypoints.Length) // Reached last waypoint
                     {
-                        transform.Position.xz = traveller.destination * 2; // Teleport to destination
+                        transform.Position = traveller.waypoints[^1]; // Teleport to destination
                         ecb.SetComponentEnabled<Travelling>(entity, false);
                     }
                     else
                     {
-                        // Register at new next waypoint
-                        if (junctionLookup.HasComponent(traveller.NextWaypoint))
-                            junctionLookup.GetRefRW(traveller.NextWaypoint).ValueRW.registeredObjects++;
+                        // If the waypoint does not exist, the next iteration will handle choosing a new one and registering there
+                        if (WaypointExists(traveller.NextWaypoint))
+                            RegisterAtWaypoint(GetEntity(traveller.NextWaypoint));
                     }
                 }
+            }
+            private void RegisterAtWaypoint(Entity waypoint)
+            {
+                if (junctionLookup.HasComponent(waypoint))
+                    junctionLookup.GetRefRW(waypoint).ValueRW.registeredObjects++;
+            }
+            private void DeregisterAtWaypoint(Entity waypoint)
+            {
+                if (junctionLookup.HasComponent(waypoint))
+                    junctionLookup.GetRefRW(waypoint).ValueRW.registeredObjects--;
             }
         }
     }

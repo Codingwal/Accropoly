@@ -170,7 +170,7 @@ namespace Systems
             public ComponentLookup<Connections> connectionsLookup;
             public void Execute(Entity entity, in NewWaypoint newWaypoint, in LocalTransform transform)
             {
-                var connections = connectionsLookup.GetRefRW(entity); // Can't pass as param because of connectionsLookup
+                var connections = connectionsLookup.GetRefRW(entity);
 
                 // Add to waypoint list of the tile this waypoint belongs to
                 int2 tilePos = (int2)math.round(transform.Position.xz / 2);

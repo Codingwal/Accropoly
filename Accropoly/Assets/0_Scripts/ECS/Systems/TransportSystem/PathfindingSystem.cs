@@ -35,10 +35,9 @@ namespace Systems
                     {
                         waypoints = new(8, Allocator.Persistent, NativeArrayOptions.UninitializedMemory)
                     };
-                    foreach (Entity waypoint in traveller.waypoints)
+                    foreach (float3 waypoint in traveller.waypoints)
                     {
-                        float3 waypointPos = SystemAPI.GetComponent<LocalTransform>(waypoint).Position;
-                        waypoints.waypoints.Add(waypointPos);
+                        waypoints.waypoints.Add(waypoint);
                     }
                     traveller.waypoints.Dispose();
                     ecb.AddComponent(entity, waypoints);
@@ -55,9 +54,8 @@ namespace Systems
                 Entities.ForEach((Entity entity, ref Traveller traveller, ref TravellerWaypointsSerializable waypoints) =>
                 {
                     traveller.waypoints = new(8, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
-                    foreach (float3 waypointPos in waypoints.waypoints)
+                    foreach (float3 waypoint in waypoints.waypoints)
                     {
-                        Entity waypoint = waypointsData.waypoints[waypointPos];
                         traveller.waypoints.Add(waypoint);
                     }
                     waypoints.waypoints.Dispose();
@@ -103,20 +101,19 @@ namespace Systems
             float3 start = new(startTile.x * 2, 0.8f, startTile.y * 2);
             float3 dest = new(destTile.x * 2, 0.8f, destTile.y * 2);
 
-            UnsafeList<Entity> path = new(10, Allocator.TempJob);
+            UnsafeList<float3> path = new(10, Allocator.TempJob);
             float travelTime = 0;
 
             if (FindPath(ref path, start, dest))
             {
                 for (int i = 1; i < path.Length; i++)
                 {
-                    float3 posA = transformLookup.GetRefRO(path[i - 1]).ValueRO.Position;
-                    float3 posB = transformLookup.GetRefRO(path[i]).ValueRO.Position;
-                    float distance = math.distance(posA, posB);
+                    float distance = math.distance(path[i - 1], path[i]);
 
-                    float speedA = waypointLookup.GetRefRO(path[i - 1]).ValueRO.velocity;
-                    float speedB = waypointLookup.GetRefRO(path[i]).ValueRO.velocity;
-                    float averageSpeed = (speedA + speedB) * 0.5f;
+                    // float speedA = waypointLookup.GetRefRO(path[i - 1]).ValueRO.velocity;
+                    // float speedB = waypointLookup.GetRefRO(path[i]).ValueRO.velocity;
+                    // float averageSpeed = (speedA + speedB) * 0.5f;
+                    float averageSpeed = 8;
 
                     travelTime += distance / averageSpeed * MovementSystem.gameSecondsPerMovementSecond;
                 }
@@ -130,7 +127,7 @@ namespace Systems
         /// <summary>Finds the shortest path using A* pathfinding from start to dest and stores it in waypoints.</summary>
         /// <remarks>The path does not include start and destination</remarks>
         /// <returns>Returns true if a path was found</returns>
-        public bool FindPath(ref UnsafeList<Entity> path, float3 start, float3 dest, TravelObjects useableVehicles = TravelObjects.Standard)
+        public bool FindPath(ref UnsafeList<float3> path, float3 start, float3 dest, TravelObjects useableVehicles = TravelObjects.Standard)
         {
             Debug.Assert(path.IsCreated, "The path list has not been created");
             Debug.Assert(path.IsEmpty, "The path list must be empty");
@@ -167,11 +164,11 @@ namespace Systems
                 if (pos.Equals(dest))
                 {
                     // Get path
-                    NativeList<Entity> reversedPath = new(Allocator.TempJob);
+                    NativeList<float3> reversedPath = new(Allocator.TempJob);
                     Entity current = node.entity;
                     while (current != Entity.Null)
                     {
-                        reversedPath.Add(current);
+                        reversedPath.Add(transformLookup.GetRefRO(current).ValueRO.Position);
                         current = closedList[current].previous;
                     }
 

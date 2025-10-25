@@ -16,8 +16,8 @@ namespace Components
 
         // Path info
         public int nextWaypointIndex; // Used by movement system
-        public UnsafeList<Entity> waypoints; // Should not be serialized
-        public Entity NextWaypoint => waypoints[nextWaypointIndex];
+        public UnsafeList<float3> waypoints; // Should not be serialized
+        public float3 NextWaypoint => waypoints[nextWaypointIndex];
 
         public float3 velocity; // Used by movement system
 
