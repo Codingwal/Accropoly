@@ -52,7 +52,7 @@ namespace Systems
         }
     }
 
-    public partial struct PathfindingUtility
+    public struct PathfindingUtility
     {
         [NativeDisableContainerSafetyRestriction] public ComponentLookup<LocalTransform> transformLookup;
         public ComponentLookup<Connections> connectionsLookup;

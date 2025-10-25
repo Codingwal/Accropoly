@@ -73,12 +73,6 @@ namespace Systems
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
             WaypointsData waypointsData = SystemAPI.GetComponent<WaypointsData>(SystemAPI.GetSingletonEntity<WaypointsData>());
 
-            // Add new waypoints to waypoints lookup
-            foreach (var (transform, entity) in SystemAPI.Query<RefRO<LocalTransform>>().WithAll<NewWaypoint>().WithEntityAccess())
-            {
-                waypointsData.waypoints.Add(transform.ValueRO.Position, entity);
-            }
-
             // Needed by jobs
             JobUtility jobUtility = new()
             {
@@ -87,15 +81,6 @@ namespace Systems
                 ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged), // Needs a seperate ecb
                 waypoints = waypointsData.waypoints,
             };
-
-            new InitializeNewWaypoints()
-            {
-                ecb = ecb,
-                waypoints = waypointsData.waypoints,
-                tileGrid = SystemAPI.GetSingletonBuffer<EntityBufferElement>(),
-                transportTileLookup = SystemAPI.GetComponentLookup<TransportTile>(),
-                connectionsLookup = SystemAPI.GetComponentLookup<Connections>(),
-            }.Schedule();
 
             new ClearReplaceTilesJob()
             {
@@ -157,67 +142,6 @@ namespace Systems
                     float3 nextPos = SystemAPI.GetComponent<LocalTransform>(nextEntity).Position;
                     Gizmos.DrawLine(transform.ValueRO.Position, nextPos);
                 }
-            }
-        }
-
-        [BurstCompile]
-        private partial struct InitializeNewWaypoints : IJobEntity
-        {
-            public EntityCommandBuffer ecb;
-            public NativeHashMap<float3, Entity> waypoints;
-            public DynamicBuffer<EntityBufferElement> tileGrid;
-            public ComponentLookup<TransportTile> transportTileLookup;
-            public ComponentLookup<Connections> connectionsLookup;
-            public void Execute(Entity entity, in NewWaypoint newWaypoint, in LocalTransform transform)
-            {
-                var connections = connectionsLookup.GetRefRW(entity);
-
-                // Add to waypoint list of the tile this waypoint belongs to
-                int2 tilePos = (int2)math.round(transform.Position.xz / 2);
-                Entity tile = TileGridUtility.GetTile(tilePos, tileGrid);
-                transportTileLookup.GetRefRW(tile).ValueRW.waypoints.Add(entity);
-
-                // Create connections
-                foreach (float3 nextPos in newWaypoint.nextWaypoints)
-                {
-                    if (math.isnan(nextPos.x)) continue;
-                    Debug.Assert(waypoints.ContainsKey(nextPos), $"Connection to non-existent waypoint found (from {transform.Position} to {nextPos})");
-                    Entity next = waypoints[nextPos];
-                    connections.ValueRW.AddNext(next);
-                    connectionsLookup.GetRefRW(next).ValueRW.AddPrevious(entity);
-                }
-
-                // Connect with close waypoints
-                foreach (var pair in waypoints)
-                {
-                    float3 otherPos = pair.Key;
-                    Entity other = pair.Value;
-
-                    // Skip self
-                    if (otherPos.Equals(transform.Position))
-                        continue;
-
-                    // Skip if not close enough
-                    if (math.lengthsq(transform.Position - otherPos) > math.square(0.15))
-                        continue;
-
-                    // Connect
-                    var connectionsOther = connectionsLookup.GetRefRW(other);
-                    if (connections.ValueRO.entry) // other -> this
-                    {
-                        Debug.Assert(connectionsOther.ValueRO.exit);
-                        connectionsOther.ValueRW.AddNext(entity);
-                        connections.ValueRW.AddPrevious(other);
-                    }
-                    if (connections.ValueRO.exit) // this -> other
-                    {
-                        Debug.Assert(connectionsOther.ValueRO.entry);
-                        connections.ValueRW.AddNext(other);
-                        connectionsOther.ValueRW.AddPrevious(entity);
-                    }
-                }
-
-                ecb.RemoveComponent<NewWaypoint>(entity);
             }
         }
 
