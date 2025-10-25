@@ -5,6 +5,7 @@ using Components;
 using Tags;
 using Unity.Collections;
 using UnityEngine;
+using Unity.Burst;
 
 namespace Systems
 {
@@ -13,124 +14,124 @@ namespace Systems
     /// </summary>
     public partial class TileConnectionSystem : SystemBase
     {
+        EntityQuery connectingTiles;
+        EntityQuery newConnectingTiles;
+        EntityQuery newNotConnectingTiles;
         protected override void OnCreate()
         {
             RequireForUpdate<EntityBufferElement>();
+
+            connectingTiles = new EntityQueryBuilder(Allocator.Temp)
+                .WithAll<ConnectingTile>()
+                .Build(this);
+
+            newConnectingTiles = new EntityQueryBuilder(Allocator.Temp)
+                .WithAll<NewTile, ConnectingTile>()
+                .Build(this);
+
+            newNotConnectingTiles = new EntityQueryBuilder(Allocator.Temp)
+                .WithAll<NewTile>()
+                .WithNone<ConnectingTile>()
+                .Build(this);
+
         }
         protected override void OnUpdate()
         {
-            var ecb = SystemAPI.GetSingleton<PreLateSimulationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
             var entityGrid = TileGridUtility.GetEntityGrid();
-
-            NativeArray<Direction> directions = new(4, Allocator.TempJob);
-            Direction.GetDirections(ref directions);
-
-            // Connect new tiles with the ConnectingTile component
-            // ConnectingTile, MapTileComponent & LocalTransform can't be passed as parameters because SystemAPI.GetComponent & SystemAPI.HasComponent are used
-            Entities.WithAll<NewTile, ConnectingTile>().ForEach((Entity entity) =>
-            {
-                ConnectingTile connectingTile = SystemAPI.GetComponent<ConnectingTile>(entity);
-                Tile mapTileComponent = SystemAPI.GetComponent<Tile>(entity);
-                LocalTransform transform = SystemAPI.GetComponent<LocalTransform>(entity);
-
-                foreach (Direction direction in directions)
-                {
-                    if (!TileGridUtility.TryGetTile(mapTileComponent.pos + direction.DirectionVec, entityGrid, out Entity neighbour)) continue;
-                    if (SystemAPI.HasComponent<ConnectingTile>(neighbour))
-                    {
-                        var neighbourConnectingTile = SystemAPI.GetComponent<ConnectingTile>(neighbour);
-                        if (neighbourConnectingTile.group == connectingTile.group)
-                        {
-                            connectingTile.AddDirection(direction);
-                            neighbourConnectingTile.AddDirection(direction.Flip());
-                        }
-                        else neighbourConnectingTile.RemoveDirection(direction.Flip());
-
-                        // Update neighbour if they don't get updated this frame anyway
-                        if (!SystemAPI.HasComponent<NewTile>(neighbour))
-                        {
-                            SystemAPI.SetComponent(neighbour, neighbourConnectingTile); // Changes must be applied directly as they might be read in the same job
-
-                            var neighbourTransform = SystemAPI.GetComponent<LocalTransform>(neighbour);
-                            neighbourTransform.Rotation = quaternion.EulerXYZ(0, neighbourConnectingTile.GetRotation().ToRadians(), 0);
-                            SystemAPI.SetComponent(neighbour, neighbourTransform);
-
-                            var neighbourTile = SystemAPI.GetComponent<Tile>(neighbour);
-                            neighbourTile.rotation = neighbourConnectingTile.GetRotation();
-                            SystemAPI.SetComponent(neighbour, neighbourTile); // Changes must be applied directly because the data might be updated in the same frame again
-                        }
-                    }
-                }
-
-                // Update ConnectingTile
-                ecb.SetComponent(entity, connectingTile);
-
-                // Update rotation
-                Direction rotation = connectingTile.GetRotation();
-                transform.Rotation = quaternion.EulerXYZ(0, rotation.ToRadians(), 0);
-                mapTileComponent.rotation = rotation;
-                SystemAPI.SetComponent(entity, transform);
-                SystemAPI.SetComponent(entity, mapTileComponent); // Changes must be applied directly because the data might be updated in the same frame again
-            }).Schedule();
-
-            // Disconnect new tiles without the ConnectingTile component
-            Entities.WithAll<NewTile>().WithNone<ConnectingTile>().ForEach((Entity entity) =>
-            {
-                var mapTileComponent = SystemAPI.GetComponent<Tile>(entity);
-
-                foreach (Direction direction in directions)
-                {
-                    if (!TileGridUtility.TryGetTile(mapTileComponent.pos + direction.DirectionVec, entityGrid, out Entity neighbour)) continue;
-                    if (SystemAPI.HasComponent<ConnectingTile>(neighbour))
-                    {
-                        var neighbourConnectingTile = SystemAPI.GetComponent<ConnectingTile>(neighbour);
-
-                        // Skip if the neighbour wasn't connected
-                        if (!neighbourConnectingTile.IsConnected(direction.Flip()))
-                            continue;
-
-                        // Update neighbour ConnectingTile
-                        neighbourConnectingTile.RemoveDirection(direction.Flip());
-                        SystemAPI.SetComponent(neighbour, neighbourConnectingTile);
-
-                        var neighbourTransform = SystemAPI.GetComponent<LocalTransform>(neighbour);
-                        neighbourTransform.Rotation = quaternion.EulerXYZ(0, neighbourConnectingTile.GetRotation().ToRadians(), 0);
-                        SystemAPI.SetComponent(neighbour, neighbourTransform);
-
-                        var neighbourTile = SystemAPI.GetComponent<Tile>(neighbour);
-                        neighbourTile.rotation = neighbourConnectingTile.GetRotation();
-                        SystemAPI.SetComponent(neighbour, neighbourTile); // Changes must be applied directly because the data might be updated in the same frame again
-                    }
-                }
-            }).Schedule();
 
             if (SystemAPI.HasSingleton<LoadGame>())
             {
-                // ConnectingTile can't be passed as a parameter because SystemAPI.GetComponent & SystemAPI.HasComponent are used
-                Entities.WithAll<ConnectingTile>().ForEach((Entity entity, ref Tile mapTileComponent, ref LocalTransform transform) =>
+                new ConnectTilesJob
                 {
-                    var connectingTile = SystemAPI.GetComponentRW<ConnectingTile>(entity);
-                    foreach (Direction direction in directions)
-                    {
-                        if (!TileGridUtility.TryGetTile(mapTileComponent.pos + direction.DirectionVec, entityGrid, out Entity neighbour)) continue;
-                        if (SystemAPI.HasComponent<ConnectingTile>(neighbour))
-                        {
-                            var neighbourConnectingTile = SystemAPI.GetComponent<ConnectingTile>(neighbour);
-                            if (neighbourConnectingTile.group != connectingTile.ValueRO.group) continue;
-
-                            // Update self
-                            connectingTile.ValueRW.AddDirection(direction);
-                        }
-                    }
-
-                    // Update rotation
-                    Direction rotation = connectingTile.ValueRO.GetRotation();
-                    transform.Rotation = quaternion.EulerXYZ(0, rotation.ToRadians(), 0);
-                    mapTileComponent.rotation = rotation;
-                }).Schedule();
+                    entityGrid = entityGrid,
+                    connectingTileLookup = SystemAPI.GetComponentLookup<ConnectingTile>(),
+                    tileLookup = SystemAPI.GetComponentLookup<Tile>(),
+                    transformLookup = SystemAPI.GetComponentLookup<LocalTransform>()
+                }.Schedule(connectingTiles);
+                return;
             }
 
-            directions.Dispose(Dependency);
+            new ConnectTilesJob
+            {
+                entityGrid = entityGrid,
+                connectingTileLookup = SystemAPI.GetComponentLookup<ConnectingTile>(),
+                tileLookup = SystemAPI.GetComponentLookup<Tile>(),
+                transformLookup = SystemAPI.GetComponentLookup<LocalTransform>()
+            }.Schedule(newConnectingTiles);
+
+            new DisconnectTilesJob
+            {
+                entityGrid = entityGrid,
+                connectingTileLookup = SystemAPI.GetComponentLookup<ConnectingTile>(),
+                tileLookup = SystemAPI.GetComponentLookup<Tile>(),
+                transformLookup = SystemAPI.GetComponentLookup<LocalTransform>()
+            }.Schedule(newNotConnectingTiles);
+        }
+
+        [BurstCompile]
+        private partial struct ConnectTilesJob : IJobEntity
+        {
+            public DynamicBuffer<EntityBufferElement> entityGrid;
+            public ComponentLookup<ConnectingTile> connectingTileLookup;
+            public ComponentLookup<Tile> tileLookup;
+            public ComponentLookup<LocalTransform> transformLookup;
+            public void Execute(Entity entity)
+            {
+                RefRW<ConnectingTile> connectingTile = connectingTileLookup.GetRefRW(entity);
+                RefRW<Tile> tile = tileLookup.GetRefRW(entity);
+
+                foreach (Direction direction in Direction.GetDirections())
+                {
+                    if (!TileGridUtility.TryGetTile(tile.ValueRO.pos + direction.DirectionVec, entityGrid, out Entity neighbour)) continue;
+                    if (!connectingTileLookup.HasComponent(neighbour)) continue;
+
+                    var neighbourConnectingTile = connectingTileLookup.GetRefRW(neighbour);
+                    if (neighbourConnectingTile.ValueRO.group == connectingTile.ValueRO.group)
+                    {
+                        connectingTile.ValueRW.AddDirection(direction);
+                        neighbourConnectingTile.ValueRW.AddDirection(direction.Flip());
+                    }
+                    else neighbourConnectingTile.ValueRW.RemoveDirection(direction.Flip());
+
+                    // Update neighbour
+                    Direction newNeighbourRotation = neighbourConnectingTile.ValueRO.GetRotation();
+                    transformLookup.GetRefRW(neighbour).ValueRW.Rotation = quaternion.EulerXYZ(0, newNeighbourRotation.ToRadians(), 0);
+                    tileLookup.GetRefRW(neighbour).ValueRW.rotation = newNeighbourRotation;
+                }
+
+                Direction newRotation = connectingTile.ValueRO.GetRotation();
+                tile.ValueRW.rotation = newRotation;
+                transformLookup.GetRefRW(entity).ValueRW.Rotation = quaternion.EulerXYZ(0, newRotation.ToRadians(), 0);
+            }
+        }
+
+        [BurstCompile]
+        private partial struct DisconnectTilesJob : IJobEntity
+        {
+            public DynamicBuffer<EntityBufferElement> entityGrid;
+            public ComponentLookup<ConnectingTile> connectingTileLookup;
+            public ComponentLookup<Tile> tileLookup;
+            public ComponentLookup<LocalTransform> transformLookup;
+            public void Execute(Entity entity)
+            {
+                Tile tile = tileLookup.GetRefRO(entity).ValueRO;
+
+                foreach (Direction direction in Direction.GetDirections())
+                {
+                    if (!TileGridUtility.TryGetTile(tile.pos + direction.DirectionVec, entityGrid, out Entity neighbour)) continue;
+                    if (!connectingTileLookup.HasComponent(neighbour)) continue;
+
+                    var neighbourConnectingTile = connectingTileLookup.GetRefRW(neighbour);
+
+                    // Update neighbourr connecting tile
+                    neighbourConnectingTile.ValueRW.RemoveDirection(direction.Flip());
+
+                    // Update neighbour rotation
+                    Direction newNeighbourRotation = neighbourConnectingTile.ValueRO.GetRotation();
+                    transformLookup.GetRefRW(neighbour).ValueRW.Rotation = quaternion.EulerXYZ(0, newNeighbourRotation.ToRadians(), 0);
+                    tileLookup.GetRefRW(neighbour).ValueRW.rotation = newNeighbourRotation;
+                }
+            }
         }
     }
 }
