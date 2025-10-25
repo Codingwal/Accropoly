@@ -55,13 +55,11 @@ public partial class Deserializer
                 PersonComponents.Traveller => new Traveller()
                 {
                     destination = Deserialize(new int2()),
-                    velocity = Deserialize(new float3()),
+                    useableVehicles = (Components.WaypointComponents.TravelObjects)br.ReadInt32(),
                     maxAcceleration = br.ReadSingle(),
                     nextWaypointIndex = br.ReadInt32(),
-                },
-                PersonComponents.TravellerWaypointsSerializable => new TravellerWaypointsSerializable()
-                {
                     waypoints = Deserialize(new UnsafeList<float3>()),
+                    velocity = Deserialize(new float3()),
                 },
                 PersonComponents.Travelling => new Travelling(),
                 PersonComponents.WantsToTravel => new WantsToTravel(),

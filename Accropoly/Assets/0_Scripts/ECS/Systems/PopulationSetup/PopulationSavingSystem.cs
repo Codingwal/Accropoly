@@ -60,7 +60,6 @@ namespace Systems
                     if (componentType == typeof(Person)) AddComponentData<Person>();
                     else if (componentType == typeof(Worker)) AddComponentData<Worker>();
                     else if (componentType == typeof(Traveller)) AddComponentData<Traveller>();
-                    else if (componentType == typeof(TravellerWaypointsSerializable)) AddComponentData<TravellerWaypointsSerializable>();
                     else if (componentType == typeof(Travelling)) AddTag<Travelling>();
                     else if (componentType == typeof(WantsToTravel)) AddTag<WantsToTravel>();
                     else Debug.LogWarning($"Component of type {componentType} will not be serialized but also isn't present in typesToIgnore");

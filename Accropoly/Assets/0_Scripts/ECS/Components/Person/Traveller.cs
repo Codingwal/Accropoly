@@ -41,12 +41,6 @@ namespace Components
             maxAcceleration = 10;
         }
     }
-
-    // For serialization purposes
-    public struct TravellerWaypointsSerializable : IComponentData
-    {
-        public UnsafeList<float3> waypoints;
-    }
 }
 namespace Tags
 {

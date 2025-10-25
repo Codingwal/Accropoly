@@ -49,7 +49,6 @@ namespace Systems
                     else if (type == typeof(Person)) AddComponent<Person>();
                     else if (type == typeof(Worker)) AddComponent<Worker>();
                     else if (type == typeof(Traveller)) AddComponent<Traveller>();
-                    else if (type == typeof(TravellerWaypointsSerializable)) AddComponent<TravellerWaypointsSerializable>();
                     else if (type == typeof(Travelling)) AddComponent<Travelling>();
                     else if (type == typeof(WantsToTravel)) AddComponent<WantsToTravel>();
                     else Debug.LogError($"Unexpected type {type.Name}");

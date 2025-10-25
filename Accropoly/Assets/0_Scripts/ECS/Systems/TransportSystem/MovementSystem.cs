@@ -25,7 +25,6 @@ namespace Systems
         {
             travellingObjects = new EntityQueryBuilder(Allocator.Temp)
                 .WithAll<Travelling, Traveller, LocalTransform>()
-                .WithNone<TravellerWaypointsSerializable>() // Wait until the data has been fully loaded
                 .Build(this);
 
             RequireForUpdate(travellingObjects);
@@ -60,10 +59,16 @@ namespace Systems
             if (!SystemAPI.HasSingleton<RunGame>())
                 return;
 
+            WaypointsData waypointsData = SystemAPI.GetSingleton<WaypointsData>();
+
+            // Wait for WaypointSystem to setup waypoints
+            if (waypointsData.waypoints.IsEmpty)
+                return;
+
             new MoveObjectsJob()
             {
                 ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged),
-                waypointsData = SystemAPI.GetSingleton<WaypointsData>(),
+                waypointsData = waypointsData,
                 collisionWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().CollisionWorld,
                 deltaTime = SystemAPI.GetSingleton<GameInfo>().fixedDeltaTime / gameSecondsPerMovementSecond,
                 waypointLookup = SystemAPI.GetComponentLookup<Waypoint>(),
@@ -255,7 +260,7 @@ namespace Systems
             {
                 if (math.distancesq(transform.Position, waypointPos) < math.square(0.3f)) // Reached waypoint
                 {
-                    DeregisterAtWaypoint(GetEntity(traveller.NextWaypoint));
+                    DeregisterAtWaypoint(waypoint);
 
                     traveller.nextWaypointIndex++; // Update targeted waypoint
 

@@ -21,54 +21,18 @@ namespace Systems
         protected override void OnCreate()
         {
             RequireForUpdate<Traveller>();
+            RequireForUpdate<RunGame>();
         }
         protected override void OnUpdate()
         {
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
-
-            // Prepare traveller data for serialization (waypoints can't be serialized directly because entity ids might differ after restarting)
-            if (SystemAPI.HasSingleton<PreSaveGame>())
-            {
-                Entities.ForEach((Entity entity, ref Traveller traveller) =>
-                {
-                    TravellerWaypointsSerializable waypoints = new()
-                    {
-                        waypoints = new(8, Allocator.Persistent, NativeArrayOptions.UninitializedMemory)
-                    };
-                    foreach (float3 waypoint in traveller.waypoints)
-                    {
-                        waypoints.waypoints.Add(waypoint);
-                    }
-                    traveller.waypoints.Dispose();
-                    ecb.AddComponent(entity, waypoints);
-                }).Schedule();
-            }
-
-            if (!SystemAPI.HasSingleton<RunGame>())
-                return;
-
-            // Recreate waypoints list from serialization container (can't be serialized directly because entity ids might differ after restarting)
-            var waypointsData = SystemAPI.GetSingleton<WaypointsData>();
-            if (!waypointsData.waypoints.IsEmpty)
-            {
-                Entities.ForEach((Entity entity, ref Traveller traveller, ref TravellerWaypointsSerializable waypoints) =>
-                {
-                    traveller.waypoints = new(8, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
-                    foreach (float3 waypoint in waypoints.waypoints)
-                    {
-                        traveller.waypoints.Add(waypoint);
-                    }
-                    waypoints.waypoints.Dispose();
-                    ecb.RemoveComponent<TravellerWaypointsSerializable>(entity);
-                }).Run();
-            }
 
             var utility = new PathfindingUtility()
             {
                 transformLookup = SystemAPI.GetComponentLookup<LocalTransform>(),
                 connectionsLookup = SystemAPI.GetComponentLookup<Connections>(),
                 waypointLookup = SystemAPI.GetComponentLookup<Waypoint>(),
-                waypointsData = waypointsData,
+                waypointsData = SystemAPI.GetSingleton<WaypointsData>(),
             };
 
             // Handle objects requesting a path
