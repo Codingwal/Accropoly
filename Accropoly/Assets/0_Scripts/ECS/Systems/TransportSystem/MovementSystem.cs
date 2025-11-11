@@ -277,16 +277,15 @@ namespace Systems
 
                     traveller.nextWaypointIndex++; // Update targeted waypoint
 
-                    if (traveller.nextWaypointIndex == traveller.waypoints.Length - 1) // Reached second last waypoint
+                    if (traveller.nextWaypointIndex == traveller.waypoints.Length - 1) // Targeting last waypoint
                     {
-                        transform.Position = traveller.waypoints[^1]; // Teleport to destination
+                        transform.Position = traveller.NextWaypoint; // Teleport to destination
+                        Debug.Log($"Set position to {transform.Position} (Entity {entity})");
                         ecb.SetComponentEnabled<Travelling>(entity, false);
                     }
                     else
                     {
-                        // If the waypoint does not exist, the next iteration will handle choosing a new one and registering there
-                        if (WaypointExists(traveller.NextWaypoint))
-                            RegisterAtWaypoint(GetEntity(traveller.NextWaypoint));
+                        RegisterAtWaypoint(GetEntity(traveller.NextWaypoint));
                     }
                 }
             }

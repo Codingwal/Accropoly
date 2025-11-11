@@ -96,22 +96,13 @@ namespace Systems
             Debug.Assert(path.IsCreated, "The path list has not been created");
             Debug.Assert(path.IsEmpty, "The path list must be empty");
             Debug.Assert(!start.Equals(dest), $"Start must not equal destination (start and dest are {start})");
+            Debug.Assert(waypointsData.waypoints.ContainsKey(start), $"No waypoint at start pos {start}");
+            Debug.Assert(waypointsData.waypoints.ContainsKey(dest), $"No waypoint at destination pos {dest}");
 
             NativeList<(float, NodeToVisit)> openList = new(8, Allocator.TempJob); // (cost, info)
             NativeHashMap<Entity, VisitedNode> closedList = new(8, Allocator.TempJob); // (entity, info)
 
-            NativeList<Direction> directions = new(4, Allocator.TempJob); // Contains the four directions
-            Direction.GetDirections(ref directions);
-
-            void Dispose()
-            {
-                openList.Dispose();
-                closedList.Dispose();
-                directions.Dispose();
-            }
-
-            Debug.Assert(waypointsData.waypoints.TryGetValue(start, out Entity startWaypoint), $"There is no waypoint at the start pos {start}");
-            openList.Add((0, new(startWaypoint, Entity.Null)));
+            openList.Add((0, new(waypointsData.waypoints[start], Entity.Null)));
 
             int iteration = 0;
 
@@ -140,8 +131,8 @@ namespace Systems
                     for (int i = reversedPath.Length - 1; i >= 0; i--)
                         path.Add(reversedPath[i]);
                     reversedPath.Dispose();
-
-                    Dispose();
+                    openList.Dispose();
+                    closedList.Dispose();
                     return true;
                 }
 
@@ -163,12 +154,12 @@ namespace Systems
                     float3 nextPos = transformLookup.GetRefRO(next).ValueRO.Position;
                     openList.Add((CalculateCost(nextPos, pos, cost, dest, speed), new NodeToVisit(next, node.entity)));
                 }
-                directions.Clear();
 
                 if (iteration > 1000) throw new();
                 iteration++;
             }
-            Dispose();
+            openList.Dispose();
+            closedList.Dispose();
             return false;
         }
         private static (float, NodeToVisit) PopCheapest(in NativeList<(float, NodeToVisit)> openList)
