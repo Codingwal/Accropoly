@@ -13,4 +13,8 @@ namespace Components
 namespace Tags
 {
     public struct Homeless : IComponentData { }
+
+    public struct FreeTime : IComponentData { }
+    public struct Resting : IComponentData { }
+    public struct Working : IComponentData { }
 }

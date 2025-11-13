@@ -33,7 +33,6 @@ namespace Systems
 
             NativeArray<Entity> homelessEntities = GetEntityQuery(typeof(Homeless)).ToEntityArray(Allocator.TempJob);
             NativeArray<Person> homelessPersonComponents = GetEntityQuery(typeof(Homeless), typeof(Person)).ToComponentDataArray<Person>(Allocator.TempJob);
-            NativeArray<LocalTransform> homelessTransforms = GetEntityQuery(typeof(Homeless), typeof(LocalTransform)).ToComponentDataArray<LocalTransform>(Allocator.TempJob);
             NativeArray<int> homelessIndex = new(1, Allocator.TempJob);
             homelessIndex[0] = 0;
 
@@ -57,10 +56,8 @@ namespace Systems
                     ecb.SetComponent(homelessEntity, personComponent);
 
                     // Update position
-                    float offset = (habitat.totalSpace - habitat.freeSpace - 2.5f) * 0.2f;
-                    var homelessTransform = homelessTransforms[homelessIndex[0]];
-                    homelessTransform.Position = new(2 * habitatTile.pos.x + offset, 0.5f, 2 * habitatTile.pos.y);
-                    ecb.SetComponent(homelessEntity, homelessTransform);
+                    float3 pos = new(2 * habitatTile.pos.x, 0.8f, 2 * habitatTile.pos.y);
+                    ecb.SetComponent(homelessEntity, LocalTransform.FromPositionRotationScale(pos, quaternion.identity, 0.1f));
                 }
                 else if (rnd.NextFloat() <= immigrationProbability * deltaTime) // Multiply with delta time bc immigrationProbability is per second, not per frame
                 {
@@ -87,12 +84,13 @@ namespace Systems
                     ecb.AddComponent<Travelling>(entity);
                     ecb.SetComponentEnabled<Travelling>(entity, false);
 
+                    ecb.AddComponent<FreeTime>(entity);
+
                     float3 pos = new(2 * habitatTile.pos.x, 0.8f, 2 * habitatTile.pos.y);
                     ecb.SetComponent(entity, LocalTransform.FromPositionRotationScale(pos, quaternion.identity, 0.1f));
                 }
             })
-            .WithDisposeOnCompletion(homelessEntities).WithDisposeOnCompletion(homelessPersonComponents)
-            .WithDisposeOnCompletion(homelessTransforms).WithDisposeOnCompletion(homelessIndex)
+            .WithDisposeOnCompletion(homelessEntities).WithDisposeOnCompletion(homelessPersonComponents).WithDisposeOnCompletion(homelessIndex)
             .Schedule();
         }
     }

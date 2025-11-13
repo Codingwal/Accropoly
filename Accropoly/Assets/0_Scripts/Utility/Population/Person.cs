@@ -17,4 +17,7 @@ public enum PersonComponents : int
     // Tags
     Travelling = 100,
     WantsToTravel = 101,
+    FreeTime = 102,
+    Resting = 103,
+    Working = 104
 }

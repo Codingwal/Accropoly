@@ -62,6 +62,9 @@ namespace Systems
                     else if (componentType == typeof(Traveller)) AddComponentData<Traveller>();
                     else if (componentType == typeof(Travelling)) AddTag<Travelling>();
                     else if (componentType == typeof(WantsToTravel)) AddTag<WantsToTravel>();
+                    else if (componentType == typeof(FreeTime)) AddTag<FreeTime>();
+                    else if (componentType == typeof(Resting)) AddTag<Resting>();
+                    else if (componentType == typeof(Working)) AddTag<Working>();
                     else Debug.LogWarning($"Component of type {componentType} will not be serialized but also isn't present in typesToIgnore");
                 }
                 componentTypes.Dispose();

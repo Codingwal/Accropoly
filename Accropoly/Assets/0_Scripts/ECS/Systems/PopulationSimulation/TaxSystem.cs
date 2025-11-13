@@ -8,6 +8,7 @@ namespace Systems
     /// Handles taxes: The player gets money each morning
     /// totalTaxIncome = averageHappiness * totalPopulation * taxPerHappiness
     /// </summary>
+    [UpdateInGroup(typeof(LateSimulationSystemGroup))]
     public partial class TaxSystem : SystemBase
     {
         protected override void OnCreate()

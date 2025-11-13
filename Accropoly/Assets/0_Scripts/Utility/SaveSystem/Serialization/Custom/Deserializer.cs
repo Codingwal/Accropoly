@@ -63,6 +63,9 @@ public partial class Deserializer
                 },
                 PersonComponents.Travelling => new Travelling(),
                 PersonComponents.WantsToTravel => new WantsToTravel(),
+                PersonComponents.FreeTime => new FreeTime(),
+                PersonComponents.Resting => new Resting(),
+                PersonComponents.Working => new Working(),
                 _ => throw new($"Cannot deserialize component of type {type}")
             };
             data.components.Add((component, isEnabled));

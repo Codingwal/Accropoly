@@ -169,6 +169,7 @@ namespace Systems
                 if (!WaypointExists(traveller.waypoints[^1]))
                 {
                     Debug.LogWarning("Destination does not exist! Stopping.");
+                    ecb.SetComponentEnabled<Travelling>(entity, false);
                     return;
                 }
 
@@ -280,7 +281,6 @@ namespace Systems
                     if (traveller.nextWaypointIndex == traveller.waypoints.Length - 1) // Targeting last waypoint
                     {
                         transform.Position = traveller.NextWaypoint; // Teleport to destination
-                        Debug.Log($"Set position to {transform.Position} (Entity {entity})");
                         ecb.SetComponentEnabled<Travelling>(entity, false);
                     }
                     else

@@ -66,6 +66,9 @@ public partial class Serializer
             }
             else if (type == typeof(Travelling)) bw.Write((int)PersonComponents.Travelling);
             else if (type == typeof(WantsToTravel)) bw.Write((int)PersonComponents.WantsToTravel);
+            else if (type == typeof(FreeTime)) bw.Write((int)PersonComponents.FreeTime);
+            else if (type == typeof(Resting)) bw.Write((int)PersonComponents.Resting);
+            else if (type == typeof(Working)) bw.Write((int)PersonComponents.Working);
             else throw new($"Cannot serialize component of type {type}");
         }
     }
