@@ -32,8 +32,8 @@ public partial class AppearenceSystem : SystemBase
             Debug.Assert(config.simpleTiles.ContainsKey((int)tile.tileType), $"{tile.tileType} is not a simple tile.");
             data = config.simpleTiles[(int)tile.tileType];
         }).Schedule();
-
-        Entities.ForEach((ref LocalTransform transform, ref MaterialMeshInfo data, in Tile tile, in ConnectingTile connectingTile) =>
+ 
+        Entities.ForEach((ref LocalTransform transform, ref MaterialMeshInfo data, in Tile tile, in ConnectingTile connectingTile) => 
         {
             int index = connectingTile.GetIndex();
             if (index == 5 && tile.tileType == TileType.Lake)

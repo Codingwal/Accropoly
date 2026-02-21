@@ -20,9 +20,9 @@ public class FileHandler
         }
         return files;
     }
-    public static void SaveObject<T>(string directory, string name, T obj)
+    public static void SaveObject<T>(string directory, string name, T obj) 
     {
-        string dataPath = $"{baseDir}{directory}/{name}.bin";
+        string dataPath = $"{baseDir}{directory}/{name}.bin";   
 
         FileStream fs = File.Create(dataPath);
         Serializer serializer = new(new(fs));
