@@ -14,7 +14,7 @@ public partial class AppearenceSystem : SystemBase
     private bool firstUpdate = true;
     protected override void OnUpdate()
     {
-        if (firstUpdate)
+        if (firstUpdate) 
         {
             Appearence data = Authoring.Appearence.CreateAppearenceConfig();
             EntityManager.CreateSingleton(data);
