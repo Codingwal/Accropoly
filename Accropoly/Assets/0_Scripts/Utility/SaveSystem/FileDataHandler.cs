@@ -15,7 +15,7 @@ public class FileHandler
         {
             // Get the fileName, without path & fileType
             int startPoint = files[i].LastIndexOf("/") + 1;
-            int endPoint = files[i].IndexOf(".");
+            int endPoint = files[i].LastIndexOf(".");
             files[i] = files[i][startPoint..endPoint];
         }
         return files;
