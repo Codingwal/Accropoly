@@ -13,12 +13,10 @@ namespace Systems
     [UpdateInGroup(typeof(ComponentInitializationSystemGroup))]
     public partial class WorkerInitialization : SystemBase
     {
-        private EntityQuery workers;
         private EntityQuery newWorkers;
         protected override void OnCreate()
         {
             RequireForUpdate<Worker>();
-            workers = new EntityQueryBuilder(Allocator.Temp).WithAll<Worker>().Build(this);
             newWorkers = new EntityQueryBuilder(Allocator.Temp).WithAll<NewPerson, Worker>().Build(this);
         }
         protected override void OnUpdate()

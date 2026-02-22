@@ -21,7 +21,7 @@ namespace Systems
         protected override void OnCreate()
         {
             RequireForUpdate<RunGame>();
-            employersWithSpaceQuery = GetEntityQuery(typeof(ActiveTile), typeof(Employer), typeof(HasSpace), typeof(Tile));
+            employersWithSpaceQuery = new EntityQueryBuilder(Allocator.Temp).WithAll<ActiveTile, Employer, HasSpace, Tile>().Build(this);
         }
         protected override void OnUpdate()
         {
@@ -58,7 +58,7 @@ namespace Systems
                 ecb = ecb,
                 pathfindingUtility = pathfindingUtility,
                 entityGrid = entityGrid,
-                employerLookup = SystemAPI.GetComponentLookup<Employer>(true),
+                employerLookup = SystemAPI.GetComponentLookup<Employer>(),
             }.Schedule();
 
             employerEntities.Dispose(Dependency);
@@ -115,7 +115,7 @@ namespace Systems
             public EntityCommandBuffer ecb;
             public PathfindingUtility pathfindingUtility;
             public DynamicBuffer<EntityBufferElement> entityGrid;
-            [ReadOnly] public ComponentLookup<Employer> employerLookup;
+            public ComponentLookup<Employer> employerLookup;
             public void Execute(Entity entity, ref Worker worker, in Person person)
             {
                 if (pathfindingUtility.CalculateTravelTime(person.homeTile, worker.employer) != -1) // Valid path to employer

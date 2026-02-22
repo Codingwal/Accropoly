@@ -4,6 +4,7 @@ using Tags;
 using Unity.Jobs;
 using Unity.Collections;
 using System.Linq;
+using NUnit.Framework;
 
 namespace Systems
 {
@@ -38,20 +39,19 @@ namespace Systems
             public EntityCommandBuffer ecb;
             public DynamicBuffer<EntityBufferElement> buffer;
             [ReadOnly] public ComponentLookup<BuildingConnector> buildingConnectorLookup;
-            public void Execute(Entity entity, in Tile tile)
+            public void Execute(in Tile tile, EnabledRefRW<IsConnected> isConnected)
             {
-                bool isConnected = false;
                 foreach (Direction direction in Direction.GetDirections())
                 {
                     if (!TileGridUtility.TryGetTile(tile.pos + direction.DirectionVec, buffer, out Entity neighbour)) continue;
 
                     if (buildingConnectorLookup.HasComponent(neighbour))
                     {
-                        isConnected = true;
-                        break;
+                        isConnected.ValueRW = true;
+                        return;
                     }
                 }
-                ecb.SetComponentEnabled<IsConnected>(entity, isConnected);
+                isConnected.ValueRW = false;
             }
         }
     }

@@ -52,7 +52,7 @@ namespace Systems
             [ReadOnly] public NativeReference<float> happinessSum;
             public void Execute(ref UIInfo info)
             {
-                info.happinessSum += happinessSum.Value;
+                info.happinessSum = happinessSum.Value;
             }
         }
 

@@ -17,12 +17,12 @@ namespace Systems
             var ecb = SystemAPI.GetSingleton<EndComponentInitializationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
 
             // Init new habitats / employers
-            foreach (var (habitat, entity) in SystemAPI.Query<RefRW<Habitat>>().WithEntityAccess())
+            foreach (var (habitat, entity) in SystemAPI.Query<RefRW<Habitat>>().WithAll<NewTile>().WithEntityAccess())
             {
                 habitat.ValueRW.freeSpace = habitat.ValueRO.totalSpace;
                 ecb.AddComponent<HasSpace>(entity);
             }
-            foreach (var (employer, entity) in SystemAPI.Query<RefRW<Employer>>().WithEntityAccess())
+            foreach (var (employer, entity) in SystemAPI.Query<RefRW<Employer>>().WithAll<NewTile>().WithEntityAccess())
             {
                 employer.ValueRW.freeSpace = employer.ValueRO.totalSpace;
                 ecb.AddComponent<HasSpace>(entity);

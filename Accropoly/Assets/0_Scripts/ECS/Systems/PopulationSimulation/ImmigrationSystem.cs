@@ -5,6 +5,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using Components;
 using Tags;
+using UnityEngine;
 
 namespace Systems
 {
@@ -26,7 +27,7 @@ namespace Systems
         [BurstCompile]
         protected override void OnUpdate()
         {
-            Random rnd = new((uint)UnityEngine.Random.Range(1, 1000));
+            Unity.Mathematics.Random rnd = new((uint)UnityEngine.Random.Range(1, 1000));
             float deltaTime = SystemAPI.Time.DeltaTime;
             var ecb = SystemAPI.GetSingleton<EndCreationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
             Entity prefab = SystemAPI.GetSingleton<ConfigComponents.PrefabEntity>().personPrefab;
@@ -58,7 +59,7 @@ namespace Systems
             public EntityCommandBuffer ecb;
             public float deltaTime;
             public Entity prefab;
-            public Random rnd;
+            public Unity.Mathematics.Random rnd;
             public NativeArray<Entity> homelessEntities;
             public NativeArray<Person> homelessPersonComponents;
             public NativeReference<int> homelessIndex;
@@ -84,7 +85,7 @@ namespace Systems
                     float3 pos = new(2 * habitatTile.pos.x, 0.8f, 2 * habitatTile.pos.y);
                     ecb.SetComponent(homelessEntity, LocalTransform.FromPositionRotationScale(pos, quaternion.identity, 0.1f));
 
-                    homelessIndex.Value++; // ?
+                    homelessIndex.Value++; // ? 
                 }
                 else if (rnd.NextFloat() <= immigrationProbability * deltaTime) // Multiply with delta time bc immigrationProbability is per second, not per frame
                 {
