@@ -12,14 +12,13 @@ namespace Systems
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<Tags.RunGame>();
-            state.RequireForUpdate<ConfigComponents.Time>();
             newDayTagQuery = state.GetEntityQuery(typeof(Tags.NewDay));
         }
         public void OnUpdate(ref SystemState state)
         {
             state.CompleteDependency(); // Important because TaxSystem writes to GameInfo and GetSingleton doesn't complete dependencies but throws an error
 
-            var config = SystemAPI.GetSingleton<ConfigComponents.Time>();
+            var config = ConfigData.timeConfig;
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
 
             ecb.DestroyEntity(newDayTagQuery, EntityQueryCaptureMode.AtPlayback); // Delete old tag if present

@@ -1,4 +1,3 @@
-using Unity.Collections;
 using Unity.Entities;
 using Components;
 
@@ -14,11 +13,10 @@ namespace Systems
         protected override void OnCreate()
         {
             RequireForUpdate<Tags.NewDay>();
-            RequireForUpdate<ConfigComponents.Taxes>();
         }
         protected override void OnUpdate()
         {
-            var config = SystemAPI.GetSingleton<ConfigComponents.Taxes>();
+            var config = ConfigData.populationConfig.taxes;
 
             float totalTaxIncome = 0;
             foreach (var person in SystemAPI.Query<RefRO<Person>>())

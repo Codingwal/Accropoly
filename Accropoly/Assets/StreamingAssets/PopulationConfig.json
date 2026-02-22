@@ -1,0 +1,13 @@
+{
+    "happiness": {
+        "defaultHappiness": 50,
+        "homeless": -30,
+        "hasElectricity": 10,
+        "noElectricity": -10,
+        "employed": 20,
+        "unemployed": -10
+    },
+    "taxes": {
+        "taxPerHappiness": 1
+    }
+}

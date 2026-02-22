@@ -20,7 +20,10 @@ public class SaveSystem : FileHandler
 
         Debug.Log("Loading config data");
         ConfigData.saveSystemConfig = ReadJsonConfig<SaveSystemConfig>("SaveSystemConfig");
-        ConfigData.tileConfig = ReadJsonConfig<TileConfig>("TileConfig");
+        ConfigData.tileConfig = ReadJsonConfig<TileConfig>("TileConfig");   
+        ConfigData.populationConfig = ReadJsonConfig<PopulationConfig>("PopulationConfig");
+        ConfigData.cameraConfig = ReadJsonConfig<CameraConfig>("CameraConfig");
+        ConfigData.timeConfig = ReadJsonConfig<TimeConfig>("TimeConfig");
 
         Debug.Log("Initializing user data");
 

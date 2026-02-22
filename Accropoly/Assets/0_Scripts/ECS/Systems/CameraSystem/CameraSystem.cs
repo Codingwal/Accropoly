@@ -16,13 +16,9 @@ namespace Systems
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<Tags.RunGame>();
-            state.RequireForUpdate<ConfigComponents.Camera>();
-            // state.RequireForUpdate<InputData>();
         }
         public void OnUpdate(ref SystemState state)
         {
-            var config = SystemAPI.GetSingleton<ConfigComponents.Camera>();
-            var inputData = SystemAPI.GetSingleton<InputData>();
             var cameraTransform = SystemAPI.GetSingleton<CameraTransform>();
 
             // Apply transform values from last job
@@ -39,13 +35,11 @@ namespace Systems
                 Cursor.visible = true;
             }
 
-            var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
-
             state.Dependency = new Job
             {
-                ecb = ecb,
-                config = config,
-                inputData = inputData,
+                ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged),
+                config = ConfigData.cameraConfig,
+                inputData = SystemAPI.GetSingleton<InputData>(),
                 deltaTime = Time.deltaTime,
                 mapSize = WorldDataSystem.worldData.map.tiles.GetLength(0),
                 transform = cameraTransform,
@@ -57,7 +51,7 @@ namespace Systems
         public partial struct Job : IJob
         {
             public EntityCommandBuffer ecb;
-            public ConfigComponents.Camera config;
+            public CameraConfig config;
             public InputData inputData;
             public float deltaTime;
             public int mapSize;
