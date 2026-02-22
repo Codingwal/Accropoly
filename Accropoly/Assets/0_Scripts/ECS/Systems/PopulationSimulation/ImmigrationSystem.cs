@@ -33,31 +33,58 @@ namespace Systems
 
             NativeArray<Entity> homelessEntities = GetEntityQuery(typeof(Homeless)).ToEntityArray(Allocator.TempJob);
             NativeArray<Person> homelessPersonComponents = GetEntityQuery(typeof(Homeless), typeof(Person)).ToComponentDataArray<Person>(Allocator.TempJob);
-            NativeArray<int> homelessIndex = new(1, Allocator.TempJob);
-            homelessIndex[0] = 0;
+            NativeReference<int> homelessIndex = new(0, Allocator.TempJob);
 
-            // Foreach active habitat with space
-            Entities.WithAll<ActiveTile, HasSpace>().ForEach((Entity habitatEntity, ref Habitat habitat, in Tile habitatTile) =>
+            new ImmigrationJob
             {
-                if (homelessIndex[0] < homelessEntities.Length) // If there is at least one homeless person left
+                ecb = ecb,
+                deltaTime = deltaTime,
+                prefab = prefab,
+                rnd = rnd,
+                homelessEntities = homelessEntities,
+                homelessPersonComponents = homelessPersonComponents,
+                homelessIndex = homelessIndex,
+            }.Schedule();
+
+            homelessEntities.Dispose(Dependency);
+            homelessPersonComponents.Dispose(Dependency);
+            homelessIndex.Dispose(Dependency);
+        }
+
+        [BurstCompile]
+        [WithAll(typeof(ActiveTile), typeof(HasSpace))]
+        private partial struct ImmigrationJob : IJobEntity
+        {
+            public EntityCommandBuffer ecb;
+            public float deltaTime;
+            public Entity prefab;
+            public Random rnd;
+            public NativeArray<Entity> homelessEntities;
+            public NativeArray<Person> homelessPersonComponents;
+            public NativeReference<int> homelessIndex;
+            public void Execute(Entity habitatEntity, ref Habitat habitat, in Tile habitatTile)
+            {
+                if (homelessIndex.Value < homelessEntities.Length) // If there is at least one homeless person left
                 {
                     // Reimmigration
 
                     habitat.freeSpace--;
                     if (habitat.freeSpace == 0) ecb.RemoveComponent<HasSpace>(habitatEntity);
 
-                    var homelessEntity = homelessEntities[homelessIndex[0]];
+                    var homelessEntity = homelessEntities[homelessIndex.Value];
 
                     ecb.RemoveComponent<Homeless>(homelessEntity);
 
                     // Update homeTile
-                    var personComponent = homelessPersonComponents[homelessIndex[0]];
+                    var personComponent = homelessPersonComponents[homelessIndex.Value];
                     personComponent.homeTile = habitatTile.pos;
                     ecb.SetComponent(homelessEntity, personComponent);
 
                     // Update position
                     float3 pos = new(2 * habitatTile.pos.x, 0.8f, 2 * habitatTile.pos.y);
                     ecb.SetComponent(homelessEntity, LocalTransform.FromPositionRotationScale(pos, quaternion.identity, 0.1f));
+
+                    homelessIndex.Value++; // ?
                 }
                 else if (rnd.NextFloat() <= immigrationProbability * deltaTime) // Multiply with delta time bc immigrationProbability is per second, not per frame
                 {
@@ -89,9 +116,7 @@ namespace Systems
                     float3 pos = new(2 * habitatTile.pos.x, 0.8f, 2 * habitatTile.pos.y);
                     ecb.SetComponent(entity, LocalTransform.FromPositionRotationScale(pos, quaternion.identity, 0.1f));
                 }
-            })
-            .WithDisposeOnCompletion(homelessEntities).WithDisposeOnCompletion(homelessPersonComponents).WithDisposeOnCompletion(homelessIndex)
-            .Schedule();
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 using Unity.Entities;
 using Components;
 using Tags;
+using Unity.Collections;
 
 namespace Systems
 {
@@ -13,19 +14,26 @@ namespace Systems
         protected override void OnUpdate()
         {
             var ecb = SystemAPI.GetSingleton<EndComponentInitializationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
-            Entities.WithAll<NewTile, ElectricityConsumer>().ForEach((Entity entity) =>
-            {
-                ecb.AddComponent<HasElectricity>(entity);
-                ecb.SetComponentEnabled<HasElectricity>(entity, false);
-            }).Schedule();
+
+            EntityQuery newConsumers = SystemAPI.QueryBuilder().WithAll<NewTile, ElectricityConsumer>().Build();
+            AddDisabledHasElectricityComponent(newConsumers);
 
             if (SystemAPI.HasSingleton<LoadGame>())
             {
-                Entities.WithAll<ElectricityConsumer>().ForEach((Entity entity) =>
-                {
-                    ecb.AddComponent<HasElectricity>(entity);
+                EntityQuery consumers = SystemAPI.QueryBuilder().WithAll<ElectricityConsumer>().Build();
+                AddDisabledHasElectricityComponent(consumers);
+            }
+
+            void AddDisabledHasElectricityComponent(EntityQuery query)
+            {
+                // Add tag component
+                ecb.AddComponent<HasElectricity>(query, EntityQueryCaptureMode.AtPlayback);
+
+                // Disable tag component
+                var array = query.ToEntityArray(Allocator.Temp);
+                foreach (var entity in array)
                     ecb.SetComponentEnabled<HasElectricity>(entity, false);
-                }).Schedule();
+                array.Dispose();
             }
         }
     }

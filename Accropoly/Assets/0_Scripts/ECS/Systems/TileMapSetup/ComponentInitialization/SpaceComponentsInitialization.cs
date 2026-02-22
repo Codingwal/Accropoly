@@ -15,30 +15,32 @@ namespace Systems
         protected override void OnUpdate()
         {
             var ecb = SystemAPI.GetSingleton<EndComponentInitializationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
-            Entities.WithAll<NewTile>().ForEach((Entity entity, ref Habitat habitat) =>
-            {
-                habitat.freeSpace = habitat.totalSpace;
-                ecb.AddComponent<HasSpace>(entity);
-            }).Schedule();
-            Entities.WithAll<NewTile>().ForEach((Entity entity, ref Employer employer) =>
-            {
-                employer.freeSpace = employer.totalSpace;
-                ecb.AddComponent<HasSpace>(entity);
-            }).Schedule();
 
+            // Init new habitats / employers
+            foreach (var (habitat, entity) in SystemAPI.Query<RefRW<Habitat>>().WithEntityAccess())
+            {
+                habitat.ValueRW.freeSpace = habitat.ValueRO.totalSpace;
+                ecb.AddComponent<HasSpace>(entity);
+            }
+            foreach (var (employer, entity) in SystemAPI.Query<RefRW<Employer>>().WithEntityAccess())
+            {
+                employer.ValueRW.freeSpace = employer.ValueRO.totalSpace;
+                ecb.AddComponent<HasSpace>(entity);
+            }
+
+            // Re-add tag after world loading
             if (SystemAPI.HasSingleton<LoadGame>())
             {
-                Entities.ForEach((Entity entity, in Habitat habitat) =>
+                foreach (var (habitat, entity) in SystemAPI.Query<RefRO<Habitat>>().WithEntityAccess())
                 {
-                    if (habitat.freeSpace > 0)
+                    if (habitat.ValueRO.freeSpace > 0)
                         ecb.AddComponent<HasSpace>(entity);
-                }).Schedule();
-
-                Entities.ForEach((Entity entity, in Employer employer) =>
+                }
+                foreach (var (employer, entity) in SystemAPI.Query<RefRO<Employer>>().WithEntityAccess())
                 {
-                    if (employer.freeSpace > 0)
+                    if (employer.ValueRO.freeSpace > 0)
                         ecb.AddComponent<HasSpace>(entity);
-                }).Schedule();
+                }
             }
         }
     }

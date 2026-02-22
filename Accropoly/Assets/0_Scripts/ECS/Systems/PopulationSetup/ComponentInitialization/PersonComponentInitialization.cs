@@ -20,11 +20,11 @@ namespace Systems
         {
             var ecb = SystemAPI.GetSingleton<EndComponentInitializationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
 
-            Entities.ForEach((Entity entity, in Person person) =>
+            foreach (var (person, entity) in SystemAPI.Query<RefRO<Person>>().WithEntityAccess())
             {
-                if (person.homeTile.Equals(new(-1, -1)))
+                if (person.ValueRO.homeTile.Equals(new(-1, -1)))
                     ecb.AddComponent<Homeless>(entity);
-            }).Schedule();
+            }
         }
 
     }

@@ -2,6 +2,7 @@ using System.Linq;
 using Components;
 using Components.WaypointComponents;
 using Tags;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
@@ -36,7 +37,20 @@ namespace Systems
             };
 
             // Handle objects requesting a path
-            Entities.WithAll<WantsToTravel>().ForEach((Entity entity, ref Traveller traveller, in LocalTransform transform) =>
+            new CalculatePathsJob
+            {
+                ecb = ecb,
+                utility = utility,
+            }.Schedule();
+        }
+
+        [BurstCompile]
+        [WithAll(typeof(WantsToTravel))]
+        private partial struct CalculatePathsJob : IJobEntity
+        {
+            public EntityCommandBuffer ecb;
+            public PathfindingUtility utility;
+            public void Execute(Entity entity, ref Traveller traveller, in LocalTransform transform)
             {
                 traveller.Reset();
 
@@ -48,7 +62,7 @@ namespace Systems
                 }
                 else Debug.LogWarning($"Couldn't find path from {transform.Position} to {dest}!");
                 ecb.SetComponentEnabled<WantsToTravel>(entity, false);
-            }).Schedule();
+            }
         }
     }
 

@@ -23,11 +23,9 @@ namespace Systems
             int populationSize = populationQuery.CalculateEntityCount();
             int unemployedCount = unemployedQuery.CalculateEntityCount();
 
-            Entities.ForEach((ref UIInfo info) =>
-            {
-                info.populationSize = populationSize;
-                info.unemployedCount = unemployedCount;
-            }).Run();
+            var info = SystemAPI.GetSingletonRW<UIInfo>();
+            info.ValueRW.populationSize = populationSize;
+            info.ValueRW.unemployedCount = unemployedCount;
         }
     }
 }

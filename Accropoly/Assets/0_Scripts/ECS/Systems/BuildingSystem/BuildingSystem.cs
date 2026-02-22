@@ -77,9 +77,9 @@ namespace Systems
             {
                 var gameInfo = SystemAPI.GetSingleton<GameInfo>();
 
-                Entities.WithAll<TileToPlace>().ForEach((in LocalTransform transform) =>
+                foreach (var transform in SystemAPI.Query<RefRO<LocalTransform>>().WithAll<TileToPlace>())
                 {
-                    int2 pos = (int2)transform.Position.xz / 2;
+                    int2 pos = (int2)transform.ValueRO.Position.xz / 2;
                     Entity tile = TileGridUtility.GetTile(pos, entityGrid);
 
                     // Get tile placing cost
@@ -91,8 +91,8 @@ namespace Systems
                         gameInfo.balance -= cost; // Buy the tile
                         ecb.AddComponent<Replace>(tile); // Mark tile for placement
                     }
-                }).Run();
-                ecb.SetComponent(SystemAPI.GetSingletonEntity<GameInfo>(), gameInfo); // Update the balance
+                }
+                SystemAPI.SetSingleton(gameInfo);
 
                 // Delete all TileToPlace entities (as they have been placed now)
                 ecb.DestroyEntity(tileToPlaceQuery, EntityQueryCaptureMode.AtPlayback);
@@ -111,10 +111,10 @@ namespace Systems
                 ecb.SetComponent(tileToPlaceInfoEntity, tileToPlaceInfo);
 
                 // Update all TileToPlace entities
-                Entities.WithAll<TileToPlace>().ForEach((ref LocalTransform transform) =>
+                foreach (var transform in SystemAPI.Query<RefRW<LocalTransform>>().WithAll<TileToPlace>())
                 {
-                    transform.Rotation = quaternion.Euler(new(0, tileToPlaceInfo.rotation.ToRadians(), 0));
-                }).Schedule();
+                    transform.ValueRW.Rotation = quaternion.Euler(new(0, tileToPlaceInfo.rotation.ToRadians(), 0));
+                }
 
                 return;
             }

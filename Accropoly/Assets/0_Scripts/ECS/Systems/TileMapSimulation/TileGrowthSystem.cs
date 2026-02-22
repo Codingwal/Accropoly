@@ -2,6 +2,7 @@ using Unity.Entities;
 using Components;
 using Tags;
 using UnityEngine;
+using Unity.Burst;
 
 namespace Systems
 {
@@ -18,11 +19,22 @@ namespace Systems
         }
         protected override void OnUpdate()
         {
-            var config = SystemAPI.GetSingleton<ConfigComponents.TileGrowing>();
-            var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
-            float deltaTime = SystemAPI.GetSingleton<GameInfo>().deltaTime;
+            new GrowTilesJob
+            {
+                ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged),
+                deltaTime = SystemAPI.GetSingleton<GameInfo>().deltaTime,
+                config = SystemAPI.GetSingleton<ConfigComponents.TileGrowing>(),
+            }.Schedule();
+        }
 
-            Entities.WithAll<ActiveTile>().ForEach((Entity entity, ref Tile tile, ref GrowingTile growingTile) =>
+        [BurstCompile]
+        [WithAll(typeof(ActiveTile))]
+        private partial struct GrowTilesJob : IJobEntity
+        {
+            public EntityCommandBuffer ecb;
+            public float deltaTime;
+            public ConfigComponents.TileGrowing config;
+            public void Execute(Entity entity, ref Tile tile, ref GrowingTile growingTile)
             {
                 growingTile.age += deltaTime;
 
@@ -37,7 +49,7 @@ namespace Systems
                     ecb.RemoveComponent<GrowingTile>(entity);
                     ecb.AddComponent<NewTile>(entity);
                 }
-            }).Schedule();
+            }
         }
     }
 }

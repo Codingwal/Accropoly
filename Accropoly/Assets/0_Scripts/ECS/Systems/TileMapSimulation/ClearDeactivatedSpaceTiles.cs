@@ -18,18 +18,38 @@ namespace Systems
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
 
             // Clear deactivated habitats
-            Entities.WithDisabled<ActiveTile>().ForEach((Entity entity, ref Habitat habitat) =>
+            new ClearDeactivatedHabitatsJob
+            {
+                ecb = ecb
+            }.Schedule();
+
+            // Clear deactivated employers
+            new ClearDeactivatedEmployersJob
+            {
+                ecb = ecb
+            }.Schedule();
+        }
+        [WithDisabled(typeof(ActiveTile))]
+        private partial struct ClearDeactivatedHabitatsJob : IJobEntity
+        {
+            public EntityCommandBuffer ecb;
+
+            public void Execute(Entity entity, ref Habitat habitat)
             {
                 habitat.freeSpace = habitat.totalSpace;
                 ecb.AddComponent<HasSpace>(entity);
-            }).Schedule();
+            }
+        }
+        [WithDisabled(typeof(ActiveTile))]
+        private partial struct ClearDeactivatedEmployersJob : IJobEntity
+        {
+            public EntityCommandBuffer ecb;
 
-            // Clear deactivated employers
-            Entities.WithDisabled<ActiveTile>().ForEach((Entity entity, ref Employer employer) =>
+            public void Execute(Entity entity, ref Employer employer)
             {
                 employer.freeSpace = employer.totalSpace;
                 ecb.AddComponent<HasSpace>(entity);
-            }).Schedule();
+            }
         }
     }
 }

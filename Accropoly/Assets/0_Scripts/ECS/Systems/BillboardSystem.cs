@@ -1,6 +1,7 @@
 using Components;
 using ConfigComponents;
 using Tags;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
@@ -71,25 +72,18 @@ namespace Systems
                 firstUpdate = false;
             }
 
+            // Dispose BillboardOwners when saving
             if (SystemAPI.HasSingleton<SaveGame>())
             {
-                // Dispose BillboardOwners
-                Entities.ForEach((ref BillboardOwner billboardOwner) =>
-                {
-                    DisposeBillboardOwner(ref billboardOwner, ref ecb);
-                }).WithoutBurst().Schedule();
+                new DisposeBillboardOwnersJob { ecb = ecb }
+                    .Schedule(SystemAPI.QueryBuilder().WithAll<BillboardOwner>().Build());
                 return;
             }
 
-            Entities.WithAll<Replace>().ForEach((ref BillboardOwner billboardOwner) =>
-            {
-                DisposeBillboardOwner(ref billboardOwner, ref ecb);
-            }).WithoutBurst().Run();
-
-            // Make sure all tiles with problems have the BillboardOwner component, this simplifies the Entities.ForEach 
+            // Make sure all tiles with problems have the BillboardOwner component, this simplifies the UpdateBillboardsJob
             ecb.AddComponent(tilesWithProblemsQuery, new BillboardOwner());
 
-            // Create a few new billboard entity if we're running short
+            // Create a few new billboard entities if we're running short
             // The numbers (currently 2 and 5) are arbitrary
             if (unusedBillboards.Count < 2)
             {
@@ -102,11 +96,37 @@ namespace Systems
                 }
             }
 
-            var hasElectricityLookup = GetComponentLookup<HasElectricity>(true);
-            var isConnectedLookup = GetComponentLookup<IsConnected>(true);
+            new DisposeBillboardOwnersJob { ecb = ecb }
+                .Schedule(SystemAPI.QueryBuilder().WithAll<Replace, BillboardOwner>().Build());
 
             // Update billboards / billboard owners
-            Entities.WithNone<Replace>().ForEach((Entity entity, ref BillboardOwner billboardOwner, in Tile tile) =>
+            new UpdateBillboardsJob
+            {
+                ecb = ecb,
+                hasElectricityLookup = GetComponentLookup<HasElectricity>(isReadOnly: true),
+                isConnectedLookup = GetComponentLookup<IsConnected>(isReadOnly: true),
+                config = config
+            }.Schedule();
+        }
+
+        // Can't BurstCompile because of static RW field unusedBillboards
+        private partial struct DisposeBillboardOwnersJob : IJobEntity
+        {
+            public EntityCommandBuffer ecb;
+            public void Execute(ref BillboardOwner billboardOwner)
+            {
+                DisposeBillboardOwner(ref billboardOwner, ref ecb);
+            }
+        }
+
+        // Can't BurstCompile because of static RW field unusedBillboards
+        private partial struct UpdateBillboardsJob : IJobEntity
+        {
+            public EntityCommandBuffer ecb;
+            [ReadOnly] public ComponentLookup<HasElectricity> hasElectricityLookup;
+            [ReadOnly] public ComponentLookup<IsConnected> isConnectedLookup;
+            public Billboarding config;
+            public void Execute(Entity entity, ref BillboardOwner billboardOwner, in Tile tile)
             {
                 if (!billboardOwner.IsInitialized)
                     billboardOwner.Initialize();
@@ -135,7 +155,7 @@ namespace Systems
 
                 // Update the component
                 ecb.SetComponent(entity, billboardOwner); // Needed because the data is passed to sub-functions (ref doesn't work as intended)
-            }).WithReadOnly(hasElectricityLookup).WithReadOnly(isConnectedLookup).WithoutBurst().Schedule(); // Burst doesn't work because of static field
+            }
         }
 
         private static bool ContainsProblem(UnsafeList<BillboardInfo> billboards, Problems problem)

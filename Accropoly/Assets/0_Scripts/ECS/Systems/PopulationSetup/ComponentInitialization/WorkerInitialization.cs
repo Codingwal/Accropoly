@@ -1,6 +1,7 @@
 using Unity.Entities;
 using Components;
 using Tags;
+using Unity.Collections;
 
 namespace Systems
 {
@@ -12,26 +13,28 @@ namespace Systems
     [UpdateInGroup(typeof(ComponentInitializationSystemGroup))]
     public partial class WorkerInitialization : SystemBase
     {
+        private EntityQuery workers;
+        private EntityQuery newWorkers;
         protected override void OnCreate()
         {
             RequireForUpdate<Worker>();
+            workers = new EntityQueryBuilder(Allocator.Temp).WithAll<Worker>().Build(this);
+            newWorkers = new EntityQueryBuilder(Allocator.Temp).WithAll<NewPerson, Worker>().Build(this);
         }
         protected override void OnUpdate()
         {
             var ecb = SystemAPI.GetSingleton<EndComponentInitializationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
-            Entities.WithAll<NewPerson, Worker>().ForEach((Entity entity) =>
-            {
-                ecb.SetComponent(entity, new Worker { employer = new(-1, -1) });
-                ecb.AddComponent<Unemployed>(entity);
-            }).Schedule();
+
+            ecb.AddComponent(newWorkers, new Worker { employer = new(-1, -1) }); // Set not add, but set doesn't have the required overload
+            ecb.AddComponent<Unemployed>(newWorkers, EntityQueryCaptureMode.AtPlayback);
 
             if (SystemAPI.HasSingleton<LoadGame>())
             {
-                Entities.ForEach((Entity entity, in Worker worker) =>
+                foreach (var (worker, entity) in SystemAPI.Query<RefRO<Worker>>().WithEntityAccess())
                 {
-                    if (worker.employer.Equals(new(-1, -1)))
+                    if (worker.ValueRO.employer.Equals(new(-1, -1)))
                         ecb.AddComponent<Unemployed>(entity);
-                }).Schedule();
+                }
             }
         }
     }

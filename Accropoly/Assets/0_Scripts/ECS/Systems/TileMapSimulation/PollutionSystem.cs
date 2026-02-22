@@ -17,24 +17,21 @@ namespace Systems
         }
         protected override void OnUpdate()
         {
-
-            NativeArray<float> totalPollution = new(1, Allocator.TempJob, NativeArrayOptions.ClearMemory);
-            NativeArray<float> electricityPollution = new(1, Allocator.TempJob, NativeArrayOptions.ClearMemory);
-
-            Entities.WithAll<ActiveTile>().ForEach((in Polluter polluter) =>
+            float totalPollution = 0;
+            foreach (var polluter in SystemAPI.Query<RefRO<Polluter>>().WithAll<ActiveTile>())
             {
-                totalPollution[0] += polluter.pollution;
-            }).Schedule();
-            Entities.WithAll<ActiveTile, ElectricityProducer>().ForEach((in Polluter polluter) =>
-            {
-                electricityPollution[0] += polluter.pollution;
-            }).Schedule();
+                totalPollution += polluter.ValueRO.pollution;
+            }
 
-            Entities.ForEach((ref UIInfo info) =>
+            float electricityPollution = 0;
+            foreach (var polluter in SystemAPI.Query<RefRO<Polluter>>().WithAll<ActiveTile>())
             {
-                info.pollution = totalPollution[0];
-                info.electricityPollution = electricityPollution[0];
-            }).WithDisposeOnCompletion(totalPollution).WithDisposeOnCompletion(electricityPollution).Schedule();
+                electricityPollution += polluter.ValueRO.pollution;
+            }
+
+            var uiInfo = SystemAPI.GetSingletonRW<UIInfo>();
+            uiInfo.ValueRW.pollution = totalPollution;
+            uiInfo.ValueRW.electricityPollution = electricityPollution;
         }
     }
 }

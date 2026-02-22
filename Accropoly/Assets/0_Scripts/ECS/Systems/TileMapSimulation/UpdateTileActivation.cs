@@ -18,25 +18,18 @@ namespace Systems
         }
         protected override void OnUpdate()
         {
-            var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
-
-            Entities.WithAll<Tile>().ForEach((Entity entity) =>
-            {
-                ecb.SetComponentEnabled<ActiveTile>(entity, true);
-            }).Schedule();
+            // Enable all tiles by deault
+            EntityManager.SetComponentEnabled<ActiveTile>(SystemAPI.QueryBuilder().WithPresent<ActiveTile>().Build(), true);
 
             // Disable buildings without connection (street, ...)
-            Entities.WithDisabled<IsConnected>().ForEach((Entity entity) =>
-           {
-               ecb.SetComponentEnabled<ActiveTile>(entity, false);
-           }).Schedule();
+            EntityManager.SetComponentEnabled<ActiveTile>(SystemAPI.QueryBuilder().WithPresent<ActiveTile>().WithDisabled<IsConnected>().Build(), false);
 
-            // Disable e-consumers without electricity
-            Entities.WithDisabled<HasElectricity>().ForEach((Entity entity, in ElectricityConsumer electricityConsumer) =>
-           {
-               if (electricityConsumer.disableIfElectroless) // Only disable if electricity is strictly required
-                   ecb.SetComponentEnabled<ActiveTile>(entity, false);
-           }).Schedule();
+            // Disable e-consumers without electricity (if electircity is required)
+            foreach (var (consumer, entity) in SystemAPI.Query<RefRO<ElectricityConsumer>>().WithEntityAccess())
+            {
+                if (consumer.ValueRO.disableIfElectroless) // Only disable if electricity is strictly required
+                    SystemAPI.SetComponentEnabled<ActiveTile>(entity, false);
+            }
         }
     }
 }

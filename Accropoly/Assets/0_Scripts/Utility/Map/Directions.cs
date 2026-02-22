@@ -95,6 +95,8 @@ public struct Direction : IEquatable<Direction>
             list.Add((Direction)i);
         }
     }
+
+    // Make unmanaged
     public static DirectionEnumerable GetDirections()
     {
         return new DirectionEnumerable();

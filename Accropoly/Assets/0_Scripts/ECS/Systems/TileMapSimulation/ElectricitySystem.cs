@@ -18,46 +18,47 @@ namespace Systems
         }
         protected override void OnUpdate()
         {
-            // Calculate the current production
-            NativeArray<float> totalProduction = new(1, Allocator.TempJob, NativeArrayOptions.ClearMemory);
-            Entities.WithAll<ActiveTile>().ForEach((in ElectricityProducer producer) =>
-            {
-                totalProduction[0] += producer.production;
-            }).Schedule();
-
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
+
+            // Calculate the current production
+            float totalProduction = 0;
+            foreach (var producer in SystemAPI.Query<RefRO<ElectricityProducer>>().WithAll<ActiveTile>())
+            {
+                totalProduction += producer.ValueRO.production;
+            }
 
             // Enable as many consumers as possible
             // Tiles with & without electricity are split so that the distribution is consistent across frames
 
-            NativeArray<float> totalConsumption = new(1, Allocator.TempJob, NativeArrayOptions.ClearMemory);
-            NativeArray<float> maxConsumption = new(1, Allocator.TempJob, NativeArrayOptions.ClearMemory);
+            float totalConsumption = 0f;
+            float maxConsumption = 0f;
 
-            Entities.WithNone<DisabledTile>().WithAll<HasElectricity>().ForEach((Entity entity, in ElectricityConsumer consumer) =>
+            void UpdateEntity(Entity entity, in ElectricityConsumer consumer)
             {
-                bool canEnable = totalConsumption[0] + consumer.consumption <= totalProduction[0];
-                totalConsumption[0] += canEnable ? consumer.consumption : 0; // Only add to the production if the consumer can be enabled
+                bool canEnable = totalConsumption + consumer.consumption <= totalProduction;
+                totalConsumption += canEnable ? consumer.consumption : 0; // Only add to the production if the consumer can be enabled
                 ecb.SetComponentEnabled<HasElectricity>(entity, canEnable);
 
-                maxConsumption[0] += consumer.consumption; // Only for informative purposes
-            }).Schedule();
+                maxConsumption += consumer.consumption; // Only for informative purposes
+            }
 
-            Entities.WithNone<DisabledTile>().WithDisabled<HasElectricity>().ForEach((Entity entity, in ElectricityConsumer consumer) =>
+            foreach (var (consumer, entity) in SystemAPI.Query<RefRO<ElectricityConsumer>>()
+                .WithAll<HasElectricity>().WithNone<DisabledTile>().WithEntityAccess())
             {
-                bool canEnable = totalConsumption[0] + consumer.consumption <= totalProduction[0];
-                totalConsumption[0] += canEnable ? consumer.consumption : 0; // Only add to the production if the consumer can be enabled
-                ecb.SetComponentEnabled<HasElectricity>(entity, canEnable);
+                UpdateEntity(entity, consumer.ValueRO);
+            }
 
-                maxConsumption[0] += consumer.consumption; // Only for informative purposes
-            }).Schedule();
+            foreach (var (consumer, entity) in SystemAPI.Query<RefRO<ElectricityConsumer>>()
+                .WithDisabled<HasElectricity>().WithNone<DisabledTile>().WithEntityAccess())
+            {
+                UpdateEntity(entity, consumer.ValueRO);
+            }
 
             // Update UIInfo (used for the statistics display)
-            Entities.ForEach((ref UIInfo info) =>
-            {
-                info.electricityProduction = totalProduction[0];
-                info.actualElectricityConsumption = totalConsumption[0];
-                info.maxElectricityConsumption = maxConsumption[0];
-            }).WithDisposeOnCompletion(totalProduction).WithDisposeOnCompletion(totalConsumption).WithDisposeOnCompletion(maxConsumption).Schedule();
+            var info = SystemAPI.GetSingletonRW<UIInfo>();
+            info.ValueRW.electricityProduction = totalProduction;
+            info.ValueRW.actualElectricityConsumption = totalConsumption;
+            info.ValueRW.maxElectricityConsumption = maxConsumption;
         }
     }
 }

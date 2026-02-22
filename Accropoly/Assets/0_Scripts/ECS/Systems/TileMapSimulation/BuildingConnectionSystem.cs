@@ -1,6 +1,9 @@
 using Unity.Entities;
 using Components;
 using Tags;
+using Unity.Jobs;
+using Unity.Collections;
+using System.Linq;
 
 namespace Systems
 {
@@ -21,25 +24,35 @@ namespace Systems
             frame++;
             if (frame % 50 != 0) return;
 
-            var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
-            var buffer = SystemAPI.GetBuffer<EntityBufferElement>(SystemAPI.GetSingletonEntity<EntityGridHolder>());
+            new CheckBuildingConnectionsJob
+            {
+                ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged),
+                buffer = SystemAPI.GetBuffer<EntityBufferElement>(SystemAPI.GetSingletonEntity<EntityGridHolder>()),
+                buildingConnectorLookup = GetComponentLookup<BuildingConnector>(true),
+            }.Schedule();
+        }
 
-            Entities.WithPresent<IsConnected>().ForEach((Entity entity, in Tile mapTileComponent) =>
+        [WithPresent(typeof(IsConnected))]
+        private partial struct CheckBuildingConnectionsJob : IJobEntity
+        {
+            public EntityCommandBuffer ecb;
+            public DynamicBuffer<EntityBufferElement> buffer;
+            [ReadOnly] public ComponentLookup<BuildingConnector> buildingConnectorLookup;
+            public void Execute(Entity entity, in Tile tile)
             {
                 bool isConnected = false;
                 foreach (Direction direction in Direction.GetDirections())
                 {
-                    if (!TileGridUtility.TryGetTile(mapTileComponent.pos + direction.DirectionVec, buffer, out Entity neighbour)) continue;
+                    if (!TileGridUtility.TryGetTile(tile.pos + direction.DirectionVec, buffer, out Entity neighbour)) continue;
 
-                    if (SystemAPI.HasComponent<BuildingConnector>(neighbour))
+                    if (buildingConnectorLookup.HasComponent(neighbour))
                     {
                         isConnected = true;
                         break;
                     }
                 }
                 ecb.SetComponentEnabled<IsConnected>(entity, isConnected);
-            }).WithoutBurst().Schedule();
-
+            }
         }
     }
 }

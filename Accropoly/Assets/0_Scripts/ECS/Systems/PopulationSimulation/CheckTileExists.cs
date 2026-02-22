@@ -5,6 +5,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using Components;
 using Tags;
+using Unity.Burst;
 
 namespace Systems
 {
@@ -22,7 +23,7 @@ namespace Systems
             RequireForUpdate<RunGame>();
 
             newTilesQuery = GetEntityQuery(typeof(NewTile));
-            disabledTilesQuery = GetEntityQuery(new EntityQueryDesc { Disabled = new ComponentType[] { typeof(ActiveTile) }, All = new ComponentType[] { typeof(Tile) } });
+            disabledTilesQuery = new EntityQueryBuilder(Allocator.Temp).WithAll<Tile>().WithDisabled<ActiveTile>().Build(this);
         }
         protected override void OnUpdate()
         {
@@ -31,55 +32,80 @@ namespace Systems
 
             if (newTilesCount == 0 && disabledTilesCount == 0) return;
 
+            NativeList<int2> tiles = new(newTilesCount + disabledTilesCount, Allocator.TempJob);
+
             // Get all positions of deleted (replaced) tiles
-            NativeArray<int2> newTilesPositions = new(newTilesCount, Allocator.TempJob);
-            var inputDeps = Entities.WithAll<NewTile>().ForEach((int entityInQueryIndex, in Tile mapTileComponent) =>
+            foreach (var tile in SystemAPI.Query<RefRO<Tile>>().WithAll<NewTile>())
             {
-                newTilesPositions[entityInQueryIndex] = mapTileComponent.pos;
-            }).Schedule(Dependency);
+                tiles.Add(tile.ValueRO.pos);
+            }
 
             // Get all positions of disabled tiles
-            NativeArray<int2> disabledTilesPositions = new(disabledTilesCount, Allocator.TempJob);
-            inputDeps = Entities.WithDisabled<ActiveTile>().ForEach((int entityInQueryIndex, in Tile mapTileComponent) =>
+            foreach (var tile in SystemAPI.Query<RefRO<Tile>>().WithDisabled<ActiveTile>())
             {
-                disabledTilesPositions[entityInQueryIndex] = mapTileComponent.pos;
-            }).Schedule(inputDeps);
+                tiles.Add(tile.ValueRO.pos);
+            }
 
+            var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
+            Random rnd = new((uint)UnityEngine.Random.Range(1, 1000));
 
             // Make people homeless if their home is deactivated / has been replaced
-            var ecb1 = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
-            Random rnd = new((uint)UnityEngine.Random.Range(1, 1000));
-            JobHandle handle1 = Entities.WithNone<Homeless>().ForEach((Entity entity, ref Person person) =>
+            new MakeHomelessJob
+            {
+                transformLookup = GetComponentLookup<LocalTransform>(),
+                tiles = tiles,
+                ecb = ecb,
+                rnd = rnd,
+            }.Schedule();
+
+            // Make people unemployed if their employer is deactivated / has been replaced
+            new MakeUnemployedJob
+            {
+                tiles = tiles,
+                ecb = ecb,
+            }.Schedule();
+
+            tiles.Dispose(Dependency);
+        }
+
+        [BurstCompile]
+        private partial struct MakeHomelessJob : IJobEntity 
+        {
+            [ReadOnly] public ComponentLookup<LocalTransform> transformLookup;
+            public NativeList<int2> tiles;
+            public EntityCommandBuffer ecb;
+            public Random rnd;
+            public void Execute(Entity entity, ref Person person)
             {
                 int2 homeTilePos = person.homeTile;
-                if (newTilesPositions.Contains(homeTilePos) || disabledTilesPositions.Contains(homeTilePos))
+                if (tiles.Contains(homeTilePos))
                 {
                     // These changes need to be synchronous -> Reason why the system executes directly before the ECBS
                     person.homeTile = new(-1);
-                    ecb1.AddComponent<Homeless>(entity);
+                    ecb.AddComponent<Homeless>(entity);
 
                     // Homeless people are collected at a special position
-                    LocalTransform transform = SystemAPI.GetComponent<LocalTransform>(entity);
+                    LocalTransform transform = transformLookup[entity];
                     transform.Position = new(-1 + rnd.NextFloat(-0.5f, 0.5f), 0.5f, -1 + rnd.NextFloat(-0.5f, 0.5f));
-                    ecb1.SetComponent(entity, transform);
+                    transformLookup[entity] = transform;
                 }
-            }).WithReadOnly(newTilesPositions).WithReadOnly(disabledTilesPositions).Schedule(inputDeps);
+            }
+        }
 
-            // Make people unemployed if their employer is deactivated / has been replaced
-            var ecb2 = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
-            JobHandle handle2 = Entities.WithNone<Unemployed>().ForEach((Entity entity, ref Worker worker) =>
+        [BurstCompile]
+        private partial struct MakeUnemployedJob : IJobEntity
+        {
+            [ReadOnly] public NativeList<int2> tiles;
+            public EntityCommandBuffer ecb;
+            public void Execute(Entity entity, ref Worker worker)
             {
                 int2 employerPos = worker.employer;
-                if (newTilesPositions.Contains(employerPos) || disabledTilesPositions.Contains(employerPos))
+                if (tiles.Contains(employerPos))
                 {
                     worker.employer = new(-1);
-                    ecb2.AddComponent<Unemployed>(entity);
+                    ecb.AddComponent<Unemployed>(entity);
                 }
-            }).WithReadOnly(newTilesPositions).WithReadOnly(disabledTilesPositions).Schedule(inputDeps);
-
-            // Dispose NativeArrays after all jobs that use them have been completed
-            Dependency = newTilesPositions.Dispose(JobHandle.CombineDependencies(handle1, handle2));
-            Dependency = disabledTilesPositions.Dispose(JobHandle.CombineDependencies(handle1, handle2));
+            }
         }
     }
 }

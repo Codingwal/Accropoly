@@ -43,17 +43,17 @@ namespace Systems
             };
             if (SystemAPI.HasSingleton<LoadGame>())
             {
-                Entities.WithAll<Person>().ForEach((ref PhysicsCollider collider) =>
+                foreach (var collider in SystemAPI.Query<RefRW<PhysicsCollider>>().WithAll<Person>())
                 {
-                    collider.Value.Value.SetCollisionFilter(colliderFilter);
-                }).Run();
+                    collider.ValueRW.Value.Value.SetCollisionFilter(colliderFilter);
+                }
             }
             else
             {
-                Entities.WithAll<NewPerson>().ForEach((ref PhysicsCollider collider) =>
+                foreach (var collider in SystemAPI.Query<RefRW<PhysicsCollider>>().WithAll<NewPerson>())
                 {
-                    collider.Value.Value.SetCollisionFilter(colliderFilter);
-                }).Run();
+                    collider.ValueRW.Value.Value.SetCollisionFilter(colliderFilter);
+                }
             }
 
             if (!SystemAPI.HasSingleton<RunGame>())

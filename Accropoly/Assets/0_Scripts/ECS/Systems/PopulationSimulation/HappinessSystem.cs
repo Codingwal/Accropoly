@@ -3,6 +3,8 @@ using Unity.Mathematics;
 using Unity.Collections;
 using Components;
 using Tags;
+using Unity.Burst;
+using Unity.Jobs;
 
 namespace Systems
 {
@@ -24,12 +26,46 @@ namespace Systems
             frame++;
             if (frame % 50 != 0) return;
 
-            var buffer = TileGridUtility.GetEntityGrid();
-            var config = SystemAPI.GetSingleton<ConfigComponents.Happiness>();
-            var hasElectricityLookup = GetComponentLookup<HasElectricity>();
+            NativeReference<float> happinessSum = new(0, Allocator.TempJob);
 
-            NativeArray<float> happinessSum = new NativeArray<float>(1, Allocator.TempJob, NativeArrayOptions.ClearMemory);
-            Entities.ForEach((Entity entity, ref Person person) =>
+            new CalculateHappinessJob
+            {
+                config = SystemAPI.GetSingleton<ConfigComponents.Happiness>(),
+                hasElectricityLookup = GetComponentLookup<HasElectricity>(),
+                workerLookup = GetComponentLookup<Worker>(),
+                unemployedLookup = GetComponentLookup<Unemployed>(),
+                buffer = TileGridUtility.GetEntityGrid(),
+                happinessSum = happinessSum,
+            }.Schedule();
+
+            new UpdateHappinessInfoJob
+            {
+                happinessSum = happinessSum,
+            }.Schedule();
+
+            happinessSum.Dispose(Dependency);
+        }
+
+        [BurstCompile]
+        private partial struct UpdateHappinessInfoJob : IJobEntity
+        {
+            [ReadOnly] public NativeReference<float> happinessSum;
+            public void Execute(ref UIInfo info)
+            {
+                info.happinessSum += happinessSum.Value;
+            }
+        }
+
+        [BurstCompile]
+        private partial struct CalculateHappinessJob : IJobEntity
+        {
+            public ConfigComponents.Happiness config;
+            [ReadOnly] public ComponentLookup<HasElectricity> hasElectricityLookup;
+            [ReadOnly] public ComponentLookup<Worker> workerLookup;
+            [ReadOnly] public ComponentLookup<Unemployed> unemployedLookup;
+            public DynamicBuffer<EntityBufferElement> buffer;
+            public NativeReference<float> happinessSum;
+            public void Execute(Entity entity, ref Person person)
             {
                 person.happiness = config.defaultHappiness;
 
@@ -50,20 +86,15 @@ namespace Systems
                 }
 
                 // Work factors
-                if (SystemAPI.HasComponent<Worker>(entity))
+                if (workerLookup.HasComponent(entity))
                 {
-                    bool employed = !SystemAPI.HasComponent<Unemployed>(entity);
+                    bool employed = !unemployedLookup.HasComponent(entity);
                     person.happiness += employed ? config.employed : config.unemployed;
                 }
 
                 person.happiness = math.clamp(person.happiness, 0, 100);
-                happinessSum[0] += person.happiness;
-            }).Schedule();
-
-            Entities.ForEach((ref UIInfo info) =>
-            {
-                info.happinessSum = happinessSum[0];
-            }).WithDisposeOnCompletion(happinessSum).Schedule();
+                happinessSum.Value += person.happiness;
+            }
         }
     }
 }

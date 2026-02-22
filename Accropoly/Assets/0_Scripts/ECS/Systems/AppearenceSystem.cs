@@ -6,6 +6,8 @@ using Tags;
 using Unity.Transforms;
 using Unity.Mathematics;
 using UnityEngine;
+using Unity.Collections;
+using Unity.Burst;
 
 [UpdateInGroup(typeof(LateSimulationSystemGroup))]
 public partial class AppearenceSystem : SystemBase
@@ -27,33 +29,14 @@ public partial class AppearenceSystem : SystemBase
 
         Appearence config = SystemAPI.GetSingleton<Appearence>();
 
-        Entities.WithChangeFilter<Tile>().WithNone<ConnectingTile>().ForEach((ref MaterialMeshInfo data, in Tile tile) =>
+        new UpdateSimpleTilesJob { config = config }
+            .Schedule(SystemAPI.QueryBuilder().WithAll<Tile, MaterialMeshInfo>().WithNone<ConnectingTile>().Build());
+
+        new UpdateConnectingTilesJob
         {
-            Debug.Assert(config.simpleTiles.ContainsKey((int)tile.tileType), $"{tile.tileType} is not a simple tile.");
-            data = config.simpleTiles[(int)tile.tileType];
-        }).Schedule();
- 
-        Entities.ForEach((ref LocalTransform transform, ref MaterialMeshInfo data, in Tile tile, in ConnectingTile connectingTile) => 
-        {
-            int index = connectingTile.GetIndex();
-            if (index == 5 && tile.tileType == TileType.Lake)
-            {
-                var tileedges = TileGridUtility.GetSquareEdgeTiles(tile.pos);
-                for (int i = 0; i < 4; i++)
-                {
-                    var edge = tileedges[i];
-                    Tile edgetile = SystemAPI.GetComponent<Tile>(edge);
-                    if (edgetile.tileType != TileType.Lake)
-                    {
-                        index = 6;
-                        transform.Rotation = quaternion.EulerXYZ(0, ((Direction)i).ToRadians(), 0);
-                        break;
-                    }
-                }
-            }
-            Debug.Assert(config.connectingTiles.ContainsKey((int)tile.tileType), $"{tile.tileType} is not a connecting tile.");
-            data = config.connectingTiles[(int)tile.tileType].pairs[index];
-        }).WithoutBurst().Run();
+            config = config,
+            tileLookup = GetComponentLookup<Tile>(isReadOnly: true)
+        }.Schedule(SystemAPI.QueryBuilder().WithAll<Tile, MaterialMeshInfo, ConnectingTile, LocalTransform>().Build());
     }
     protected override void OnDestroy()
     {
@@ -74,5 +57,43 @@ public partial class AppearenceSystem : SystemBase
             SystemAPI.SetComponent(entity, newData);
         else // Is a connecting tile
             SystemAPI.SetComponent(entity, config.connectingTiles[(int)tileType].pairs[0]);
+    }
+
+    [BurstCompile]
+    private partial struct UpdateSimpleTilesJob : IJobEntity
+    {
+        public Appearence config;
+        public void Execute(ref MaterialMeshInfo data, in Tile tile)
+        {
+            Debug.Assert(config.simpleTiles.ContainsKey((int)tile.tileType), $"{tile.tileType} is not a simple tile.");
+            data = config.simpleTiles[(int)tile.tileType];
+        }
+    }
+
+    private partial struct UpdateConnectingTilesJob : IJobEntity
+    {
+        public Appearence config;
+        [ReadOnly] public ComponentLookup<Tile> tileLookup;
+        public void Execute(ref LocalTransform transform, ref MaterialMeshInfo data, in Tile tile, in ConnectingTile connectingTile)
+        {
+            int index = connectingTile.GetIndex();
+            if (index == 5 && tile.tileType == TileType.Lake)
+            {
+                var tileedges = TileGridUtility.GetSquareEdgeTiles(tile.pos);
+                for (int i = 0; i < 4; i++)
+                {
+                    var edge = tileedges[i];
+                    Tile edgeTile = tileLookup[edge];
+                    if (edgeTile.tileType != TileType.Lake)
+                    {
+                        index = 6;
+                        transform.Rotation = quaternion.EulerXYZ(0, ((Direction)i).ToRadians(), 0);
+                        break;
+                    }
+                }
+            }
+            Debug.Assert(config.connectingTiles.ContainsKey((int)tile.tileType), $"{tile.tileType} is not a connecting tile.");
+            data = config.connectingTiles[(int)tile.tileType].pairs[index];
+        }
     }
 }

@@ -3,7 +3,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 
-public unsafe interface IFixedArrayHelper<T> : IAspect where T : unmanaged
+public interface IFixedArrayHelper<T> where T : unmanaged
 {
     public int Size { get; } // Element count
     public int ElementSize { get; }

@@ -125,6 +125,7 @@ namespace Systems
                 {
                     var junction = SystemAPI.GetComponentRO<Junction>(entity);
                     if (junction.ValueRO.registeredObjects > 0)
+
                         Gizmos.color = Color.green;
                     if (junction.ValueRO.stop)
                         Gizmos.color = Color.red;
