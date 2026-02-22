@@ -11,7 +11,7 @@ public static class TilePlacingUtility
 {
     public static List<(IComponentData, bool)> GetComponents(TileType tileType, int2 pos, Direction rotation)
     {
-        var tileGrowingConfig = ECSUtility.GetSingleton<ConfigComponents.TileGrowing>();
+        var tileGrowingConfig = ConfigData.tileConfig.tileGrowing;
         System.Random rnd = new();
         List<(IComponentData, bool)> components = tileType switch
         {
@@ -19,19 +19,19 @@ public static class TilePlacingUtility
             TileType.Sapling => new() { (new GrowingTile { age = rnd.Next(tileGrowingConfig.maxAge1) }, true) },
             TileType.Forest => new() { },
             TileType.House => new() { (new Habitat {totalSpace = rnd.Next(2, 6)}, true),
-                                      (new ElectricityConsumer { consumption = 2, disableIfElectroless = false }, true),
-                                      (new Polluter { pollution = 3 }, true), (new IsConnected(), false), (new TransportTile(2), true) },
+                                        (new ElectricityConsumer { consumption = 2, disableIfElectroless = false }, true),
+                                        (new Polluter { pollution = 3 }, true), (new IsConnected(), false), (new TransportTile(2), true) },
             TileType.SolarPanel => new() { (new ElectricityProducer { production = 10 }, true), (new Polluter { pollution = 1 }, true),
-                                           (new Employer{totalSpace = 1}, true), (new TransportTile(2), true) },
+                                            (new Employer{totalSpace = 1}, true), (new TransportTile(2), true) },
             TileType.Street => new() { (new ConnectingTile(ConnectingTileGroup.Street), true), (new BuildingConnector(), true), (new TransportTile(10), true) },
             TileType.Lake => new() { (new ConnectingTile(ConnectingTileGroup.Lake), true) },
             TileType.River => new() { (new ConnectingTile(ConnectingTileGroup.River), true) },
             TileType.Hut => new() { (new Habitat { totalSpace = rnd.Next(1, 3) }, true), (new TransportTile(2), true) },
             TileType.Office => new() { (new ElectricityConsumer { consumption = 5, disableIfElectroless = true }, true),
-                                       (new Employer { totalSpace = 10 }, true), (new TransportTile(2), true),
-                                       (new Polluter { pollution = 5 }, true), (new IsConnected(), false) },
+                                        (new Employer { totalSpace = 10 }, true), (new TransportTile(2), true),
+                                        (new Polluter { pollution = 5 }, true), (new IsConnected(), false) },
             TileType.WindTurbine => new() { (new ElectricityProducer { production = 50 }, true), (new Polluter { pollution = 2 }, true),
-                                           (new Employer {totalSpace = 2}, true), (new TransportTile(2), true) },
+                                            (new Employer {totalSpace = 2}, true), (new TransportTile(2), true) },
             TileType.GrowingForest => new() { (new GrowingTile { age = rnd.Next(tileGrowingConfig.maxAge1, tileGrowingConfig.maxAge2) }, true) },
             TileType.Bitumen => new() { (new TransportTile(5), true) },
             TileType.CityStreet => new() { (new ConnectingTile(ConnectingTileGroup.Street), true), (new BuildingConnector(), true), (new TransportTile(10), true) },

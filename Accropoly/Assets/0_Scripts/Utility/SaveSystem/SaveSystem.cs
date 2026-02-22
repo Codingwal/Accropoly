@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.IO;
+using Unity.Entities;
 using UnityEngine;
 
 public class SaveSystem : FileHandler
@@ -16,23 +18,30 @@ public class SaveSystem : FileHandler
     {
         Debug.Log("Initializing SaveSystem");
 
+        Debug.Log("Loading config data");
+        ConfigData.saveSystemConfig = ReadJsonConfig<SaveSystemConfig>("SaveSystemConfig");
+        ConfigData.tileConfig = ReadJsonConfig<TileConfig>("TileConfig");
+
+        Debug.Log("Initializing user data");
+
         string[] requiredDirectories =
         {
             "UserData",
             "Templates",
             "Saves"
         };
+        UserData defaultUserData = UserData.Default;
         Dictionary<string, object> requiredFiles = new()
         {
-            {"UserData/userdata", UserData.Default},
+            {"UserData/userdata", defaultUserData},
         };
 
-        if (SaveSystemConfig.DeleteTemplates)
+        if (ConfigData.saveSystemConfig.deleteTemplates)
             DeleteDirectoryContent("Templates");
 
-        InitFileSystem(requiredDirectories, requiredFiles, SaveSystemConfig.OverwriteFiles);
+        InitFileSystem(requiredDirectories, requiredFiles, ConfigData.saveSystemConfig.overwriteFiles);
 
-        if (SaveSystemConfig.DeleteSaves)
+        if (ConfigData.saveSystemConfig.deleteSaves)
             DeleteDirectoryContent("Saves");
     }
     public static void Initialize() { _instance = new(); }
@@ -56,4 +65,25 @@ public class SaveSystem : FileHandler
     }
     public void CreateWorld(string worldName, string mapTemplateName) { CreateWorld(worldName, LoadObject<MapData>("Templates", mapTemplateName)); }
     public void SaveTemplate(MapData templateData, string newTemplateName) { SaveObject("Templates", newTemplateName, templateData); }
+
+    private T ReadJsonConfig<T>(string fileName)
+    {
+        string configPath = Path.Combine(Application.streamingAssetsPath, fileName + ".json");
+
+        if (!File.Exists(configPath))
+        {
+            Debug.LogError($"Config file \"{fileName}.json\" not found!");
+            return default;
+        }
+
+        string str = File.ReadAllText(configPath);
+        return JsonUtility.FromJson<T>(str);
+    }
+
+    private void WriteJsonConfig(string fileName, object config)
+    {
+        string configPath = Path.Combine(Application.streamingAssetsPath, fileName + ".json");
+        string str = JsonUtility.ToJson(config, true);
+        File.WriteAllText(configPath, str);
+    }
 }

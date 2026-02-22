@@ -4,6 +4,6 @@ namespace Components
 {
     public struct GrowingTile : IComponentData
     {
-        public float age;
+        public float age; // In in-game hours
     }
 }
