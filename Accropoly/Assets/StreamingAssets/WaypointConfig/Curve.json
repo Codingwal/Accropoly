@@ -1,77 +1,244 @@
 {
     "waypoints": {
-        "street-outer-1": {
-            "position": [-0.25, 0.8, 0.95],
+        "float3(0.95f, 0.8f, 0.25f)": {
+            "position": [
+                0.95,
+                0.8,
+                0.25
+            ],
             "allowedObjects": 1,
-            "velocity": 11,
-            "nextWaypoints": ["street-outer-2"],
+            "velocity": 17.0,
+            "nextWaypoints": [
+                "float3(0.5f, 0.8f, 0.25f)"
+            ],
             "junctionData": 0,
             "entry": true,
             "exit": false
         },
-        "street-outer-2": {
-            "position": [-0.25, 0.8, 0.25],
-            "allowedObjects": 1,
-            "velocity": 11,
-            "nextWaypoints": ["street-outer-3"],
+        "float3(-0.95f, 0.8f, 0f)": {
+            "position": [
+                -0.95,
+                0.8,
+                0.0
+            ],
+            "allowedObjects": 2,
+            "velocity": 3.0,
+            "nextWaypoints": [
+                "float3(-0.7f, 0.8f, 0f)"
+            ],
+            "junctionData": 0,
+            "entry": true,
+            "exit": true
+        },
+        "float3(-0.7f, 0.8f, 0f)": {
+            "position": [
+                -0.7,
+                0.8,
+                0.0
+            ],
+            "allowedObjects": 2,
+            "velocity": 3.0,
+            "nextWaypoints": [
+                "float3(-0.7f, 0.8f, 0.95f)",
+                "float3(0f, 0.8f, -0.7f)",
+                "float3(-0.95f, 0.8f, 0f)"
+            ],
             "junctionData": 0,
             "entry": false,
             "exit": false
         },
-        "street-outer-3": {
-            "position": [0.25, 0.8, -0.25],
+        "float3(0.95f, 0.8f, -0.25f)": {
+            "position": [
+                0.95,
+                0.8,
+                -0.25
+            ],
             "allowedObjects": 1,
-            "velocity": 11,
-            "nextWaypoints": ["street-outer-4"],
-            "junctionData": 0,
-            "entry": false,
-            "exit": false
-        },
-        "street-outer-4": {
-            "position": [0.95, 0.8, -0.25],
-            "allowedObjects": 1,
-            "velocity": 11,
+            "velocity": 17.0,
             "nextWaypoints": [],
             "junctionData": 0,
             "entry": false,
             "exit": true
         },
-
-        "street-inner-1": {
-            "position": [0.95, 0.8, 0.25],
-            "allowedObjects": 1,
-            "velocity": 11,
-            "nextWaypoints": ["street-inner-2"],
+        "float3(0.7f, 0.8f, 0.95f)": {
+            "position": [
+                0.7,
+                0.8,
+                0.95
+            ],
+            "allowedObjects": 2,
+            "velocity": 3.0,
+            "nextWaypoints": [
+                "float3(0.95f, 0.8f, 0.7f)"
+            ],
             "junctionData": 0,
             "entry": true,
-            "exit": false
+            "exit": true
         },
-        "street-inner-2": {
-            "position": [0.5, 0.8, 0.25],
+        "float3(0.95f, 0.8f, 0.7f)": {
+            "position": [
+                0.95,
+                0.8,
+                0.7
+            ],
+            "allowedObjects": 2,
+            "velocity": 3.0,
+            "nextWaypoints": [
+                "float3(0.7f, 0.8f, 0.95f)"
+            ],
+            "junctionData": 0,
+            "entry": true,
+            "exit": true
+        },
+        "float3(0.95f, 0.8f, -0.7f)": {
+            "position": [
+                0.95,
+                0.8,
+                -0.7
+            ],
+            "allowedObjects": 2,
+            "velocity": 3.0,
+            "nextWaypoints": [
+                "float3(0f, 0.8f, -0.7f)"
+            ],
+            "junctionData": 0,
+            "entry": true,
+            "exit": true
+        },
+        "float3(-0.7f, 0.8f, 0.95f)": {
+            "position": [
+                -0.7,
+                0.8,
+                0.95
+            ],
+            "allowedObjects": 2,
+            "velocity": 3.0,
+            "nextWaypoints": [
+                "float3(-0.7f, 0.8f, 0f)"
+            ],
+            "junctionData": 0,
+            "entry": true,
+            "exit": true
+        },
+        "float3(0.25f, 0.8f, 0.5f)": {
+            "position": [
+                0.25,
+                0.8,
+                0.5
+            ],
             "allowedObjects": 1,
-            "velocity": 11,
-            "nextWaypoints": ["street-inner-3"],
+            "velocity": 17.0,
+            "nextWaypoints": [
+                "float3(0.25f, 0.8f, 0.95f)"
+            ],
             "junctionData": 0,
             "entry": false,
             "exit": false
         },
-        "street-inner-3": {
-            "position": [0.25, 0.8, 0.5],
+        "float3(0.5f, 0.8f, 0.25f)": {
+            "position": [
+                0.5,
+                0.8,
+                0.25
+            ],
             "allowedObjects": 1,
-            "velocity": 11,
-            "nextWaypoints": ["street-inner-4"],
+            "velocity": 17.0,
+            "nextWaypoints": [
+                "float3(0.25f, 0.8f, 0.5f)"
+            ],
             "junctionData": 0,
             "entry": false,
             "exit": false
         },
-        "street-inner-4": {
-            "position": [0.25, 0.8, 0.95],
+        "float3(0.25f, 0.8f, -0.25f)": {
+            "position": [
+                0.25,
+                0.8,
+                -0.25
+            ],
             "allowedObjects": 1,
-            "velocity": 11,
+            "velocity": 17.0,
+            "nextWaypoints": [
+                "float3(0.95f, 0.8f, -0.25f)"
+            ],
+            "junctionData": 0,
+            "entry": false,
+            "exit": false
+        },
+        "float3(-0.25f, 0.8f, 0.25f)": {
+            "position": [
+                -0.25,
+                0.8,
+                0.25
+            ],
+            "allowedObjects": 1,
+            "velocity": 17.0,
+            "nextWaypoints": [
+                "float3(0.25f, 0.8f, -0.25f)"
+            ],
+            "junctionData": 0,
+            "entry": false,
+            "exit": false
+        },
+        "float3(0.25f, 0.8f, 0.95f)": {
+            "position": [
+                0.25,
+                0.8,
+                0.95
+            ],
+            "allowedObjects": 1,
+            "velocity": 17.0,
             "nextWaypoints": [],
             "junctionData": 0,
             "entry": false,
             "exit": true
+        },
+        "float3(0f, 0.8f, -0.95f)": {
+            "position": [
+                0.0,
+                0.8,
+                -0.95
+            ],
+            "allowedObjects": 2,
+            "velocity": 3.0,
+            "nextWaypoints": [
+                "float3(0f, 0.8f, -0.7f)"
+            ],
+            "junctionData": 0,
+            "entry": true,
+            "exit": true
+        },
+        "float3(0f, 0.8f, -0.7f)": {
+            "position": [
+                0.0,
+                0.8,
+                -0.7
+            ],
+            "allowedObjects": 2,
+            "velocity": 3.0,
+            "nextWaypoints": [
+                "float3(-0.7f, 0.8f, 0f)",
+                "float3(0.95f, 0.8f, -0.7f)",
+                "float3(0f, 0.8f, -0.95f)"
+            ],
+            "junctionData": 0,
+            "entry": false,
+            "exit": false
+        },
+        "float3(-0.25f, 0.8f, 0.95f)": {
+            "position": [
+                -0.25,
+                0.8,
+                0.95
+            ],
+            "allowedObjects": 1,
+            "velocity": 17.0,
+            "nextWaypoints": [
+                "float3(-0.25f, 0.8f, 0.25f)"
+            ],
+            "junctionData": 0,
+            "entry": true,
+            "exit": false
         }
     }
 }

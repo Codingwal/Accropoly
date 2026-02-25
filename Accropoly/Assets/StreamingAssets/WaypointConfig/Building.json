@@ -1,21 +1,34 @@
 {
     "waypoints": {
         "center": {
-            "position": [0, 0.8, 0],
+            "position": [
+                0.0,
+                0.8,
+                0.0
+            ],
             "allowedObjects": 2,
-            "velocity": 3,
-            "nextWaypoints": ["side"],
+            "velocity": 3.0,
+            "nextWaypoints": [
+                "edge"
+            ],
             "junctionData": 0,
             "entry": false,
             "exit": false
         },
-        "side": {
-            "position": [0, 0.8, 0.95],
+        "edge": {
+            "position": [
+                0.0,
+                0.8,
+                0.95
+            ],
             "allowedObjects": 2,
-            "velocity": 3,
-            "nextWaypoints": ["center"],
+            "velocity": 3.0,
+            "nextWaypoints": [
+                "center"
+            ],
             "junctionData": 0,
             "entry": true,
             "exit": true
+        }
     }
-}}
+}

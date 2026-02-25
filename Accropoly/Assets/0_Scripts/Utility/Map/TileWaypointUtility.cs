@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices;
 using Components;
 using Components.WaypointComponents;
 using Unity.Collections;
@@ -37,7 +38,7 @@ public struct TileWaypointUtility
         }
         else if (tile.tileType == TileType.Bitumen)
         {
-            throw new NotImplementedException();
+            type = "Plaza";
         }
         else
         {
