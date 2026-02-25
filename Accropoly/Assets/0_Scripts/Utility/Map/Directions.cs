@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Mathematics;
 
@@ -77,26 +76,6 @@ public struct Direction : IEquatable<Direction>
     private static int Normalize(int value) { return (value + 100) % 4; }
     public static Direction Rotate(Direction direction, int rotation) { return (Direction)Normalize((int)direction + rotation); }
 
-    /// <summary>
-    /// Fills the first 4 slots of the container with the 4 directions
-    /// </summary>
-    public static void GetDirections(ref NativeArray<Direction> array)
-    {
-        for (int i = 0; i < 4; i++)
-        {
-            array[i] = (Direction)i;
-        }
-    }
-    public static void GetDirections(ref NativeList<Direction> list)
-    {
-        list.Clear();
-        for (int i = 0; i < 4; i++)
-        {
-            list.Add((Direction)i);
-        }
-    }
-
-    // Make unmanaged
     public static DirectionEnumerable GetDirections()
     {
         return new DirectionEnumerable();
@@ -110,25 +89,27 @@ public struct Direction : IEquatable<Direction>
         return Normalize((int)resultingDirection - (int)direction);
     }
 }
-public class DirectionEnumerable : IEnumerable
+public struct DirectionEnumerable : IEnumerable
 {
-    public DirectionEnumerator GetEnumerator()
+    public readonly DirectionEnumerator GetEnumerator()
     {
-        return new();
+        DirectionEnumerator enumerator = new();
+        enumerator.Reset();
+        return enumerator;
     }
 
-    IEnumerator IEnumerable.GetEnumerator()
+    readonly IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
     }
 }
-public class DirectionEnumerator : IEnumerator
+public struct DirectionEnumerator : IEnumerator
 {
-    private int dir = -1;
-    public Direction Current => (Direction)dir;
-    object IEnumerator.Current => Current;
+    private int dir;
+    public readonly Direction Current => (Direction)dir;
+    readonly object IEnumerator.Current => Current;
 
-    public void Dispose() { }
+    public readonly void Dispose() { }
     public bool MoveNext()
     {
         dir++;

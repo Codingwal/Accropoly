@@ -32,6 +32,8 @@ public partial class AppearenceSystem : SystemBase
         new UpdateSimpleTilesJob { config = config }
             .Schedule(SystemAPI.QueryBuilder().WithAll<Tile, MaterialMeshInfo>().WithNone<ConnectingTile>().Build());
 
+        // TODO: Use Schedule and remove Dependency.Complete()
+        Dependency.Complete();
         new UpdateConnectingTilesJob
         {
             config = config,

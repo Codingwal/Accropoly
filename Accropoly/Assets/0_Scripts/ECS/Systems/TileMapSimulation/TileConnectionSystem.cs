@@ -68,7 +68,7 @@ namespace Systems
             }.Schedule(newNotConnectingTiles);
         }
 
-        // TODO: BurstCompile (Direction.GetDirections must become unmanaged first)
+        [BurstCompile]
         private partial struct ConnectTilesJob : IJobEntity
         {
             public DynamicBuffer<EntityBufferElement> entityGrid;
@@ -105,7 +105,7 @@ namespace Systems
             }
         }
 
-        // TODO: BurstCompile (Direction.GetDirections must become unmanaged first)
+        [BurstCompile]
         private partial struct DisconnectTilesJob : IJobEntity
         {
             public DynamicBuffer<EntityBufferElement> entityGrid;

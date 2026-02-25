@@ -5,6 +5,7 @@ using Unity.Jobs;
 using Unity.Collections;
 using System.Linq;
 using NUnit.Framework;
+using Unity.Burst;
 
 namespace Systems
 {
@@ -33,6 +34,7 @@ namespace Systems
             }.Schedule();
         }
 
+        [BurstCompile]
         [WithPresent(typeof(IsConnected))]
         private partial struct CheckBuildingConnectionsJob : IJobEntity
         {

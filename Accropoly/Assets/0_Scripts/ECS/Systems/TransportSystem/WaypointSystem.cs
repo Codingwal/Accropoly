@@ -170,7 +170,7 @@ namespace Systems
             private bool DataChanged(Entity entity, in Tile tile, in CopyComponent<Tile> tileOld)
             {
                 // Tiletype or rotation changed?
-                if (!tile.Equals(tileOld.value))
+                if (tile.tileType != tileOld.value.tileType || tile.rotation != tileOld.value.rotation)
                     return true;
 
                 // If not a connecting tile, nothing relevant changed
@@ -178,7 +178,7 @@ namespace Systems
                     return false;
 
                 // Not equal => something changed
-                return !connectingTileLookup[entity].Equals(connectingTileOldLookup[entity].value);
+                return connectingTileLookup[entity].index != connectingTileOldLookup[entity].value.index;
             }
         }
 
