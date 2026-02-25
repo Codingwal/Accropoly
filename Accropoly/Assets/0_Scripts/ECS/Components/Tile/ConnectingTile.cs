@@ -1,6 +1,8 @@
 using Unity.Entities;
 using UnityEngine;
 
+[assembly: RegisterGenericComponentType(typeof(CopyComponent<Components.ConnectingTile>))]
+
 namespace Components
 {
     public unsafe struct ConnectingTile : IComponentData

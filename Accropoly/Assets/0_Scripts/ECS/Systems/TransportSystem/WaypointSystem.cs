@@ -18,29 +18,6 @@ namespace Systems
     [UpdateInGroup(typeof(LateSimulationSystemGroup))]
     public partial class WaypointSystem : SystemBase
     {
-        private EntityQuery connectingTilesToUpdate;
-        private EntityQuery otherTilesToUpdate;
-        private EntityQuery tileWithReplaceTag;
-        protected override void OnCreate()
-        {
-            // Contains all TransportTiles where relevant data changed (including all NewTiles) (includes all TransportTiles at world loading)
-            connectingTilesToUpdate = new EntityQueryBuilder(Allocator.Temp)
-                .WithAspect<TransportTileAspect>()
-                .WithAll<ConnectingTile>() // Needed for SetChangedVersionFilter
-                .WithNone<Replace>()
-                .Build(this);
-            connectingTilesToUpdate.SetChangedVersionFilter(new ComponentType[] { typeof(ConnectingTile), typeof(Tile) });
-
-            otherTilesToUpdate = new EntityQueryBuilder(Allocator.Temp)
-                .WithAspect<TransportTileAspect>()
-                .WithNone<Replace, ConnectingTile>()
-                .Build(this);
-            otherTilesToUpdate.SetChangedVersionFilter(new ComponentType[] { typeof(Tile) });
-
-            tileWithReplaceTag = new EntityQueryBuilder(Allocator.Temp)
-                .WithAll<Replace, TransportTile>()
-                .Build(this);
-        }
         protected override void OnUpdate()
         {
             if (SystemAPI.HasSingleton<LoadGame>())
@@ -85,24 +62,18 @@ namespace Systems
             new ClearReplaceTilesJob()
             {
                 jobUtility = jobUtility
-            }.Schedule(tileWithReplaceTag);
+            }.Schedule();
 
             // Garantee that all connecting tiles have been updated
             World.GetExistingSystemManaged<TileConnectionSystem>().CheckedStateRef.Dependency.Complete();
 
-            // They are updated seperately because of SetChangedVersionFilter()
             new UpdateTilesJob()
             {
                 ecb = ecb,
                 jobUtility = jobUtility,
-                connectingTileLookup = SystemAPI.GetComponentLookup<ConnectingTile>(isReadOnly: true)
-            }.Schedule(connectingTilesToUpdate);
-            new UpdateTilesJob()
-            {
-                ecb = ecb,
-                jobUtility = jobUtility,
-                connectingTileLookup = SystemAPI.GetComponentLookup<ConnectingTile>(isReadOnly: true)
-            }.Schedule(otherTilesToUpdate);
+                connectingTileLookup = SystemAPI.GetComponentLookup<ConnectingTile>(isReadOnly: true),
+                connectingTileOldLookup = SystemAPI.GetComponentLookup<CopyComponent<ConnectingTile>>()
+            }.Schedule();
 
             // Ugly and slow but neccessary :(
             Dependency.Complete();
@@ -153,6 +124,7 @@ namespace Systems
         /// Remove waypoints from tiles that will get replaced
         /// </summary>
         [BurstCompile]
+        [WithAll(typeof(Replace))]
         private partial struct ClearReplaceTilesJob : IJobEntity
         {
             public JobUtility jobUtility;
@@ -172,19 +144,41 @@ namespace Systems
             public EntityCommandBuffer ecb;
             public JobUtility jobUtility;
             [ReadOnly] public ComponentLookup<ConnectingTile> connectingTileLookup;
-            public void Execute(Entity entity, ref TransportTile transportTile, in Tile tile, in LocalTransform transform)
+            public ComponentLookup<CopyComponent<ConnectingTile>> connectingTileOldLookup;
+            public void Execute(Entity entity, ref TransportTile transportTile, in Tile tile, ref CopyComponent<Tile> tileOld, in LocalTransform transform)
             {
-                // Delete all waypoints owned by this tile
-                jobUtility.DeleteTileWaypoints(ref transportTile.waypoints);
+                if (DataChanged(entity, in tile, in tileOld))
+                {
+                    // Delete all waypoints owned by this tile
+                    jobUtility.DeleteTileWaypoints(ref transportTile.waypoints);
 
-                // Check if the tile is a connecting tile
-                ConnectingTile? connectingTile = null;
+                    // Check if the tile is a connecting tile
+                    ConnectingTile? connectingTile = null;
+                    if (connectingTileLookup.HasComponent(entity))
+                        connectingTile = connectingTileLookup[entity];
+
+                    // Create new waypoints
+                    var tileWaypointUtility = new TileWaypointUtility(tile, transform, connectingTile);
+                    tileWaypointUtility.CreateWaypoints(ref ecb);
+                }
+
+                tileOld.value = tile;
                 if (connectingTileLookup.HasComponent(entity))
-                    connectingTile = connectingTileLookup[entity];
+                    connectingTileOldLookup[entity] = new(connectingTileLookup[entity]);
+            }
 
-                // Create new waypoints
-                var tileWaypointUtility = new TileWaypointUtility(tile, transform, connectingTile);
-                tileWaypointUtility.CreateWaypoints(ref ecb);
+            private bool DataChanged(Entity entity, in Tile tile, in CopyComponent<Tile> tileOld)
+            {
+                // Tiletype or rotation changed?
+                if (!tile.Equals(tileOld.value))
+                    return true;
+
+                // If not a connecting tile, nothing relevant changed
+                if (!connectingTileLookup.HasComponent(entity))
+                    return false;
+
+                // Not equal => something changed
+                return !connectingTileLookup[entity].Equals(connectingTileOldLookup[entity].value);
             }
         }
 
