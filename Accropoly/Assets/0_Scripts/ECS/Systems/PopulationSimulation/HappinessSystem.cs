@@ -4,7 +4,6 @@ using Unity.Collections;
 using Components;
 using Tags;
 using Unity.Burst;
-using Unity.Jobs;
 
 namespace Systems
 {
@@ -17,7 +16,6 @@ namespace Systems
         protected override void OnCreate()
         {
             RequireForUpdate<RunGame>();
-            RequireForUpdate<ConfigComponents.Happiness>();
         }
 
         protected override void OnUpdate()
@@ -30,7 +28,7 @@ namespace Systems
 
             new CalculateHappinessJob
             {
-                config = SystemAPI.GetSingleton<ConfigComponents.Happiness>(),
+                config = ConfigData.populationConfig.Data.happiness,
                 hasElectricityLookup = GetComponentLookup<HasElectricity>(),
                 workerLookup = GetComponentLookup<Worker>(),
                 unemployedLookup = GetComponentLookup<Unemployed>(),
@@ -59,7 +57,7 @@ namespace Systems
         [BurstCompile]
         private partial struct CalculateHappinessJob : IJobEntity
         {
-            public ConfigComponents.Happiness config;
+            public PopulationConfig.Happiness config;
             [ReadOnly] public ComponentLookup<HasElectricity> hasElectricityLookup;
             [ReadOnly] public ComponentLookup<Worker> workerLookup;
             [ReadOnly] public ComponentLookup<Unemployed> unemployedLookup;

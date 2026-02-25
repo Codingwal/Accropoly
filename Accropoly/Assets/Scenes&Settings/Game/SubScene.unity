@@ -13,7 +13,7 @@ OcclusionCullingSettings:
 --- !u!104 &2
 RenderSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 9
+  serializedVersion: 10
   m_Fog: 0
   m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   m_FogMode: 3
@@ -42,8 +42,8 @@ RenderSettings:
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 12
-  m_GIWorkflowMode: 1
+  serializedVersion: 13
+  m_BakeOnSceneLoad: 0
   m_GISettings:
     serializedVersion: 2
     m_BounceScale: 1
@@ -66,9 +66,6 @@ LightmapSettings:
     m_LightmapParameters: {fileID: 0}
     m_LightmapsBakeMode: 1
     m_TextureCompression: 1
-    m_FinalGather: 0
-    m_FinalGatherFiltering: 1
-    m_FinalGatherRayCount: 256
     m_ReflectionCompression: 2
     m_MixedBakeMode: 2
     m_BakeBackend: 1
@@ -122,52 +119,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &115408466
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 115408467}
-  - component: {fileID: 115408468}
-  m_Layer: 0
-  m_Name: TileMapSimulationAuthoring
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &115408467
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 115408466}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &115408468
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 115408466}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e0f4a499360eca469acb9771e2ebd15, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxAge1: 6
-  maxAge2: 12
 --- !u!1 &903553014
 GameObject:
   m_ObjectHideFlags: 0
@@ -178,10 +129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 903553016}
   - component: {fileID: 903553017}
-  - component: {fileID: 903553019}
   - component: {fileID: 903553020}
-  - component: {fileID: 903553021}
-  - component: {fileID: 903553022}
   - component: {fileID: 903553023}
   m_Layer: 0
   m_Name: Authoring
@@ -219,27 +167,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tilePrefab: {fileID: 8833141692400065624, guid: 0220ee1e56efbf44992718310e25e3f1, type: 3}
   personPrefab: {fileID: 8833141692400065624, guid: 956099f2050680f4381e4cdac2268438, type: 3}
---- !u!114 &903553019
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 903553014}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d4691fd6d2601bb4598db17567c221c9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 8
-  rotationSpeed: 100
-  zoomSpeed: 15
-  minDistance: 5
-  maxDistance: 150
-  lookSpeed: 200
-  minAngle: 10
-  maxAngle: 70
-  sprintSpeedMultiplier: 5
 --- !u!114 &903553020
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -255,55 +182,6 @@ MonoBehaviour:
   mouseRayLayer:
     serializedVersion: 2
     m_Bits: 64
---- !u!114 &903553021
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 903553014}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f94288f40292c7499028c3d7a87383b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tilePrices:
-    dictionary:
-    - key: 1
-      value: 5
-    - key: 2
-      value: 10
-    - key: 4
-      value: 50
-    - key: 5
-      value: 200
-    - key: 9
-      value: 50
-    - key: 6
-      value: 50
-    - key: 8
-      value: 50
-    - key: 10
-      value: 500
-    - key: 11
-      value: 1000
-    - key: 20
-      value: 20
-    - key: 7
-      value: 20
---- !u!114 &903553022
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 903553014}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2bca66b101e807543b0cb50460c3f498, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  secondsPerDay: 60
 --- !u!114 &903553023
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -318,74 +196,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefab: {fileID: 1061788756884513946, guid: 8b03c98019ed2a042aa908561c34fb07, type: 3}
   billboardHeightOffset: 2.5
---- !u!1 &1407001049
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1407001050}
-  - component: {fileID: 1407001051}
-  - component: {fileID: 1407001052}
-  m_Layer: 0
-  m_Name: PopulationSimulationAuthoring
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1407001050
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1407001049}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1407001051
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1407001049}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c9e846388cb20c44bad87a2d5955e404, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  defaultHappiness: 50
-  homeless: -30
-  hasElectricity: 10
-  noElectricity: -10
-  employed: 20
-  unemployed: -10
---- !u!114 &1407001052
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1407001049}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b0d39e227dd6ceb41b473c992ea754f7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  taxPerHappiness: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 903553016}
-  - {fileID: 115408467}
-  - {fileID: 1407001050}

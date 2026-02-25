@@ -15,7 +15,6 @@ namespace Systems
         {
             RequireForUpdate<RunGame>();
             RequireForUpdate<GrowingTile>();
-            RequireForUpdate<ConfigComponents.TileGrowing>();
         }
         protected override void OnUpdate()
         {
@@ -23,7 +22,7 @@ namespace Systems
             {
                 ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged),
                 deltaTime = SystemAPI.GetSingleton<GameInfo>().deltaTime,
-                config = SystemAPI.GetSingleton<ConfigComponents.TileGrowing>(),
+                config = ConfigData.tileConfig.Data.tileGrowing,
             }.Schedule();
         }
 
@@ -33,10 +32,10 @@ namespace Systems
         {
             public EntityCommandBuffer ecb;
             public float deltaTime;
-            public ConfigComponents.TileGrowing config;
+            public TileConfig.TileGrowing config;
             public void Execute(Entity entity, ref Tile tile, ref GrowingTile growingTile)
             {
-                growingTile.age += deltaTime;
+                growingTile.age += deltaTime / 3600;
 
                 if (tile.tileType == TileType.Sapling && growingTile.age >= config.maxAge1)
                 {

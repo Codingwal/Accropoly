@@ -13,14 +13,11 @@ public class FileHandler
 
         for (int i = 0; i < files.Length; i++)
         {
-            // Get the fileName, without path & fileType
-            int startPoint = files[i].LastIndexOf("/") + 1;
-            int endPoint = files[i].LastIndexOf(".");
-            files[i] = files[i][startPoint..endPoint];
+            files[i] = GetFileName(files[i]);
         }
         return files;
     }
-    public static void SaveObject<T>(string directory, string name, T obj) 
+    public static void SaveObject<T>(string directory, string name, T obj)
     {
         string dataPath = $"{baseDir}{directory}/{name}.bin";
 
@@ -77,5 +74,15 @@ public class FileHandler
                 SaveObject("", fileDataPair.Key, fileDataPair.Value);
             }
         }
+    }
+
+    /// <summary>
+    /// Get the fileName, without path or file type
+    /// </summary>
+    public static string GetFileName(string path)
+    {
+        int startPoint = path.LastIndexOf("/") + 1;
+        int endPoint = path.LastIndexOf(".");
+        return path[startPoint..endPoint];
     }
 }

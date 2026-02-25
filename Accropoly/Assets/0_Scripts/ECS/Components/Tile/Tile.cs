@@ -1,8 +1,12 @@
+using Components;
 using Unity.Entities;
 using Unity.Mathematics;
 
+[assembly: RegisterGenericComponentType(typeof(CopyComponent<Tile>))]
+
 namespace Components
 {
+
     public struct Tile : IComponentData
     {
         public TileType tileType;

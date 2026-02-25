@@ -61,3 +61,12 @@ public unsafe struct Ref<T> where T : unmanaged
         }
     }
 }
+
+public struct CopyComponent<T> : IComponentData where T : struct, IComponentData
+{
+    public T value;
+    public CopyComponent(T value)
+    {
+        this.value = value;
+    }
+}

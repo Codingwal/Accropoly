@@ -37,6 +37,8 @@ namespace Systems
             typesToIgnoreSet.Add(typeof(HasSpace));
             typesToIgnoreSet.Add(typeof(HasElectricity));
             typesToIgnoreSet.Add(typeof(BillboardOwner));
+            typesToIgnoreSet.Add(typeof(CopyComponent<Tile>));
+            typesToIgnoreSet.Add(typeof(CopyComponent<ConnectingTile>));
 
             WorldDataSystem.worldData.map.tiles = new TileData[WorldDataSystem.worldData.map.tiles.GetLength(0), WorldDataSystem.worldData.map.tiles.GetLength(1)];
 

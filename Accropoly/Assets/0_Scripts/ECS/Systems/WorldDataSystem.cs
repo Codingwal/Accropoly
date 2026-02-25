@@ -80,6 +80,16 @@ namespace Systems
                 state.EntityManager.CreateSingleton<PreSaveGame>();
             }
         }
+
+        public void OnDestroy(ref SystemState state)
+        {
+            // Dispose config data
+            foreach (var pair in ConfigData.waypointConfig.Data.tileToWaypoints)
+                pair.Value.waypoints.Dispose();
+            ConfigData.waypointConfig.Data.tileToWaypoints.Dispose();
+        }
+
+
         public static void LoadWorldData()
         {
             loadGame = true;
