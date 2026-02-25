@@ -36,7 +36,7 @@ public partial class AppearenceSystem : SystemBase
         {
             config = config,
             tileLookup = GetComponentLookup<Tile>(isReadOnly: true)
-        }.Schedule(SystemAPI.QueryBuilder().WithAll<Tile, MaterialMeshInfo, ConnectingTile, LocalTransform>().Build());
+        }.Run(SystemAPI.QueryBuilder().WithAll<Tile, MaterialMeshInfo, ConnectingTile, LocalTransform>().Build());
     }
     protected override void OnDestroy()
     {
