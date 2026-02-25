@@ -1,0 +1,20 @@
+{
+    "center":{
+        "position": [0, 0.8, 0],
+        "allowedObjects": 2,
+        "velocity": 3,
+        "nextWaypoints": ["side"],
+        "junctionData": 0,
+        "entry": false,
+        "exit": false
+    },
+    "side":{
+        "position": [0, 0.8, 0.95],
+        "allowedObjects": 2,
+        "velocity": 3,
+        "nextWaypoints": ["center"],
+        "junctionData": 0,
+        "entry": true,
+        "exit": true
+    }
+}

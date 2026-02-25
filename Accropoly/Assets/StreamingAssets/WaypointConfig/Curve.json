@@ -1,0 +1,75 @@
+{
+    "street-outer-1": {
+        "position": [-0.25, 0.8, 0.95],
+        "allowedObjects": 1,
+        "velocity": 11,
+        "nextWaypoints": ["street-outer-2"],
+        "junctionData": 0,
+        "entry": true,
+        "exit": false
+    },
+    "street-outer-2": {
+        "position": [-0.25, 0.8, 0.25],
+        "allowedObjects": 1,
+        "velocity": 11,
+        "nextWaypoints": ["street-outer-3"],
+        "junctionData": 0,
+        "entry": false,
+        "exit": false
+    },
+    "street-outer-3": {
+        "position": [0.25, 0.8, -0.25],
+        "allowedObjects": 1,
+        "velocity": 11,
+        "nextWaypoints": ["street-outer-4"],
+        "junctionData": 0,
+        "entry": false,
+        "exit": false
+    },
+    "street-outer-4": {
+        "position": [0.95, 0.8, -0.25],
+        "allowedObjects": 1,
+        "velocity": 11,
+        "nextWaypoints": [],
+        "junctionData": 0,
+        "entry": false,
+        "exit": true
+    },
+
+    "street-inner-1": {
+        "position": [0.95, 0.8, 0.25],
+        "allowedObjects": 1,
+        "velocity": 11,
+        "nextWaypoints": ["street-inner-2"],
+        "junctionData": 0,
+        "entry": true,
+        "exit": false
+    },
+    "street-inner-2": {
+        "position": [0.5, 0.8, 0.25],
+        "allowedObjects": 1,
+        "velocity": 11,
+        "nextWaypoints": ["street-inner-3"],
+        "junctionData": 0,
+        "entry": false,
+        "exit": false
+    },
+    "street-inner-3": {
+        "position": [0.25, 0.8, 0.5],
+        "allowedObjects": 1,
+        "velocity": 11,
+        "nextWaypoints": ["street-inner-4"],
+        "junctionData": 0,
+        "entry": false,
+        "exit": false
+    },
+    "street-inner-4": {
+        "position": [0.25, 0.8, -0.95],
+        "allowedObjects": 1,
+        "velocity": 11,
+        "nextWaypoints": [],
+        "junctionData": 0,
+        "entry": false,
+        "exit": true
+    }
+}

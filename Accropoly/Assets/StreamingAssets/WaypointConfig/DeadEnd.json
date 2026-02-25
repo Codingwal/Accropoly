@@ -1,0 +1,38 @@
+{
+    "street-1": {
+        "position": [-0.25, 0.8, 0.95],
+        "allowedObjects": 1,
+        "velocity": 11,
+        "nextWaypoints": ["street-2"],
+        "junctionData": 0,
+        "entry": true,
+        "exit": false
+    },
+    "street-2": {
+        "position": [-0.25, 0.8, -0.25],
+        "allowedObjects": 1,
+        "velocity": 11,
+        "nextWaypoints": ["street-3"],
+        "junctionData": 0,
+        "entry": false,
+        "exit": false
+    },
+    "street-3": {
+        "position": [0.25, 0.8, -0.25],
+        "allowedObjects": 1,
+        "velocity": 11,
+        "nextWaypoints": ["street-4"],
+        "junctionData": 0,
+        "entry": false,
+        "exit": false
+    },
+    "street-4": {
+        "position": [0.25, 0.8, 0.95],
+        "allowedObjects": 1,
+        "velocity": 11,
+        "nextWaypoints": [],
+        "junctionData": 0,
+        "entry": false,
+        "exit": true
+    }
+}

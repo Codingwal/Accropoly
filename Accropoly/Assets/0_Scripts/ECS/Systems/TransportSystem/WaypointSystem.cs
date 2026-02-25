@@ -90,15 +90,18 @@ namespace Systems
             // Garantee that all connecting tiles have been updated
             World.GetExistingSystemManaged<TileConnectionSystem>().CheckedStateRef.Dependency.Complete();
 
+            // They are updated seperately because of SetChangedVersionFilter()
             new UpdateTilesJob()
             {
                 ecb = ecb,
                 jobUtility = jobUtility,
+                connectingTileLookup = SystemAPI.GetComponentLookup<ConnectingTile>(isReadOnly: true)
             }.Schedule(connectingTilesToUpdate);
             new UpdateTilesJob()
             {
                 ecb = ecb,
                 jobUtility = jobUtility,
+                connectingTileLookup = SystemAPI.GetComponentLookup<ConnectingTile>(isReadOnly: true)
             }.Schedule(otherTilesToUpdate);
 
             // Ugly and slow but neccessary :(
@@ -168,13 +171,20 @@ namespace Systems
         {
             public EntityCommandBuffer ecb;
             public JobUtility jobUtility;
-            public void Execute(TransportTileAspect transportTileAspect)
+            [ReadOnly] public ComponentLookup<ConnectingTile> connectingTileLookup;
+            public void Execute(Entity entity, ref TransportTile transportTile, in Tile tile, in LocalTransform transform)
             {
                 // Delete all waypoints owned by this tile
-                jobUtility.DeleteTileWaypoints(ref transportTileAspect.transportTile.ValueRW.waypoints);
+                jobUtility.DeleteTileWaypoints(ref transportTile.waypoints);
+
+                // Check if the tile is a connecting tile
+                ConnectingTile? connectingTile = null;
+                if (connectingTileLookup.HasComponent(entity))
+                    connectingTile = connectingTileLookup[entity];
 
                 // Create new waypoints
-                transportTileAspect.GetPoints(ecb);
+                var tileWaypointUtility = new TileWaypointUtility(tile, transform, connectingTile);
+                tileWaypointUtility.CreateWaypoints(ref ecb);
             }
         }
 

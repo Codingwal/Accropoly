@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
-using Unity.Entities;
+using Unity.Collections;
 using UnityEngine;
 
 public class SaveSystem : FileHandler
@@ -20,10 +20,23 @@ public class SaveSystem : FileHandler
 
         Debug.Log("Loading config data");
         ConfigData.saveSystemConfig = ReadJsonConfig<SaveSystemConfig>("SaveSystemConfig");
-        ConfigData.tileConfig = ReadJsonConfig<TileConfig>("TileConfig");   
+        ConfigData.tileConfig = ReadJsonConfig<TileConfig>("TileConfig");
         ConfigData.populationConfig = ReadJsonConfig<PopulationConfig>("PopulationConfig");
         ConfigData.cameraConfig = ReadJsonConfig<CameraConfig>("CameraConfig");
         ConfigData.timeConfig = ReadJsonConfig<TimeConfig>("TimeConfig");
+
+        // Get config data for each type of tile, convert it to unmanaged data and store it together with the type name
+        ConfigData.waypointConfig.tileToWaypoints = new(10, Allocator.Persistent);
+        foreach (string file in Directory.GetFiles(Path.Combine(Application.persistentDataPath, "WaypointConfig")))
+        {
+            var tileWaypointsManaged = JsonUtility.FromJson<WaypointConfigManaged.TileWaypoints>(File.ReadAllText(file));
+            var tileWaypointsUnmanaged = new ConvertWaypointConfig().ConfigWaypointsToWaypointData(tileWaypointsManaged);
+
+            Debug.Assert(GetFileName(file).Length < 32, $"File name \"{GetFileName(file)}\"is too long");
+            FixedString32Bytes type = GetFileName(file);
+
+            ConfigData.waypointConfig.tileToWaypoints.Add(type, new WaypointConfigUnmanaged.TileWaypoints { waypoints = tileWaypointsUnmanaged });
+        }
 
         Debug.Log("Initializing user data");
 

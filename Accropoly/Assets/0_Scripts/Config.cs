@@ -1,5 +1,10 @@
 
 using System;
+using System.Collections.Generic;
+using Components.WaypointComponents;
+using Unity.Collections;
+using Unity.Mathematics;
+using static Components.WaypointComponents.Junction;
 
 public static class ConfigData
 {
@@ -8,6 +13,7 @@ public static class ConfigData
     public static PopulationConfig populationConfig;
     public static CameraConfig cameraConfig;
     public static TimeConfig timeConfig;
+    public static WaypointConfigUnmanaged waypointConfig;
 }
 
 [Serializable]
@@ -84,4 +90,49 @@ public struct TimeConfig
 {
     public float secondsPerDay;
     public readonly float TimeSpeed => 24 * 60 * 60 / secondsPerDay;
+}
+
+[Serializable]
+public struct WaypointConfigManaged
+{
+    [Serializable]
+    public struct Waypoint
+    {
+        public List<float> position; // float3
+        public TravelObjects allowedObjects;
+        public float velocity;
+        public List<string> nextWaypoints;
+        public JunctionData junctionData;
+        public bool entry;
+        public bool exit;
+    }
+
+    [Serializable]
+    public struct TileWaypoints
+    {
+        public Dictionary<string, Waypoint> waypoints;
+    }
+
+    public Dictionary<string, TileWaypoints> tileToWaypoints;
+}
+
+public struct WaypointConfigUnmanaged
+{
+    public struct WaypointData
+    {
+        public float3 position;
+        public TravelObjects allowedObjects;
+        public float velocity;
+        public NewWaypoint newWaypointData;
+        public JunctionData junctionData;
+        public bool entry;
+        public bool exit;
+    }
+
+    public struct TileWaypoints
+    {
+        public NativeList<WaypointData> waypoints;
+    }
+
+    public NativeHashMap<FixedString32Bytes, TileWaypoints> tileToWaypoints;
 }
