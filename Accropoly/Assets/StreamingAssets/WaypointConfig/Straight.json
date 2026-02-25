@@ -1,38 +1,40 @@
 {
-    "street-northEntry": {
-        "position": [-0.25, 0.8, 0.95],
-        "allowedObjects": 1,
-        "velocity": 11,
-        "nextWaypoints": ["street-southExit"],
-        "junctionData": 0,
-        "entry": true,
-        "exit": false
-    },
-    "street-southExit": {
-        "position": [-0.25, 0.8, -0.95],
-        "allowedObjects": 1,
-        "velocity": 11,
-        "nextWaypoints": [],
-        "junctionData": 0,
-        "entry": false,
-        "exit": true
-    },
-    "street-southEntry": {
-        "position": [0.25, 0.8, -0.95],
-        "allowedObjects": 1,
-        "velocity": 11,
-        "nextWaypoints": ["street-northExit"],
-        "junctionData": 0,
-        "entry": true,
-        "exit": false
-    },
-    "street-northExit": {
-        "position": [0.25, 0.8, 0.95],
-        "allowedObjects": 1,
-        "velocity": 11,
-        "nextWaypoints": [],
-        "junctionData": 0,
-        "entry": false,
-        "exit": true
+    "waypoints": {
+        "street-northEntry": {
+            "position": [-0.25, 0.8, 0.95],
+            "allowedObjects": 1,
+            "velocity": 11,
+            "nextWaypoints": ["street-southExit"],
+            "junctionData": 0,
+            "entry": true,
+            "exit": false
+        },
+        "street-southExit": {
+            "position": [-0.25, 0.8, -0.95],
+            "allowedObjects": 1,
+            "velocity": 11,
+            "nextWaypoints": [],
+            "junctionData": 0,
+            "entry": false,
+            "exit": true
+        },
+        "street-southEntry": {
+            "position": [0.25, 0.8, -0.95],
+            "allowedObjects": 1,
+            "velocity": 11,
+            "nextWaypoints": ["street-northExit"],
+            "junctionData": 0,
+            "entry": true,
+            "exit": false
+        },
+        "street-northExit": {
+            "position": [0.25, 0.8, 0.95],
+            "allowedObjects": 1,
+            "velocity": 11,
+            "nextWaypoints": [],
+            "junctionData": 0,
+            "entry": false,
+            "exit": true
+        }
     }
 }

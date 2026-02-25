@@ -11,7 +11,7 @@ public static class TilePlacingUtility
 {
     public static List<(IComponentData, bool)> GetComponents(TileType tileType, int2 pos, Direction rotation)
     {
-        var tileGrowingConfig = ConfigData.tileConfig.tileGrowing;
+        var tileGrowingConfig = ConfigData.tileConfig.Data.tileGrowing;
         System.Random rnd = new();
         List<(IComponentData, bool)> components = tileType switch
         {

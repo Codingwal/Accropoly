@@ -22,7 +22,7 @@ namespace Systems
             {
                 ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged),
                 deltaTime = SystemAPI.GetSingleton<GameInfo>().deltaTime,
-                config = ConfigData.tileConfig.tileGrowing,
+                config = ConfigData.tileConfig.Data.tileGrowing,
             }.Schedule();
         }
 

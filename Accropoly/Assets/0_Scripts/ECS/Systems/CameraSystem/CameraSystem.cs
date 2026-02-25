@@ -38,7 +38,7 @@ namespace Systems
             state.Dependency = new Job
             {
                 ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged),
-                config = ConfigData.cameraConfig,
+                config = ConfigData.cameraConfig.Data,
                 inputData = SystemAPI.GetSingleton<InputData>(),
                 deltaTime = Time.deltaTime,
                 mapSize = WorldDataSystem.worldData.map.tiles.GetLength(0),

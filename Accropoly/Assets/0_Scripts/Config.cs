@@ -2,18 +2,26 @@
 using System;
 using System.Collections.Generic;
 using Components.WaypointComponents;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Mathematics;
 using static Components.WaypointComponents.Junction;
 
-public static class ConfigData
+public abstract class ConfigData
 {
-    public static SaveSystemConfig saveSystemConfig;
-    public static TileConfig tileConfig;
-    public static PopulationConfig populationConfig;
-    public static CameraConfig cameraConfig;
-    public static TimeConfig timeConfig;
-    public static WaypointConfigUnmanaged waypointConfig;
+    public static readonly SharedStatic<SaveSystemConfig> saveSystemConfig = SharedStatic<SaveSystemConfig>.GetOrCreate<SaveSystemConfigKey>();
+    public static readonly SharedStatic<TileConfig> tileConfig = SharedStatic<TileConfig>.GetOrCreate<TileConfigContextKey>();
+    public static readonly SharedStatic<PopulationConfig> populationConfig = SharedStatic<PopulationConfig>.GetOrCreate<PopulationConfigKey>();
+    public static readonly SharedStatic<CameraConfig> cameraConfig = SharedStatic<CameraConfig>.GetOrCreate<CameraConfigKey>();
+    public static readonly SharedStatic<TimeConfig> timeConfig = SharedStatic<TimeConfig>.GetOrCreate<TimeConfigKey>();
+    public static readonly SharedStatic<WaypointConfigUnmanaged> waypointConfig = SharedStatic<WaypointConfigUnmanaged>.GetOrCreate<WaypointConfigUnmanagedKey>();
+
+    private class SaveSystemConfigKey { }
+    private class TileConfigContextKey { }
+    private class PopulationConfigKey { }
+    private class CameraConfigKey { }
+    private class TimeConfigKey { }
+    private class WaypointConfigUnmanagedKey { }
 }
 
 [Serializable]

@@ -18,7 +18,7 @@ namespace Systems
         {
             state.CompleteDependency(); // Important because TaxSystem writes to GameInfo and GetSingleton doesn't complete dependencies but throws an error
 
-            var config = ConfigData.timeConfig;
+            var config = ConfigData.timeConfig.Data;
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
 
             ecb.DestroyEntity(newDayTagQuery, EntityQueryCaptureMode.AtPlayback); // Delete old tag if present

@@ -84,9 +84,9 @@ namespace Systems
         public void OnDestroy(ref SystemState state)
         {
             // Dispose config data
-            foreach (var pair in ConfigData.waypointConfig.tileToWaypoints)
+            foreach (var pair in ConfigData.waypointConfig.Data.tileToWaypoints)
                 pair.Value.waypoints.Dispose();
-            ConfigData.waypointConfig.tileToWaypoints.Dispose();
+            ConfigData.waypointConfig.Data.tileToWaypoints.Dispose();
         }
 
 

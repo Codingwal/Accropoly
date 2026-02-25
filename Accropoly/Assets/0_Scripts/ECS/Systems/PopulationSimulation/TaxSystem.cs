@@ -16,7 +16,7 @@ namespace Systems
         }
         protected override void OnUpdate()
         {
-            var config = ConfigData.populationConfig.taxes;
+            var config = ConfigData.populationConfig.Data.taxes;
 
             float totalTaxIncome = 0;
             foreach (var person in SystemAPI.Query<RefRO<Person>>())

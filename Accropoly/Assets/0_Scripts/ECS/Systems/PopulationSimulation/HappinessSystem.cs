@@ -28,7 +28,7 @@ namespace Systems
 
             new CalculateHappinessJob
             {
-                config = ConfigData.populationConfig.happiness,
+                config = ConfigData.populationConfig.Data.happiness,
                 hasElectricityLookup = GetComponentLookup<HasElectricity>(),
                 workerLookup = GetComponentLookup<Worker>(),
                 unemployedLookup = GetComponentLookup<Unemployed>(),

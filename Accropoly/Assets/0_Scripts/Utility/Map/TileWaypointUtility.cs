@@ -1,6 +1,7 @@
 using System;
 using Components;
 using Components.WaypointComponents;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -20,7 +21,7 @@ public struct TileWaypointUtility
     }
     public void CreateWaypoints(ref EntityCommandBuffer ecb)
     {
-        string type;
+        FixedString32Bytes type;
         if (connectingTile.HasValue)
         {
             type = connectingTile.Value.GetIndex() switch
@@ -43,7 +44,7 @@ public struct TileWaypointUtility
             type = "Building";
         }
 
-        if (!ConfigData.waypointConfig.tileToWaypoints.TryGetValue(type, out var tileWaypoints))
+        if (!ConfigData.waypointConfig.Data.tileToWaypoints.TryGetValue(type, out var tileWaypoints))
         {
             Debug.LogError($"No waypoint data for type \"{type}\"");
             return;
