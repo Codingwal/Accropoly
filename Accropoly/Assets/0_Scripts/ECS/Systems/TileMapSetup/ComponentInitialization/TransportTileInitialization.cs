@@ -15,22 +15,22 @@ namespace Systems
             var ecb = SystemAPI.GetSingleton<EndComponentInitializationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
 
             // Add Tile CopyComponent
-            foreach (var (tile, entity) in SystemAPI.Query<RefRO<Tile>>().WithEntityAccess().WithAll<NewTile>())
-                ecb.AddComponent(entity, new CopyComponent<Tile>(tile.ValueRO));
+            foreach (var (_, entity) in SystemAPI.Query<RefRO<Tile>>().WithEntityAccess().WithAll<NewTile, TransportTile>())
+                ecb.AddComponent<CopyComponent<Tile>>(entity);
 
             // Add ConnectingTile CopyComponent
-            foreach (var (connectingTile, entity) in SystemAPI.Query<RefRO<ConnectingTile>>().WithEntityAccess().WithAll<NewTile>())
-                ecb.AddComponent(entity, new CopyComponent<ConnectingTile>(connectingTile.ValueRO));
+            foreach (var (_, entity) in SystemAPI.Query<RefRO<ConnectingTile>>().WithEntityAccess().WithAll<NewTile, TransportTile>())
+                ecb.AddComponent<CopyComponent<ConnectingTile>>(entity);
 
             if (SystemAPI.HasSingleton<LoadGame>())
             {
                 // Add Tile CopyComponent
-                foreach (var (tile, entity) in SystemAPI.Query<RefRO<Tile>>().WithEntityAccess())
-                    ecb.AddComponent(entity, new CopyComponent<Tile>(tile.ValueRO));
+                foreach (var (_, entity) in SystemAPI.Query<RefRO<Tile>>().WithEntityAccess().WithAll<TransportTile>())
+                    ecb.AddComponent<CopyComponent<Tile>>(entity);
 
                 // Add ConnectingTile CopyComponent
-                foreach (var (connectingTile, entity) in SystemAPI.Query<RefRO<ConnectingTile>>().WithEntityAccess())
-                    ecb.AddComponent(entity, new CopyComponent<ConnectingTile>(connectingTile.ValueRO));
+                foreach (var (_, entity) in SystemAPI.Query<RefRO<ConnectingTile>>().WithEntityAccess().WithAll<TransportTile>())
+                    ecb.AddComponent<CopyComponent<ConnectingTile>>(entity);
             }
         }
     }
