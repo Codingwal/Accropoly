@@ -1,6 +1,8 @@
 using Unity.Entities;
 using Unity.Mathematics;
 using Components;
+using System.Collections;
+using System.Collections.Generic;
 
 public static class TileGridUtility
 {
@@ -68,26 +70,18 @@ public static class TileGridUtility
         entity = default;
         return false;
     }
-    public static Entity[] GetNeighbourTiles(int2 pos)
+    public static IEnumerable<Entity> GetNeighbourTiles(int2 pos, DynamicBuffer<EntityBufferElement> entityGrid)
     {
-        var buffer = GetEntityGrid();
-        return new Entity[4]
-        {
-            buffer[GetIndex(pos + new int2(1, 0), buffer.Length)],
-            buffer[GetIndex(pos + new int2(-1, 0), buffer.Length)],
-            buffer[GetIndex(pos + new int2(0, 1), buffer.Length)],
-            buffer[GetIndex(pos + new int2(0, -1), buffer.Length)],
-        };
+        yield return GetTile(pos + new int2(0, 1), entityGrid);
+        yield return GetTile(pos + new int2(1, 0), entityGrid);
+        yield return GetTile(pos + new int2(0, -1), entityGrid);
+        yield return GetTile(pos + new int2(-1, 0), entityGrid);
     }
-    public static Entity[] GetSquareEdgeTiles(int2 pos)
+    public static IEnumerable<Entity> GetSquareEdgeTiles(int2 pos, DynamicBuffer<EntityBufferElement> entityGrid)
     {
-        var buffer = GetEntityGrid();
-        return new Entity[4]
-        {
-            buffer[GetIndex(pos + new int2(-1, 1), buffer.Length)],
-            buffer[GetIndex(pos + new int2(1, 1), buffer.Length)],
-            buffer[GetIndex(pos + new int2(1, -1), buffer.Length)],
-            buffer[GetIndex(pos + new int2(-1, -1), buffer.Length)],
-        };
+        yield return GetTile(pos + new int2(-1, 1), entityGrid);
+        yield return GetTile(pos + new int2(1, 1), entityGrid);
+        yield return GetTile(pos + new int2(1, -1), entityGrid);
+        yield return GetTile(pos + new int2(-1, -1), entityGrid);
     }
 }

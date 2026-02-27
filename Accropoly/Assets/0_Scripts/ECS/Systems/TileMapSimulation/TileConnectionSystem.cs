@@ -89,9 +89,9 @@ namespace Systems
                     if (neighbourConnectingTile.ValueRO.group == connectingTile.ValueRO.group)
                     {
                         connectingTile.ValueRW.AddDirection(direction);
-                        neighbourConnectingTile.ValueRW.AddDirection(direction.Flip());
+                        neighbourConnectingTile.ValueRW.AddDirection(Direction.Flip(direction));
                     }
-                    else neighbourConnectingTile.ValueRW.RemoveDirection(direction.Flip());
+                    else neighbourConnectingTile.ValueRW.RemoveDirection(Direction.Flip(direction));
 
                     // Update neighbour
                     Direction newNeighbourRotation = neighbourConnectingTile.ValueRO.GetRotation();
@@ -124,7 +124,7 @@ namespace Systems
                     var neighbourConnectingTile = connectingTileLookup.GetRefRW(neighbour);
 
                     // Update neighbourr connecting tile
-                    neighbourConnectingTile.ValueRW.RemoveDirection(direction.Flip());
+                    neighbourConnectingTile.ValueRW.RemoveDirection(Direction.Flip(direction));
 
                     // Update neighbour rotation
                     Direction newNeighbourRotation = neighbourConnectingTile.ValueRO.GetRotation();

@@ -32,13 +32,12 @@ public partial class AppearenceSystem : SystemBase
         new UpdateSimpleTilesJob { config = config }
             .Schedule(SystemAPI.QueryBuilder().WithAll<Tile, MaterialMeshInfo>().WithNone<ConnectingTile>().Build());
 
-        // TODO: Use Schedule and remove Dependency.Complete()
-        Dependency.Complete();
         new UpdateConnectingTilesJob
         {
             config = config,
-            tileLookup = GetComponentLookup<Tile>(isReadOnly: true)
-        }.Run(SystemAPI.QueryBuilder().WithAll<Tile, MaterialMeshInfo, ConnectingTile, LocalTransform>().Build());
+            tileLookup = GetComponentLookup<Tile>(isReadOnly: true),
+            tileGrid = TileGridUtility.GetEntityGrid()
+        }.Schedule(SystemAPI.QueryBuilder().WithAll<Tile, MaterialMeshInfo, ConnectingTile, LocalTransform>().Build());
     }
     protected override void OnDestroy()
     {
@@ -72,26 +71,28 @@ public partial class AppearenceSystem : SystemBase
         }
     }
 
+    [BurstCompile]
     private partial struct UpdateConnectingTilesJob : IJobEntity
     {
         public Appearence config;
         [ReadOnly] public ComponentLookup<Tile> tileLookup;
+        public DynamicBuffer<EntityBufferElement> tileGrid;
         public void Execute(ref LocalTransform transform, ref MaterialMeshInfo data, in Tile tile, in ConnectingTile connectingTile)
         {
             int index = connectingTile.GetIndex();
             if (index == 5 && tile.tileType == TileType.Lake)
             {
-                var tileedges = TileGridUtility.GetSquareEdgeTiles(tile.pos);
-                for (int i = 0; i < 4; i++)
+                Direction dir = Directions.North;
+                foreach (var edge in TileGridUtility.GetSquareEdgeTiles(tile.pos, tileGrid))
                 {
-                    var edge = tileedges[i];
                     Tile edgeTile = tileLookup[edge];
                     if (edgeTile.tileType != TileType.Lake)
                     {
                         index = 6;
-                        transform.Rotation = quaternion.EulerXYZ(0, ((Direction)i).ToRadians(), 0);
+                        transform.Rotation = quaternion.EulerXYZ(0, dir.ToRadians(), 0);
                         break;
                     }
+                    dir.Rotate(1);
                 }
             }
             Debug.Assert(config.connectingTiles.ContainsKey((int)tile.tileType), $"{tile.tileType} is not a connecting tile.");

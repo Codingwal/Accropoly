@@ -101,7 +101,7 @@ namespace Systems
             }
             else if (placementInputData.action == PlacementAction.Rotate)
             {
-                tileToPlaceInfo.rotation = tileToPlaceInfo.rotation.Rotate(1);
+                tileToPlaceInfo.rotation.Rotate(1);
 
                 // Update transform & TileToPlaceInfo
                 Entity tileToPlaceInfoEntity = SystemAPI.GetSingletonEntity<TileToPlaceInfo>();

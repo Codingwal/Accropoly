@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using Unity.Collections;
 using Unity.Mathematics;
 
 public struct Direction : IEquatable<Direction>
@@ -25,12 +24,12 @@ public struct Direction : IEquatable<Direction>
         else throw new($"Invalid direction vector {directionVec}");
     }
 
-    public readonly Direction Rotate(int rotation) { return Rotate(direction, rotation); }
-    public readonly Direction Flip() { return (Direction)Normalize((int)direction + 2); }
+    public void Rotate(int rotation) { direction = Rotate(direction, rotation); }
+    public void Flip() { Rotate(2); }
     public readonly float ToRadians() { return math.radians((uint)direction * 90); }
     public readonly bool IsOpposite(Direction other)
     {
-        return other == Flip();
+        return other == Flip(this);
     }
     public readonly bool IsAdjacent(Direction other) { return !IsOpposite(other); }
     public readonly override string ToString()
@@ -75,6 +74,7 @@ public struct Direction : IEquatable<Direction>
 
     private static int Normalize(int value) { return (value + 100) % 4; }
     public static Direction Rotate(Direction direction, int rotation) { return (Direction)Normalize((int)direction + rotation); }
+    public static Direction Flip(Direction direction) { return Rotate(direction, 2); }
 
     public static DirectionEnumerable GetDirections()
     {
