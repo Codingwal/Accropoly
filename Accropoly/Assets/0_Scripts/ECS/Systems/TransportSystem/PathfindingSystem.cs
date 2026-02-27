@@ -154,19 +154,20 @@ namespace Systems
                 RefRO<Connections> connections = connectionsLookup.GetRefRO(node.entity);
 
                 // Add neighbours to openList (if they are valid)
-                foreach (Entity next in connections.ValueRO.next)
+                foreach (NextPoint nextPoint in connections.ValueRO.nextWaypoints)
                 {
-                    if (next == Entity.Null) continue;
+                    if (!waypointsData.waypoints.TryGetValue(nextPoint.position, out var nextEntity))
+                        continue;
 
-                    var waypointData = waypointLookup.GetRefRO(next);
+                    var waypointData = waypointLookup.GetRefRO(nextEntity);
 
                     // Check if this waypoint is accessible
                     if ((waypointData.ValueRO.allowedObjects & useableVehicles) == TravelObjects.None)
                         continue;
 
                     float speed = waypointData.ValueRO.velocity;
-                    float3 nextPos = transformLookup.GetRefRO(next).ValueRO.Position;
-                    openList.Add((CalculateCost(nextPos, pos, cost, dest, speed), new NodeToVisit(next, node.entity)));
+                    float3 nextPos = transformLookup.GetRefRO(nextEntity).ValueRO.Position;
+                    openList.Add((CalculateCost(nextPos, pos, cost, dest, speed), new NodeToVisit(nextEntity, node.entity)));
                 }
 
                 if (iteration > 1000) throw new();

@@ -1,0 +1,22 @@
+{
+    "__ default orientation": "",
+    
+    "waypoints": [
+        {
+            "position": [
+                0.0,
+                0.8,
+                0.0
+            ],
+            "allowedObjects": 2,
+            "velocity": 3.0,
+            "nextWaypoints": [
+                { "position": [0, 0.8, 0.95] },
+                { "position": [0.95, 0.8, 0] },
+                { "position": [0, 0.8, -0.95] },
+                { "position": [-0.95, 0.8, 0] }
+            ],
+            "junctionData": 0
+        }
+    ]
+}

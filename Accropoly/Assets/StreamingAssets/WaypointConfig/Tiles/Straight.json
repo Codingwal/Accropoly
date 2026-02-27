@@ -1,0 +1,20 @@
+{
+    "elements": [
+        {
+            "name": "street-straight",
+            "rotation": 0
+        },
+        {
+            "name": "street-straight",
+            "rotation": 2
+        },
+        {
+            "name": "sidewalk-straight",
+            "rotation": 0
+        },
+        {
+            "name": "sidewalk-straight",
+            "rotation": 2
+        }
+    ]
+}

@@ -79,7 +79,7 @@ namespace Systems
             Dependency.Complete();
             SystemAPI.SetComponent(SystemAPI.GetSingletonEntity<WaypointsData>(), waypointsData);
         }
-        public void DrawGizmos(bool highlightTileExits, bool displayJunctionInfo)
+        public void DrawGizmos(bool displayJunctionInfo)
         {
             foreach (var (transform, connections, waypoint, entity) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<Connections>, RefRO<Waypoint>>().WithEntityAccess())
             {
@@ -90,9 +90,6 @@ namespace Systems
                     TravelObjects.Sidewalk => Color.cyan,
                     _ => Color.magenta
                 };
-
-                if (highlightTileExits && connections.ValueRO.exit)
-                    Gizmos.color = Color.gray;
 
                 // Display additional data for junctions (by changing the colour)
                 if (displayJunctionInfo && SystemAPI.HasComponent<Junction>(entity))
@@ -109,13 +106,9 @@ namespace Systems
 
                 // Draw connections
                 Gizmos.color = Color.blue;
-                foreach (Entity nextEntity in connections.ValueRO.next)
+                foreach (NextPoint next in connections.ValueRO.nextWaypoints)
                 {
-                    if (nextEntity == Entity.Null)
-                        continue;
-
-                    float3 nextPos = SystemAPI.GetComponent<LocalTransform>(nextEntity).Position;
-                    Gizmos.DrawLine(transform.ValueRO.Position, nextPos);
+                    Utility.Gizmo_DrawBezierCurve(transform.ValueRO.Position, next.controlPoint, next.position, 10);
                 }
             }
         }
@@ -193,35 +186,6 @@ namespace Systems
                 foreach (Entity entity in tileWaypoints)
                 {
                     float3 pos = transformLookup.GetRefRO(entity).ValueRO.Position;
-                    RefRO<Connections> connections = connectionsLookup.GetRefRO(entity);
-
-                    // Update next
-                    foreach (Entity other in connections.ValueRO.next)
-                    {
-                        if (other == Entity.Null) continue;
-
-                        // All waypoints of this tile will get deleted => updating them is unneccessary
-                        if (tileWaypoints.Contains(other))
-                            continue;
-
-                        // Update other
-                        RefRW<Connections> connectionsOther = connectionsLookup.GetRefRW(other);
-                        connectionsOther.ValueRW.RemovePrevious(entity);
-                    }
-
-                    // Update previous
-                    foreach (Entity other in connections.ValueRO.previous)
-                    {
-                        if (other == Entity.Null) continue;
-
-                        // All waypoints of this tile will get deleted => updating them is unneccessary
-                        if (tileWaypoints.Contains(other))
-                            continue;
-
-                        // Update other
-                        RefRW<Connections> connectionsOther = connectionsLookup.GetRefRW(other);
-                        connectionsOther.ValueRW.RemoveNext(entity);
-                    }
 
                     ecb.DestroyEntity(entity);
                     waypoints.Remove(pos);

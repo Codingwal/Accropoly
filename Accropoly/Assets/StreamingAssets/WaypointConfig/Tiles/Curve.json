@@ -1,0 +1,21 @@
+{
+    "elements": [
+        {
+            "name": "street-curve",
+            "rotation": 0
+        },
+        {
+            "name": "street-widecurve",
+            "rotation": 0
+        },
+
+        {
+            "name": "sidewalk-corner",
+            "rotation": 0
+        },
+        {
+            "name": "sidewalk-widecorner",
+            "rotation": 0
+        }
+    ]
+}

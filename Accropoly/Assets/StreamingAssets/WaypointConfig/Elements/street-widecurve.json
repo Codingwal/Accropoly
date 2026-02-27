@@ -1,0 +1,19 @@
+{
+    "__ default orientation": "north -> east (south & west side)",
+
+    "waypoints": [
+        {
+            "position": [
+                -0.25,
+                0.8,
+                0.95
+            ],
+            "allowedObjects": 1,
+            "velocity": 14,
+            "nextWaypoints": [
+                { "position": [1.05, 0.8, -0.25], "controlPoint": [-0.25, 0.8, -0.25] }
+            ],
+            "junctionData": 0
+        }
+    ]
+}

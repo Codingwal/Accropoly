@@ -1,0 +1,19 @@
+{
+    "__ default orientation": "east -> north (inner curve)",
+
+    "waypoints": [
+        {
+            "position": [
+                0.95,
+                0.8,
+                0.25
+            ],
+            "allowedObjects": 1,
+            "velocity": 11,
+            "nextWaypoints": [
+                { "position": [0.25, 0.8, 1.05], "controlPoint": [0.25, 0.8, 0.25] }
+            ],
+            "junctionData": 0
+        }
+    ]
+}
