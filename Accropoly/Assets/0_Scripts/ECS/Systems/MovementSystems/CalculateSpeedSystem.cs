@@ -25,7 +25,7 @@ namespace Systems
             {
                 waypointLookup = SystemAPI.GetComponentLookup<Waypoint>(isReadOnly: true),
                 waypointsData = SystemAPI.GetSingleton<WaypointsData>()
-            }.Schedule();
+            }.Schedule(); 
         }
 
         [BurstCompile]

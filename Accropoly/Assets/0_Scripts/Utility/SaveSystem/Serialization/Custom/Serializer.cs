@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Components;
 using Tags;
 
@@ -84,6 +85,11 @@ public partial class Serializer
                 Serialize(componentData.curve.control);
                 Serialize(componentData.curve.dest);
                 bw.Write(componentData.timeAlongCurve);
+            }
+            else if (type == typeof(List<PathElement>))
+            {
+                bw.Write((int)PersonComponents.Path);
+                Serialize((List<PathElement>)component);
             }
             else if (type == typeof(Travelling)) bw.Write((int)PersonComponents.Travelling);
             else if (type == typeof(WantsToTravel)) bw.Write((int)PersonComponents.WantsToTravel);
@@ -185,5 +191,10 @@ public partial class Serializer
     public void Serialize(UserData data)
     {
         bw.Write(data.worldName);
+    }
+
+    public void Serialize(PathElement pathElement)
+    {
+        Serialize(pathElement.waypoint);
     }
 }

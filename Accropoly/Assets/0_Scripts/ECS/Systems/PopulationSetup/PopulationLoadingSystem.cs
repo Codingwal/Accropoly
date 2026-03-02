@@ -43,6 +43,13 @@ namespace Systems
                         if (component is IEnableableComponent)
                             ecb.SetComponentEnabled(entity, typeof(T), enabled);
                     }
+                    void AddBuffer<T>() where T : unmanaged, IBufferElementData
+                    {
+                        var buffer = ecb.AddBuffer<T>(entity);
+                        List<T> values = component as List<T>;
+                        foreach (var value in values)
+                            buffer.Add(value);
+                    }
 
                     Type type = component.GetType();
                     if (type == typeof(PosComponent)) pos = ((PosComponent)component).pos;
@@ -52,6 +59,7 @@ namespace Systems
                     else if (type == typeof(MovementInfo)) AddComponent<MovementInfo>();
                     else if (type == typeof(Speed)) AddComponent<Speed>();
                     else if (type == typeof(CurveFollower)) AddComponent<CurveFollower>();
+                    else if (type == typeof(List<PathElement>)) AddBuffer<PathElement>();
                     else if (type == typeof(Travelling)) AddComponent<Travelling>();
                     else if (type == typeof(WantsToTravel)) AddComponent<WantsToTravel>();
                     else if (type == typeof(FreeTime)) AddComponent<FreeTime>();
