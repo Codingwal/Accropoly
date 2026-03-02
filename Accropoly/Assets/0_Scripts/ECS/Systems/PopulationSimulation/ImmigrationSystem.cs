@@ -108,6 +108,10 @@ namespace Systems
                     ecb.SetComponentEnabled<WantsToTravel>(entity, false);
 
                     ecb.AddComponent<Traveller>(entity);
+                    ecb.AddComponent<MovementInfo>(entity);
+                    ecb.AddBuffer<PathElement>(entity);
+                    ecb.AddComponent<Speed>(entity);
+                    ecb.AddComponent<CurveFollower>(entity);
 
                     ecb.AddComponent<Travelling>(entity);
                     ecb.SetComponentEnabled<Travelling>(entity, false);

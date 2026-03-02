@@ -25,23 +25,8 @@ public class SaveSystem : FileHandler
         ConfigData.populationConfig.Data = ReadJsonConfig<PopulationConfig>("PopulationConfig");
         ConfigData.cameraConfig.Data = ReadJsonConfig<CameraConfig>("CameraConfig");
         ConfigData.timeConfig.Data = ReadJsonConfig<TimeConfig>("TimeConfig");
+        LoadWaypointConfig();
 
-        // Get config data for each type of tile, convert it to unmanaged data and store it together with the type name
-        ConfigData.waypointConfig.Data.tileToWaypoints = new(10, Allocator.Persistent);
-        foreach (string file in Directory.GetFiles(Path.Combine(Application.streamingAssetsPath, "WaypointConfig")))
-        {
-            if (file.Contains(".meta"))
-                continue;
-
-            string fileText = File.ReadAllText(file);
-            var tileWaypointsManaged = JsonConvert.DeserializeObject<WaypointConfigManaged.TileWaypoints>(fileText);
-            var tileWaypointsUnmanaged = new ConvertWaypointConfig().ConfigWaypointsToWaypointData(tileWaypointsManaged);
-
-            Debug.Assert(GetFileName(file).Length < 32, $"File name \"{GetFileName(file)}\"is too long");
-            FixedString32Bytes type = GetFileName(file);
-
-            ConfigData.waypointConfig.Data.tileToWaypoints.Add(type, new WaypointConfigUnmanaged.TileWaypoints { waypoints = tileWaypointsUnmanaged });
-        }
 
         Debug.Log("Initializing user data");
 
@@ -65,6 +50,39 @@ public class SaveSystem : FileHandler
         if (ConfigData.saveSystemConfig.Data.deleteSaves)
             DeleteDirectoryContent("Saves");
     }
+
+    private void LoadWaypointConfig()
+    {
+        WaypointConfigSerialized waypointConfigSerialized = new() { elements = new(), tiles = new() };
+
+        // Load tile data
+        foreach (string filePath in Directory.GetFiles(Path.Combine(Application.streamingAssetsPath, "WaypointConfig", "Tiles")))
+        {
+            if (filePath.Contains(".meta"))
+                continue;
+
+            string fileName = GetFileName(filePath);
+            string fileText = File.ReadAllText(filePath);
+            var tileData = JsonConvert.DeserializeObject<WaypointConfigSerialized.TileData>(fileText);
+            waypointConfigSerialized.tiles.Add(fileName, tileData);
+        }
+
+        // Load element data
+        foreach (string filePath in Directory.GetFiles(Path.Combine(Application.streamingAssetsPath, "WaypointConfig", "Elements")))
+        {
+            if (filePath.Contains(".meta"))
+                continue;
+
+            string fileName = GetFileName(filePath);
+            string fileText = File.ReadAllText(filePath);
+            var elementData = JsonConvert.DeserializeObject<WaypointConfigSerialized.ElementData>(fileText);
+            waypointConfigSerialized.elements.Add(fileName, elementData);
+        }
+
+        // Convert serialized config data to unmanaged config data
+        ConfigData.waypointConfig.Data = WaypointConversionUtility.ConvertWaypointConfig(waypointConfigSerialized);
+    }
+
     public static void Initialize() { _instance = new(); }
     public WorldData GetWorldData(string worldName) { return LoadObject<WorldData>("Saves", worldName); }
     public WorldData GetWorldData() { return GetWorldData(GetWorldName()); }

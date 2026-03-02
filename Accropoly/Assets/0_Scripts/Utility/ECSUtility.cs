@@ -41,6 +41,10 @@ public unsafe struct Ref<T> where T : unmanaged
 {
     [NativeDisableUnsafePtrRestriction]
     private readonly T* data;
+    public Ref(ref T data)
+    {
+        this.data = (T*)UnsafeUtility.AddressOf(ref data);
+    }
     public Ref(T* data)
     {
         this.data = data;

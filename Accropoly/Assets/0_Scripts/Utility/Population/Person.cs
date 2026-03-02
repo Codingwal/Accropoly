@@ -3,7 +3,7 @@ using Unity.Entities;
 
 public struct PersonData
 {
-    public List<(IComponentData, bool)> components;
+    public List<(object, bool)> components;
 }
 // Explicit values for compatability with other versions (new PersonComponents just get a higher value)
 public enum PersonComponents : int
@@ -13,6 +13,10 @@ public enum PersonComponents : int
     Person = 1,
     Worker = 2,
     Traveller = 3,
+    MovementInfo = 4,
+    Speed = 5,
+    CurveFollower = 6,
+    Path = 7, // DynamicBuffer<PathElement>, serialized as List<PathElement>
 
     // Tags
     Travelling = 100,

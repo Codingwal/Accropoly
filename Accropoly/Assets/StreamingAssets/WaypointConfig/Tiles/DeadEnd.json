@@ -1,0 +1,12 @@
+{
+    "elements": [
+        {
+            "name": "street-deadend",
+            "rotation": 0
+        },
+        {
+            "name": "sidewalk-deadend",
+            "rotation": 0
+        }
+    ]
+}

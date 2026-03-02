@@ -1,5 +1,3 @@
-using System;
-using System.Runtime.InteropServices;
 using Components;
 using Components.WaypointComponents;
 using Unity.Collections;
@@ -7,7 +5,6 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
-using WaypointData = WaypointConfigUnmanaged.WaypointData;
 
 public struct TileWaypointUtility
 {
@@ -45,33 +42,50 @@ public struct TileWaypointUtility
             type = "Building";
         }
 
-        if (!ConfigData.waypointConfig.Data.tileToWaypoints.TryGetValue(type, out var tileWaypoints))
+        if (!ConfigData.waypointConfig.Data.tiles.TryGetValue(type, out var tileData))
         {
             Debug.LogError($"No waypoint data for type \"{type}\"");
             return;
         }
 
-        foreach (var waypoint in tileWaypoints.waypoints)
-            CreateWaypoint(waypoint, ref ecb);
+        foreach (var element in tileData.elements)
+        {
+            if (!ConfigData.waypointConfig.Data.elements.TryGetValue(element.name, out var elementData))
+                Debug.LogError($"Element {element.name} does not exist.");
+
+            foreach (var waypoint in elementData.waypoints)
+                CreateWaypoint(waypoint, element.rotation, ref ecb);
+        }
     }
 
-    private void CreateWaypoint(WaypointData waypoint, ref EntityCommandBuffer ecb)
+    private void CreateWaypoint(WaypointConfig.WaypointData waypointData, Direction elementRotation, ref EntityCommandBuffer ecb)
     {
         Entity entity = ecb.CreateEntity();
-        ecb.AddComponent(entity, LocalTransform.FromPosition(ToWorldSpace(waypoint.position)));
-        ecb.AddComponent(entity, new Waypoint { allowedObjects = waypoint.allowedObjects, velocity = waypoint.velocity });
-        ecb.AddComponent(entity, new Connections(waypoint.entry, waypoint.exit));
 
-        if (waypoint.junctionData != Junction.JunctionData.None)
-            ecb.AddComponent(entity, new Junction(waypoint.junctionData));
+        // Rotate position according to elementRotation and convert it to world space, then set the transform
+        float3 position = ToWorldSpace(Rotate(waypointData.position, elementRotation));
+        ecb.AddComponent(entity, LocalTransform.FromPosition(position));
 
-        // Convert nextWaypoints to world space
-        for (int i = 0; i < waypoint.newWaypointData.nextWaypoints.Size; i++)
+        // Add waypointData (velocity & allowedObjects)
+        ecb.AddComponent(entity, waypointData.waypointData);
+
+        // Add junction component (optional)
+        if (waypointData.junctionData != Junction.JunctionData.None)
+            ecb.AddComponent(entity, new Junction(waypointData.junctionData));
+
+        var buffer = ecb.AddBuffer<Connection>(entity);
+
+        // Add connections data
+        foreach (var connection in waypointData.connections)
         {
-            if (math.isnan(waypoint.newWaypointData.nextWaypoints[i].x)) continue;
-            waypoint.newWaypointData.nextWaypoints[i] = ToWorldSpace(waypoint.newWaypointData.nextWaypoints[i]);
+            buffer.Add(new Connection()
+            {
+                nextWaypoint = ToWorldSpace(Rotate(connection.nextWaypoint, elementRotation)),
+                controlPoint = ToWorldSpace(Rotate(connection.controlPoint, elementRotation))
+            });
         }
-        ecb.AddComponent(entity, waypoint.newWaypointData);
+
+        ecb.AddComponent<NewWaypoint>(entity);
     }
 
     private float3 ToWorldSpace(float3 pos)

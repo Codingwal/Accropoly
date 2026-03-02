@@ -1,0 +1,29 @@
+{
+    "elements": [
+        {
+            "name": "sidewalk-straight",
+            "rotation": 0
+        },
+        {
+            "name": "sidewalk-corner",
+            "rotation": 0
+        },
+        {
+            "name": "sidewalk-corner",
+            "rotation": 1
+        },
+
+        {
+            "name": "street-junction-side",
+            "rotation": 0
+        },
+        {
+            "name": "street-junction-side",
+            "rotation": 1
+        },
+        {
+            "name": "street-junction-side",
+            "rotation": 2
+        }
+    ]
+}

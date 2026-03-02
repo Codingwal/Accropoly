@@ -1,0 +1,76 @@
+{
+    "__ default orientation": "north (west side) <-> north (east side)",
+    
+    "waypoints": [
+        {
+            "position": [
+                -0.7,
+                0.8,
+                0.95
+            ],
+            "allowedObjects": 2,
+            "velocity": 3,
+            "nextWaypoints": [
+                { "position": [-0.7, 0.8, -0.5] },
+                { "position": [-0.7, 0.8, 1.05] }
+            ],
+            "junctionData": 0
+        },
+        {
+            "position": [
+                -0.7,
+                0.8,
+                -0.5
+            ],
+            "allowedObjects": 2,
+            "velocity": 3,
+            "nextWaypoints": [
+                { "position": [0, 0.8, -0.7], "controlPoint": [-0.7, 0.8, -0.7] },
+                { "position": [-0.7, 0.8, 0.95] }
+            ],
+            "junctionData": 0
+        },
+        {
+            "position": [
+                0,
+                0.8,
+                -0.7
+            ],
+            "allowedObjects": 2,
+            "velocity": 3,
+            "nextWaypoints": [
+                { "position": [0.7, 0.8, -0.5], "controlPoint": [0.7, 0.8, -0.7] },
+                { "position": [-0.7, 0.8, -0.5], "controlPoint": [-0.7, 0.8, -0.7] }
+            ],
+            "junctionData": 0
+        },
+        {
+            "position": [
+                0.7,
+                0.8,
+                -0.5
+            ],
+            "allowedObjects": 2,
+            "velocity": 3,
+            "nextWaypoints": [
+                { "position": [0.7, 0.8, 0.95] },
+                { "position": [0, 0.8, -0.7], "controlPoint": [0.7, 0.8, -0.7] }
+            ],
+            "junctionData": 0
+        },
+        {
+            "position": [
+                0.7,
+                0.8,
+                0.95
+            ],
+            "allowedObjects": 2,
+            "velocity": 3,
+            "nextWaypoints": [
+                { "position": [0.7, 0.8, 1.05] },
+                { "position": [0.7, 0.8, -0.5] }
+            ],
+            "junctionData": 0
+        }
+    ]
+}

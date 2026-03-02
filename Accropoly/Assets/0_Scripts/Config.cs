@@ -14,14 +14,14 @@ public abstract class ConfigData
     public static readonly SharedStatic<PopulationConfig> populationConfig = SharedStatic<PopulationConfig>.GetOrCreate<PopulationConfigKey>();
     public static readonly SharedStatic<CameraConfig> cameraConfig = SharedStatic<CameraConfig>.GetOrCreate<CameraConfigKey>();
     public static readonly SharedStatic<TimeConfig> timeConfig = SharedStatic<TimeConfig>.GetOrCreate<TimeConfigKey>();
-    public static readonly SharedStatic<WaypointConfigUnmanaged> waypointConfig = SharedStatic<WaypointConfigUnmanaged>.GetOrCreate<WaypointConfigUnmanagedKey>();
+    public static readonly SharedStatic<WaypointConfig> waypointConfig = SharedStatic<WaypointConfig>.GetOrCreate<WaypointConfigKey>();
 
     private class SaveSystemConfigKey { }
     private class TileConfigContextKey { }
     private class PopulationConfigKey { }
     private class CameraConfigKey { }
     private class TimeConfigKey { }
-    private class WaypointConfigUnmanagedKey { }
+    private class WaypointConfigKey { }
 }
 
 [Serializable]
@@ -100,47 +100,70 @@ public struct TimeConfig
     public readonly float TimeSpeed => 24 * 60 * 60 / secondsPerDay;
 }
 
-[Serializable]
-public struct WaypointConfigManaged
-{
-    [Serializable]
-    public struct Waypoint
-    {
-        public List<float> position; // float3
-        public TravelObjects allowedObjects;
-        public float velocity;
-        public List<string> nextWaypoints;
-        public JunctionData junctionData;
-        public bool entry;
-        public bool exit;
-    }
-
-    [Serializable]
-    public struct TileWaypoints
-    {
-        public Dictionary<string, Waypoint> waypoints;
-    }
-
-    public Dictionary<string, TileWaypoints> tileToWaypoints;
-}
-
-public struct WaypointConfigUnmanaged
+public struct WaypointConfig
 {
     public struct WaypointData
     {
         public float3 position;
-        public TravelObjects allowedObjects;
-        public float velocity;
-        public NewWaypoint newWaypointData;
+        public Waypoint waypointData; // allowedObjects & velocity
+        public NativeList<Connection> connections; // next waypoints
         public JunctionData junctionData;
-        public bool entry;
-        public bool exit;
     }
-
-    public struct TileWaypoints
+    public struct ElementData
     {
         public NativeList<WaypointData> waypoints;
     }
+    public struct TileData
+    {
+        public struct Element
+        {
+            public FixedString32Bytes name;
+            public Direction rotation;
+        }
+        public NativeList<Element> elements;
+    }
 
-    public NativeHashMap<FixedString32Bytes, TileWaypoints> tileToWaypoints;
+    public NativeHashMap<FixedString32Bytes, TileData> tiles;
+    public NativeHashMap<FixedString32Bytes, ElementData> elements;
+}
+
+[Serializable]
+public struct WaypointConfigSerialized
+{
+    [Serializable]
+    public struct Connection
+    {
+        public List<float> position;
+        public List<float> controlPoint;
+    }
+
+    [Serializable]
+    public struct WaypointData
+    {
+        public List<float> position; // float3
+        public TravelObjects allowedObjects;
+        public float velocity;
+        public List<Connection> nextWaypoints;
+        public JunctionData junctionData;
+    }
+
+    [Serializable]
+    public struct ElementData
+    {
+        public List<WaypointData> waypoints;
+    }
+
+    [Serializable]
+    public struct TileData
+    {
+        public struct Element
+        {
+            public string name;
+            public int rotation;
+        }
+        public List<Element> elements;
+    }
+
+    public Dictionary<string, ElementData> elements;
+    public Dictionary<string, TileData> tiles;
 }

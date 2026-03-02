@@ -6,6 +6,7 @@ using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
 using Tags;
+using System.IO;
 
 namespace Systems
 {
@@ -37,7 +38,7 @@ namespace Systems
             WorldDataSystem.worldData.population = new();
             foreach ((var _, Entity entity) in SystemAPI.Query<RefRO<Person>>().WithEntityAccess())
             {
-                List<(IComponentData, bool)> components = new();
+                List<(object, bool)> components = new();
                 NativeArray<ComponentType> componentTypes = state.EntityManager.GetChunk(entity).Archetype.GetComponentTypes();
 
                 EntityManager entityManager = state.EntityManager;
@@ -51,6 +52,14 @@ namespace Systems
                         bool isEnabled = !componentType.IsEnableable || entityManager.IsComponentEnabled(entity, componentType);
                         components.Add((entityManager.GetComponentData<T>(entity), isEnabled));
                     }
+                    void AddBuffer<T>() where T : unmanaged, IBufferElementData
+                    {
+                        var buffer = entityManager.GetBuffer<T>(entity, isReadOnly: true);
+                        List<T> values = new();
+                        foreach (var value in buffer)
+                            values.Add(value);
+                        components.Add((values, true));
+                    }
                     void AddTag<T>() where T : unmanaged, IComponentData
                     {
                         bool isEnabled = !componentType.IsEnableable || entityManager.IsComponentEnabled(entity, componentType);
@@ -60,6 +69,10 @@ namespace Systems
                     if (componentType == typeof(Person)) AddComponentData<Person>();
                     else if (componentType == typeof(Worker)) AddComponentData<Worker>();
                     else if (componentType == typeof(Traveller)) AddComponentData<Traveller>();
+                    else if (componentType == typeof(MovementInfo)) AddComponentData<MovementInfo>();
+                    else if (componentType == typeof(Speed)) AddComponentData<Speed>();
+                    else if (componentType == typeof(CurveFollower)) AddComponentData<CurveFollower>();
+                    else if (componentType == ComponentType.ReadWrite<PathElement>()) AddBuffer<PathElement>();
                     else if (componentType == typeof(Travelling)) AddTag<Travelling>();
                     else if (componentType == typeof(WantsToTravel)) AddTag<WantsToTravel>();
                     else if (componentType == typeof(FreeTime)) AddTag<FreeTime>();

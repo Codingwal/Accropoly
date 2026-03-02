@@ -36,9 +36,9 @@ namespace Systems
 
             var pathfindingUtility = new PathfindingUtility()
             {
-                transformLookup = SystemAPI.GetComponentLookup<LocalTransform>(),
-                connectionsLookup = SystemAPI.GetComponentLookup<Connections>(),
-                waypointLookup = SystemAPI.GetComponentLookup<Waypoint>(),
+                transformLookup = SystemAPI.GetComponentLookup<LocalTransform>(isReadOnly: true),
+                connectionsLookup = SystemAPI.GetBufferLookup<Connection>(isReadOnly: true),
+                waypointLookup = SystemAPI.GetComponentLookup<Waypoint>(isReadOnly: true),
                 waypointsData = SystemAPI.GetSingleton<WaypointsData>(),
             };
 

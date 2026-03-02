@@ -1,0 +1,34 @@
+{
+    "__ default orientation": "north <-> east (south & west side)",
+
+    "waypoints": [
+        {
+            "position": [
+                -0.7,
+                0.8,
+                0.95
+            ],
+            "allowedObjects": 2,
+            "velocity": 3,
+            "nextWaypoints": [
+                { "position": [0.95, 0.8, -0.7], "controlPoint": [-0.7, 0.8, -0.7] },
+                { "position": [-0.7, 0.8, 1.05] }
+            ],
+            "junctionData": 0
+        },
+        {
+            "position": [
+                0.95,
+                0.8,
+                -0.7
+            ],
+            "allowedObjects": 2,
+            "velocity": 3,
+            "nextWaypoints": [
+                { "position": [-0.7, 0.8, 0.95], "controlPoint": [-0.7, 0.8, -0.7] },
+                { "position": [1.05, 0.8, -0.7] }
+            ],
+            "junctionData": 0
+        }
+    ]
+}

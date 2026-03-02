@@ -1,0 +1,20 @@
+{
+    "__ default orientation": "north",
+    
+    "waypoints": [
+        {
+            "position": [
+                0.0,
+                0.8,
+                0.95
+            ],
+            "allowedObjects": 2,
+            "velocity": 3.0,
+            "nextWaypoints": [
+                { "position": [0, 0.8, 0] },
+                { "position": [0, 0.8, 1.05] }
+            ],
+            "junctionData": 0
+        }
+    ]
+}

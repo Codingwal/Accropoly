@@ -3,6 +3,7 @@ using Unity.Mathematics;
 using Components;
 using Tags;
 using Unity.Collections.LowLevel.Unsafe;
+using System.Collections.Generic;
 
 public partial class Deserializer
 {
@@ -34,7 +35,7 @@ public partial class Deserializer
         for (int i = 0; i < count; i++)
         {
             bool isEnabled = br.ReadBoolean();
-            IComponentData component;
+            object component;
 
             PersonComponents type = (PersonComponents)br.ReadInt32();
             component = type switch
@@ -55,12 +56,28 @@ public partial class Deserializer
                 PersonComponents.Traveller => new Traveller()
                 {
                     destination = Deserialize(new int2()),
-                    useableVehicles = (Components.WaypointComponents.TravelObjects)br.ReadInt32(),
-                    maxAcceleration = br.ReadSingle(),
-                    nextWaypointIndex = br.ReadInt32(),
-                    waypoints = Deserialize(new UnsafeList<float3>()),
-                    velocity = Deserialize(new float3()),
+                    useableVehicles = (Components.WaypointComponents.TravelObjects)br.ReadInt32()
                 },
+                PersonComponents.MovementInfo => new MovementInfo()
+                {
+                    nextWaypointIndex = br.ReadInt32(),
+                    nextWaypoint = Deserialize(new float3())
+                },
+                PersonComponents.Speed => new Speed()
+                {
+                    value = br.ReadSingle(),
+                },
+                PersonComponents.CurveFollower => new CurveFollower()
+                {
+                    curve = new()
+                    {
+                        start = Deserialize(new float3()),
+                        control = Deserialize(new float3()),
+                        dest = Deserialize(new float3())
+                    },
+                    timeAlongCurve = br.ReadSingle()
+                },
+                PersonComponents.Path => Deserialize(new List<PathElement>()),
                 PersonComponents.Travelling => new Travelling(),
                 PersonComponents.WantsToTravel => new WantsToTravel(),
                 PersonComponents.FreeTime => new FreeTime(),
@@ -149,6 +166,12 @@ public partial class Deserializer
     public UserData Deserialize(UserData data)
     {
         data.worldName = br.ReadString();
+        return data;
+    }
+
+    public PathElement Deserialize(PathElement data)
+    {
+        data.waypoint = Deserialize(new float3());
         return data;
     }
 }

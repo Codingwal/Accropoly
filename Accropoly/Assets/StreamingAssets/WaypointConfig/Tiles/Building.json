@@ -1,0 +1,12 @@
+{
+    "elements": [
+        {
+            "name": "sidewalk-center",
+            "rotation": 0
+        },
+        {
+            "name": "sidewalk-edge",
+            "rotation": 0
+        }
+    ]
+}

@@ -83,10 +83,21 @@ namespace Systems
 
         public void OnDestroy(ref SystemState state)
         {
-            // Dispose config data
-            foreach (var pair in ConfigData.waypointConfig.Data.tileToWaypoints)
+            // Dispose waypoint config data
+
+            foreach (var pair in ConfigData.waypointConfig.Data.tiles)
+                pair.Value.elements.Dispose();
+
+            foreach (var pair in ConfigData.waypointConfig.Data.elements)
+            {
+                foreach (var waypoint in pair.Value.waypoints)
+                    waypoint.connections.Dispose();
+
                 pair.Value.waypoints.Dispose();
-            ConfigData.waypointConfig.Data.tileToWaypoints.Dispose();
+            }
+
+            ConfigData.waypointConfig.Data.tiles.Dispose();
+            ConfigData.waypointConfig.Data.elements.Dispose();
         }
 
 
