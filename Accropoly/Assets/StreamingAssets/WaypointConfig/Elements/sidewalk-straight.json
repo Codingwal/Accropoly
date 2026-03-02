@@ -12,7 +12,9 @@
             "velocity": 3,
             "nextWaypoints": [
                 { "position": [-0.7, 0.8, 0] },
-                { "position": [-0.7, 0.8, 1.05] }
+                { "position": [-0.7, 0.8, 1.05] },
+
+                { "position": [-0.25, 0.8, 0.95] }
             ],
             "junctionData": 0
         },
@@ -27,7 +29,8 @@
             "nextWaypoints": [
                 { "position": [-0.7, 0.8, -0.95] },
                 { "position": [-0.7, 0.8, 0.95] },
-                { "position": [-0.95, 0.8, 0] }
+                { "position": [-0.95, 0.8, 0] },
+                { "position": [0.7, 0.8, 0] }
             ],
             "junctionData": 0
         },

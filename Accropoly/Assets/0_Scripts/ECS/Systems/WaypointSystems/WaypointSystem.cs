@@ -81,6 +81,11 @@ namespace Systems
         }
         public void DrawGizmos(bool displayJunctionInfo)
         {
+            if (!SystemAPI.HasSingleton<WaypointsData>())
+                return;
+
+            WaypointsData waypointsData = SystemAPI.GetSingleton<WaypointsData>();
+
             foreach (var (transform, connections, waypoint, entity) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<Connections>, RefRO<Waypoint>>().WithEntityAccess())
             {
                 // Select color depending on waypoint type
@@ -108,6 +113,9 @@ namespace Systems
                 Gizmos.color = Color.blue;
                 foreach (NextPoint next in connections.ValueRO.nextWaypoints)
                 {
+                    if (!waypointsData.waypoints.ContainsKey(next.position))
+                        continue;
+
                     new BezierCurve(transform.ValueRO.Position, next.controlPoint, next.position).Draw(10);
                 }
             }
