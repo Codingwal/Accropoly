@@ -73,16 +73,17 @@ public struct TileWaypointUtility
         if (waypointData.junctionData != Junction.JunctionData.None)
             ecb.AddComponent(entity, new Junction(waypointData.junctionData));
 
-        // Update next waypoints data: Rotate according to elementRotation and convert to world space
-        for (int i = 0; i < waypointData.connections.nextWaypoints.Length; i++)
-        {
-            NextPoint next = waypointData.connections.nextWaypoints[i];
-            next.position = ToWorldSpace(Rotate(next.position, elementRotation));
-            next.controlPoint = ToWorldSpace(Rotate(next.controlPoint, elementRotation));
+        var buffer = ecb.AddBuffer<Connection>(entity);
 
-            waypointData.connections.nextWaypoints[i] = next;
+        // Add connections data
+        foreach (var connection in waypointData.connections)
+        {
+            buffer.Add(new Connection()
+            {
+                nextWaypoint = ToWorldSpace(Rotate(connection.nextWaypoint, elementRotation)),
+                controlPoint = ToWorldSpace(Rotate(connection.controlPoint, elementRotation))
+            });
         }
-        ecb.AddComponent(entity, waypointData.connections);
 
         ecb.AddComponent<NewWaypoint>(entity);
     }

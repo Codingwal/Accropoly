@@ -106,7 +106,7 @@ public struct WaypointConfig
     {
         public float3 position;
         public Waypoint waypointData; // allowedObjects & velocity
-        public Connections connections; // next waypoints
+        public NativeList<Connection> connections; // next waypoints
         public JunctionData junctionData;
     }
     public struct ElementData
@@ -131,7 +131,7 @@ public struct WaypointConfig
 public struct WaypointConfigSerialized
 {
     [Serializable]
-    public struct NextPoint
+    public struct Connection
     {
         public List<float> position;
         public List<float> controlPoint;
@@ -143,7 +143,7 @@ public struct WaypointConfigSerialized
         public List<float> position; // float3
         public TravelObjects allowedObjects;
         public float velocity;
-        public List<NextPoint> nextWaypoints;
+        public List<Connection> nextWaypoints;
         public JunctionData junctionData;
     }
 

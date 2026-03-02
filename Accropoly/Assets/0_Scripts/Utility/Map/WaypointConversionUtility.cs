@@ -41,23 +41,24 @@ public static class WaypointConversionUtility
         {
             position = FloatListToFloat3(waypointSerialized.position),
             waypointData = new(waypointSerialized.allowedObjects, waypointSerialized.velocity),
+            connections = new(Allocator.Persistent),
             junctionData = waypointSerialized.junctionData
         };
 
         // convert waypoint.connections
         foreach (var nextPointSerialized in waypointSerialized.nextWaypoints)
         {
-            NextPoint nextPoint = new()
+            Connection connection = new()
             {
-                position = FloatListToFloat3(nextPointSerialized.position),
+                nextWaypoint = FloatListToFloat3(nextPointSerialized.position),
             };
 
             if (nextPointSerialized.controlPoint != null)
-                nextPoint.controlPoint = FloatListToFloat3(nextPointSerialized.controlPoint);
+                connection.controlPoint = FloatListToFloat3(nextPointSerialized.controlPoint);
             else
-                nextPoint.controlPoint = nextPoint.position;
+                connection.controlPoint = connection.nextWaypoint;
 
-            waypoint.connections.nextWaypoints.Add(nextPoint);
+            waypoint.connections.Add(connection);
         }
 
         return waypoint;

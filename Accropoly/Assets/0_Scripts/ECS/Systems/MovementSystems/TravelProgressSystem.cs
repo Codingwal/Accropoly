@@ -25,7 +25,7 @@ namespace Systems
                 waypointsData = SystemAPI.GetSingleton<WaypointsData>(),
                 junctionLookup = SystemAPI.GetComponentLookup<Junction>(),
                 travellingLookup = SystemAPI.GetComponentLookup<Travelling>(),
-                connectionsLookup = SystemAPI.GetComponentLookup<Connections>()
+                connectionsLookup = SystemAPI.GetBufferLookup<Connection>(isReadOnly: true)
             }.Schedule();
         }
 
@@ -36,7 +36,7 @@ namespace Systems
             public WaypointsData waypointsData;
             public ComponentLookup<Junction> junctionLookup;
             public ComponentLookup<Travelling> travellingLookup;
-            [ReadOnly] public ComponentLookup<Connections> connectionsLookup;
+            [ReadOnly] public BufferLookup<Connection> connectionsLookup;
             public void Execute(Entity entity, ref MovementInfo movementInfo, ref CurveFollower curveFollower, ref LocalTransform transform, in DynamicBuffer<PathElement> path)
             {
                 // Start with second waypoint as target (object starts at first waypoint)
@@ -78,18 +78,18 @@ namespace Systems
                 // Get information about the previous waypoint (important for the curve)
                 float3 prevWaypoint = path[movementInfo.nextWaypointIndex - 1].waypoint;
                 Entity prevWaypointEntity = GetEntity(prevWaypoint);
-                Connections connections = connectionsLookup[prevWaypointEntity];
+                var connections = connectionsLookup[prevWaypointEntity];
 
                 // Find the connection we are taking to get the connection data
-                NextPoint nextPoint = new();
-                foreach (NextPoint _nextPoint in connections.nextWaypoints)
+                Connection connection = new();
+                foreach (Connection _connection in connections)
                 {
-                    if (_nextPoint.position.Equals(movementInfo.nextWaypoint))
-                        nextPoint = _nextPoint;
+                    if (_connection.nextWaypoint.Equals(movementInfo.nextWaypoint))
+                        connection = _connection;
                 }
 
                 // Update curveFollower
-                curveFollower.curve = new(prevWaypoint, nextPoint.controlPoint, movementInfo.nextWaypoint);
+                curveFollower.curve = new(prevWaypoint, connection.controlPoint, movementInfo.nextWaypoint);
                 curveFollower.timeAlongCurve = 0;
 
                 RegisterAtWaypoint(movementInfo.nextWaypoint);

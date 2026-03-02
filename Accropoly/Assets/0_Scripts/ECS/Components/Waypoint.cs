@@ -14,12 +14,6 @@ namespace Components
     {
         public struct NewWaypoint : IComponentData { }
 
-        public struct NextPoint
-        {
-            public float3 position;
-            public float3 controlPoint;
-        }
-
         public struct Waypoint : IComponentData // Always present
         {
             public TravelObjects allowedObjects;
@@ -31,9 +25,10 @@ namespace Components
             }
         }
 
-        public struct Connections : IComponentData // Always present
+        public struct Connection : IBufferElementData // Always present
         {
-            public FixedList128Bytes<NextPoint> nextWaypoints;
+            public float3 controlPoint;
+            public float3 nextWaypoint;
         }
         public struct Junction : IComponentData // Optional
         {

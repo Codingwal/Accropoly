@@ -31,7 +31,7 @@ namespace Systems
             var utility = new PathfindingUtility()
             {
                 transformLookup = SystemAPI.GetComponentLookup<LocalTransform>(isReadOnly: true),
-                connectionsLookup = SystemAPI.GetComponentLookup<Connections>(isReadOnly: true),
+                connectionsLookup = SystemAPI.GetBufferLookup<Connection>(isReadOnly: true),
                 waypointLookup = SystemAPI.GetComponentLookup<Waypoint>(isReadOnly: true),
                 waypointsData = SystemAPI.GetSingleton<WaypointsData>(),
             };
@@ -77,7 +77,7 @@ namespace Systems
     {
         [NativeDisableContainerSafetyRestriction]
         [ReadOnly] public ComponentLookup<LocalTransform> transformLookup;
-        [ReadOnly] public ComponentLookup<Connections> connectionsLookup;
+        [ReadOnly] public BufferLookup<Connection> connectionsLookup;
         [ReadOnly] public ComponentLookup<Waypoint> waypointLookup;
         [ReadOnly] public WaypointsData waypointsData;
 
@@ -159,12 +159,12 @@ namespace Systems
                 }
 
                 // Get neighbours
-                RefRO<Connections> connections = connectionsLookup.GetRefRO(node.entity);
+                var connections = connectionsLookup[node.entity];
 
                 // Add neighbours to openList (if they are valid)
-                foreach (NextPoint nextPoint in connections.ValueRO.nextWaypoints)
+                foreach (Connection connection in connections)
                 {
-                    if (!waypointsData.waypoints.TryGetValue(nextPoint.position, out var nextEntity))
+                    if (!waypointsData.waypoints.TryGetValue(connection.nextWaypoint, out var nextEntity))
                         continue;
 
                     var waypointData = waypointLookup.GetRefRO(nextEntity);

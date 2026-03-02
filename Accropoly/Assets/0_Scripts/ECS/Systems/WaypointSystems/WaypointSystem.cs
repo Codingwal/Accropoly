@@ -53,7 +53,6 @@ namespace Systems
             // Needed by jobs
             JobUtility jobUtility = new()
             {
-                connectionsLookup = SystemAPI.GetComponentLookup<Connections>(),
                 transformLookup = SystemAPI.GetComponentLookup<LocalTransform>(),
                 ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged), // Needs a seperate ecb
                 waypoints = waypointsData.waypoints,
@@ -86,7 +85,7 @@ namespace Systems
 
             WaypointsData waypointsData = SystemAPI.GetSingleton<WaypointsData>();
 
-            foreach (var (transform, connections, waypoint, entity) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<Connections>, RefRO<Waypoint>>().WithEntityAccess())
+            foreach (var (transform, connections, waypoint, entity) in SystemAPI.Query<RefRO<LocalTransform>, DynamicBuffer<Connection>, RefRO<Waypoint>>().WithEntityAccess())
             {
                 // Select color depending on waypoint type
                 Gizmos.color = waypoint.ValueRO.allowedObjects switch
@@ -111,12 +110,12 @@ namespace Systems
 
                 // Draw connections
                 Gizmos.color = Color.blue;
-                foreach (NextPoint next in connections.ValueRO.nextWaypoints)
+                foreach (Connection connection in connections)
                 {
-                    if (!waypointsData.waypoints.ContainsKey(next.position))
+                    if (!waypointsData.waypoints.ContainsKey(connection.nextWaypoint))
                         continue;
 
-                    new BezierCurve(transform.ValueRO.Position, next.controlPoint, next.position).Draw(10);
+                    new BezierCurve(transform.ValueRO.Position, connection.controlPoint, connection.nextWaypoint).Draw(10);
                 }
             }
         }
@@ -185,7 +184,6 @@ namespace Systems
 
         private struct JobUtility
         {
-            public ComponentLookup<Connections> connectionsLookup;
             [NativeDisableContainerSafetyRestriction] public ComponentLookup<LocalTransform> transformLookup;
             public EntityCommandBuffer ecb;
             public NativeHashMap<float3, Entity> waypoints;
