@@ -18,7 +18,6 @@ namespace Components
         {
             public float3 position;
             public float3 controlPoint;
-            public float length;
         }
 
         public struct Waypoint : IComponentData // Always present

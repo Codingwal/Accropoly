@@ -30,9 +30,9 @@ namespace Systems
 
             var utility = new PathfindingUtility()
             {
-                transformLookup = SystemAPI.GetComponentLookup<LocalTransform>(),
-                connectionsLookup = SystemAPI.GetComponentLookup<Connections>(),
-                waypointLookup = SystemAPI.GetComponentLookup<Waypoint>(),
+                transformLookup = SystemAPI.GetComponentLookup<LocalTransform>(isReadOnly: true),
+                connectionsLookup = SystemAPI.GetComponentLookup<Connections>(isReadOnly: true),
+                waypointLookup = SystemAPI.GetComponentLookup<Waypoint>(isReadOnly: true),
                 waypointsData = SystemAPI.GetSingleton<WaypointsData>(),
             };
 
@@ -50,17 +50,24 @@ namespace Systems
         {
             public EntityCommandBuffer ecb;
             public PathfindingUtility utility;
-            public void Execute(Entity entity, ref Traveller traveller, in LocalTransform transform)
+            public void Execute(Entity entity, ref Traveller traveller, in LocalTransform transform, ref DynamicBuffer<PathElement> path)
             {
-                traveller.Reset();
-
                 float3 dest = new(traveller.destination.x * 2, 0.8f, traveller.destination.y * 2);
 
-                if (utility.FindPath(ref traveller.waypoints, transform.Position, dest))
+                UnsafeList<float3> pathList = new(10, Allocator.TempJob);
+
+                if (!utility.FindPath(ref pathList, transform.Position, dest))
+                    Debug.LogWarning($"Couldn't find path from {transform.Position} to {dest}!");
+
+                path.Clear();
+                foreach (float3 waypoint in pathList)
                 {
-                    ecb.SetComponentEnabled<Travelling>(entity, true);
+                    path.Add(waypoint);
                 }
-                else Debug.LogWarning($"Couldn't find path from {transform.Position} to {dest}!");
+
+                pathList.Dispose();
+
+                ecb.SetComponentEnabled<Travelling>(entity, true);
                 ecb.SetComponentEnabled<WantsToTravel>(entity, false);
             }
         }
@@ -68,10 +75,11 @@ namespace Systems
 
     public struct PathfindingUtility
     {
-        [NativeDisableContainerSafetyRestriction] public ComponentLookup<LocalTransform> transformLookup;
-        public ComponentLookup<Connections> connectionsLookup;
-        public ComponentLookup<Waypoint> waypointLookup;
-        public WaypointsData waypointsData;
+        [NativeDisableContainerSafetyRestriction]
+        [ReadOnly] public ComponentLookup<LocalTransform> transformLookup;
+        [ReadOnly] public ComponentLookup<Connections> connectionsLookup;
+        [ReadOnly] public ComponentLookup<Waypoint> waypointLookup;
+        [ReadOnly] public WaypointsData waypointsData;
 
         /// <remarks>Returns -1 if no path is found</remarks>
         public float CalculateTravelTime(int2 startTile, int2 destTile)

@@ -49,6 +49,9 @@ namespace Systems
                     else if (type == typeof(Person)) AddComponent<Person>();
                     else if (type == typeof(Worker)) AddComponent<Worker>();
                     else if (type == typeof(Traveller)) AddComponent<Traveller>();
+                    else if (type == typeof(MovementInfo)) AddComponent<MovementInfo>();
+                    else if (type == typeof(Speed)) AddComponent<Speed>();
+                    else if (type == typeof(CurveFollower)) AddComponent<CurveFollower>();
                     else if (type == typeof(Travelling)) AddComponent<Travelling>();
                     else if (type == typeof(WantsToTravel)) AddComponent<WantsToTravel>();
                     else if (type == typeof(FreeTime)) AddComponent<FreeTime>();

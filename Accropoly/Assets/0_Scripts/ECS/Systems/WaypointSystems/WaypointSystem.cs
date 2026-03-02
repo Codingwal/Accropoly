@@ -108,7 +108,7 @@ namespace Systems
                 Gizmos.color = Color.blue;
                 foreach (NextPoint next in connections.ValueRO.nextWaypoints)
                 {
-                    Utility.Gizmo_DrawBezierCurve(transform.ValueRO.Position, next.controlPoint, next.position, 10);
+                    new BezierCurve(transform.ValueRO.Position, next.controlPoint, next.position).Draw(10);
                 }
             }
         }

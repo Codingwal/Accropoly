@@ -50,7 +50,6 @@ public static class WaypointConversionUtility
             NextPoint nextPoint = new()
             {
                 position = FloatListToFloat3(nextPointSerialized.position),
-                length = 0, // TODO
             };
 
             if (nextPointSerialized.controlPoint != null)

@@ -13,6 +13,9 @@ public enum PersonComponents : int
     Person = 1,
     Worker = 2,
     Traveller = 3,
+    MovementInfo = 4,
+    Speed = 5,
+    CurveFollower = 6,
 
     // Tags
     Travelling = 100,
