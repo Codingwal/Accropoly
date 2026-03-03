@@ -1,5 +1,6 @@
 using System.IO;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEditor;
@@ -19,24 +20,23 @@ public class Bootstrap : ICustomBootstrap
 
     private struct TestStruct
     {
-        public float3 a;
+        private UnsafeList<int> list;
+        public void Init()
+        {
+        }
     }
 
     private void Test()
     {
         string path = Path.Combine(Application.persistentDataPath, "Test.bin");
 
-        TestStruct testStruct = new()
-        {
-            a = new(1, 2, 3)
-        };
+        TestStruct testStruct = new();
+        testStruct.Init();
         Save(testStruct, path);
 
-        // var testStruct2 = Load(path);
+        var testStruct2 = Load(path);
 
-        // Debug.Log(testStruct2.a);
-
-        // Debug.Assert(testStruct.Equals(testStruct2), ":(");
+        Debug.Assert(testStruct.Equals(testStruct2), ":(");
     }
 
     private void Save(TestStruct testStruct, string path)

@@ -8,19 +8,15 @@ using Unity.Collections.LowLevel.Unsafe;
 
 public unsafe struct Deserializer
 {
-    private delegate void TypeSerializer(Deserializer deserializer, void* data);
-    private readonly Dictionary<Type, TypeSerializer> typeDeserializers;
+    public delegate void TypeDeserializer(Deserializer deserializer, void* data);
+    public readonly Dictionary<Type, TypeDeserializer> typeDeserializers;
     private readonly IReader reader;
     public Deserializer(IReader _reader)
     {
         reader = _reader;
 
-        typeDeserializers = new()
-        {
-            { typeof(int), (deserializer, data) => *(int*)data = deserializer.reader.ReadInt()},
-            { typeof(float), (deserializer, data) => *(float*)data = deserializer.reader.ReadFloat()},
-            { typeof(FixedString32Bytes), (deserializer, data) =>*(FixedString32Bytes*)data = deserializer.reader.ReadStr() }
-        };
+        typeDeserializers = new();
+        DefaultDeserializers.GetDeserializers(typeDeserializers);
     }
 
     public readonly T Deserialize<T>() where T : unmanaged
@@ -29,8 +25,11 @@ public unsafe struct Deserializer
         Deserialize(typeof(T), UnsafeUtility.AddressOf(ref data));
         return data;
     }
-    private readonly void Deserialize(Type type, void* data)
+    private readonly void Deserialize(Type type, void* data, int recursion = 0)
     {
+        if (recursion > 10)
+            throw new($"Encountered recursion bug while serializing {type}");
+
         if (type.GetInterfaces().Contains(typeof(ICustomSaving)))
         {
             object obj = Marshal.PtrToStructure((IntPtr)data, type);
@@ -45,8 +44,7 @@ public unsafe struct Deserializer
             return;
         }
 
-        var fields = type.GetFields();
-        foreach (FieldInfo field in fields)
+        foreach (FieldInfo field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
         {
             if (field.GetCustomAttribute(typeof(DontSaveAttribute)) != null)
                 continue;
@@ -55,7 +53,19 @@ public unsafe struct Deserializer
             Type fieldType = field.FieldType;
             void* fieldAddress = (byte*)data + fieldOffset;
 
-            Deserialize(fieldType, fieldAddress);
+            Deserialize(fieldType, fieldAddress, recursion + 1);
+        }
+    }
+
+    public static class DefaultDeserializers
+    {
+        public static void GetDeserializers(Dictionary<Type, TypeDeserializer> typeDeserializers)
+        {
+            typeDeserializers.Add(typeof(int), (d, data) => *(int*)data = d.reader.ReadInt());
+            typeDeserializers.Add(typeof(float), (d, data) => *(float*)data = d.reader.ReadFloat());
+            typeDeserializers.Add(typeof(FixedString32Bytes), (d, data) => *(FixedString32Bytes*)data = d.reader.ReadStr());
+
+            // TODO: Native containers
         }
     }
 }
