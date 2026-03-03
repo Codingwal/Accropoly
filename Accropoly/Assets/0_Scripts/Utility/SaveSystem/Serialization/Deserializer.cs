@@ -1,65 +1,61 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using Unity.Mathematics;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 
-public partial class Deserializer
+public unsafe struct Deserializer
 {
-    readonly BinaryReader br;
-    public Deserializer(BinaryReader br)
+    private delegate void TypeSerializer(Deserializer deserializer, void* data);
+    private readonly Dictionary<Type, TypeSerializer> typeDeserializers;
+    private readonly IReader reader;
+    public Deserializer(IReader _reader)
     {
-        this.br = br;
-    }
-    public byte Deserialize(byte data) { return br.ReadByte(); }
-    public bool Deserialize(bool data) { return br.ReadBoolean(); }
-    public int Deserialize(int data) { return br.ReadInt32(); }
-    public uint Deserialize(uint data) { return br.ReadUInt32(); }
-    public float Deserialize(float data) { return br.ReadSingle(); }
-    public char Deserialize(char data) { return br.ReadChar(); }
-    public string Deserialize(string data) { return br.ReadString(); }
+        reader = _reader;
 
-    public T[] Deserialize<T>(T[] data) where T : new()
-    {
-        int size = br.ReadInt32();
-        data = new T[size];
-        for (int i = 0; i < size; i++)
+        typeDeserializers = new()
         {
-            data[i] = Deserialize((dynamic)new T());
-        }
+            { typeof(int), (deserializer, data) => *(int*)data = deserializer.reader.ReadInt()},
+            { typeof(float), (deserializer, data) => *(float*)data = deserializer.reader.ReadFloat()},
+            { typeof(FixedString32Bytes), (deserializer, data) =>*(FixedString32Bytes*)data = deserializer.reader.ReadStr() }
+        };
+    }
+
+    public readonly T Deserialize<T>() where T : unmanaged
+    {
+        T data = new();
+        Deserialize(typeof(T), UnsafeUtility.AddressOf(ref data));
         return data;
     }
-    public T[,] Deserialize<T>(T[,] data) where T : new()
+    private readonly void Deserialize(Type type, void* data)
     {
-        int2 size = new(br.ReadInt32(), br.ReadInt32());
-        data = new T[size.x, size.y];
-        for (int x = 0; x < data.GetLength(0); x++)
+        if (type.GetInterfaces().Contains(typeof(ICustomSaving)))
         {
-            for (int y = 0; y < data.GetLength(1); y++)
-            {
-                data[x, y] = Deserialize((dynamic)new T());
-            }
+            object obj = Marshal.PtrToStructure((IntPtr)data, type);
+            ((ICustomSaving)obj).Load(this);
+            Marshal.StructureToPtr(obj, (IntPtr)data, false);
+            return;
         }
-        return data;
-    }
-    public List<T> Deserialize<T>(List<T> data) where T : new()
-    {
-        int size = br.ReadInt32();
-        data = new(size);
-        for (int i = 0; i < size; i++)
+
+        if (typeDeserializers.TryGetValue(type, out var typeDeserializer))
         {
-            data.Add(Deserialize((dynamic)new T()));
+            typeDeserializer(this, data);
+            return;
         }
-        return data;
-    }
-    public Dictionary<TKey, TValue> Deserialize<TKey, TValue>(Dictionary<TKey, TValue> data) where TKey : notnull, new() where TValue : new()
-    {
-        int size = br.ReadInt32();
-        data = new(size);
-        for (int i = 0; i < size; i++)
+
+        var fields = type.GetFields();
+        foreach (FieldInfo field in fields)
         {
-            data.Add(Deserialize((dynamic)new TKey()), Deserialize((dynamic)new TValue()));
+            if (field.GetCustomAttribute(typeof(DontSaveAttribute)) != null)
+                continue;
+
+            int fieldOffset = UnsafeUtility.GetFieldOffset(field);
+            Type fieldType = field.FieldType;
+            void* fieldAddress = (byte*)data + fieldOffset;
+
+            Deserialize(fieldType, fieldAddress);
         }
-        return data;
     }
 }

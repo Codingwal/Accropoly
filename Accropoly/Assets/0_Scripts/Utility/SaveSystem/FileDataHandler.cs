@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -19,25 +20,29 @@ public class FileHandler
     }
     public static void SaveObject<T>(string directory, string name, T obj)
     {
-        string dataPath = $"{baseDir}{directory}/{name}.bin";
+        // string dataPath = $"{baseDir}{directory}/{name}.bin";
 
-        FileStream fs = File.Create(dataPath);
-        Serializer serializer = new(new(fs));
+        // FileStream fs = File.Create(dataPath);
+        // Serializer serializer = new(new(fs));
 
-        serializer.Serialize((dynamic)obj);
-        fs.Close();
+        // serializer.Serialize((dynamic)obj);
+        // fs.Close();
+
+        throw new NotImplementedException();
     }
     public static T LoadObject<T>(string directory, string name) where T : new()
     {
-        string dataPath = $"{baseDir}{directory}/{name}.bin";
+        // string dataPath = $"{baseDir}{directory}/{name}.bin";
 
-        FileStream fs = File.Open(dataPath, FileMode.Open);
-        Deserializer deserializer = new(new(fs));
+        // FileStream fs = File.Open(dataPath, FileMode.Open);
+        // Deserializer deserializer = new(new(fs));
 
-        T data = deserializer.Deserialize((dynamic)new T());
-        fs.Close();
+        // T data = deserializer.Deserialize((dynamic)new T());
+        // fs.Close();
 
-        return data;
+        // return data;
+
+        throw new NotImplementedException();
     }
     public static void DeleteFile(string directory, string name)
     {

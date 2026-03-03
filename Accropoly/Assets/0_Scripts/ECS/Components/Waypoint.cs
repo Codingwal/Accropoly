@@ -25,6 +25,7 @@ namespace Components
             }
         }
 
+        [InternalBufferCapacity(5)]
         public struct Connection : IBufferElementData // Always present
         {
             public float3 controlPoint;
