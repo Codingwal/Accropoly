@@ -2,6 +2,7 @@ using Unity.Entities;
 using UnityEngine;
 using Components;
 using Tags;
+using System.IO;
 
 namespace Systems
 {
@@ -78,6 +79,7 @@ namespace Systems
             {
                 saveGame = false;
                 state.EntityManager.CreateSingleton<PreSaveGame>();
+
             }
         }
 
@@ -100,14 +102,25 @@ namespace Systems
             ConfigData.waypointConfig.Data.elements.Dispose();
         }
 
-
         public static void LoadWorldData()
         {
-            loadGame = true;
+            // loadGame = true;
+            // FileStream fs = File.Open(Path.Combine(Application.persistentDataPath, "Save.bin"), FileMode.Open);
+            // IReader reader = new BinReader();
+            // reader.Init(fs);
+            // Deserializer deserializer = new(reader);
+            // deserializer.Deserialize<WorldSave>();
+            // fs.Close();
         }
         public static void SaveWorldData()
         {
-            saveGame = true;
+            // saveGame = true;
+            FileStream fs = File.Create(Path.Combine(Application.persistentDataPath, "Save.bin"));
+            IWriter writer = new BinWriter();
+            writer.Init(fs);
+            Serializer serializer = new(writer);
+            serializer.Serialize(new WorldSave());
+            fs.Close();
         }
     }
 }

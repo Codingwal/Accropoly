@@ -18,31 +18,38 @@ public class FileHandler
         }
         return files;
     }
-    public static void SaveObject<T>(string directory, string name, T obj)
+    public static void SaveObject<T>(string directory, string name, T obj, bool overwrite = true)
+        where T : unmanaged
     {
-        // string dataPath = $"{baseDir}{directory}/{name}.bin";
+        string dataPath = $"{baseDir}{directory}/{name}.bin";
 
-        // FileStream fs = File.Create(dataPath);
-        // Serializer serializer = new(new(fs));
+        if (File.Exists(dataPath) && !overwrite)
+            return;
 
-        // serializer.Serialize((dynamic)obj);
-        // fs.Close();
+        FileStream fs = File.Create(dataPath);
+        IWriter writer = new BinWriter();
+        writer.Init(fs);
+        Serializer serializer = new(writer);
 
-        throw new NotImplementedException();
+        serializer.Serialize(obj);
+
+        fs.Close();
     }
-    public static T LoadObject<T>(string directory, string name) where T : new()
+    public static T LoadObject<T>(string directory, string name)
+        where T : unmanaged
     {
-        // string dataPath = $"{baseDir}{directory}/{name}.bin";
+        string dataPath = $"{baseDir}{directory}/{name}.bin";
 
-        // FileStream fs = File.Open(dataPath, FileMode.Open);
-        // Deserializer deserializer = new(new(fs));
+        FileStream fs = File.Open(dataPath, FileMode.Open);
+        IReader reader = new BinReader();
+        reader.Init(fs);
+        Deserializer deserializer = new(reader);
 
-        // T data = deserializer.Deserialize((dynamic)new T());
-        // fs.Close();
+        T data = deserializer.Deserialize<T>();
 
-        // return data;
+        fs.Close();
 
-        throw new NotImplementedException();
+        return data;
     }
     public static void DeleteFile(string directory, string name)
     {
@@ -63,20 +70,13 @@ public class FileHandler
         foreach (DirectoryInfo subDir in dir.GetDirectories())
             subDir.Delete(true);
     }
-    public static void InitFileSystem(string[] requiredDirectories, Dictionary<string, object> requiredFiles, bool overwriteFiles)
+    public static void InitFileSystem(string[] requiredDirectories)
     {
         foreach (string directory in requiredDirectories)
         {
             if (!Directory.Exists($"{baseDir}{directory}/"))
             {
                 Directory.CreateDirectory($"{baseDir}{directory}/");
-            }
-        }
-        foreach (var fileDataPair in requiredFiles)
-        {
-            if (overwriteFiles || !File.Exists($"{baseDir}{fileDataPair.Key}.bin"))
-            {
-                SaveObject("", fileDataPair.Key, fileDataPair.Value);
             }
         }
     }

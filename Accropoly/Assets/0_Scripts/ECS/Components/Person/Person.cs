@@ -3,6 +3,7 @@ using Unity.Mathematics;
 
 namespace Components
 {
+    [Save]
     public struct Person : IComponentData
     {
         public int2 homeTile;

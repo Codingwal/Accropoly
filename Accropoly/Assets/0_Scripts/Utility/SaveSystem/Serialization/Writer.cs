@@ -3,6 +3,7 @@ using System.Text;
 
 public interface IWriter
 {
+    public void Init(FileStream fs);
     public void Write(int data);
     public void Write(float data);
     public void Write(bool data);
@@ -13,10 +14,7 @@ public interface IWriter
 public struct BinWriter : IWriter
 {
     private BinaryWriter bw;
-    public BinWriter(BinaryWriter _bw)
-    {
-        bw = _bw;
-    }
+    public void Init(FileStream fs) { bw = new(fs); }
     public readonly void Write(int data) => bw.Write(data);
     public readonly void Write(float data) => bw.Write(data);
     public readonly void Write(bool data) => bw.Write(data);
@@ -25,10 +23,7 @@ public struct BinWriter : IWriter
 public struct LineWriter : IWriter
 {
     private FileStream fs;
-    public LineWriter(FileStream _fs)
-    {
-        fs = _fs;
-    }
+    public void Init(FileStream fs) { this.fs = fs; }
     private readonly void WriteString(string data)
     {
         byte[] arr = new UTF8Encoding(true).GetBytes(data);
