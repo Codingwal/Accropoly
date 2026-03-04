@@ -8,6 +8,7 @@ public interface IWriter
     public void Write(float data);
     public void Write(bool data);
     public void Write(string data);
+    public void Write(byte data);
 
 }
 
@@ -19,6 +20,7 @@ public struct BinWriter : IWriter
     public readonly void Write(float data) => bw.Write(data);
     public readonly void Write(bool data) => bw.Write(data);
     public readonly void Write(string data) => bw.Write(data);
+    public readonly void Write(byte data) => bw.Write(data);
 }
 public struct LineWriter : IWriter
 {
@@ -34,4 +36,5 @@ public struct LineWriter : IWriter
     public readonly void Write(int data) => Write(data.ToString());
     public readonly void Write(float data) => Write(data.ToString());
     public readonly void Write(bool data) => Write(data.ToString());
+    public readonly void Write(byte data) => Write(data.ToString());
 }

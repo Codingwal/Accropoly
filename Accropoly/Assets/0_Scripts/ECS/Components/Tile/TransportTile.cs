@@ -4,7 +4,8 @@ using Unity.Entities;
 
 namespace Components
 {
-    public struct TransportTile : IComponentData
+    [Save("TransportTile")]
+    public struct TransportTile : IComponentData, ICustomSaving
     {
         public float timer; // Used by JunctionSystem
         public UnsafeList<Entity> waypoints;
@@ -12,6 +13,18 @@ namespace Components
         {
             timer = 0;
             waypoints = new(initialCapacity, Allocator.Persistent);
+        }
+
+        public void Load(Deserializer deserializer)
+        {
+            timer = deserializer.Deserialize<float>();
+            waypoints = new(10, Allocator.Persistent);
+        }
+
+        public void Save(Serializer serializer)
+        {
+            serializer.Serialize(timer);
+            waypoints.Dispose();
         }
     }
 }

@@ -81,11 +81,11 @@ public class SaveSystem : FileHandler
     }
 
     public static void Initialize() { _instance = new(); }
-    public WorldData GetWorldData(string worldName) { return default; } // { return LoadObject<WorldData>("Saves", worldName); }
+    public WorldData GetWorldData(string worldName) { return LoadObject<WorldData>("Saves", worldName); }
     public WorldData GetWorldData() { return GetWorldData(GetWorldName()); }
     public UserData GetUserData() { return LoadObject<UserData>("UserData", "userdata"); }
     public string GetWorldName() { return GetUserData().worldName.ToString(); }
-    public void SaveWorldData(string worldName, WorldData worldData) { } // { SaveObject("Saves", worldName, worldData); }
+    public void SaveWorldData(string worldName, WorldData worldData) { SaveObject("Saves", worldName, worldData); }
     public void SaveWorldData(WorldData worldData) { SaveWorldData(GetWorldName(), worldData); }
     public void SaveUserData(UserData userData) { SaveObject("UserData", "userdata", userData); }
     public void UpdateWorldName(string newWorldName)
@@ -94,13 +94,8 @@ public class SaveSystem : FileHandler
         userData.worldName = newWorldName;
         SaveUserData(userData);
     }
-    public void CreateWorld(string worldName, MapData mapTemplate)
-    {
-        WorldData worldData = new(mapTemplate);
-        SaveWorldData(worldName, worldData);
-    }
-    public void CreateWorld(string worldName, string mapTemplateName) { } // { CreateWorld(worldName, LoadObject<MapData>("Templates", mapTemplateName)); }
-    public void SaveTemplate(MapData templateData, string newTemplateName) { } // { SaveObject("Templates", newTemplateName, templateData); }
+    public void CreateWorld(string worldName, string templateName) { SaveWorldData(worldName, LoadObject<WorldData>("Templates", templateName)); }
+    public void SaveTemplate(WorldData template, string name) { SaveObject("Templates", name, template); }
 
     private T ReadJsonConfig<T>(string fileName)
     {

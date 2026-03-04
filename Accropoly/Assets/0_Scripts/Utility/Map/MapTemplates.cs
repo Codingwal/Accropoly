@@ -1,72 +1,52 @@
 using System.Collections.Generic;
+using Components;
+using Tags;
+using Unity.Collections;
+using Unity.Mathematics;
 
 public static class MapTemplates
 {
-    public static TileData[,] PlainsMap
+    public static WorldSave DefaultMap
     {
         get
         {
-            TileData[,] tiles = new TileData[20, 20];
-            for (int x = 0; x < tiles.GetLength(0); x++)
+            WorldSaveBuilder builder = new();
+
+            // Create tiles
+            const int size = 20;
+            for (int x = 0; x < size; x++)
             {
-                for (int y = 0; y < tiles.GetLength(1); y++)
+                for (int y = 0; y < size; y++)
                 {
-                    tiles[x, y].components = TilePlacingUtility.GetComponents(TileType.Plains, new(x, y), Directions.North);
+                    int entityId = builder.CreateEntity();
+                    builder.AddComponent(entityId, new Tile(x, y, TileType.Plains, Directions.North));
+                    builder.AddComponent(entityId, new ActiveTile(), enabled: false);
+                    builder.AddComponent(entityId, new NewTile());
                 }
             }
-            return tiles;
-        }
-    }
-    public static TileData[,] ForestMap
-    {
-        get
-        {
-            TileData[,] tiles = new TileData[20, 20];
-            for (int x = 0; x < tiles.GetLength(0); x++)
+
+            // Set GameInfo
+            builder.AddComponent(builder.CreateEntity(), new GameInfo()
             {
-                for (int y = 0; y < tiles.GetLength(1); y++)
-                {
-                    tiles[x, y].components = TilePlacingUtility.GetComponents(TileType.Sapling, new(x, y), Directions.North);
-                }
-            }
-            return tiles;
-        }
-    }
-    public static TileData[,] BigPlainsMap
-    {
-        get
-        {
-            TileData[,] tiles = new TileData[100, 100];
-            for (int x = 0; x < tiles.GetLength(0); x++)
+                balance = 5000,
+                time = WorldTime.Zero
+            });
+
+            builder.AddComponent(builder.CreateEntity(), new CameraTransform()
             {
-                for (int y = 0; y < tiles.GetLength(1); y++)
-                {
-                    tiles[x, y].components = TilePlacingUtility.GetComponents(TileType.Plains, new(x, y), Directions.North);
-                }
-            }
-            return tiles;
+                pos = new float3(20, 0, 20),
+                rot = new(70, 0, 0),
+                camDist = 30,
+                cursorLocked = false,
+            });
+
+            return builder.GetWorldSave();
+
         }
     }
-    public static TileData[,] BigForestMap
+
+    public static Dictionary<FixedString32Bytes, WorldData> mapTemplates = new()
     {
-        get
-        {
-            TileData[,] tiles = new TileData[100, 100];
-            for (int x = 0; x < tiles.GetLength(0); x++)
-            {
-                for (int y = 0; y < tiles.GetLength(1); y++)
-                {
-                    tiles[x, y].components = TilePlacingUtility.GetComponents(TileType.Sapling, new(x, y), Directions.North);
-                }
-            }
-            return tiles;
-        }
-    }
-    public static Dictionary<string, MapData> mapTemplates = new()
-    {
-        {"PlainsMap", new MapData(){tiles = PlainsMap}},
-        {"ForestMap", new MapData(){tiles = ForestMap}},
-        {"BigPlainsMap", new MapData(){tiles = BigPlainsMap}},
-        {"BigForestMap", new MapData(){tiles = BigForestMap}},
+        {"DefaultMap", new () { worldSave = DefaultMap }},
     };
 }

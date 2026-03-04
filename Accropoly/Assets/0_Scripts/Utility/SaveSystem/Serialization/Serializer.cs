@@ -36,11 +36,8 @@ public unsafe struct Serializer
             return;
         }
 
-        if (typeSerializers.TryGetValue(type, out var typeSerializer))
-        {
-            typeSerializer(this, data);
+        if (TryCustomSerialization(type, data))
             return;
-        }
 
         foreach (FieldInfo field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
         {
@@ -58,6 +55,38 @@ public unsafe struct Serializer
         }
     }
 
+    private readonly bool TryCustomSerialization(Type type, void* data)
+    {
+        if (typeSerializers.TryGetValue(type, out var typeSerializer))
+        {
+            typeSerializer(this, data);
+            return true;
+        }
+
+        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(UnsafeList<>))
+        {
+            Type elementType = type.GetGenericArguments()[0];
+
+            object obj = Marshal.PtrToStructure(new(data), type);
+
+            // this.SerializeUnsafeList<elementType>((UnsafeList<elementType>)data);
+            MethodInfo method = GetType().GetMethod(nameof(SerializeUnsafeList), BindingFlags.NonPublic | BindingFlags.Instance);
+            method = method.MakeGenericMethod(elementType);
+            method.Invoke(this, new object[] { obj });
+            return true;
+        }
+
+        return false;
+    }
+
+    private readonly void SerializeUnsafeList<T>(UnsafeList<T> list)
+        where T : unmanaged
+    {
+        Serialize(list.Length);
+        foreach (T element in list)
+            Serialize(element);
+    }
+
     public static class DefaultSerializers
     {
         public static void GetSerializers(Dictionary<Type, TypeSerializer> typeSerializers)
@@ -65,6 +94,7 @@ public unsafe struct Serializer
             typeSerializers.Add(typeof(int), (s, data) => s.writer.Write(*(int*)data));
             typeSerializers.Add(typeof(float), (s, data) => s.writer.Write(*(float*)data));
             typeSerializers.Add(typeof(bool), (s, data) => s.writer.Write(*(bool*)data));
+            typeSerializers.Add(typeof(byte), (s, data) => s.writer.Write(*(byte*)data));
             typeSerializers.Add(typeof(FixedString32Bytes), (s, data) => s.writer.Write(((FixedString32Bytes*)data)->ToString()));
 
             // TODO: Native containers

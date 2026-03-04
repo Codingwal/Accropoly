@@ -58,7 +58,7 @@ public static class MenuUtility
     public static void CreateTemplate(string worldName, string newTemplateName)
     {
         WorldData worldData = SaveSystem.Instance.GetWorldData(worldName);
-        SaveSystem.Instance.SaveTemplate(worldData.map, newTemplateName);
+        SaveSystem.Instance.SaveTemplate(worldData, newTemplateName);
     }
     public static string[] GetMapTemplateNames()
     {

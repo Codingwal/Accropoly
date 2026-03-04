@@ -24,7 +24,7 @@ public partial class AppearenceSystem : SystemBase
             firstUpdate = false;
         }
 
-        if (!(SystemAPI.HasSingleton<RunGame>() || SystemAPI.HasSingleton<LoadGame>()))
+        if (!SystemAPI.HasSingleton<RunGame>())
             return;
 
         Appearence config = SystemAPI.GetSingleton<Appearence>();

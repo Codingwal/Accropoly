@@ -44,7 +44,7 @@ namespace Systems
                 }
             }
 
-            if (!(SystemAPI.HasSingleton<RunGame>() || SystemAPI.HasSingleton<LoadGame>()))
+            if (!SystemAPI.HasSingleton<RunGame>())
                 return;
 
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);

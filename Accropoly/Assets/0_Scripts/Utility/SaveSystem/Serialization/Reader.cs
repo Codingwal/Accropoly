@@ -8,6 +8,7 @@ public interface IReader
     public float ReadFloat();
     public bool ReadBool();
     public string ReadStr();
+    public byte ReadByte();
 
 }
 
@@ -19,4 +20,5 @@ public struct BinReader : IReader
     public readonly float ReadFloat() => br.ReadSingle();
     public readonly bool ReadBool() => br.ReadBoolean();
     public readonly string ReadStr() => br.ReadString();
+    public readonly byte ReadByte() => br.ReadByte();
 }

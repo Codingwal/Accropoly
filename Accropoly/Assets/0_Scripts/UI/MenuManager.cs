@@ -108,12 +108,11 @@ public class MenuManager : MonoBehaviour
     private void OnCreateMap()
     {
         optionMenu.SetActive(false);
-        MenuUtility.StartGame(mapNameField.text);
+        ReloadUI();
 
         MenuUtility.CreateWorld(mapNameField.text, SelectedMapTemplateName);
-        ReloadUI();
-        // Select the newly created world for convinience
-        mapsDropdown.value = mapsDropdown.options.FindIndex(x => x.text == mapNameField.text);
+
+        MenuUtility.StartGame(mapNameField.text);
     }
     private void OnCreateTemplate()
     {
@@ -124,9 +123,9 @@ public class MenuManager : MonoBehaviour
     private void OnCreateStandardTemplates()
     {
         var templates = MapTemplates.mapTemplates;
-        foreach (var template in templates)
+        foreach (var pair in templates)
         {
-            SaveSystem.Instance.SaveTemplate(template.Value, template.Key);
+            SaveSystem.Instance.SaveTemplate(pair.Value, pair.Key.ToString());
         }
         ReloadUI();
     }

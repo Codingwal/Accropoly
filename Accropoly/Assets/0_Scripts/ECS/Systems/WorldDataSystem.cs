@@ -33,12 +33,6 @@ namespace Systems
             // If the game is being saved
             if (SystemAPI.HasSingleton<SaveGame>())
             {
-                // Save GameInfo
-                GameInfo gameInfo = SystemAPI.GetSingleton<GameInfo>();
-                worldData.balance = gameInfo.balance;
-                worldData.time = gameInfo.time;
-                state.EntityManager.DestroyEntity(gameInfoQuery);
-
                 // Save the worldData
                 Debug.Log("Saving WorldData");
                 SaveSystem.Instance.SaveWorldData(worldData);
@@ -49,37 +43,23 @@ namespace Systems
                 state.EntityManager.DestroyEntity(SystemAPI.GetSingletonEntity<SaveGame>());
             }
 
-            // If the game has been loaded
             if (SystemAPI.HasSingleton<LoadGame>())
             {
                 state.EntityManager.DestroyEntity(SystemAPI.GetSingletonEntity<LoadGame>());
+
+                Debug.Log("Starting game");
                 state.EntityManager.CreateSingleton<RunGame>();
             }
 
             if (loadGame)
             {
-                loadGame = false;
-
-                Debug.Log("Loading WorldData");
-
-                worldData = SaveSystem.Instance.GetWorldData();
-                state.EntityManager.CreateSingleton(new GameInfo
-                {
-                    balance = worldData.balance,
-                    time = worldData.time,
-                });
                 state.EntityManager.CreateSingleton<LoadGame>();
             }
-            if (SystemAPI.HasSingleton<PreSaveGame>())
-            {
-                state.EntityManager.DestroyEntity(SystemAPI.GetSingletonEntity<PreSaveGame>());
-                state.EntityManager.CreateSingleton<SaveGame>();
-            }
+
             if (saveGame)
             {
                 saveGame = false;
-                state.EntityManager.CreateSingleton<PreSaveGame>();
-
+                state.EntityManager.CreateSingleton<SaveGame>();
             }
         }
 
@@ -104,23 +84,21 @@ namespace Systems
 
         public static void LoadWorldData()
         {
-            // loadGame = true;
-            // FileStream fs = File.Open(Path.Combine(Application.persistentDataPath, "Save.bin"), FileMode.Open);
-            // IReader reader = new BinReader();
-            // reader.Init(fs);
-            // Deserializer deserializer = new(reader);
-            // deserializer.Deserialize<WorldSave>();
-            // fs.Close();
+            EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+
+            Debug.Log("Loading WorldData");
+            WorldLoader loader = new(entityManager);
+            WorldData worldData = SaveSystem.Instance.GetWorldData();
+            loader.Load(worldData.worldSave);
+
+            loadGame = true;
         }
         public static void SaveWorldData()
         {
             // saveGame = true;
-            FileStream fs = File.Create(Path.Combine(Application.persistentDataPath, "Save.bin"));
-            IWriter writer = new BinWriter();
-            writer.Init(fs);
-            Serializer serializer = new(writer);
-            serializer.Serialize(new WorldSave());
-            fs.Close();
+            WorldSaver saver = new(World.DefaultGameObjectInjectionWorld.EntityManager);
+            WorldData worldData = new() { worldSave = saver.Save() };
+            SaveSystem.Instance.SaveWorldData(worldData);
         }
     }
 }

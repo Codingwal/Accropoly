@@ -41,7 +41,7 @@ namespace Systems
                 config = ConfigData.cameraConfig.Data,
                 inputData = SystemAPI.GetSingleton<InputData>(),
                 deltaTime = Time.deltaTime,
-                mapSize = WorldDataSystem.worldData.map.tiles.GetLength(0),
+                mapSize = 20, // TODO
                 transform = cameraTransform,
                 transformHolder = SystemAPI.GetSingletonEntity<CameraTransform>(),
             }.Schedule(state.Dependency);

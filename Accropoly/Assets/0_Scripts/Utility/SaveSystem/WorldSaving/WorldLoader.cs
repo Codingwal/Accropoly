@@ -1,21 +1,27 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
+using UnityEngine;
 
 public class WorldLoader
 {
-    private readonly Deserializer deserializer;
     public List<TypeManager.TypeInfo> types;
-    private Dictionary<Entity, Entity> entityMap; // old id -> new id
-    public WorldLoader(Deserializer _deserializer)
+    private Dictionary<int, Entity> entityMap; // old id -> new id
+    private EntityManager entityManager;
+    public WorldLoader(EntityManager _entityManager)
     {
-        deserializer = _deserializer;
         types = new();
         entityMap = new();
+        entityManager = _entityManager;
 
-        foreach (var type in TypeManager.AllTypes)
+        var typeInfos = TypeManager.GetAllTypes();
+        foreach (TypeManager.TypeInfo type in typeInfos)
         {
+            if (type.TypeIndex == TypeIndex.Null)
+                continue;
+
             if (type.Category == TypeManager.TypeCategory.ComponentData
                 && type.Type.GetCustomAttribute(typeof(SaveAttribute)) != null)
             {
@@ -23,38 +29,36 @@ public class WorldLoader
             }
         }
     }
-    public void Load()
+    public void Load(WorldSave save)
     {
-        EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-
-        int count = deserializer.Deserialize<int>();
-        for (int i = 0; i < count; i++)
+        foreach (var componentSave in save.componentSaves)
         {
-            var name = deserializer.Deserialize<FixedString32Bytes>();
+            // TODO: Use attribute name
+            TypeManager.TypeInfo? type = types.Find((t) => t.Type.Name == componentSave.name);
+            if (!type.HasValue)
+                throw new($"ComponentType \"{componentSave.name}\" does not exist");
 
-            TypeManager.TypeInfo? type = types.Find((t) => t.Type.Name == name);
-            if (type == null)
-                throw new($"ComponentType {name} does not exist");
-
-            // this.SaveComponent<type.Type>(entityManager);
-            GetType().GetMethod("SaveComponent")
-                .MakeGenericMethod(type.Value.Type)
-                .Invoke(this, new object[] { entityManager });
+            // this.LoadComponent<type.Type>(entityManager);
+            MethodInfo method = GetType().GetMethod(nameof(LoadComponent), BindingFlags.NonPublic | BindingFlags.Instance);
+            method = method.MakeGenericMethod(type.Value.Type);
+            method.Invoke(this, new object[] { componentSave });
         }
     }
 
-    public void LoadComponent<T>(EntityManager entityManager) where T : unmanaged, IComponentData
+    private unsafe void LoadComponent<T>(WorldSave.ComponentSave save) where T : unmanaged, IComponentData
     {
-        int count = deserializer.Deserialize<int>();
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < save.entityIds.Length; i++)
         {
-            Entity entity = deserializer.Deserialize<Entity>();
-            T component = deserializer.Deserialize<T>();
+            int entityId = save.entityIds[i];
+            T component = UnsafeUtility.ReadArrayElement<T>(save.components.Ptr, i);
 
-            if (!entityMap.ContainsKey(entity))
-                entityMap[entity] = entityManager.CreateEntity();
+            if (!entityMap.ContainsKey(entityId))
+                entityMap[entityId] = entityManager.CreateEntity();
 
-            entityManager.SetComponentData(entityMap[entity], component);
+            entityManager.AddComponentData(entityMap[entityId], component);
+
+            if (component is IEnableableComponent)
+                entityManager.SetComponentEnabled(entityMap[entityId], typeof(T), save.enabled[i]);
         }
     }
 }

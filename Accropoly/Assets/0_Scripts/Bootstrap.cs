@@ -10,12 +10,9 @@ public class Bootstrap : ICustomBootstrap
 {
     public bool Initialize(string defaultWorldName)
     {
-        // Test();
-        // EditorApplication.ExitPlaymode();
-
         SaveSystem.Initialize();
 
-        return false;
+        return true;
     }
 
     // private struct TestStruct
@@ -23,6 +20,15 @@ public class Bootstrap : ICustomBootstrap
     //     private UnsafeList<int> list;
     //     public void Init()
     //     {
+    //         list = new(3, Allocator.Persistent)
+    //         {
+    //             5, 25, 125
+    //         };
+    //     }
+    //     public void Print()
+    //     {
+    //         Debug.Assert(list.IsCreated, "Not created");
+    //         Debug.Log($"{list[0]}, {list[1]}, {list[2]}");
     //     }
     // }
 
@@ -30,20 +36,25 @@ public class Bootstrap : ICustomBootstrap
     // {
     //     string path = Path.Combine(Application.persistentDataPath, "Test.bin");
 
+    //     Debug.Log(path);
+
     //     TestStruct testStruct = new();
     //     testStruct.Init();
     //     Save(testStruct, path);
 
     //     var testStruct2 = Load(path);
 
-    //     Debug.Assert(testStruct.Equals(testStruct2), ":(");
+    //     testStruct2.Print();
+
+    //     // Debug.Assert(testStruct.Equals(testStruct2), ":(");
     // }
 
     // private void Save(TestStruct testStruct, string path)
     // {
     //     FileStream fs = File.Create(path);
-
-    //     Serializer serializer = new(new BinWriter(new(fs)));
+    //     IWriter writer = new BinWriter();
+    //     writer.Init(fs);
+    //     Serializer serializer = new(writer);
 
     //     serializer.Serialize(testStruct);
 
@@ -52,8 +63,10 @@ public class Bootstrap : ICustomBootstrap
     // private TestStruct Load(string path)
     // {
     //     FileStream fs = File.Open(path, FileMode.Open);
+    //     IReader reader = new BinReader();
+    //     reader.Init(fs);
+    //     Deserializer deserializer = new(reader);
 
-    //     Deserializer deserializer = new(new BinReader(new(fs)));
     //     TestStruct testStruct = deserializer.Deserialize<TestStruct>();
 
     //     fs.Close();

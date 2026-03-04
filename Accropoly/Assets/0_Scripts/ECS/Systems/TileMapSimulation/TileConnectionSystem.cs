@@ -39,17 +39,17 @@ namespace Systems
         {
             var entityGrid = TileGridUtility.GetEntityGrid();
 
-            if (SystemAPI.HasSingleton<LoadGame>())
-            {
-                new ConnectTilesJob
-                {
-                    entityGrid = entityGrid,
-                    connectingTileLookup = SystemAPI.GetComponentLookup<ConnectingTile>(),
-                    tileLookup = SystemAPI.GetComponentLookup<Tile>(),
-                    transformLookup = SystemAPI.GetComponentLookup<LocalTransform>()
-                }.Schedule(connectingTiles);
-                return;
-            }
+            // if (SystemAPI.HasSingleton<LoadGame>())
+            // {
+            //     new ConnectTilesJob
+            //     {
+            //         entityGrid = entityGrid,
+            //         connectingTileLookup = SystemAPI.GetComponentLookup<ConnectingTile>(),
+            //         tileLookup = SystemAPI.GetComponentLookup<Tile>(),
+            //         transformLookup = SystemAPI.GetComponentLookup<LocalTransform>()
+            //     }.Schedule(connectingTiles);
+            //     return;
+            // }
 
             new ConnectTilesJob
             {

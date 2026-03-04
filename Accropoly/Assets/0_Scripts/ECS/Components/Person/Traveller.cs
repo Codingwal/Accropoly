@@ -4,6 +4,7 @@ using Components.WaypointComponents;
 
 namespace Components
 {
+    [Save("Traveller")]
     public struct Traveller : IComponentData
     {
         // Journey info
@@ -26,6 +27,7 @@ namespace Components
         }
     }
 
+    [Save("MovementInfo")]
     public struct MovementInfo : IComponentData
     {
         public int nextWaypointIndex; // Used by movement system
@@ -34,6 +36,9 @@ namespace Components
 }
 namespace Tags
 {
+    [Save("Travelling")]
     public struct Travelling : IComponentData, IEnableableComponent { }
+
+    [Save("WantsToTravel")]
     public struct WantsToTravel : IComponentData, IEnableableComponent { }
 }

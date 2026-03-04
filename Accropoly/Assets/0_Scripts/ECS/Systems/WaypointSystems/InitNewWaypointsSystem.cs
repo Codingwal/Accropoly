@@ -1,5 +1,6 @@
 using Components;
 using Components.WaypointComponents;
+using Tags;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -12,6 +13,7 @@ public partial class InitNewWaypointsSystem : SystemBase
     protected override void OnCreate()
     {
         RequireForUpdate<WaypointsData>();
+        RequireForUpdate<RunGame>();
     }
     protected override void OnUpdate()
     {

@@ -27,21 +27,6 @@ namespace Systems
                 employer.ValueRW.freeSpace = employer.ValueRO.totalSpace;
                 ecb.AddComponent<HasSpace>(entity);
             }
-
-            // Re-add tag after world loading
-            if (SystemAPI.HasSingleton<LoadGame>())
-            {
-                foreach (var (habitat, entity) in SystemAPI.Query<RefRO<Habitat>>().WithEntityAccess())
-                {
-                    if (habitat.ValueRO.freeSpace > 0)
-                        ecb.AddComponent<HasSpace>(entity);
-                }
-                foreach (var (employer, entity) in SystemAPI.Query<RefRO<Employer>>().WithEntityAccess())
-                {
-                    if (employer.ValueRO.freeSpace > 0)
-                        ecb.AddComponent<HasSpace>(entity);
-                }
-            }
         }
     }
 }
