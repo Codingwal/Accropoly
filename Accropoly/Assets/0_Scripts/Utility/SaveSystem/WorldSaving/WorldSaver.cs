@@ -20,6 +20,8 @@ public class WorldSaver
 
         foreach (var type in types)
         {
+            // TODO: Skip components with zero entities
+
             // this.SaveComponent<type.Type>(entityManager);
             var componentSave = GetType().GetMethod(nameof(SaveComponent), BindingFlags.NonPublic | BindingFlags.Instance)
                 .MakeGenericMethod(type.Type)

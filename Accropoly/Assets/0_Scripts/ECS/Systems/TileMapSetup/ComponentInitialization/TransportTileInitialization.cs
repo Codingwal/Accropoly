@@ -1,6 +1,6 @@
 using Unity.Entities;
 using Components;
-using Tags;
+using Unity.Burst;
 
 namespace Systems
 {
@@ -8,29 +8,19 @@ namespace Systems
     /// Initialize transport tiles (add components containing old data, used to check if the waypoints need to be updated)
     /// </summary>
     [UpdateInGroup(typeof(ComponentInitializationSystemGroup))]
-    public partial class TransportTileInitialization : SystemBase
+    public partial struct TransportTileInitialization : ISystem
     {
-        protected override void OnCreate()
+        [BurstCompile]
+        public void OnUpdate(ref SystemState state)
         {
-            // Add Tile CopyComponent
-            foreach (var (_, entity) in SystemAPI.Query<RefRO<Tile>>().WithEntityAccess().WithAll<TransportTile>())
-                EntityManager.AddComponent<CopyComponent<Tile>>(entity);
+            var ecb = SystemAPI.GetSingleton<EndComponentInitializationECBSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
 
-            // Add ConnectingTile CopyComponent
-            foreach (var (_, entity) in SystemAPI.Query<RefRO<ConnectingTile>>().WithEntityAccess().WithAll<TransportTile>())
-                EntityManager.AddComponent<CopyComponent<ConnectingTile>>(entity);
-        }
-        protected override void OnUpdate()
-        {
-            var ecb = SystemAPI.GetSingleton<EndComponentInitializationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
-
-            // Add Tile CopyComponent
-            foreach (var (_, entity) in SystemAPI.Query<RefRO<Tile>>().WithEntityAccess().WithAll<NewTile, TransportTile>())
+            foreach (var (_, entity) in SystemAPI.Query<RefRO<TransportTile>>().WithEntityAccess()
+                .WithNone<CopyComponent<Tile>, CopyComponent<ConnectingTile>>())
+            {
                 ecb.AddComponent<CopyComponent<Tile>>(entity);
-
-            // Add ConnectingTile CopyComponent
-            foreach (var (_, entity) in SystemAPI.Query<RefRO<ConnectingTile>>().WithEntityAccess().WithAll<NewTile, TransportTile>())
                 ecb.AddComponent<CopyComponent<ConnectingTile>>(entity);
+            }
         }
     }
 }

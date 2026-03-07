@@ -6,13 +6,13 @@ public static class WorldManager
     public static World world;
     public static void CreateWorld()
     {
+        Debug.Log("Loading world");
+
         // Create world
-        Debug.Log("Creating world");
         world = new World("My world");
         World.DefaultGameObjectInjectionWorld = world;
 
         // Load WorldData
-        Debug.Log("Loading WorldData");
         WorldData worldData = SaveSystem.Instance.GetWorldData();
         WorldLoader loader = new(world.EntityManager);
         loader.Load(worldData.worldSave);
@@ -28,28 +28,23 @@ public static class WorldManager
     }
     public static void PauseWorld()
     {
-        Debug.Log("Pausing world");
         ScriptBehaviourUpdateOrder.RemoveWorldFromCurrentPlayerLoop(world);
     }
     public static void ResumeWorld()
     {
-        Debug.Log("Resuming world");
         ScriptBehaviourUpdateOrder.AppendWorldToCurrentPlayerLoop(world);
     }
     public static void DestroyWorld()
     {
-        PauseWorld();
-
-        Debug.Log("Saving WorldData");
+        Debug.Log("Saving and destroying world");
 
         WorldSaver saver = new(world.EntityManager);
         WorldData worldData = new() { worldSave = saver.Save() };
         SaveSystem.Instance.SaveWorldData(worldData);
 
-
-        Debug.Log("Destroying world");
-
         world.QuitUpdate = true;
         world.Dispose();
+
+        World.DefaultGameObjectInjectionWorld = null;
     }
 }

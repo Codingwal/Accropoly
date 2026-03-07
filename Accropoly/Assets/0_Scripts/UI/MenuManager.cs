@@ -61,6 +61,7 @@ public class MenuManager : MonoBehaviour
             mainMenu.SetActive(true);
             optionMenu.SetActive(false);
             pauseMenu.SetActive(false);
+            ReloadUI();
             MenuUtility.QuitGame();
         });
 
