@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
+using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
@@ -10,12 +10,14 @@ public class WorldSaveBuilder
 {
     private Dictionary<Type, int> componentSaveIndices;
     private WorldSave save;
+    private List<Serializer> serializers;
     private int entityCount;
     private List<TypeManager.TypeInfo> saveableTypes;
     public WorldSaveBuilder()
     {
         componentSaveIndices = new();
         save = new() { componentSaves = new(5, Allocator.Persistent) };
+        serializers = new();
         entityCount = 0;
         saveableTypes = SaveComponents.GetSaveComponentTypeInfos();
     }
@@ -31,14 +33,14 @@ public class WorldSaveBuilder
         return entityCount - 1;
     }
 
-    public unsafe void AddComponent<T>(int entityId, T data, bool enabled = true)
+    public void AddComponent<T>(int entityId, T data, bool enabled = true)
         where T : unmanaged, IComponentData
     {
         int index = GetOrCreateComponentSave(typeof(T));
-
         ref ComponentSave componentSave = ref save.componentSaves.ElementAt(index);
+
         componentSave.entityIds.Add(entityId);
-        componentSave.components.AddRange(&data, sizeof(T));
+        serializers[index].Serialize(data);
         componentSave.enabled.Add(enabled);
     }
 
@@ -58,8 +60,12 @@ public class WorldSaveBuilder
             enabled = new(0, Allocator.Persistent)
         };
 
+        Serializer componentSerializer = new(new NativeListWriter(componentSave.components));
+
         save.componentSaves.Add(componentSave);
+        serializers.Add(componentSerializer);
         componentSaveIndices.Add(type, save.componentSaves.Length - 1);
+
         return save.componentSaves.Length - 1;
     }
 }

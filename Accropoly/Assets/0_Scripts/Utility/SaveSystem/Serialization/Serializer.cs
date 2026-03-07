@@ -11,7 +11,7 @@ public unsafe struct Serializer
 {
     public delegate void TypeSerializer(Serializer serializer, void* data);
     public readonly Dictionary<Type, TypeSerializer> typeSerializers;
-    private readonly IWriter writer;
+    public readonly IWriter writer;
     public Serializer(IWriter _writer)
     {
         writer = _writer;
@@ -24,7 +24,7 @@ public unsafe struct Serializer
     {
         Serialize(typeof(T), UnsafeUtility.AddressOf(ref data));
     }
-    private readonly void Serialize(Type type, void* data, int recursion = 0)
+    public readonly void Serialize(Type type, void* data, int recursion = 0)
     {
         if (recursion > 10)
             throw new($"Encountered recursion bug while deserializing {type}");
@@ -63,28 +63,54 @@ public unsafe struct Serializer
             return true;
         }
 
-        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(UnsafeList<>))
+        if (!type.IsGenericType)
+            return false;
+
+        // Handle generics
+
+        if (type.GetGenericTypeDefinition() == typeof(UnsafeList<>))
         {
             Type elementType = type.GetGenericArguments()[0];
 
-            object obj = Marshal.PtrToStructure(new(data), type);
+            // this.SerializeUnsafeList<elementType>(data);
+            CallMethod(nameof(SerializeUnsafeList), elementType, data);
 
-            // this.SerializeUnsafeList<elementType>((UnsafeList<elementType>)data);
-            MethodInfo method = GetType().GetMethod(nameof(SerializeUnsafeList), BindingFlags.NonPublic | BindingFlags.Instance);
-            method = method.MakeGenericMethod(elementType);
-            method.Invoke(this, new object[] { obj });
             return true;
         }
+        else if (type.GetGenericTypeDefinition() == typeof(NativeList<>))
+        {
+            Type elementType = type.GetGenericArguments()[0];
 
+            // this.SerializeNativeList<elementType>(data);
+            CallMethod(nameof(SerializeNativeList), elementType, data);
+
+            return true;
+        }
         return false;
     }
 
-    private readonly void SerializeUnsafeList<T>(UnsafeList<T> list)
+    private readonly void SerializeNativeList<T>(IntPtr ptr)
         where T : unmanaged
     {
-        Serialize(list.Length);
-        foreach (T element in list)
+        var listPtr = (NativeList<T>*)ptr;
+        Serialize(listPtr->Length);
+        foreach (T element in *listPtr)
             Serialize(element);
+    }
+    private readonly void SerializeUnsafeList<T>(IntPtr ptr)
+        where T : unmanaged
+    {
+        var listPtr = (UnsafeList<T>*)ptr;
+        Serialize(listPtr->Length);
+        foreach (T element in *listPtr)
+            Serialize(element);
+    }
+
+    private readonly void CallMethod(string name, Type typeArgument, void* data)
+    {
+        MethodInfo method = GetType().GetMethod(name, BindingFlags.NonPublic | BindingFlags.Instance);
+        method = method.MakeGenericMethod(typeArgument);
+        method.Invoke(this, new object[] { new IntPtr(data) });
     }
 
     public static class DefaultSerializers

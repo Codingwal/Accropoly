@@ -20,12 +20,15 @@ public class DrawGizmos : MonoBehaviour
 
         World world = World.DefaultGameObjectInjectionWorld;
 
+        if (world.Name != "My world")
+            return;
+
         if (debugWaypoints)
             world.GetExistingSystemManaged<WaypointSystem>().DrawGizmos(displayJunctionInfo);
 
         world.GetExistingSystemManaged<MovementSystem>().DrawGizmos(debugPath, debugCurrentTarget);
 
-        if (debugRaycasts) 
+        if (debugRaycasts)
             world.Unmanaged.GetUnsafeSystemRef<CollisionPreventionSystem>(world.GetExistingSystem<CollisionPreventionSystem>())
                 .DrawGizmos();
     }

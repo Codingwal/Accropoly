@@ -7,25 +7,25 @@ public struct WorldSave
     public struct ComponentSave : ICustomSaving
     {
         public FixedString32Bytes name;
-        public UnsafeList<int> entityIds;
-        public UnsafeList<byte> components;
-        public UnsafeList<bool> enabled;
+        public NativeList<int> entityIds;
+        public NativeList<byte> components;
+        public NativeList<bool> enabled;
 
         public void Load(Deserializer deserializer)
         {
             name = deserializer.Deserialize<FixedString32Bytes>();
 
             Debug.Assert(deserializer.Deserialize<FixedString32Bytes>() == "Entities");
-            entityIds = deserializer.Deserialize<UnsafeList<int>>();
+            entityIds = deserializer.Deserialize<NativeList<int>>();
 
-            Debug.Assert(deserializer.Deserialize<FixedString32Bytes>() == "Components");
-            components = deserializer.Deserialize<UnsafeList<byte>>();
+            Debug.Assert(deserializer.Deserialize<FixedString32Bytes>() == "Components", $"ERROR! {name}");
+            components = deserializer.Deserialize<NativeList<byte>>();
 
             Debug.Assert(deserializer.Deserialize<FixedString32Bytes>() == "Enabled");
-            enabled = deserializer.Deserialize<UnsafeList<bool>>();
+            enabled = deserializer.Deserialize<NativeList<bool>>();
         }
 
-        public void Save(Serializer serializer)
+        public readonly void Save(Serializer serializer)
         {
             serializer.Serialize(name);
 

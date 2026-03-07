@@ -25,8 +25,7 @@ public class FileHandler
             return;
 
         FileStream fs = File.Create(dataPath);
-        IWriter writer = new BinWriter();
-        writer.Init(fs);
+        IWriter writer = new BinWriter(fs);
         Serializer serializer = new(writer);
 
         serializer.Serialize(obj);
@@ -39,8 +38,7 @@ public class FileHandler
         string dataPath = $"{baseDir}{directory}/{name}.bin";
 
         FileStream fs = File.Open(dataPath, FileMode.Open);
-        IReader reader = new BinReader();
-        reader.Init(fs);
+        IReader reader = new BinReader(fs);
         Deserializer deserializer = new(reader);
 
         T data = deserializer.Deserialize<T>();

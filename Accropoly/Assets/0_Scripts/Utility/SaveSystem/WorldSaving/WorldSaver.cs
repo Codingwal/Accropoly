@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
+using UnityEngine;
 
 public class WorldSaver
 {
@@ -33,20 +33,21 @@ public class WorldSaver
         return save;
     }
 
-    private unsafe WorldSave.ComponentSave SaveComponent<T>()
+    private WorldSave.ComponentSave SaveComponent<T>()
         where T : unmanaged, IComponentData
     {
         EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithPresent<T>().Build(entityManager);
         WorldSave.ComponentSave componentSave = new()
         {
-            entityIds = new(0, Allocator.Persistent),
-            components = new(0, Allocator.Persistent),
-            enabled = new(0, Allocator.Persistent)
+            entityIds = new(Allocator.Persistent),
+            components = new(Allocator.Persistent),
+            enabled = new(Allocator.Persistent)
         };
+
+        Serializer componentSerializer = new(new NativeListWriter(componentSave.components));
 
         NativeArray<T> components = query.ToComponentDataArray<T>(Allocator.Temp);
         NativeArray<Entity> entities = query.ToEntityArray(Allocator.Temp);
-
 
         bool isEnableable = TypeManager.GetTypeIndex(typeof(T)).IsEnableable;
 
@@ -56,9 +57,7 @@ public class WorldSaver
         {
             componentSave.entityIds.Add(entities[i].Index);
 
-            ref T dataRef = ref UnsafeUtility.ArrayElementAsRef<T>(components.GetUnsafePtr(), i);
-            void* ptr = UnsafeUtility.AddressOf(ref dataRef);
-            componentSave.components.AddRange(ptr, sizeof(T));
+            componentSerializer.Serialize(components[i]);
 
             // If isEnableable, check if enabled (otherwise just set as true)
             componentSave.enabled.Add(!isEnableable || entityManager.IsComponentEnabled(entities[i], typeof(T)));

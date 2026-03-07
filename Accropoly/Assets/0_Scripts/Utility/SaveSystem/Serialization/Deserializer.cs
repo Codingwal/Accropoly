@@ -51,6 +51,9 @@ public unsafe struct Deserializer
             Type fieldType = field.FieldType;
             void* fieldAddress = (byte*)data + fieldOffset;
 
+            if (fieldType.IsPointer)
+                Debug.LogWarning($"Deserializing pointer type ({fieldType})");
+
             Deserialize(fieldType, fieldAddress, recursion + 1);
         }
     }
@@ -63,14 +66,26 @@ public unsafe struct Deserializer
             return true;
         }
 
-        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(UnsafeList<>))
+        if (!type.IsGenericType)
+            return false;
+
+        // Handle generics
+
+        if (type.GetGenericTypeDefinition() == typeof(UnsafeList<>))
         {
             Type elementType = type.GetGenericArguments()[0];
 
-            // object obj = this.DeserializeUnsafeList<elementType>(obj);
-            GetType().GetMethod(nameof(DeserializeUnsafeList), BindingFlags.NonPublic | BindingFlags.Instance)
-                .MakeGenericMethod(elementType)
-                .Invoke(this, new object[] { new IntPtr(data) });
+            // this.DeserializeUnsafeList<elementType>(data);
+            CallMethod(nameof(DeserializeUnsafeList), elementType, data);
+
+            return true;
+        }
+        else if (type.GetGenericTypeDefinition() == typeof(NativeList<>))
+        {
+            Type elementType = type.GetGenericArguments()[0];
+
+            // this.DeserializeUnsafeList<elementType>(data);
+            CallMethod(nameof(DeserializeNativeList), elementType, data);
 
             return true;
         }
@@ -78,6 +93,16 @@ public unsafe struct Deserializer
         return false;
     }
 
+    private readonly void DeserializeNativeList<T>(IntPtr ptr)
+        where T : unmanaged
+    {
+        var listPtr = (NativeList<T>*)ptr;
+
+        int length = Deserialize<int>();
+        *listPtr = new(length, Allocator.Persistent);
+        for (int i = 0; i < length; i++)
+            listPtr->Add(Deserialize<T>());
+    }
     private readonly void DeserializeUnsafeList<T>(IntPtr ptr)
         where T : unmanaged
     {
@@ -87,6 +112,13 @@ public unsafe struct Deserializer
         *listPtr = new(length, Allocator.Persistent);
         for (int i = 0; i < length; i++)
             listPtr->Add(Deserialize<T>());
+    }
+
+    private readonly void CallMethod(string name, Type typeArgument, void* data)
+    {
+        MethodInfo method = GetType().GetMethod(name, BindingFlags.NonPublic | BindingFlags.Instance);
+        method = method.MakeGenericMethod(typeArgument);
+        method.Invoke(this, new object[] { new IntPtr(data) });
     }
 
     public static class DefaultDeserializers

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
+using UnityEngine;
 
 public class WorldLoader
 {
@@ -31,16 +32,20 @@ public class WorldLoader
         }
     }
 
-    private unsafe void LoadComponent<T>(WorldSave.ComponentSave save) where T : unmanaged, IComponentData
+    private void LoadComponent<T>(WorldSave.ComponentSave save) where T : unmanaged, IComponentData
     {
+        Deserializer componentDeserializer = new(new NativeListReader(save.components));
+
         for (int i = 0; i < save.entityIds.Length; i++)
         {
             int entityId = save.entityIds[i];
-            T component = UnsafeUtility.ReadArrayElement<T>(save.components.Ptr, i);
 
             if (!entityMap.ContainsKey(entityId))
                 entityMap[entityId] = entityManager.CreateEntity();
 
+            T component = componentDeserializer.Deserialize<T>();
+            if (component is Components.Tile tile)
+                Debug.Log($"Tile pos: {tile.pos}");
             entityManager.AddComponentData(entityMap[entityId], component);
 
             if (component is IEnableableComponent)
