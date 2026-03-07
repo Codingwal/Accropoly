@@ -6,7 +6,7 @@ using Unity.Mathematics;
 
 namespace Components
 {
-    [Save("Tile2")]
+    [Save("Tile")]
     public struct Tile : IComponentData
     {
         public TileType tileType;

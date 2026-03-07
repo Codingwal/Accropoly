@@ -38,6 +38,7 @@ public static class MenuUtility
     {
         WorldData worldData = SaveSystem.Instance.GetWorldData(worldName);
         SaveSystem.Instance.SaveTemplate(worldData, newTemplateName);
+        worldData.Dispose();
     }
     public static string[] GetMapTemplateNames()
     {
@@ -72,6 +73,15 @@ public static class MenuUtility
     {
         Application.Quit();
     }
+    public static void CreateStandardTemplates()
+    {
+        var templates = MapTemplates.mapTemplates;
+        foreach (var (name, template) in templates)
+        {
+            SaveSystem.Instance.SaveTemplate(template, name.ToString());
+            template.Dispose();
+        }
+    }
 
 
     public static UIInfo GetUIInfo()
@@ -85,7 +95,7 @@ public static class MenuUtility
             return GetSingleton<GameInfo>();
         }
         catch (InvalidOperationException)
-        {   
+        {
             return default;
         }
     }

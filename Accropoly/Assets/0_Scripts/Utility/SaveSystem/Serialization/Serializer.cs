@@ -11,7 +11,7 @@ public unsafe struct Serializer
 {
     public delegate void TypeSerializer(Serializer serializer, void* data);
     public readonly Dictionary<Type, TypeSerializer> typeSerializers;
-    public readonly IWriter writer;
+    private readonly IWriter writer;
     public Serializer(IWriter _writer)
     {
         writer = _writer;

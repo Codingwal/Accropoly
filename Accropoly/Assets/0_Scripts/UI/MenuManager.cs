@@ -123,11 +123,7 @@ public class MenuManager : MonoBehaviour
     }
     private void OnCreateStandardTemplates()
     {
-        var templates = MapTemplates.mapTemplates;
-        foreach (var pair in templates)
-        {
-            SaveSystem.Instance.SaveTemplate(pair.Value, pair.Key.ToString());
-        }
+        MenuUtility.CreateStandardTemplates();
         ReloadUI();
     }
     private void OnDeleteMap()

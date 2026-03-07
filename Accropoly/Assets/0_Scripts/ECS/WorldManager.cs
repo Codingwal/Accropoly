@@ -16,6 +16,7 @@ public static class WorldManager
         WorldData worldData = SaveSystem.Instance.GetWorldData();
         WorldLoader loader = new(world.EntityManager);
         loader.Load(worldData.worldSave);
+        worldData.Dispose();
 
         // Init tile grid lookup
         InitEntityGrid.CreateEntityGrid(world.EntityManager);
@@ -41,6 +42,7 @@ public static class WorldManager
         WorldSaver saver = new(world.EntityManager);
         WorldData worldData = new() { worldSave = saver.Save() };
         SaveSystem.Instance.SaveWorldData(worldData);
+        worldData.Dispose();
 
         world.QuitUpdate = true;
         world.Dispose();

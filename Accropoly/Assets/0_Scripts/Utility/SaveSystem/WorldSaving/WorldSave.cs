@@ -1,15 +1,23 @@
+using System;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 
-public struct WorldSave
+public struct WorldSave : IDisposable
 {
-    public struct ComponentSave : ICustomSaving
+    public struct ComponentSave : ICustomSaving, IDisposable
     {
         public FixedString32Bytes name;
         public NativeList<int> entityIds;
         public NativeList<byte> components;
         public NativeList<bool> enabled;
+
+        public void Dispose()
+        {
+            entityIds.Dispose();
+            components.Dispose();
+            enabled.Dispose();
+        }
 
         public void Load(Deserializer deserializer)
         {
@@ -40,4 +48,12 @@ public struct WorldSave
         }
     }
     public UnsafeList<ComponentSave> componentSaves;
+
+    public void Dispose()
+    {
+        foreach (var componentSave in componentSaves)
+            componentSave.Dispose();
+
+        componentSaves.Dispose();
+    }
 }

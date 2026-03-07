@@ -1,8 +1,11 @@
-using System.Collections.Generic;
-using Unity.Mathematics;
+using System;
 
-[System.Serializable]
-public struct WorldData
+[Serializable]
+public struct WorldData : IDisposable
 {
     public WorldSave worldSave;
+    public void Dispose()
+    {
+        worldSave.Dispose();
+    }
 }

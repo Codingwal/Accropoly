@@ -16,7 +16,7 @@ public static class ECSUtility
             All = new ComponentType[] { typeof(T) },
             Options = EntityQueryOptions.IncludeSystems
         };
-        return EntityManager.CreateEntityQuery(desc).GetSingletonEntity();
+        return EntityManager.CreateEntityQuery(desc).GetSingletonEntity(); 
     }
     public static RefRW<T> GetSingletonRW<T>() where T : unmanaged, IComponentData
     {

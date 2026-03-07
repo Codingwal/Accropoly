@@ -51,7 +51,7 @@ public readonly struct LineWriter : IWriter
 }
 public readonly unsafe struct NativeListWriter : IWriter
 {
-    public readonly NativeList<byte> data;
+    private readonly NativeList<byte> data;
     public NativeListWriter(NativeList<byte> data)
     {
         this.data = data;
