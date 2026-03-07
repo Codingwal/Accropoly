@@ -29,7 +29,7 @@ namespace Components
             Menu,
             Escape,
             HideUI,
-            Hotkey,
+            Hotkey
         }
         public Action action;
         public int hotkey;

@@ -13,10 +13,6 @@ public class StatisticsDisplay : MonoBehaviour
 
     [SerializeField] private TMP_Text timeText;
 
-    private void Start()
-    {
-        MenuUtility.InitUIInfo();
-    }
     private void Update()
     {
         var uiInfo = MenuUtility.GetUIInfo();

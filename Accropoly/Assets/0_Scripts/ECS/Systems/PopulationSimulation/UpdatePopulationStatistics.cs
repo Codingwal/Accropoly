@@ -13,8 +13,6 @@ namespace Systems
         private EntityQuery unemployedQuery;
         protected override void OnCreate()
         {
-            RequireForUpdate<RunGame>();
-
             populationQuery = GetEntityQuery(typeof(Person));
             unemployedQuery = GetEntityQuery(typeof(Unemployed));
         }

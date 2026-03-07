@@ -6,6 +6,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using Components;
 using Tags;
+using Unity.Transforms;
 
 public static class TilePlacingUtility
 {
@@ -51,21 +52,14 @@ public static class TilePlacingUtility
         List<ComponentType> componentTypes = new();
         foreach (var (component, _) in components)
             componentTypes.Add(component.GetType());
-
-        // Add all components of the prefab (Transform & Rendering components)
-        var prefab = ECSUtility.GetSingleton<ConfigComponents.PrefabEntity>(); // Get the tilePrefab
-        NativeArray<ComponentType> prefabComponentTypes = em.GetChunk(prefab.tilePrefab).Archetype.GetComponentTypes(Allocator.Temp);
-
-        foreach (var componentType in prefabComponentTypes)
-            if (!(componentType == typeof(Prefab) || componentType == typeof(LinkedEntityGroup))) // Remove prefab components (for example, 'Prefab' exludes the entity from all queries)
-                componentTypes.Add(componentType);
-        prefabComponentTypes.Dispose();
+        componentTypes.Add(typeof(LocalTransform));
 
         // Moving the archetype keeps values of components that were already present (rendering components, Scene, ...)
         EntityArchetype archetype = em.CreateArchetype(componentTypes.ToArray());
         em.SetArchetype(tile, archetype);
 
-        // Local helper function
+        // Rendering components will be added automatically by TileSetupSystem
+
         void SetComponentData<T>(IComponentData component, bool enabled) where T : unmanaged, IComponentData
         {
             em.SetComponentData<T>(tile, (T)component);

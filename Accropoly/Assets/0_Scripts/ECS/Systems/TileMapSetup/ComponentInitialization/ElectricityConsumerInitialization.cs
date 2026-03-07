@@ -18,12 +18,6 @@ namespace Systems
             EntityQuery newConsumers = SystemAPI.QueryBuilder().WithAll<NewTile, ElectricityConsumer>().Build();
             AddDisabledHasElectricityComponent(newConsumers);
 
-            if (SystemAPI.HasSingleton<LoadGame>())
-            {
-                EntityQuery consumers = SystemAPI.QueryBuilder().WithAll<ElectricityConsumer>().Build();
-                AddDisabledHasElectricityComponent(consumers);
-            }
-
             void AddDisabledHasElectricityComponent(EntityQuery query)
             {
                 // Add tag component

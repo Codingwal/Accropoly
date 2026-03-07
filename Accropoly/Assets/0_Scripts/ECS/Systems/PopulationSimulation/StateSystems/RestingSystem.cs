@@ -10,8 +10,6 @@ public partial class RestingSystem : SystemBase
     EntityQuery resting;
     protected override void OnCreate()
     {
-        RequireForUpdate<RunGame>();
-
         notResting = new EntityQueryBuilder(Allocator.Temp)
             .WithAll<Person, Traveller, FreeTime, LocalTransform>()
             .WithNone<Homeless>()

@@ -18,35 +18,14 @@ namespace Systems
     [UpdateInGroup(typeof(LateSimulationSystemGroup))]
     public partial class WaypointSystem : SystemBase
     {
+        protected override void OnCreate()
+        {
+            // Create and initialize data
+            WaypointsData data = new() { waypoints = new(30, Allocator.Persistent) };
+            EntityManager.CreateSingleton(data);
+        }
         protected override void OnUpdate()
         {
-            if (SystemAPI.HasSingleton<LoadGame>())
-            {
-                // Create and initialize data
-                WaypointsData data = new() { waypoints = new(30, Allocator.Persistent) };
-                EntityManager.CreateSingleton(data);
-            }
-            else if (SystemAPI.HasSingleton<SaveGame>())
-            {
-                // Dispose and destroy WaypointsData
-                Entity dataHolder = SystemAPI.GetSingletonEntity<WaypointsData>();
-                RefRW<WaypointsData> data = SystemAPI.GetComponentRW<WaypointsData>(dataHolder);
-                data.ValueRW.waypoints.Dispose();
-                EntityManager.DestroyEntity(dataHolder);
-
-                // Destroy waypoints
-                EntityManager.DestroyEntity(GetEntityQuery(typeof(Waypoint)));
-
-                // Dispose TransportTile data
-                foreach (var transportTile in SystemAPI.Query<RefRW<TransportTile>>())
-                {
-                    transportTile.ValueRW.waypoints.Dispose();
-                }
-            }
-
-            if (!SystemAPI.HasSingleton<RunGame>())
-                return;
-
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
             WaypointsData waypointsData = SystemAPI.GetComponent<WaypointsData>(SystemAPI.GetSingletonEntity<WaypointsData>());
 
@@ -78,6 +57,12 @@ namespace Systems
             Dependency.Complete();
             SystemAPI.SetComponent(SystemAPI.GetSingletonEntity<WaypointsData>(), waypointsData);
         }
+
+        protected override void OnDestroy()
+        {
+            SystemAPI.GetSingleton<WaypointsData>().waypoints.Dispose();
+        }
+
         public void DrawGizmos(bool displayJunctionInfo)
         {
             if (!SystemAPI.HasSingleton<WaypointsData>())

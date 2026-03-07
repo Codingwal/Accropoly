@@ -3,6 +3,7 @@ using Components;
 using Tags;
 using Unity.Collections;
 using Unity.Mathematics;
+using Unity.Transforms;
 
 public static class MapTemplates
 {
@@ -22,6 +23,7 @@ public static class MapTemplates
                     builder.AddComponent(entityId, new Tile(x, y, TileType.Plains, Directions.North));
                     builder.AddComponent(entityId, new ActiveTile(), enabled: false);
                     builder.AddComponent(entityId, new NewTile());
+                    builder.AddComponent(entityId, LocalTransform.FromPosition(2 * new float3(x, 0, y)));
                 }
             }
 

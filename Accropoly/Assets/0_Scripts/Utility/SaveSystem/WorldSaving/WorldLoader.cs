@@ -1,9 +1,7 @@
 using System.Collections.Generic;
 using System.Reflection;
-using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
-using UnityEngine;
 
 public class WorldLoader
 {
@@ -12,35 +10,23 @@ public class WorldLoader
     private EntityManager entityManager;
     public WorldLoader(EntityManager _entityManager)
     {
-        types = new();
         entityMap = new();
         entityManager = _entityManager;
 
-        var typeInfos = TypeManager.GetAllTypes();
-        foreach (TypeManager.TypeInfo type in typeInfos)
-        {
-            if (type.TypeIndex == TypeIndex.Null)
-                continue;
-
-            if (type.Category == TypeManager.TypeCategory.ComponentData
-                && type.Type.GetCustomAttribute(typeof(SaveAttribute)) != null)
-            {
-                types.Add(type);
-            }
-        }
+        types = SaveComponents.GetSaveComponentTypeInfos();
     }
     public void Load(WorldSave save)
     {
         foreach (var componentSave in save.componentSaves)
         {
             // TODO: Use attribute name
-            TypeManager.TypeInfo? type = types.Find((t) => t.Type.Name == componentSave.name);
-            if (!type.HasValue)
+            TypeManager.TypeInfo type = types.Find((t) => t.Type.Name == componentSave.name);
+            if (type.Type == null)
                 throw new($"ComponentType \"{componentSave.name}\" does not exist");
 
             // this.LoadComponent<type.Type>(entityManager);
             MethodInfo method = GetType().GetMethod(nameof(LoadComponent), BindingFlags.NonPublic | BindingFlags.Instance);
-            method = method.MakeGenericMethod(type.Value.Type);
+            method = method.MakeGenericMethod(type.Type);
             method.Invoke(this, new object[] { componentSave });
         }
     }

@@ -10,17 +10,9 @@ public class WorldSaver
     private EntityManager entityManager;
     public WorldSaver(EntityManager _entityManager)
     {
-        types = new();
         entityManager = _entityManager;
 
-        foreach (var type in TypeManager.AllTypes)
-        {
-            if (type.Category == TypeManager.TypeCategory.ComponentData
-                && type.Type.GetCustomAttribute(typeof(SaveAttribute)) != null)
-            {
-                types.Add(type);
-            }
-        }
+        types = SaveComponents.GetSaveComponentTypeInfos();
     }
     public WorldSave Save()
     {
@@ -56,7 +48,7 @@ public class WorldSaver
 
         bool isEnableable = TypeManager.GetTypeIndex(typeof(T)).IsEnableable;
 
-        componentSave.name = nameof(T); // TODO: Use attribute
+        componentSave.name = typeof(T).Name; // TODO: Use attribute
 
         for (int i = 0; i < components.Length; i++)
         {

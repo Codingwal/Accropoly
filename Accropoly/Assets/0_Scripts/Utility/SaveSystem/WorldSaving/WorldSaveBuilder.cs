@@ -11,11 +11,13 @@ public class WorldSaveBuilder
     private Dictionary<Type, int> componentSaveIndices;
     private WorldSave save;
     private int entityCount;
+    private List<TypeManager.TypeInfo> saveableTypes;
     public WorldSaveBuilder()
     {
         componentSaveIndices = new();
         save = new() { componentSaves = new(5, Allocator.Persistent) };
         entityCount = 0;
+        saveableTypes = SaveComponents.GetSaveComponentTypeInfos();
     }
 
     public WorldSave GetWorldSave()
@@ -42,7 +44,8 @@ public class WorldSaveBuilder
 
     private int GetOrCreateComponentSave(Type type)
     {
-        Debug.Assert(type.GetCustomAttribute(typeof(SaveAttribute)) != null, $"Can't save non saveable component type {type}");
+        var typeInfo = TypeManager.GetTypeInfo(TypeManager.GetTypeIndex(type));
+        Debug.Assert(saveableTypes.Contains(typeInfo), $"Can't save non saveable component type {type}");
 
         if (componentSaveIndices.TryGetValue(type, out int index))
             return index;

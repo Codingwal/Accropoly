@@ -19,18 +19,11 @@ namespace Systems
     {
         private const float immigrationProbability = 0.1f; // 1 = 100%
         [BurstCompile]
-        protected override void OnCreate()
-        {
-            RequireForUpdate<ConfigComponents.PrefabEntity>();
-            RequireForUpdate<RunGame>();
-        }
-        [BurstCompile]
         protected override void OnUpdate()
         {
             Unity.Mathematics.Random rnd = new((uint)UnityEngine.Random.Range(1, 1000));
             float deltaTime = SystemAPI.Time.DeltaTime;
             var ecb = SystemAPI.GetSingleton<EndCreationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
-            Entity prefab = SystemAPI.GetSingleton<ConfigComponents.PrefabEntity>().personPrefab;
 
             NativeArray<Entity> homelessEntities = GetEntityQuery(typeof(Homeless)).ToEntityArray(Allocator.TempJob);
             NativeArray<Person> homelessPersonComponents = GetEntityQuery(typeof(Homeless), typeof(Person)).ToComponentDataArray<Person>(Allocator.TempJob);
@@ -40,7 +33,6 @@ namespace Systems
             {
                 ecb = ecb,
                 deltaTime = deltaTime,
-                prefab = prefab,
                 rnd = rnd,
                 homelessEntities = homelessEntities,
                 homelessPersonComponents = homelessPersonComponents,
@@ -58,7 +50,6 @@ namespace Systems
         {
             public EntityCommandBuffer ecb;
             public float deltaTime;
-            public Entity prefab;
             public Unity.Mathematics.Random rnd;
             public NativeArray<Entity> homelessEntities;
             public NativeArray<Person> homelessPersonComponents;
@@ -95,7 +86,10 @@ namespace Systems
                     if (habitat.freeSpace == 0) ecb.RemoveComponent<HasSpace>(habitatEntity);
 
                     // Create new inhabitant for this house ("immigrant")
-                    Entity entity = ecb.Instantiate(prefab);
+                    Entity entity = ecb.CreateEntity();
+
+                    // Rendering components will be added automatically by PopulationSetupSystem
+
                     ecb.AddComponent(entity, new NewPerson());
                     ecb.AddComponent(entity, new Person
                     {
@@ -119,7 +113,7 @@ namespace Systems
                     ecb.AddComponent<FreeTime>(entity);
 
                     float3 pos = new(2 * habitatTile.pos.x, 0.8f, 2 * habitatTile.pos.y);
-                    ecb.SetComponent(entity, LocalTransform.FromPositionRotationScale(pos, quaternion.identity, 0.1f));
+                    ecb.AddComponent(entity, LocalTransform.FromPositionRotationScale(pos, quaternion.identity, 0.1f));
                 }
             }
         }

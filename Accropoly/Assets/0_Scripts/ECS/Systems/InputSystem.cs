@@ -5,6 +5,9 @@ using Components;
 using UIAction = Components.UIInputData.Action;
 using PlacementAction = Components.PlacementInputData.Action;
 using System;
+using UnityEngine.InputSystem;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Systems
 {
@@ -14,45 +17,30 @@ namespace Systems
     [UpdateInGroup(typeof(LateInitializationSystemGroup))]
     public partial class InputSystem : SystemBase
     {
-        private Controls inputActions;
         private Entity inputDataHolder;
-
-        public static Action<UIInputData> uiInput;
-        public bool uihidden = false;
 
         protected override void OnCreate()
         {
-            RequireForUpdate<Tags.RunGame>();
-
-            inputActions = new();
-            DisableInputActions();
-
             inputDataHolder = EntityManager.CreateEntity(typeof(InputData), typeof(UIInputData), typeof(PlacementInputData));
 
             SystemAPI.SetComponentEnabled<UIInputData>(inputDataHolder, false);
             SystemAPI.SetComponentEnabled<PlacementInputData>(inputDataHolder, false);
 
-            inputActions.InGame.Rotate.performed += (ctx) => OnPlacementAction(PlacementAction.Rotate);
-            inputActions.InGame.Place.canceled += (ctx) => OnPlacementAction(PlacementAction.Place);
-            inputActions.InGame.Cancel.performed += (ctx) => OnPlacementAction(PlacementAction.Cancel);
-            inputActions.UI.Menu.performed += (ctx) => OnUIAction(UIAction.Menu); ;
-            inputActions.UI.Clear.performed += (ctx) => OnUIAction(UIAction.Clear); ;
-            inputActions.UI.Hotkey1.performed += (ctx) => OnUIAction(UIAction.Hotkey, 1); ;
-            inputActions.UI.Hotkey2.performed += (ctx) => OnUIAction(UIAction.Hotkey, 2); ;
-            inputActions.UI.Hotkey3.performed += (ctx) => OnUIAction(UIAction.Hotkey, 3); ;
-            inputActions.UI.Hotkey4.performed += (ctx) => OnUIAction(UIAction.Hotkey, 4); ;
-            inputActions.UI.Hotkey5.performed += (ctx) => OnUIAction(UIAction.Hotkey, 5); ;
-            inputActions.UI.Hotkey6.performed += (ctx) => OnUIAction(UIAction.Hotkey, 6); ;
-            inputActions.UI.Hotkey7.performed += (ctx) => OnUIAction(UIAction.Hotkey, 7); ;
-            inputActions.UI.Hotkey8.performed += (ctx) => OnUIAction(UIAction.Hotkey, 8); ;
-            inputActions.UI.Hotkey9.performed += (ctx) => OnUIAction(UIAction.Hotkey, 9); ;
-            inputActions.UI.Fullscreen.performed += (ctx) => Screen.fullScreen = !Screen.fullScreen; ;
-            inputActions.Menu.Escape.performed += (ctx) => OnUIAction(UIAction.Escape); ;
-            inputActions.UI.HideUI.performed += (ctx) => OnUIAction(UIAction.HideUI); ;
+            foreach (InputAction action in InputHandler.InputActions)
+            {
+                if (action == InputHandler.InputActions.InGame.Place)
+                    action.canceled += OnInputAction;
+                else
+                    action.performed += OnInputAction;
+            }
+
+            EntityManager.CreateSingleton<UIInfo>();
         }
         protected override void OnUpdate()
         {
             var ecb = SystemAPI.GetSingleton<EndLateInitializationECBSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
+            Controls inputActions = InputHandler.InputActions;
+
             // Update InputData
             var inGameActions = inputActions.InGame;
             ecb.SetComponent(inputDataHolder, new InputData
@@ -76,30 +64,71 @@ namespace Systems
             SystemAPI.SetComponent(inputDataHolder, new PlacementInputData { placementProcessRunning = placementProcessRunning, action = PlacementAction.None });
             SystemAPI.SetComponentEnabled<PlacementInputData>(inputDataHolder, placementProcessRunning);
         }
-        public void EnableInputActions() { inputActions.Enable(); }
-        public void DisableInputActions() { inputActions.Disable(); }
-        public void EnableGameplayInputActions() { inputActions.InGame.Enable(); inputActions.UI.Enable(); }
-        public void DisableGameplayInputActions() { inputActions.InGame.Disable(); inputActions.UI.Disable(); }
-        public void EnableMenuInputActions() { inputActions.Menu.Enable(); }
-        public void DisableMenuInputActions() { inputActions.Menu.Disable(); }
+        protected override void OnDestroy()
+        {
+            foreach (InputAction action in InputHandler.InputActions)
+            {
+                if (action == InputHandler.InputActions.InGame.Place)
+                    action.canceled -= OnInputAction;
+                else
+                    action.performed -= OnInputAction;
+            }
+        }
+
+        private void OnInputAction(InputAction.CallbackContext ctx)
+        {
+            Controls inputActions = InputHandler.InputActions;
+
+            // Placement actions
+            if (ctx.action == inputActions.InGame.Place) OnPlacementAction(PlacementAction.Place);
+            else if (ctx.action == inputActions.InGame.Rotate) OnPlacementAction(PlacementAction.Rotate);
+            else if (ctx.action == inputActions.InGame.Cancel) OnPlacementAction(PlacementAction.Cancel);
+
+            // Fullscreen hotkey
+            else if (ctx.action == inputActions.UI.Fullscreen) ToggleFullscreen();
+
+            // UI actions 
+            else if (ctx.action == inputActions.Menu.Escape) OnUIAction(UIAction.Escape);
+            else if (ctx.action == inputActions.UI.Menu) OnUIAction(UIAction.Menu);
+            else if (ctx.action == inputActions.UI.Clear) OnUIAction(UIAction.Clear);
+            else if (ctx.action == inputActions.UI.HideUI) OnUIAction(UIAction.HideUI);
+
+            // Mouse movement
+            else if (inputActions.InGame.Get().actions.Contains(ctx.action)) { }
+
+            // Hotkey (1-9)
+            else
+            {
+                string str = ctx.action.name;
+                Debug.Assert(str.Contains("Hotkey"));
+                string numStr = str[^1].ToString();
+                int value = int.Parse(numStr);
+                Debug.Assert(value > 0 && value < 10);
+                OnUIAction(UIAction.Hotkey, value);
+            }
+        }
 
         private void OnPlacementAction(PlacementAction action)
         {
             SystemAPI.SetComponentEnabled<PlacementInputData>(inputDataHolder, true);
             SystemAPI.SetComponent(inputDataHolder, new PlacementInputData { action = action });
         }
-        private void OnUIAction(UIAction action, int hotkey = -1)
+        private void OnUIAction(UIAction action, int value = -1)
         {
             var inputData = new UIInputData
             {
                 action = action,
-                hotkey = hotkey
+                hotkey = value
             };
 
-            uiInput?.Invoke(inputData);
+            InputHandler.uiInput?.Invoke(inputData);
 
             SystemAPI.SetComponentEnabled<UIInputData>(inputDataHolder, true);
             SystemAPI.SetComponent(inputDataHolder, inputData);
+        }
+        private void ToggleFullscreen()
+        {
+            Screen.fullScreen = !Screen.fullScreen;
         }
     }
 }

@@ -13,7 +13,6 @@ namespace Systems
     {
         protected override void OnCreate()
         {
-            RequireForUpdate<RunGame>();
             RequireForUpdate<GrowingTile>();
         }
         protected override void OnUpdate()

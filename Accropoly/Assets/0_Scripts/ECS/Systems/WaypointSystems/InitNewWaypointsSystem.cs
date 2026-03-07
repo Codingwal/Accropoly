@@ -13,7 +13,6 @@ public partial class InitNewWaypointsSystem : SystemBase
     protected override void OnCreate()
     {
         RequireForUpdate<WaypointsData>();
-        RequireForUpdate<RunGame>();
     }
     protected override void OnUpdate()
     {

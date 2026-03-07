@@ -13,10 +13,6 @@ namespace Systems
     /// </summary>
     public partial struct CameraSystem : ISystem
     {
-        public void OnCreate(ref SystemState state)
-        {
-            state.RequireForUpdate<Tags.RunGame>();
-        }
         public void OnUpdate(ref SystemState state)
         {
             var cameraTransform = SystemAPI.GetSingleton<CameraTransform>();

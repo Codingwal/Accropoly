@@ -11,7 +11,6 @@ namespace Systems
         private EntityQuery newDayTagQuery;
         public void OnCreate(ref SystemState state)
         {
-            state.RequireForUpdate<Tags.RunGame>();
             newDayTagQuery = state.GetEntityQuery(typeof(Tags.NewDay));
         }
         public void OnUpdate(ref SystemState state)

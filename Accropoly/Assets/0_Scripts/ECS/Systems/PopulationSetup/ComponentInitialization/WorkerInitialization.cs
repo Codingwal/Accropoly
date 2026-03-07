@@ -25,15 +25,6 @@ namespace Systems
 
             ecb.AddComponent(newWorkers, new Worker { employer = new(-1, -1) }); // Set not add, but set doesn't have the required overload
             ecb.AddComponent<Unemployed>(newWorkers, EntityQueryCaptureMode.AtPlayback);
-
-            if (SystemAPI.HasSingleton<LoadGame>())
-            {
-                foreach (var (worker, entity) in SystemAPI.Query<RefRO<Worker>>().WithEntityAccess())
-                {
-                    if (worker.ValueRO.employer.Equals(new(-1, -1)))
-                        ecb.AddComponent<Unemployed>(entity);
-                }
-            }
         }
     }
 }

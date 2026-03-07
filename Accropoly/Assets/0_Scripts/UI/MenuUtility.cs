@@ -7,25 +7,7 @@ public static class MenuUtility
 {
     public static Action continuingGame;
     public static Action pausingGame;
-    public static void InitUIInfo()
-    {
-        EntityManager.CreateSingleton<UIInfo>();
-    }
-    public static UIInfo GetUIInfo()
-    {
-        return GetSingleton<UIInfo>();
-    }
-    public static GameInfo GetGameInfo()
-    {
-        try
-        {
-            return GetSingleton<GameInfo>();
-        }
-        catch (InvalidOperationException)
-        {
-            return default;
-        }
-    }
+
     public static void CreateWorld(string worldName, string templateName)
     {
         SaveSystem.Instance.UpdateWorldName(worldName);
@@ -35,21 +17,18 @@ public static class MenuUtility
     {
         SaveSystem.Instance.UpdateWorldName(worldName);
 
-        Systems.WorldDataSystem.LoadWorldData();
+        WorldManager.CreateWorld();
 
-        InputSystem.EnableInputActions();
+        InputHandler.EnableInputActions();
+        InputHandler.EnableGameplayInputActions();
 
-        Time.timeScale = 1;
-        InputSystem.EnableGameplayInputActions();
         continuingGame?.Invoke();
     }
     public static void QuitGame()
     {
-        Systems.WorldDataSystem.SaveWorldData();
+        WorldManager.DestroyWorld();
 
-        EntityManager.DestroyEntity(EntityManager.CreateEntityQuery(typeof(Tags.RunGame)));
-
-        InputSystem.DisableMenuInputActions();
+        InputHandler.DisableMenuInputActions();
     }
     public static void DeleteWorld(string mapName)
     {
@@ -70,24 +49,21 @@ public static class MenuUtility
     }
     public static void PauseGame()
     {
-        Time.timeScale = 0;
-        EntityManager.DestroyEntity(ECSUtility.GetSingletonEntity<Tags.RunGame>());
+        WorldManager.PauseWorld();
+
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-        InputSystem.DisableGameplayInputActions();
+        InputHandler.DisableGameplayInputActions();
         pausingGame?.Invoke();
     }
     public static void ContinueGame()
     {
-        Time.timeScale = 1;
-        EntityManager.CreateSingleton<Tags.RunGame>();
-        InputSystem.EnableGameplayInputActions();
+        WorldManager.ResumeWorld();
+
+        InputHandler.EnableGameplayInputActions();
         continuingGame?.Invoke();
     }
-    public static void PlaceTile(TileType tileType)
-    {
-        Systems.BuildingSystem.StartPlacementProcess(tileType);
-    }
+
     public static void OpenExplorer()
     {
         Application.OpenURL(@"file://" + FileHandler.baseDir);
@@ -96,10 +72,30 @@ public static class MenuUtility
     {
         Application.Quit();
     }
+
+
+    public static UIInfo GetUIInfo()
+    {
+        return GetSingleton<UIInfo>();
+    }
+    public static GameInfo GetGameInfo()
+    {
+        try
+        {
+            return GetSingleton<GameInfo>();
+        }
+        catch (InvalidOperationException)
+        {   
+            return default;
+        }
+    }
+    public static void PlaceTile(TileType tileType)
+    {
+        Systems.BuildingSystem.StartPlacementProcess(tileType);
+    }
     private static T GetSingleton<T>() where T : unmanaged, IComponentData
     {
         return EntityManager.CreateEntityQuery(typeof(T)).GetSingleton<T>();
     }
     private static EntityManager EntityManager => ECSUtility.EntityManager;
-    private static Systems.InputSystem InputSystem => World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<Systems.InputSystem>();
 }

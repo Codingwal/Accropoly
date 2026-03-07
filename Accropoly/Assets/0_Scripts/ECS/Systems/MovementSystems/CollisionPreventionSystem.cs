@@ -19,30 +19,28 @@ namespace Systems
         public void OnCreate(ref SystemState state)
         {
             raycasts = new(Allocator.Persistent);
+
+            foreach (var collider in SystemAPI.Query<RefRW<PhysicsCollider>>().WithAll<Person>())
+            {
+                collider.ValueRW.Value.Value.SetCollisionFilter(new CollisionFilter()
+                {
+                    BelongsTo = (uint)CollisionLayers.Cars,
+                    CollidesWith = (uint)CollisionLayers.CarRays
+                });
+            }
         }
 
         public void OnUpdate(ref SystemState state)
         {
             raycasts.Clear();
 
-            CollisionFilter colliderFilter = new()
+            foreach (var collider in SystemAPI.Query<RefRW<PhysicsCollider>>().WithAll<NewPerson>())
             {
-                BelongsTo = (uint)CollisionLayers.Cars,
-                CollidesWith = (uint)CollisionLayers.CarRays,
-            };
-            if (SystemAPI.HasSingleton<LoadGame>())
-            {
-                foreach (var collider in SystemAPI.Query<RefRW<PhysicsCollider>>().WithAll<Person>())
+                collider.ValueRW.Value.Value.SetCollisionFilter(new CollisionFilter()
                 {
-                    collider.ValueRW.Value.Value.SetCollisionFilter(colliderFilter);
-                }
-            }
-            else
-            {
-                foreach (var collider in SystemAPI.Query<RefRW<PhysicsCollider>>().WithAll<NewPerson>())
-                {
-                    collider.ValueRW.Value.Value.SetCollisionFilter(colliderFilter);
-                }
+                    BelongsTo = (uint)CollisionLayers.Cars,
+                    CollidesWith = (uint)CollisionLayers.CarRays
+                });
             }
 
             new PreventCollisionsJob()
@@ -101,7 +99,7 @@ namespace Systems
                 // Prevent collisions with other cars directly in front of this one
                 var raycastData = CastRay(transform);
                 if (raycastData.hit)
-                    speed.value = 0;                
+                    speed.value = 0;
             }
 
             private RaycastData CastRay(LocalTransform transform)

@@ -38,11 +38,11 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private Button toMainMenuButton;
     [SerializeField] private Button continueButton;
 
-    private string SelectedWorldName => mapsDropdown.options[mapsDropdown.value].text;
-    private string SelectedMapTemplateName => mapTemplateDropdown.options[mapTemplateDropdown.value].text;
+    private string SelectedWorldName => mapsDropdown.options.Count > 0 ? mapsDropdown.options[mapsDropdown.value].text : "None";
+    private string SelectedMapTemplateName => mapTemplateDropdown.options.Count > 0 ? mapTemplateDropdown.options[mapTemplateDropdown.value].text : "None";
     private void Awake()
     {
-        Systems.InputSystem.uiInput += OnUIInput;
+        InputHandler.uiInput += OnUIInput;
 
         startGameButton.onClick.AddListener(OnStartGame);
         quitButton.onClick.AddListener(OnQuit);
@@ -58,10 +58,10 @@ public class MenuManager : MonoBehaviour
         continueButton.onClick.AddListener(() => MenuUtility.ContinueGame());
         toMainMenuButton.onClick.AddListener(() =>
         {
-            MenuUtility.QuitGame();
             mainMenu.SetActive(true);
             optionMenu.SetActive(false);
             pauseMenu.SetActive(false);
+            MenuUtility.QuitGame();
         });
 
         MenuUtility.continuingGame += () =>
@@ -85,14 +85,14 @@ public class MenuManager : MonoBehaviour
     }
     private void OnDisable()
     {
-        Systems.InputSystem.uiInput -= OnUIInput;
+        InputHandler.uiInput -= OnUIInput;
     }
 
     private void OnStartGame()
     {
-        mainMenu.SetActive(false);
-
         MenuUtility.StartGame(SelectedWorldName);
+
+        mainMenu.SetActive(false);
     }
     private void OnOptions()
     {

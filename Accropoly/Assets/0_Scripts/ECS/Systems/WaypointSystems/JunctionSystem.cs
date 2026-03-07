@@ -14,7 +14,6 @@ namespace Systems
         protected override void OnCreate()
         {
             RequireForUpdate<TransportTile>();
-            RequireForUpdate<RunGame>();
         }
         protected override void OnUpdate()
         {

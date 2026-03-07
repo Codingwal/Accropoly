@@ -8,6 +8,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Rendering;
 using Unity.Transforms;
+using UnityEditorInternal;
 using UnityEngine;
 using Problems = Components.BillboardInfo.Problems;
 
@@ -39,13 +40,6 @@ namespace Systems
             tilesWithProblemsQuery = GetEntityQuery(new EntityQueryDesc[] { notConnectedQuery, noElectricityQuery });
 
             RequireForUpdate<Billboarding>();
-
-            // The game needs to be running or saving
-            RequireAnyForUpdate(new EntityQuery[] { GetEntityQuery(typeof(RunGame)), GetEntityQuery(typeof(SaveGame)) });
-        }
-        protected override void OnDestroy()
-        {
-            unusedBillboards.Dispose();
         }
 
         protected override void OnUpdate()
@@ -70,14 +64,6 @@ namespace Systems
                 }
                 SystemAPI.SetSingleton(config);
                 firstUpdate = false;
-            }
-
-            // Dispose BillboardOwners when saving
-            if (SystemAPI.HasSingleton<SaveGame>())
-            {
-                new DisposeBillboardOwnersJob { ecb = ecb }
-                    .Schedule(SystemAPI.QueryBuilder().WithAll<BillboardOwner>().Build());
-                return;
             }
 
             // Make sure all tiles with problems have the BillboardOwner component, this simplifies the UpdateBillboardsJob
@@ -107,6 +93,19 @@ namespace Systems
                 isConnectedLookup = GetComponentLookup<IsConnected>(isReadOnly: true),
                 config = config
             }.Schedule();
+        }
+
+        protected override void OnDestroy()
+        {
+            unusedBillboards.Dispose();
+
+            EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<BillboardOwner>().Build(this);
+
+            foreach (var billboardOwner in query.ToComponentDataArray<BillboardOwner>(Allocator.Temp))
+            {
+                if (billboardOwner.billboards.IsCreated)
+                    billboardOwner.billboards.Dispose();
+            }
         }
 
         // Can't BurstCompile because of static RW field unusedBillboards
