@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
@@ -54,7 +55,7 @@ public class WorldSaveBuilder
 
         ComponentSave componentSave = new()
         {
-            name = type.Name,
+            name = GetName(type),
             entityIds = new(0, Allocator.Persistent),
             components = new(0, Allocator.Persistent),
             enabled = new(0, Allocator.Persistent)
@@ -67,5 +68,15 @@ public class WorldSaveBuilder
         componentSaveIndices.Add(type, save.componentSaves.Length - 1);
 
         return save.componentSaves.Length - 1;
+    }
+
+    private string GetName(Type type)
+    {
+        SaveAttribute saveAttribute = (SaveAttribute)type.GetCustomAttribute(typeof(SaveAttribute));
+
+        if (saveAttribute == null)
+            return type.Name;
+
+        return saveAttribute.name;
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Unity.Collections;
@@ -51,7 +52,7 @@ public class WorldSaver
 
         bool isEnableable = TypeManager.GetTypeIndex(typeof(T)).IsEnableable;
 
-        componentSave.name = typeof(T).Name; // TODO: Use attribute
+        componentSave.name = GetName(typeof(T));
 
         for (int i = 0; i < components.Length; i++)
         {
@@ -64,5 +65,15 @@ public class WorldSaver
         }
 
         return componentSave;
+    }
+
+    private string GetName(Type type)
+    {
+        SaveAttribute saveAttribute = (SaveAttribute)type.GetCustomAttribute(typeof(SaveAttribute));
+
+        if (saveAttribute == null)
+            return type.Name;
+
+        return saveAttribute.name;
     }
 }

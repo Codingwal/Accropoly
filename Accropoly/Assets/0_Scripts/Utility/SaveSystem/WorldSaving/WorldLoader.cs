@@ -20,10 +20,7 @@ public class WorldLoader
     {
         foreach (var componentSave in save.componentSaves)
         {
-            // TODO: Use attribute name
-            TypeManager.TypeInfo type = types.Find((t) => t.Type.Name == componentSave.name);
-            if (type.Type == null)
-                throw new($"ComponentType \"{componentSave.name}\" does not exist");
+            TypeManager.TypeInfo type = GetTypeInfo(componentSave.name.ToString());
 
             // this.LoadComponent<type.Type>(entityManager);
             MethodInfo method = GetType().GetMethod(nameof(LoadComponent), BindingFlags.NonPublic | BindingFlags.Instance);
@@ -44,12 +41,31 @@ public class WorldLoader
                 entityMap[entityId] = entityManager.CreateEntity();
 
             T component = componentDeserializer.Deserialize<T>();
-            if (component is Components.Tile tile)
-                Debug.Log($"Tile pos: {tile.pos}");
+
             entityManager.AddComponentData(entityMap[entityId], component);
 
             if (component is IEnableableComponent)
                 entityManager.SetComponentEnabled(entityMap[entityId], typeof(T), save.enabled[i]);
         }
+    }
+
+    private TypeManager.TypeInfo GetTypeInfo(string name)
+    {
+        foreach (var typeInfo in types)
+        {
+            SaveAttribute saveAttribute = (SaveAttribute)typeInfo.Type.GetCustomAttribute(typeof(SaveAttribute));
+
+            if (saveAttribute == null)
+            {
+                if (name == typeInfo.Type.Name)
+                    return typeInfo;
+            }
+            else
+            {
+                if (name == saveAttribute.name)
+                    return typeInfo;
+            }
+        }
+        throw new($"ComponentType \"{name}\" does not exist");
     }
 }

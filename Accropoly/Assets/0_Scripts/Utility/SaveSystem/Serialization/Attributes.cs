@@ -3,7 +3,7 @@ using System;
 [AttributeUsage(AttributeTargets.Struct)]
 public class SaveAttribute : Attribute
 {
-    private string name = "";
+    public string name = "";
     public SaveAttribute(string name)
     {
         this.name = name;
