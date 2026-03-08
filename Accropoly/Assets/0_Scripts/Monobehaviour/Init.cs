@@ -1,3 +1,4 @@
+using Unity.Entities;
 using UnityEngine;
 
 public class Init : MonoBehaviour
@@ -7,9 +8,9 @@ public class Init : MonoBehaviour
         SaveSystem.Initialize();
 
         if (WorldManager.ActiveWorld)
-        {
             WorldManager.DestroyWorld();
-        }
+
+        World.DefaultGameObjectInjectionWorld?.Dispose();
     }
     private void OnDestroy()
     {

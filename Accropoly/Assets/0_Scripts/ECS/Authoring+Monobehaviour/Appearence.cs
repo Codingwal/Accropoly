@@ -3,6 +3,7 @@ using Components;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
+using Unity.Entities.UniversalDelegates;
 using Unity.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -12,9 +13,17 @@ namespace Authoring
     public class Appearence : MonoBehaviour
     {
         private static Appearence instance;
+
+        [Header("Tiles")]
         [SerializeField] private SerializableDictionary<TileType, MaterialMeshPair> simpleTiles = new();
         [SerializeField] private SerializableDictionary<TileType, MaterialMeshPairSet> connectingTiles = new();
+
+        [Header("Population")]
         [SerializeField] private MaterialMeshPair person;
+
+        [Header("Billboarding")]
+        [SerializeField] private SerializableDictionary<BillboardInfo.Problems, Material> billboardMaterials = new();
+        [SerializeField] private Mesh billboardMesh;
 
         private void Awake()
         {
@@ -27,18 +36,19 @@ namespace Authoring
 
             ConfigComponents.Appearence data = new()
             {
-                simpleTiles = new(4, Allocator.Persistent),
-                connectingTiles = new(1, Allocator.Persistent)
+                simpleTiles = new(1, Allocator.Persistent),
+                connectingTiles = new(1, Allocator.Persistent),
+                billboardMaterials = new(1, Allocator.Persistent)
             };
 
-            // Copy simpleTiles
+            // Simple tiles
             foreach ((TileType tileType, MaterialMeshPair pair) in instance.simpleTiles)
             {
                 var materialMeshInfo = RegisterPair(pair, graphicsSystem, $"simple tile \"{tileType}\"");
                 data.simpleTiles.Add((int)tileType, materialMeshInfo);
             }
 
-            // Copy connectingTiles
+            // Connecting tiles
             foreach ((TileType tileType, MaterialMeshPairSet managedSet) in instance.connectingTiles)
             {
                 MaterialMeshInfoSet set = new(7, Allocator.Persistent);
@@ -51,19 +61,37 @@ namespace Authoring
                 data.connectingTiles.Add((int)tileType, set);
             }
 
+            // Population
             data.person = RegisterPair(instance.person, graphicsSystem, "person");
+
+            // Billboarding
+            foreach ((BillboardInfo.Problems problem, Material material) in instance.billboardMaterials)
+            {
+                var materialID = RegisterMaterial(material, graphicsSystem, $"billboard \"{problem}\"");
+                data.billboardMaterials.Add((int)problem, materialID);
+            }
+            data.billboardMesh = RegisterMesh(instance.billboardMesh, graphicsSystem, $"billboard");
 
             return data;
         }
 
         private static MaterialMeshInfo RegisterPair(MaterialMeshPair pair, EntitiesGraphicsSystem graphicsSystem, string debugName)
         {
-            Debug.Assert(pair.material != null, $"Material for {debugName} is null.");
-            Debug.Assert(pair.mesh != null, $"Mesh for {debugName} is null.");
-
-            BatchMaterialID matID = graphicsSystem.RegisterMaterial(pair.material);
-            BatchMeshID meshID = graphicsSystem.RegisterMesh(pair.mesh);
+            BatchMaterialID matID = RegisterMaterial(pair.material, graphicsSystem, debugName);
+            BatchMeshID meshID = RegisterMesh(pair.mesh, graphicsSystem, debugName);
             return new(matID, meshID);
+        }
+        private static BatchMaterialID RegisterMaterial(Material material, EntitiesGraphicsSystem graphicsSystem, string debugName)
+        {
+            Debug.Assert(material != null, $"Material for {debugName} is null.");
+            BatchMaterialID matID = graphicsSystem.RegisterMaterial(material);
+            return matID;
+        }
+        private static BatchMeshID RegisterMesh(Mesh mesh, EntitiesGraphicsSystem graphicsSystem, string debugName)
+        {
+            Debug.Assert(mesh != null, $"Mesh for {debugName} is null.");
+            BatchMeshID meshID = graphicsSystem.RegisterMesh(mesh);
+            return meshID;
         }
     }
 }
@@ -90,11 +118,26 @@ public struct MaterialMeshInfoSet
 
 namespace ConfigComponents
 {
-    [ChunkSerializable]
     public struct Appearence : IComponentData
     {
+        // Tiles
         public NativeHashMap<int, MaterialMeshInfo> simpleTiles; // <TileType, pair>
         public NativeHashMap<int, MaterialMeshInfoSet> connectingTiles; // <TileType, set>
+
+        // Population
         public MaterialMeshInfo person;
+
+        // Billboarding
+        public NativeHashMap<int, BatchMaterialID> billboardMaterials;
+        public BatchMeshID billboardMesh;
+
+        public void Dispose()
+        {
+            simpleTiles.Dispose();
+            foreach (var pair in connectingTiles)
+                pair.Value.pairs.Dispose();
+            connectingTiles.Dispose();
+            billboardMaterials.Dispose();
+        }
     }
 }

@@ -12,7 +12,6 @@ using Unity.Burst;
 [UpdateInGroup(typeof(LateSimulationSystemGroup))]
 public partial class AppearenceSystem : SystemBase
 {
-    private Appearence configCopy; // Needed so that the unmanaged data structures can be disposed
     private bool firstUpdate = true;
 
     protected override void OnUpdate()
@@ -22,7 +21,6 @@ public partial class AppearenceSystem : SystemBase
         {
             Appearence data = Authoring.Appearence.CreateAppearenceConfig();
             EntityManager.CreateSingleton(data);
-            configCopy = data;
             firstUpdate = false;
         }
 
@@ -40,14 +38,7 @@ public partial class AppearenceSystem : SystemBase
     }
     protected override void OnDestroy()
     {
-        // Can't use the config singleton as it already has been destroyed
-
-        configCopy.simpleTiles.Dispose();
-        foreach (var pair in configCopy.connectingTiles)
-        {
-            pair.Value.pairs.Dispose();
-        }
-        configCopy.connectingTiles.Dispose();
+        ECSUtility.GetSingleton<Appearence>().Dispose();
     }
     public void UpdateAppearence(Entity entity, TileType tileType)
     {

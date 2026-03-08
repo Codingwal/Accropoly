@@ -4,13 +4,24 @@ using Unity.Entities;
 
 namespace Components
 {
-    public struct BillboardOwner : IComponentData
+    [Save("BillboardOwner")]
+    public struct BillboardOwner : IComponentData, ICustomSaving
     {
         public UnsafeList<BillboardInfo> billboards;
         public readonly bool IsInitialized => billboards.IsCreated;
         public void Initialize()
         {
             billboards = new(2, Allocator.Persistent);
+        }
+
+        public void Load(Deserializer deserializer)
+        {
+
+        }
+
+        public void Save(Serializer serializer)
+        {
+
         }
     }
     public struct BillboardInfo

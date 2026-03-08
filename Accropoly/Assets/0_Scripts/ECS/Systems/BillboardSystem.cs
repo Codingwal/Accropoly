@@ -1,14 +1,12 @@
 using Components;
 using ConfigComponents;
 using Tags;
-using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Rendering;
 using Unity.Transforms;
-using UnityEditorInternal;
 using UnityEngine;
 using Problems = Components.BillboardInfo.Problems;
 
@@ -22,7 +20,6 @@ namespace Systems
     {
         private static NativeQueue<Entity> unusedBillboards;
         private EntityQuery tilesWithProblemsQuery;
-        private bool firstUpdate = true;
 
         protected override void OnCreate()
         {
@@ -39,32 +36,13 @@ namespace Systems
             };
             tilesWithProblemsQuery = GetEntityQuery(new EntityQueryDesc[] { notConnectedQuery, noElectricityQuery });
 
-            RequireForUpdate<Billboarding>();
+            RequireForUpdate<Appearence>();
         }
 
         protected override void OnUpdate()
         {
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
-            var config = SystemAPI.GetSingleton<Billboarding>();
-
-            // Load materials if this is the first update (Can't be done in baker bc a system is referenced)
-            if (firstUpdate)
-            {
-                var entitiesGraphicsSystem = World.GetOrCreateSystemManaged<EntitiesGraphicsSystem>();
-                var materials = BillboardMaterials.Materials;
-                foreach (var pair in materials)
-                {
-                    int index = (int)pair.key;
-
-                    // Change the length (if necessary) so that the element can be added at the correct positon
-                    if (index >= config.materialIDs.Length)
-                        config.materialIDs.Length = index + 1;
-
-                    config.materialIDs[(int)pair.key] = entitiesGraphicsSystem.RegisterMaterial(pair.value);
-                }
-                SystemAPI.SetSingleton(config);
-                firstUpdate = false;
-            }
+            Appearence appearenceConfig = SystemAPI.GetSingleton<Appearence>();
 
             // Make sure all tiles with problems have the BillboardOwner component, this simplifies the UpdateBillboardsJob
             ecb.AddComponent(tilesWithProblemsQuery, new BillboardOwner());
@@ -75,9 +53,16 @@ namespace Systems
             {
                 for (int i = 0; i < 5; i++)
                 {
-                    Entity billboard = EntityManager.Instantiate(config.prefab);
-                    ecb.AddComponent<Billboard>(billboard); // Tag component for debugging
-                    ecb.SetComponent(billboard, LocalTransform.FromPosition(new(0, -5, 0))); // Hide unused billboards
+                    Entity billboard = EntityManager.CreateEntity();
+
+                    // Add rendering components
+                    RenderMeshDescription renderMeshDesc = new(UnityEngine.Rendering.ShadowCastingMode.Off);
+                    MaterialMeshInfo materialMeshInfo = new(appearenceConfig.billboardMaterials[0], appearenceConfig.billboardMesh);
+                    RenderMeshUtility.AddComponents(billboard, EntityManager, renderMeshDesc, materialMeshInfo);
+
+                    EntityManager.AddComponentData(billboard, LocalTransform.FromPosition(new(0, -5, 0))); // Hide unused billboards
+                    EntityManager.AddComponent<Billboard>(billboard); // Tag component for debugging
+
                     unusedBillboards.Enqueue(billboard);
                 }
             }
@@ -91,7 +76,7 @@ namespace Systems
                 ecb = ecb,
                 hasElectricityLookup = GetComponentLookup<HasElectricity>(isReadOnly: true),
                 isConnectedLookup = GetComponentLookup<IsConnected>(isReadOnly: true),
-                config = config
+                config = appearenceConfig
             }.Schedule();
         }
 
@@ -124,7 +109,7 @@ namespace Systems
             public EntityCommandBuffer ecb;
             [ReadOnly] public ComponentLookup<HasElectricity> hasElectricityLookup;
             [ReadOnly] public ComponentLookup<IsConnected> isConnectedLookup;
-            public Billboarding config;
+            public Appearence config;
             public void Execute(Entity entity, ref BillboardOwner billboardOwner, in Tile tile)
             {
                 if (!billboardOwner.IsInitialized)
@@ -138,7 +123,7 @@ namespace Systems
                 }
                 else if (!noElectricity && ContainsProblem(billboardOwner.billboards, Problems.NoElectricity))
                 {
-                    RemoveProblem(ref billboardOwner, Problems.NoElectricity, ecb, tile.pos, config);
+                    RemoveProblem(ref billboardOwner, Problems.NoElectricity, ecb, tile.pos);
                 }
 
                 // Handle connection
@@ -149,7 +134,7 @@ namespace Systems
                 }
                 else if (!notConnected && ContainsProblem(billboardOwner.billboards, Problems.NotConnected))
                 {
-                    RemoveProblem(ref billboardOwner, Problems.NotConnected, ecb, tile.pos, config);
+                    RemoveProblem(ref billboardOwner, Problems.NotConnected, ecb, tile.pos);
                 }
 
                 // Update the component
@@ -166,21 +151,21 @@ namespace Systems
             }
             return false;
         }
-        private static void AddProblem(ref BillboardOwner billboardOwner, Problems problem, EntityCommandBuffer ecb, int2 pos, Billboarding config)
+        private static void AddProblem(ref BillboardOwner billboardOwner, Problems problem, EntityCommandBuffer ecb, int2 pos, Appearence config)
         {
             if (unusedBillboards.Count == 0) return; // Wait for next frame, new billboards will be created
 
             // Get an entity and update its appearence (transform is handled later)
             Entity billboard = unusedBillboards.Dequeue();
             var info = ECSUtility.EntityManager.GetComponentData<MaterialMeshInfo>(billboard);
-            info.MaterialID = config.materialIDs[(int)problem];
+            info.MaterialID = config.billboardMaterials[(int)problem];
             ecb.SetComponent(billboard, info);
 
             billboardOwner.billboards.Add(new BillboardInfo(billboard, problem));
 
-            RepositionBillboards(ref billboardOwner.billboards, ecb, pos, config);
+            RepositionBillboards(ref billboardOwner.billboards, ecb, pos);
         }
-        private static void RemoveProblem(ref BillboardOwner billboardOwner, Problems problem, EntityCommandBuffer ecb, int2 pos, Billboarding config)
+        private static void RemoveProblem(ref BillboardOwner billboardOwner, Problems problem, EntityCommandBuffer ecb, int2 pos)
         {
             for (int i = 0; i < billboardOwner.billboards.Length; i++)
             {
@@ -194,17 +179,19 @@ namespace Systems
                 unusedBillboards.Enqueue(billboard.entity);
                 ecb.SetComponent(billboard.entity, LocalTransform.FromPosition(new(0, -5, 0))); // Hide unused billboards
 
-                RepositionBillboards(ref billboardOwner.billboards, ecb, pos, config);
+                RepositionBillboards(ref billboardOwner.billboards, ecb, pos);
                 return;
             }
             Debug.LogError("Billboard not present");
         }
-        private static void RepositionBillboards(ref UnsafeList<BillboardInfo> billboards, EntityCommandBuffer ecb, int2 pos, Billboarding config)
+        private static void RepositionBillboards(ref UnsafeList<BillboardInfo> billboards, EntityCommandBuffer ecb, int2 pos)
         {
             for (int i = 0; i < billboards.Length; i++)
             {
                 // Billboards will be shown as a vertical stack
-                var transform = LocalTransform.FromPositionRotationScale(new(pos.x * 2, i * 0.7f + config.billboardHeightOffset, pos.y * 2), quaternion.identity, 0.5f);
+                float billboardHeightOffset = ConfigData.tileConfig.Data.billboarding.billboardHeightOffset;
+                float3 position = new(pos.x * 2, i * 0.7f + billboardHeightOffset, pos.y * 2);
+                var transform = LocalTransform.FromPositionRotationScale(position, quaternion.identity, 0.5f);
                 ecb.SetComponent(billboards[i].entity, transform);
             }
         }

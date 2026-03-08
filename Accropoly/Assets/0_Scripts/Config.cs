@@ -54,6 +54,14 @@ public struct TileConfig
         public int maxAge2;
     }
     public TileGrowing tileGrowing;
+
+    [Serializable]
+    public struct Billboarding
+    {
+        public float billboardHeightOffset;
+    }
+    public Billboarding billboarding;
+
     public void Dispose() { }
 }
 

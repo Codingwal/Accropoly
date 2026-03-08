@@ -138,5 +138,6 @@ public enum ConnectingTileGroup
 }
 namespace Tags
 {
+    [Save("IsConnected")]
     public struct IsConnected : IComponentData, IEnableableComponent { }
 }

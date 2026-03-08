@@ -2,5 +2,8 @@
     "tileGrowing": {
         "maxAge1": 6,
         "maxAge2": 18
+    },
+    "billboarding": {
+        "billboardHeightOffset": 2.5
     }
 }
