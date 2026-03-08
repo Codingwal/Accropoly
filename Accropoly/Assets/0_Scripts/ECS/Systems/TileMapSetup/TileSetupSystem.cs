@@ -20,7 +20,6 @@ namespace Systems
             state.RequireForUpdate<Appearence>();
         }
 
-        [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
             Appearence appearenceConfig = SystemAPI.GetSingleton<Appearence>();

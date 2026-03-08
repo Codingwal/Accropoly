@@ -3,6 +3,7 @@ using Unity.Mathematics;
 using Components;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
 
 public static class TileGridUtility
 {
@@ -70,18 +71,14 @@ public static class TileGridUtility
         entity = default;
         return false;
     }
-    public static IEnumerable<Entity> GetNeighbourTiles(int2 pos, DynamicBuffer<EntityBufferElement> entityGrid)
+    public static NativeArray<Entity> GetSquareEdgeTiles(int2 pos, DynamicBuffer<EntityBufferElement> entityGrid)
     {
-        yield return GetTile(pos + new int2(0, 1), entityGrid);
-        yield return GetTile(pos + new int2(1, 0), entityGrid);
-        yield return GetTile(pos + new int2(0, -1), entityGrid);
-        yield return GetTile(pos + new int2(-1, 0), entityGrid);
-    }
-    public static IEnumerable<Entity> GetSquareEdgeTiles(int2 pos, DynamicBuffer<EntityBufferElement> entityGrid)
-    {
-        yield return GetTile(pos + new int2(-1, 1), entityGrid);
-        yield return GetTile(pos + new int2(1, 1), entityGrid);
-        yield return GetTile(pos + new int2(1, -1), entityGrid);
-        yield return GetTile(pos + new int2(-1, -1), entityGrid);
+        return new NativeArray<Entity>(4, Allocator.Temp)
+        {
+            [0] = GetTile(pos + new int2(-1, 1), entityGrid),
+            [1] = GetTile(pos + new int2(1, 1), entityGrid),
+            [2] = GetTile(pos + new int2(1, -1), entityGrid),
+            [3] = GetTile(pos + new int2(-1, -1), entityGrid)
+        };
     }
 }

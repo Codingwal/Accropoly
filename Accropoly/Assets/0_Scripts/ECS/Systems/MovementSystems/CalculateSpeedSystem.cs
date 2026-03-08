@@ -25,7 +25,7 @@ namespace Systems
             {
                 waypointLookup = SystemAPI.GetComponentLookup<Waypoint>(isReadOnly: true),
                 waypointsData = SystemAPI.GetSingleton<WaypointsData>()
-            }.Schedule(); 
+            }.Schedule();
         }
 
         [BurstCompile]
@@ -33,7 +33,7 @@ namespace Systems
         public partial struct CalculateSpeedJob : IJobEntity
         {
             [ReadOnly] public ComponentLookup<Waypoint> waypointLookup;
-            [ReadOnly] public WaypointsData waypointsData;
+            public WaypointsData waypointsData;
             public void Execute(ref Speed speed, in MovementInfo movementInfo, in CurveFollower curveFollower)
             {
                 Entity nextWaypointEntity = waypointsData.waypoints[movementInfo.nextWaypoint];
