@@ -7,16 +7,10 @@ public class Init : MonoBehaviour
     {
         SaveSystem.Initialize();
 
-        if (WorldManager.ActiveWorld)
-            WorldManager.DestroyWorld();
-
-        World.DefaultGameObjectInjectionWorld?.Dispose();
+        World.DisposeAllWorlds();
     }
     private void OnDestroy()
     {
-        if (WorldManager.ActiveWorld)
-        {
-            WorldManager.DestroyWorld();
-        }
+        World.DisposeAllWorlds();
     }
 }

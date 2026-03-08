@@ -1,6 +1,7 @@
 using Components;
 using ConfigComponents;
 using Tags;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
@@ -9,6 +10,7 @@ using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
 using Problems = Components.BillboardInfo.Problems;
+using BillboardList = Unity.Collections.LowLevel.Unsafe.UnsafeList<Components.BillboardInfo>;
 
 namespace Systems
 {
@@ -18,7 +20,7 @@ namespace Systems
     /// </summary>
     public partial class BillboardSystem : SystemBase
     {
-        private static NativeQueue<Entity> unusedBillboards;
+        public NativeQueue<Entity> unusedBillboards;
         private EntityQuery tilesWithProblemsQuery;
 
         protected override void OnCreate()
@@ -67,8 +69,16 @@ namespace Systems
                 }
             }
 
-            new DisposeBillboardOwnersJob { ecb = ecb }
-                .Schedule(SystemAPI.QueryBuilder().WithAll<Replace, BillboardOwner>().Build());
+            BillboardUtility utility = new()
+            {
+                unusedBillboards = unusedBillboards,
+                appearenceConfig = appearenceConfig,
+                transformLookup = SystemAPI.GetComponentLookup<LocalTransform>(),
+                materialMeshInfoLookup = SystemAPI.GetComponentLookup<MaterialMeshInfo>()
+            };
+
+            new DisposeBillboardOwnersJob { utility = utility }
+                .Schedule();
 
             // Update billboards / billboard owners
             new UpdateBillboardsJob
@@ -76,7 +86,7 @@ namespace Systems
                 ecb = ecb,
                 hasElectricityLookup = GetComponentLookup<HasElectricity>(isReadOnly: true),
                 isConnectedLookup = GetComponentLookup<IsConnected>(isReadOnly: true),
-                config = appearenceConfig
+                utility = utility
             }.Schedule();
         }
 
@@ -93,23 +103,25 @@ namespace Systems
             }
         }
 
-        // Can't BurstCompile because of static RW field unusedBillboards
+        [BurstCompile]
+        [WithAll(typeof(Replace))]
         private partial struct DisposeBillboardOwnersJob : IJobEntity
         {
-            public EntityCommandBuffer ecb;
+            public BillboardUtility utility;
             public void Execute(ref BillboardOwner billboardOwner)
             {
-                DisposeBillboardOwner(ref billboardOwner, ref ecb);
+                utility.DisposeBillboardOwner(ref billboardOwner.billboards);
             }
         }
 
-        // Can't BurstCompile because of static RW field unusedBillboards
+        [BurstCompile]
+        [WithNone(typeof(Replace))]
         private partial struct UpdateBillboardsJob : IJobEntity
         {
             public EntityCommandBuffer ecb;
             [ReadOnly] public ComponentLookup<HasElectricity> hasElectricityLookup;
             [ReadOnly] public ComponentLookup<IsConnected> isConnectedLookup;
-            public Appearence config;
+            public BillboardUtility utility;
             public void Execute(Entity entity, ref BillboardOwner billboardOwner, in Tile tile)
             {
                 if (!billboardOwner.IsInitialized)
@@ -117,24 +129,24 @@ namespace Systems
 
                 // Handle electricity
                 bool noElectricity = hasElectricityLookup.HasComponent(entity) && !hasElectricityLookup.IsComponentEnabled(entity); // .IsComponentDisabled()
-                if (noElectricity && !ContainsProblem(billboardOwner.billboards, Problems.NoElectricity))
+                if (noElectricity && !utility.ContainsProblem(billboardOwner.billboards, Problems.NoElectricity))
                 {
-                    AddProblem(ref billboardOwner, Problems.NoElectricity, ecb, tile.pos, config);
+                    utility.AddProblem(ref billboardOwner.billboards, Problems.NoElectricity, tile.pos);
                 }
-                else if (!noElectricity && ContainsProblem(billboardOwner.billboards, Problems.NoElectricity))
+                else if (!noElectricity && utility.ContainsProblem(billboardOwner.billboards, Problems.NoElectricity))
                 {
-                    RemoveProblem(ref billboardOwner, Problems.NoElectricity, ecb, tile.pos);
+                    utility.RemoveProblem(ref billboardOwner.billboards, Problems.NoElectricity, tile.pos);
                 }
 
                 // Handle connection
                 bool notConnected = isConnectedLookup.HasComponent(entity) && !isConnectedLookup.IsComponentEnabled(entity); // .IsComponentDisabled()
-                if (notConnected && !ContainsProblem(billboardOwner.billboards, Problems.NotConnected))
+                if (notConnected && !utility.ContainsProblem(billboardOwner.billboards, Problems.NotConnected))
                 {
-                    AddProblem(ref billboardOwner, Problems.NotConnected, ecb, tile.pos, config);
+                    utility.AddProblem(ref billboardOwner.billboards, Problems.NotConnected, tile.pos);
                 }
-                else if (!notConnected && ContainsProblem(billboardOwner.billboards, Problems.NotConnected))
+                else if (!notConnected && utility.ContainsProblem(billboardOwner.billboards, Problems.NotConnected))
                 {
-                    RemoveProblem(ref billboardOwner, Problems.NotConnected, ecb, tile.pos);
+                    utility.RemoveProblem(ref billboardOwner.billboards, Problems.NotConnected, tile.pos);
                 }
 
                 // Update the component
@@ -142,70 +154,74 @@ namespace Systems
             }
         }
 
-        private static bool ContainsProblem(UnsafeList<BillboardInfo> billboards, Problems problem)
+        private struct BillboardUtility
         {
-            foreach (BillboardInfo billboard in billboards)
+            public NativeQueue<Entity> unusedBillboards;
+            public Appearence appearenceConfig;
+            public ComponentLookup<LocalTransform> transformLookup;
+            public ComponentLookup<MaterialMeshInfo> materialMeshInfoLookup;
+            public bool ContainsProblem(BillboardList billboards, Problems problem)
             {
-                if (billboard.problem == problem)
-                    return true;
+                foreach (BillboardInfo billboard in billboards)
+                {
+                    if (billboard.problem == problem)
+                        return true;
+                }
+                return false;
             }
-            return false;
-        }
-        private static void AddProblem(ref BillboardOwner billboardOwner, Problems problem, EntityCommandBuffer ecb, int2 pos, Appearence config)
-        {
-            if (unusedBillboards.Count == 0) return; // Wait for next frame, new billboards will be created
-
-            // Get an entity and update its appearence (transform is handled later)
-            Entity billboard = unusedBillboards.Dequeue();
-            var info = ECSUtility.EntityManager.GetComponentData<MaterialMeshInfo>(billboard);
-            info.MaterialID = config.billboardMaterials[(int)problem];
-            ecb.SetComponent(billboard, info);
-
-            billboardOwner.billboards.Add(new BillboardInfo(billboard, problem));
-
-            RepositionBillboards(ref billboardOwner.billboards, ecb, pos);
-        }
-        private static void RemoveProblem(ref BillboardOwner billboardOwner, Problems problem, EntityCommandBuffer ecb, int2 pos)
-        {
-            for (int i = 0; i < billboardOwner.billboards.Length; i++)
+            public void AddProblem(ref BillboardList billboards, Problems problem, int2 pos)
             {
-                BillboardInfo billboard = billboardOwner.billboards[i];
+                if (unusedBillboards.Count == 0) return; // Wait for next frame, new billboards will be created
 
-                if (billboard.problem != problem)
-                    continue;
+                // Get an entity and update its appearence (transform is handled later)
+                Entity billboard = unusedBillboards.Dequeue();
+                materialMeshInfoLookup.GetRefRW(billboard).ValueRW.MaterialID = appearenceConfig.billboardMaterials[(int)problem];
 
-                // Recycle the billboard
-                billboardOwner.billboards.RemoveAt(i);
-                unusedBillboards.Enqueue(billboard.entity);
-                ecb.SetComponent(billboard.entity, LocalTransform.FromPosition(new(0, -5, 0))); // Hide unused billboards
+                billboards.Add(new BillboardInfo(billboard, problem));
 
-                RepositionBillboards(ref billboardOwner.billboards, ecb, pos);
-                return;
+                RepositionBillboards(ref billboards, pos);
             }
-            Debug.LogError("Billboard not present");
-        }
-        private static void RepositionBillboards(ref UnsafeList<BillboardInfo> billboards, EntityCommandBuffer ecb, int2 pos)
-        {
-            for (int i = 0; i < billboards.Length; i++)
+            public void RemoveProblem(ref BillboardList billboards, Problems problem, int2 pos)
             {
-                // Billboards will be shown as a vertical stack
-                float billboardHeightOffset = ConfigData.tileConfig.Data.billboarding.billboardHeightOffset;
-                float3 position = new(pos.x * 2, i * 0.7f + billboardHeightOffset, pos.y * 2);
-                var transform = LocalTransform.FromPositionRotationScale(position, quaternion.identity, 0.5f);
-                ecb.SetComponent(billboards[i].entity, transform);
-            }
-        }
-        private static void DisposeBillboardOwner(ref BillboardOwner billboardOwner, ref EntityCommandBuffer ecb)
-        {
-            if (!billboardOwner.billboards.IsCreated)
-                return;
+                for (int i = 0; i < billboards.Length; i++)
+                {
+                    BillboardInfo billboard = billboards[i];
 
-            foreach (BillboardInfo billboard in billboardOwner.billboards)
-            {
-                ecb.SetComponent(billboard.entity, LocalTransform.FromPosition(new(0, -5, 0))); // Hide unused billboards
-                unusedBillboards.Enqueue(billboard.entity);
+                    if (billboard.problem != problem)
+                        continue;
+
+                    // Recycle the billboard
+                    billboards.RemoveAt(i);
+                    unusedBillboards.Enqueue(billboard.entity);
+                    transformLookup.GetRefRW(billboard.entity).ValueRW.Position = new(0, -5, 0);
+
+                    RepositionBillboards(ref billboards, pos);
+                    return;
+                }
+                Debug.LogError("Billboard not present");
             }
-            billboardOwner.billboards.Dispose();
+            public void RepositionBillboards(ref BillboardList billboards, int2 pos)
+            {
+                for (int i = 0; i < billboards.Length; i++)
+                {
+                    // Billboards will be shown as a vertical stack
+                    float billboardHeightOffset = ConfigData.tileConfig.Data.billboarding.billboardHeightOffset;
+                    float3 position = new(pos.x * 2, i * 0.7f + billboardHeightOffset, pos.y * 2);
+                    transformLookup[billboards[i].entity] = LocalTransform.FromPositionRotationScale(position, quaternion.identity, 0.5f);
+                }
+            }
+            public void DisposeBillboardOwner(ref BillboardList billboards)
+            {
+                if (!billboards.IsCreated)
+                    return;
+
+                foreach (BillboardInfo billboard in billboards)
+                {
+                    transformLookup.GetRefRW(billboard.entity).ValueRW.Position = new(0, -5, 0); // Hide unused billboards
+                    unusedBillboards.Enqueue(billboard.entity);
+                }
+                billboards.Dispose();
+            }
         }
     }
 }
