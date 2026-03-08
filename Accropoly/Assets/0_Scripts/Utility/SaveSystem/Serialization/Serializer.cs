@@ -24,7 +24,7 @@ public unsafe struct Serializer
     {
         Serialize(typeof(T), UnsafeUtility.AddressOf(ref data));
     }
-    public readonly void Serialize(Type type, void* data, int recursion = 0)
+    private readonly void Serialize(Type type, void* data, int recursion = 0)
     {
         if (recursion > 10)
             throw new($"Encountered recursion bug while deserializing {type}");

@@ -7,7 +7,7 @@ using Unity.Transforms;
 
 public static class MapTemplates
 {
-    public static WorldSave DefaultMap
+    public static WorldData DefaultMap
     {
         get
         {
@@ -42,13 +42,17 @@ public static class MapTemplates
                 cursorLocked = false,
             });
 
-            return builder.GetWorldSave();
-
+            return new WorldData()
+            {
+                version = 1,
+                mapSize = size,
+                worldSave = builder.GetWorldSave(),
+            };
         }
     }
 
     public static Dictionary<FixedString32Bytes, WorldData> mapTemplates = new()
     {
-        {"DefaultMap", new () { worldSave = DefaultMap }},
+        { "DefaultMap", DefaultMap },
     };
 }
