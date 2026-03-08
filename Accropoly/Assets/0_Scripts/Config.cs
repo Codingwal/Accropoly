@@ -150,6 +150,7 @@ public struct WaypointConfig
         {
             public FixedString32Bytes name;
             public Direction rotation;
+            public bool2 flip;
         }
         public NativeList<Element> elements;
     }
@@ -207,6 +208,8 @@ public struct WaypointConfigSerialized
         {
             public string name;
             public int rotation;
+            public bool flipX;
+            public bool flipY;
         }
         public List<Element> elements;
     }

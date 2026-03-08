@@ -17,7 +17,14 @@ public static class WaypointConversionUtility
 
             // Convert element references
             foreach (var element in tileDataSerialized.elements)
-                tileData.elements.Add(new() { name = new(element.name), rotation = (Direction)element.rotation });
+            {
+                tileData.elements.Add(new()
+                {
+                    name = new(element.name),
+                    rotation = (Direction)element.rotation,
+                    flip = new(element.flipX, element.flipY)
+                });
+            }
 
             waypointConfig.tiles.Add(new(tileName), tileData);
         }

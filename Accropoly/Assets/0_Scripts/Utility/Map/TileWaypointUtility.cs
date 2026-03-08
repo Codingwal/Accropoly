@@ -54,16 +54,16 @@ public struct TileWaypointUtility
                 Debug.LogError($"Element {element.name} does not exist.");
 
             foreach (var waypoint in elementData.waypoints)
-                CreateWaypoint(waypoint, element.rotation, ref ecb);
+                CreateWaypoint(waypoint, element.rotation, element.flip, ref ecb);
         }
     }
 
-    private void CreateWaypoint(WaypointConfig.WaypointData waypointData, Direction elementRotation, ref EntityCommandBuffer ecb)
+    private void CreateWaypoint(WaypointConfig.WaypointData waypointData, Direction elementRotation, bool2 flipElement, ref EntityCommandBuffer ecb)
     {
         Entity entity = ecb.CreateEntity();
 
         // Rotate position according to elementRotation and convert it to world space, then set the transform
-        float3 position = ToWorldSpace(Rotate(waypointData.position, elementRotation));
+        float3 position = ToWorldSpace(Convert(waypointData.position, elementRotation, flipElement));
         ecb.AddComponent(entity, LocalTransform.FromPosition(position));
 
         // Add waypointData (velocity & allowedObjects)
@@ -80,12 +80,25 @@ public struct TileWaypointUtility
         {
             buffer.Add(new Connection()
             {
-                nextWaypoint = ToWorldSpace(Rotate(connection.nextWaypoint, elementRotation)),
-                controlPoint = ToWorldSpace(Rotate(connection.controlPoint, elementRotation))
+                nextWaypoint = ToWorldSpace(Convert(connection.nextWaypoint, elementRotation, flipElement)),
+                controlPoint = ToWorldSpace(Convert(connection.controlPoint, elementRotation, flipElement))
             });
         }
 
         ecb.AddComponent<NewWaypoint>(entity);
+    }
+
+    private float3 Convert(float3 pos, Direction elementRotation, bool2 flipElement)
+    {
+        if (flipElement.x)
+            pos.x = -pos.x;
+
+        if (flipElement.y)
+            pos.z = -pos.z;
+
+        pos = Rotate(pos, elementRotation);
+
+        return pos;
     }
 
     private float3 ToWorldSpace(float3 pos)

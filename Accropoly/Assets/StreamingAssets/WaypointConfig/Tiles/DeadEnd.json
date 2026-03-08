@@ -5,7 +5,16 @@
             "rotation": 0
         },
         {
-            "name": "sidewalk-deadend",
+            "name": "sidewalk-deadend-side",
+            "rotation": 0
+        },
+        {
+            "name": "sidewalk-deadend-side",
+            "rotation": 0,
+            "flipX": true
+        },
+        {
+            "name": "sidewalk-deadend-back",
             "rotation": 0
         }
     ]

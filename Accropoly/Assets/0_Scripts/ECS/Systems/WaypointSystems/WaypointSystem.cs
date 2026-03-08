@@ -66,7 +66,7 @@ namespace Systems
             SystemAPI.GetSingleton<WaypointsData>().waypoints.Dispose();
         }
 
-        public void DrawGizmos(bool displayJunctionInfo)
+        public void DrawGizmos(bool displayJunctionInfo, bool hideUnusedConnections)
         {
             if (!SystemAPI.HasSingleton<WaypointsData>())
                 return;
@@ -100,7 +100,7 @@ namespace Systems
                 Gizmos.color = Color.blue;
                 foreach (Connection connection in connections)
                 {
-                    if (!waypointsData.waypoints.ContainsKey(connection.nextWaypoint))
+                    if (hideUnusedConnections && !waypointsData.waypoints.ContainsKey(connection.nextWaypoint))
                         continue;
 
                     new BezierCurve(transform.ValueRO.Position, connection.controlPoint, connection.nextWaypoint).Draw(10);

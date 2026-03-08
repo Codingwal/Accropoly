@@ -11,8 +11,69 @@
             "allowedObjects": 2,
             "velocity": 3,
             "nextWaypoints": [
-                { "position": [0.95, 0.8, -0.7], "controlPoint": [-0.7, 0.8, -0.7] },
+                { "position": [-0.7, 0.8, 0] },
                 { "position": [-0.7, 0.8, 1.05] }
+            ],
+            "junctionData": 0
+        },
+        {
+            "position": [
+                -0.7,
+                0.8,
+                0
+            ],
+            "allowedObjects": 2,
+            "velocity": 3,
+            "nextWaypoints": [
+                { "position": [0, 0.8, -0.7], "controlPoint": [-0.7, 0.8, -0.7] },
+                { "position": [-0.7, 0.8, 0.95] },
+                { "position": [-0.95, 0.8, 0] }
+            ],
+            "junctionData": 0
+        },
+
+        {
+            "position": [
+                -0.95,
+                0.8,
+                0
+            ],
+            "allowedObjects": 2,
+            "velocity": 3,
+            "nextWaypoints": [
+                { "position": [-1.05, 0.8, 0] },
+                { "position": [-0.7, 0.8, 0] }
+            ],
+            "junctionData": 0
+        },
+        
+        {
+            "position": [
+                0,
+                0.8,
+                -0.95
+            ],
+            "allowedObjects": 2,
+            "velocity": 3,
+            "nextWaypoints": [
+                { "position": [0, 0.8, -1.05] },
+                { "position": [0, 0.8, -0.7] }
+            ],
+            "junctionData": 0
+        },
+
+        {
+            "position": [
+                0,
+                0.8,
+                -0.7
+            ],
+            "allowedObjects": 2,
+            "velocity": 3,
+            "nextWaypoints": [
+                { "position": [-0.7, 0.8, 0], "controlPoint": [-0.7, 0.8, -0.7] },
+                { "position": [0.95, 0.8, -0.7] },
+                { "position": [0, 0.8, -0.95] }
             ],
             "junctionData": 0
         },
@@ -25,7 +86,7 @@
             "allowedObjects": 2,
             "velocity": 3,
             "nextWaypoints": [
-                { "position": [-0.7, 0.8, 0.95], "controlPoint": [-0.7, 0.8, -0.7] },
+                { "position": [0, 0.8, -0.7] },
                 { "position": [1.05, 0.8, -0.7] }
             ],
             "junctionData": 0

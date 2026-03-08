@@ -7,6 +7,7 @@ public class DrawGizmos : MonoBehaviour
     [Header("Waypoint system")]
     [SerializeField] private bool debugWaypoints;
     [SerializeField] private bool displayJunctionInfo;
+    [SerializeField] private bool hideUnusedConnections;
 
     [Header("Movement system")]
     [SerializeField] private bool debugPath;
@@ -21,7 +22,7 @@ public class DrawGizmos : MonoBehaviour
         World world = World.DefaultGameObjectInjectionWorld;
 
         if (debugWaypoints)
-            world.GetExistingSystemManaged<WaypointSystem>().DrawGizmos(displayJunctionInfo);
+            world.GetExistingSystemManaged<WaypointSystem>().DrawGizmos(displayJunctionInfo, hideUnusedConnections);
 
         world.GetExistingSystemManaged<MovementSystem>().DrawGizmos(debugPath, debugCurrentTarget);
 

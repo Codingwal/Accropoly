@@ -23,7 +23,7 @@ public partial struct ValidatePathSystem : ISystem
             wantsToTravelLookup = SystemAPI.GetComponentLookup<WantsToTravel>(),
         }.Schedule();
     }
-    
+
     [BurstCompile]
     [WithAll(typeof(Travelling))]
     public partial struct ValidatePathJob : IJobEntity
@@ -33,6 +33,13 @@ public partial struct ValidatePathSystem : ISystem
         public ComponentLookup<WantsToTravel> wantsToTravelLookup;
         public void Execute(Entity entity, ref LocalTransform transform, ref MovementInfo movementInfo, in DynamicBuffer<PathElement> path)
         {
+            if (path.Length == 0)
+            {
+                Debug.LogWarning("Path is empty! Stopping.");
+                travellingLookup.SetComponentEnabled(entity, false);
+                return;
+            }
+
             // Check if destination still exists and stop otherwise
             if (!WaypointExists(path[^1].waypoint))
             {
