@@ -1,5 +1,6 @@
 using Components;
 using Components.WaypointComponents;
+using Tags;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;

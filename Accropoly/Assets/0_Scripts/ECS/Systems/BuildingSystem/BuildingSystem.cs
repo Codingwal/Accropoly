@@ -5,6 +5,7 @@ using Components;
 using PlacementAction = Components.PlacementInputData.Action;
 using Tags;
 using ConfigComponents;
+using UnityEngine;
 
 namespace Systems
 {
@@ -20,7 +21,6 @@ namespace Systems
         private static EntityQuery tileToPlaceQuery;
         protected override void OnCreate()
         {
-            RequireForUpdate<RunGame>();
             RequireForUpdate<TileToPlaceInfo>(); // Update only if there is a PlacementProcess running (The process is started by the menu)
 
             placementInputDataQuery = GetEntityQuery(typeof(PlacementInputData));
@@ -42,9 +42,9 @@ namespace Systems
 
             if (placementInputData.placementProcessRunning)
             {
-                // Place TileToPlace at current pos, if there isn't one already
                 var tileToPlaceInfoEntity = SystemAPI.GetSingletonEntity<TileToPlaceInfo>();
                 float2 pos = SystemAPI.GetComponent<LocalTransform>(tileToPlaceInfoEntity).Position.xz;
+
                 bool alreadyExists = false;
                 foreach (var transform in SystemAPI.Query<RefRO<LocalTransform>>().WithAll<TileToPlace>())
                 {
@@ -54,6 +54,7 @@ namespace Systems
                         break;
                     }
                 }
+
                 if (!alreadyExists)
                 {
                     // Get new tile type
@@ -65,11 +66,11 @@ namespace Systems
                     if (tileType == TileType.None)
                         return;
 
-                    var prefab = SystemAPI.GetSingleton<PrefabEntity>().tilePrefab;
-                    Entity entity = EntityManager.Instantiate(prefab); // Inefficient but who cares
-                    ecb.SetComponent(entity, LocalTransform.FromPositionRotation(new(pos.x, 0.3f, pos.y), quaternion.Euler(new(0, tileToPlaceInfo.rotation.ToRadians(), 0))));
-                    ecb.AddComponent<TileToPlace>(entity);
-                    ECSUtility.World.GetExistingSystemManaged<AppearenceSystem>().UpdateAppearence(entity, tileType);
+                    Entity entity = EntityManager.CreateEntity(); // Must be created on main thread because of AddRenderingComponents
+                    TileSetupSystem.AddRenderingComponents(entity, tileType, EntityManager, SystemAPI.GetSingleton<Appearence>());
+                    var rotation = quaternion.Euler(new(0, tileToPlaceInfo.rotation.ToRadians(), 0));
+                    SystemAPI.SetComponent(entity, LocalTransform.FromPositionRotation(new(pos.x, 0.3f, pos.y), rotation));
+                    EntityManager.AddComponent<TileToPlace>(entity);
                 }
                 return;
             }
@@ -139,11 +140,10 @@ namespace Systems
             }
 
             // Create a tileToPlaceInfo singleton entity and set mesh & material
-            var prefab = ECSUtility.GetSingleton<PrefabEntity>().tilePrefab;
-            Entity entity = em.Instantiate(prefab);
+            Entity entity = em.CreateEntity();
+            TileSetupSystem.AddRenderingComponents(entity, tileType, em, ECSUtility.GetSingleton<Appearence>());
             em.AddComponentData(entity, new TileToPlaceInfo { tileType = tileType });
             em.SetComponentData(entity, LocalTransform.FromPosition(0, -10, 0)); // Hide entity until the position is updated by UpdatePosition.cs
-            ECSUtility.World.GetExistingSystemManaged<AppearenceSystem>().UpdateAppearence(entity, tileType);
         }
     }
 }

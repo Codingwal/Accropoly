@@ -1,65 +1,141 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using Unity.Mathematics;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
+using UnityEngine;
 
-public partial class Deserializer
+public unsafe struct Deserializer
 {
-    readonly BinaryReader br;
-    public Deserializer(BinaryReader br)
+    public delegate void TypeDeserializer(Deserializer deserializer, void* data);
+    public readonly Dictionary<Type, TypeDeserializer> typeDeserializers;
+    private readonly IReader reader;
+    public Deserializer(IReader _reader)
     {
-        this.br = br;
-    }
-    public byte Deserialize(byte data) { return br.ReadByte(); }
-    public bool Deserialize(bool data) { return br.ReadBoolean(); }
-    public int Deserialize(int data) { return br.ReadInt32(); }
-    public uint Deserialize(uint data) { return br.ReadUInt32(); }
-    public float Deserialize(float data) { return br.ReadSingle(); }
-    public char Deserialize(char data) { return br.ReadChar(); }
-    public string Deserialize(string data) { return br.ReadString(); }
+        reader = _reader;
 
-    public T[] Deserialize<T>(T[] data) where T : new()
+        typeDeserializers = new();
+        DefaultDeserializers.GetDeserializers(typeDeserializers);
+    }
+
+    public readonly T Deserialize<T>() where T : unmanaged
     {
-        int size = br.ReadInt32();
-        data = new T[size];
-        for (int i = 0; i < size; i++)
-        {
-            data[i] = Deserialize((dynamic)new T());
-        }
+        T data = new();
+        Deserialize(typeof(T), UnsafeUtility.AddressOf(ref data));
         return data;
     }
-    public T[,] Deserialize<T>(T[,] data) where T : new()
+    private readonly void Deserialize(Type type, void* data, int recursion = 0)
     {
-        int2 size = new(br.ReadInt32(), br.ReadInt32());
-        data = new T[size.x, size.y];
-        for (int x = 0; x < data.GetLength(0); x++)
+        if (recursion > 10)
+            throw new($"Encountered recursion bug while serializing {type}");
+
+        if (type.GetInterfaces().Contains(typeof(ICustomSaving)))
         {
-            for (int y = 0; y < data.GetLength(1); y++)
+            object obj = Marshal.PtrToStructure((IntPtr)data, type);
+            ((ICustomSaving)obj).Load(this);
+            Marshal.StructureToPtr(obj, (IntPtr)data, false);
+            return;
+        }
+
+        if (TryCustomDeserialization(type, data))
+            return;
+
+        foreach (FieldInfo field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+        {
+            if (field.GetCustomAttribute(typeof(DontSaveAttribute)) != null)
+                continue;
+
+            int fieldOffset = UnsafeUtility.GetFieldOffset(field);
+            Type fieldType = field.FieldType;
+            void* fieldAddress = (byte*)data + fieldOffset;
+
+            if (fieldType.IsPointer)
+                Debug.LogWarning($"Deserializing pointer type ({fieldType})");
+
+            Deserialize(fieldType, fieldAddress, recursion + 1);
+        }
+    }
+
+    private readonly bool TryCustomDeserialization(Type type, void* data)
+    {
+        if (typeDeserializers.TryGetValue(type, out var typeSerializer))
+        {
+            typeSerializer(this, data);
+            return true;
+        }
+
+        if (!type.IsGenericType)
+            return false;
+
+        // Handle generics
+
+        if (type.GetGenericTypeDefinition() == typeof(UnsafeList<>))
+        {
+            Type elementType = type.GetGenericArguments()[0];
+
+            // this.DeserializeUnsafeList<elementType>(data);
+            CallMethod(nameof(DeserializeUnsafeList), elementType, data);
+
+            return true;
+        }
+        else if (type.GetGenericTypeDefinition() == typeof(NativeList<>))
+        {
+            Type elementType = type.GetGenericArguments()[0];
+
+            // this.DeserializeUnsafeList<elementType>(data);
+            CallMethod(nameof(DeserializeNativeList), elementType, data);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private readonly void DeserializeNativeList<T>(IntPtr ptr)
+        where T : unmanaged
+    {
+        var listPtr = (NativeList<T>*)ptr;
+
+        int length = Deserialize<int>();
+        *listPtr = new(length, Allocator.Persistent);
+        for (int i = 0; i < length; i++)
+            listPtr->Add(Deserialize<T>());
+    }
+    private readonly void DeserializeUnsafeList<T>(IntPtr ptr)
+        where T : unmanaged
+    {
+        var listPtr = (UnsafeList<T>*)ptr;
+
+        int length = Deserialize<int>();
+        *listPtr = new(length, Allocator.Persistent);
+        for (int i = 0; i < length; i++)
+            listPtr->Add(Deserialize<T>());
+    }
+
+    private readonly void CallMethod(string name, Type typeArgument, void* data)
+    {
+        MethodInfo method = GetType().GetMethod(name, BindingFlags.NonPublic | BindingFlags.Instance);
+        method = method.MakeGenericMethod(typeArgument);
+        method.Invoke(this, new object[] { new IntPtr(data) });
+    }
+
+    public static class DefaultDeserializers
+    {
+        public static void GetDeserializers(Dictionary<Type, TypeDeserializer> typeDeserializers)
+        {
+            typeDeserializers.Add(typeof(int), (d, data) => *(int*)data = d.reader.ReadInt());
+            typeDeserializers.Add(typeof(float), (d, data) => *(float*)data = d.reader.ReadFloat());
+            typeDeserializers.Add(typeof(bool), (d, data) => *(bool*)data = d.reader.ReadBool());
+            typeDeserializers.Add(typeof(FixedString32Bytes), (d, data) =>
             {
-                data[x, y] = Deserialize((dynamic)new T());
-            }
+                string str = d.reader.ReadStr();
+                *(FixedString32Bytes*)data = str;
+            });
+            typeDeserializers.Add(typeof(byte), (d, data) => *(byte*)data = d.reader.ReadByte());
+
+            // TODO: Native containers
         }
-        return data;
-    }
-    public List<T> Deserialize<T>(List<T> data) where T : new()
-    {
-        int size = br.ReadInt32();
-        data = new(size);
-        for (int i = 0; i < size; i++)
-        {
-            data.Add(Deserialize((dynamic)new T()));
-        }
-        return data;
-    }
-    public Dictionary<TKey, TValue> Deserialize<TKey, TValue>(Dictionary<TKey, TValue> data) where TKey : notnull, new() where TValue : new()
-    {
-        int size = br.ReadInt32();
-        data = new(size);
-        for (int i = 0; i < size; i++)
-        {
-            data.Add(Deserialize((dynamic)new TKey()), Deserialize((dynamic)new TValue()));
-        }
-        return data;
     }
 }

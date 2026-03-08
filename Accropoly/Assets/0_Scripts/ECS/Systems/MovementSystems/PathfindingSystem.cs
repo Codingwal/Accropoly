@@ -22,7 +22,7 @@ namespace Systems
         protected override void OnCreate()
         {
             RequireForUpdate<Traveller>();
-            RequireForUpdate<RunGame>();
+            RequireForUpdate<WaypointsData>();
         }
         protected override void OnUpdate()
         {

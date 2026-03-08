@@ -1,14 +1,19 @@
+using Unity.Burst.CompilerServices;
+using Unity.Mathematics;
+
 public struct WorldTime
 {
     public float seconds;
     public int minutes;
     public int hours;
     public int day;
-    public readonly float TimeOfDayInSeconds => hours * 3600 + minutes * 60 + seconds;
-
     private bool newHour;
+
+    public readonly float TimeOfDayInSeconds => hours * 3600 + minutes * 60 + seconds;
     public readonly bool NewHour => newHour;
-    public static float HoursToSeconds(int hours) { return hours * 3600; }
+
+    public static readonly WorldTime Zero = new();
+
     public void Advance(float deltaTime, out bool newDay)
     {
         newHour = false;
@@ -34,8 +39,11 @@ public struct WorldTime
         }
         newDay = false;
     }
+
     public readonly override string ToString()
     {
         return $"{hours}:{minutes:00} ({day})"; // Example: "12:05 (13)"
     }
+
+    public static float HoursToSeconds(int hours) { return hours * 3600; }
 }

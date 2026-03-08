@@ -20,8 +20,8 @@ namespace Systems
         private EntityQuery employersWithSpaceQuery;
         protected override void OnCreate()
         {
-            RequireForUpdate<RunGame>();
             employersWithSpaceQuery = new EntityQueryBuilder(Allocator.Temp).WithAll<ActiveTile, Employer, HasSpace, Tile>().Build(this);
+            RequireForUpdate<WaypointsData>();
         }
         protected override void OnUpdate()
         {

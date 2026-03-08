@@ -14,8 +14,10 @@ public partial class AppearenceSystem : SystemBase
 {
     private Appearence configCopy; // Needed so that the unmanaged data structures can be disposed
     private bool firstUpdate = true;
+
     protected override void OnUpdate()
     {
+        // Can't be done in OnCreate because GraphicsSystem needs to finish setup
         if (firstUpdate)
         {
             Appearence data = Authoring.Appearence.CreateAppearenceConfig();
@@ -24,20 +26,17 @@ public partial class AppearenceSystem : SystemBase
             firstUpdate = false;
         }
 
-        if (!(SystemAPI.HasSingleton<RunGame>() || SystemAPI.HasSingleton<LoadGame>()))
-            return;
-
         Appearence config = SystemAPI.GetSingleton<Appearence>();
 
         new UpdateSimpleTilesJob { config = config }
-            .Schedule(SystemAPI.QueryBuilder().WithAll<Tile, MaterialMeshInfo>().WithNone<ConnectingTile>().Build());
+            .Schedule();
 
         new UpdateConnectingTilesJob
         {
             config = config,
             tileLookup = GetComponentLookup<Tile>(isReadOnly: true),
             tileGrid = TileGridUtility.GetEntityGrid()
-        }.Schedule(SystemAPI.QueryBuilder().WithAll<Tile, MaterialMeshInfo, ConnectingTile, LocalTransform>().Build());
+        }.Schedule();
     }
     protected override void OnDestroy()
     {
@@ -54,13 +53,21 @@ public partial class AppearenceSystem : SystemBase
     {
         Appearence config = SystemAPI.GetSingleton<Appearence>();
 
-        if (config.simpleTiles.TryGetValue((int)tileType, out MaterialMeshInfo newData)) // Is a simple tile
-            SystemAPI.SetComponent(entity, newData);
-        else // Is a connecting tile
-            SystemAPI.SetComponent(entity, config.connectingTiles[(int)tileType].pairs[0]);
+        var info = GetMaterialMeshInfo(tileType, config);
+        SystemAPI.SetComponent(entity, info);
+    }
+    public static MaterialMeshInfo GetMaterialMeshInfo(TileType tileType, Appearence config)
+    {
+        if (config.simpleTiles.ContainsKey((int)tileType))
+            return config.simpleTiles[(int)tileType];
+        else if (config.connectingTiles.ContainsKey((int)tileType))
+            return config.connectingTiles[(int)tileType].pairs[0];
+        else
+            throw new();
     }
 
     [BurstCompile]
+    [WithNone(typeof(ConnectingTile))]
     private partial struct UpdateSimpleTilesJob : IJobEntity
     {
         public Appearence config;

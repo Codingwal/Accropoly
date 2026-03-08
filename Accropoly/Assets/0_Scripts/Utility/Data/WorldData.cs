@@ -1,43 +1,45 @@
-using System.Collections.Generic;
-using Unity.Mathematics;
+using System;
+using Unity.Collections;
+using UnityEngine;
 
-[System.Serializable]
-public struct WorldData
+[Serializable]
+public struct WorldData : IDisposable, ICustomSaving
 {
-    // Time
-    public WorldTime time;
+    public int version;
+    public int mapSize;
+    public WorldSave worldSave;
 
-    // Camera system
-    public float2 cameraSystemPos;
-    public float3 cameraSystemRotation;
-    public float cameraDistance;
-
-    // Economy system
-    public float balance;
-
-    // Population
-    public List<PersonData> population;
-
-    // Tilemap system
-    public MapData map;
-
-    public WorldData(MapData map)
+    public WorldData(int mapSize, WorldSave worldSave)
     {
-        time = new();
-
-        cameraSystemPos = new(20, 20);
-        cameraSystemRotation = new(70, 0, 0);
-        cameraDistance = 30;
-
-        balance = 5000;
-
-        population = new();
-
-        this.map = map;
+        version = 1;
+        this.mapSize = mapSize;
+        this.worldSave = worldSave;
     }
-}
 
-public struct MapData
-{
-    public TileData[,] tiles;
+    public void Dispose()
+    {
+        worldSave.Dispose();
+    }
+
+    public void Load(Deserializer deserializer)
+    {
+        Debug.Assert(deserializer.Deserialize<FixedString32Bytes>() == "Accropoly WorldSave!");
+
+        version = deserializer.Deserialize<int>();
+        mapSize = deserializer.Deserialize<int>();
+
+        Debug.Assert(deserializer.Deserialize<FixedString32Bytes>() == "WorldSave:");
+        worldSave = deserializer.Deserialize<WorldSave>();
+    }
+
+    public readonly void Save(Serializer serializer)
+    {
+        serializer.Serialize<FixedString32Bytes>("Accropoly WorldSave!");
+
+        serializer.Serialize(version);
+        serializer.Serialize(mapSize);
+
+        serializer.Serialize<FixedString32Bytes>("WorldSave:");
+        serializer.Serialize(worldSave);
+    }
 }

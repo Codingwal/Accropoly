@@ -1,4 +1,5 @@
 using System;
+using Components;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
@@ -13,6 +14,8 @@ namespace Authoring
         private static Appearence instance;
         [SerializeField] private SerializableDictionary<TileType, MaterialMeshPair> simpleTiles = new();
         [SerializeField] private SerializableDictionary<TileType, MaterialMeshPairSet> connectingTiles = new();
+        [SerializeField] private MaterialMeshPair person;
+
         private void Awake()
         {
             instance = this;
@@ -31,13 +34,8 @@ namespace Authoring
             // Copy simpleTiles
             foreach ((TileType tileType, MaterialMeshPair pair) in instance.simpleTiles)
             {
-                Debug.Assert(pair.material != null, $"Material for tileType {tileType} is null");
-                Debug.Assert(pair.mesh != null, $"Mesh for tileType {tileType} is null");
-
-                BatchMaterialID matID = graphicsSystem.RegisterMaterial(pair.material);
-                BatchMeshID meshID = graphicsSystem.RegisterMesh(pair.mesh);
-
-                data.simpleTiles.Add((int)tileType, new(matID, meshID));
+                var materialMeshInfo = RegisterPair(pair, graphicsSystem, $"simple tile \"{tileType}\"");
+                data.simpleTiles.Add((int)tileType, materialMeshInfo);
             }
 
             // Copy connectingTiles
@@ -47,19 +45,25 @@ namespace Authoring
                 for (int i = 0; i < 7; i++)
                 {
                     MaterialMeshPair pair = managedSet.pairs[i];
-
-                    Debug.Assert(pair.material != null, $"Material for tileType {tileType} is null");
-                    Debug.Assert(pair.mesh != null, $"Mesh for tileType {tileType} is null");
-
-                    BatchMaterialID matID = graphicsSystem.RegisterMaterial(pair.material);
-                    BatchMeshID meshID = graphicsSystem.RegisterMesh(pair.mesh);
-
-                    set.pairs.Add(new(matID, meshID));
+                    var materialMeshInfo = RegisterPair(pair, graphicsSystem, $"connecting tile \"{tileType}\" (index {i})");
+                    set.pairs.Add(materialMeshInfo);
                 }
                 data.connectingTiles.Add((int)tileType, set);
             }
 
+            data.person = RegisterPair(instance.person, graphicsSystem, "person");
+
             return data;
+        }
+
+        private static MaterialMeshInfo RegisterPair(MaterialMeshPair pair, EntitiesGraphicsSystem graphicsSystem, string debugName)
+        {
+            Debug.Assert(pair.material != null, $"Material for {debugName} is null.");
+            Debug.Assert(pair.mesh != null, $"Mesh for {debugName} is null.");
+
+            BatchMaterialID matID = graphicsSystem.RegisterMaterial(pair.material);
+            BatchMeshID meshID = graphicsSystem.RegisterMesh(pair.mesh);
+            return new(matID, meshID);
         }
     }
 }
@@ -91,5 +95,6 @@ namespace ConfigComponents
     {
         public NativeHashMap<int, MaterialMeshInfo> simpleTiles; // <TileType, pair>
         public NativeHashMap<int, MaterialMeshInfoSet> connectingTiles; // <TileType, set>
+        public MaterialMeshInfo person;
     }
 }

@@ -27,9 +27,6 @@ namespace Systems
 
         public void DrawGizmos(bool debugPath, bool debugCurrentTarget)
         {
-            if (!SystemAPI.HasSingleton<RunGame>())
-                return;
-
             if (debugPath)
             {
                 Gizmos.color = Color.green;

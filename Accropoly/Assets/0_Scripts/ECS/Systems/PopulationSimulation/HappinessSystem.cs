@@ -13,10 +13,6 @@ namespace Systems
     public partial class HappinessSystem : SystemBase
     {
         private int frame;
-        protected override void OnCreate()
-        {
-            RequireForUpdate<RunGame>();
-        }
 
         protected override void OnUpdate()
         {

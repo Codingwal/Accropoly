@@ -20,8 +20,6 @@ namespace Systems
         private EntityQuery disabledTilesQuery;
         protected override void OnCreate()
         {
-            RequireForUpdate<RunGame>();
-
             newTilesQuery = GetEntityQuery(typeof(NewTile));
             disabledTilesQuery = new EntityQueryBuilder(Allocator.Temp).WithAll<Tile>().WithDisabled<ActiveTile>().Build(this);
         }

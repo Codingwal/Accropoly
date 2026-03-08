@@ -13,34 +13,20 @@ public class DrawGizmos : MonoBehaviour
     [SerializeField] private bool debugRaycasts;
     [SerializeField] private bool debugCurrentTarget;
 
-    WaypointSystem waypointSystem = null;
-    MovementSystem movementSystem = null;
-    SystemHandle? collisionPreventionSystem = null;
-    private void Start()
-    {
-        waypointSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<WaypointSystem>();
-        movementSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<MovementSystem>();
-        collisionPreventionSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystem<CollisionPreventionSystem>();
-    }
-    private void OnDestroy()
-    {
-        waypointSystem = null;
-        movementSystem = null;
-        collisionPreventionSystem = null;
-    }
     private void OnDrawGizmos()
     {
-        if (waypointSystem == null) return;
-        if (movementSystem == null) return;
-        if (collisionPreventionSystem == null) return;
+        if (!WorldManager.ActiveWorld)
+            return;
+
+        World world = World.DefaultGameObjectInjectionWorld;
 
         if (debugWaypoints)
-            waypointSystem.DrawGizmos(displayJunctionInfo);
+            world.GetExistingSystemManaged<WaypointSystem>().DrawGizmos(displayJunctionInfo);
 
-        movementSystem.DrawGizmos(debugPath, debugCurrentTarget);
+        world.GetExistingSystemManaged<MovementSystem>().DrawGizmos(debugPath, debugCurrentTarget);
 
         if (debugRaycasts)
-            World.DefaultGameObjectInjectionWorld.Unmanaged.GetUnsafeSystemRef<CollisionPreventionSystem>(collisionPreventionSystem.Value)
+            world.Unmanaged.GetUnsafeSystemRef<CollisionPreventionSystem>(world.GetExistingSystem<CollisionPreventionSystem>())
                 .DrawGizmos();
     }
 }

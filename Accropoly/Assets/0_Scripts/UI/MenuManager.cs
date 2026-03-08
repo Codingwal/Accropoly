@@ -38,11 +38,11 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private Button toMainMenuButton;
     [SerializeField] private Button continueButton;
 
-    private string SelectedWorldName => mapsDropdown.options[mapsDropdown.value].text;
-    private string SelectedMapTemplateName => mapTemplateDropdown.options[mapTemplateDropdown.value].text;
+    private string SelectedWorldName => mapsDropdown.options.Count > 0 ? mapsDropdown.options[mapsDropdown.value].text : "None";
+    private string SelectedMapTemplateName => mapTemplateDropdown.options.Count > 0 ? mapTemplateDropdown.options[mapTemplateDropdown.value].text : "None";
     private void Awake()
     {
-        Systems.InputSystem.uiInput += OnUIInput;
+        InputHandler.uiInput += OnUIInput;
 
         startGameButton.onClick.AddListener(OnStartGame);
         quitButton.onClick.AddListener(OnQuit);
@@ -58,10 +58,11 @@ public class MenuManager : MonoBehaviour
         continueButton.onClick.AddListener(() => MenuUtility.ContinueGame());
         toMainMenuButton.onClick.AddListener(() =>
         {
-            MenuUtility.QuitGame();
             mainMenu.SetActive(true);
             optionMenu.SetActive(false);
             pauseMenu.SetActive(false);
+            ReloadUI();
+            MenuUtility.QuitGame();
         });
 
         MenuUtility.continuingGame += () =>
@@ -85,14 +86,14 @@ public class MenuManager : MonoBehaviour
     }
     private void OnDisable()
     {
-        Systems.InputSystem.uiInput -= OnUIInput;
+        InputHandler.uiInput -= OnUIInput;
     }
 
     private void OnStartGame()
     {
-        mainMenu.SetActive(false);
-
         MenuUtility.StartGame(SelectedWorldName);
+
+        mainMenu.SetActive(false);
     }
     private void OnOptions()
     {
@@ -108,12 +109,11 @@ public class MenuManager : MonoBehaviour
     private void OnCreateMap()
     {
         optionMenu.SetActive(false);
-        MenuUtility.StartGame(mapNameField.text);
+        ReloadUI();
 
         MenuUtility.CreateWorld(mapNameField.text, SelectedMapTemplateName);
-        ReloadUI();
-        // Select the newly created world for convinience
-        mapsDropdown.value = mapsDropdown.options.FindIndex(x => x.text == mapNameField.text);
+
+        MenuUtility.StartGame(mapNameField.text);
     }
     private void OnCreateTemplate()
     {
@@ -123,11 +123,7 @@ public class MenuManager : MonoBehaviour
     }
     private void OnCreateStandardTemplates()
     {
-        var templates = MapTemplates.mapTemplates;
-        foreach (var template in templates)
-        {
-            SaveSystem.Instance.SaveTemplate(template.Value, template.Key);
-        }
+        MenuUtility.CreateStandardTemplates();
         ReloadUI();
     }
     private void OnDeleteMap()

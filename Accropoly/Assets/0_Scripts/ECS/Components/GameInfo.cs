@@ -2,6 +2,7 @@ using Unity.Entities;
 
 namespace Components
 {
+    [Save("GameInfo")]
     public struct GameInfo : IComponentData
     {
         public float balance;

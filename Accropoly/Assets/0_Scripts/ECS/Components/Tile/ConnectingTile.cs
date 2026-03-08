@@ -5,7 +5,8 @@ using UnityEngine;
 
 namespace Components
 {
-    public unsafe struct ConnectingTile : IComponentData
+    [Save("ConnectingTile")]
+    public unsafe struct ConnectingTile : IComponentData, ICustomSaving
     {
         private fixed bool connectableSides[4];
         public ConnectingTileGroup group;
@@ -107,6 +108,24 @@ namespace Components
         public readonly override string ToString()
         {
             return $"{connectableSides[0]}, {connectableSides[1]}, {connectableSides[2]}, {connectableSides[3]}";
+        }
+
+        public void Save(Serializer serializer)
+        {
+            fixed (bool* ptr = connectableSides)
+            {
+                serializer.Serialize(*(int*)ptr);
+            }
+            serializer.Serialize(group);
+        }
+
+        public void Load(Deserializer deserializer)
+        {
+            fixed (bool* ptr = connectableSides)
+            {
+                *(int*)ptr = deserializer.Deserialize<int>();
+            }
+            group = deserializer.Deserialize<ConnectingTileGroup>();
         }
     }
 }

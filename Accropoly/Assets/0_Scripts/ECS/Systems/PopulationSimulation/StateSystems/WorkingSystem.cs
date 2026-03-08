@@ -12,8 +12,6 @@ namespace Systems
         EntityQuery working;
         protected override void OnCreate()
         {
-            RequireForUpdate<RunGame>();
-
             notWorking = new EntityQueryBuilder(Allocator.Temp)
                 .WithAll<Person, Traveller, Worker, FreeTime>()
                 .WithNone<Unemployed>()

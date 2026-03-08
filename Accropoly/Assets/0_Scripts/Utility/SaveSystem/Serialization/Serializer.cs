@@ -1,56 +1,129 @@
+using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
+using UnityEngine;
 
-public partial class Serializer
+public unsafe struct Serializer
 {
-    readonly BinaryWriter bw;
-    public Serializer(BinaryWriter bw)
+    public delegate void TypeSerializer(Serializer serializer, void* data);
+    public readonly Dictionary<Type, TypeSerializer> typeSerializers;
+    private readonly IWriter writer;
+    public Serializer(IWriter _writer)
     {
-        this.bw = bw;
-    }
-    public void Serialize(byte data) { bw.Write(data); }
-    public void Serialize(bool data) { bw.Write(data); }
-    public void Serialize(int data) { bw.Write(data); }
-    public void Serialize(uint data) { bw.Write(data); }
-    public void Serialize(float data) { bw.Write(data); }
-    public void Serialize(char data) { bw.Write(data); }
-    public void Serialize(string data) { bw.Write(data); }
+        writer = _writer;
 
-    public void Serialize<T>(T[] data)
+        typeSerializers = new();
+        DefaultSerializers.GetSerializers(typeSerializers);
+    }
+
+    public readonly void Serialize<T>(T data) where T : unmanaged
     {
-        bw.Write(data.Length);
-        foreach (var e in data)
+        Serialize(typeof(T), UnsafeUtility.AddressOf(ref data));
+    }
+    private readonly void Serialize(Type type, void* data, int recursion = 0)
+    {
+        if (recursion > 10)
+            throw new($"Encountered recursion bug while deserializing {type}");
+
+        if (type.GetInterfaces().Contains(typeof(ICustomSaving)))
         {
-            Serialize((dynamic)e);
+            object obj = Marshal.PtrToStructure(new(data), type);
+            ((ICustomSaving)obj).Save(this);
+            return;
+        }
+
+        if (TryCustomSerialization(type, data))
+            return;
+
+        foreach (FieldInfo field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+        {
+            if (field.GetCustomAttribute(typeof(DontSaveAttribute)) != null)
+                continue;
+
+            int fieldOffset = UnsafeUtility.GetFieldOffset(field);
+            Type fieldType = field.FieldType;
+            void* fieldAddress = (byte*)data + fieldOffset;
+
+            if (fieldType.IsPointer)
+                Debug.LogWarning($"Serializing pointer type ({fieldType})");
+
+            Serialize(fieldType, fieldAddress, recursion + 1);
         }
     }
-    public void Serialize<T>(T[,] data)
+
+    private readonly bool TryCustomSerialization(Type type, void* data)
     {
-        bw.Write(data.GetLength(0));
-        bw.Write(data.GetLength(1));
-        for (int x = 0; x < data.GetLength(0); x++)
+        if (typeSerializers.TryGetValue(type, out var typeSerializer))
         {
-            for (int y = 0; y < data.GetLength(1); y++)
-            {
-                Serialize((dynamic)data[x, y]);
-            }
+            typeSerializer(this, data);
+            return true;
         }
-    }
-    public void Serialize<T>(List<T> data)
-    {
-        bw.Write(data.Count);
-        foreach (var e in data)
+
+        if (!type.IsGenericType)
+            return false;
+
+        // Handle generics
+
+        if (type.GetGenericTypeDefinition() == typeof(UnsafeList<>))
         {
-            Serialize((dynamic)e);
+            Type elementType = type.GetGenericArguments()[0];
+
+            // this.SerializeUnsafeList<elementType>(data);
+            CallMethod(nameof(SerializeUnsafeList), elementType, data);
+
+            return true;
         }
-    }
-    public void Serialize<TKey, TValue>(Dictionary<TKey, TValue> data) where TKey : notnull
-    {
-        bw.Write(data.Count);
-        foreach (var pair in data)
+        else if (type.GetGenericTypeDefinition() == typeof(NativeList<>))
         {
-            Serialize((dynamic)pair.Key);
-            Serialize((dynamic)pair.Value);
+            Type elementType = type.GetGenericArguments()[0];
+
+            // this.SerializeNativeList<elementType>(data);
+            CallMethod(nameof(SerializeNativeList), elementType, data);
+
+            return true;
+        }
+        return false;
+    }
+
+    private readonly void SerializeNativeList<T>(IntPtr ptr)
+        where T : unmanaged
+    {
+        var listPtr = (NativeList<T>*)ptr;
+        Serialize(listPtr->Length);
+        foreach (T element in *listPtr)
+            Serialize(element);
+    }
+    private readonly void SerializeUnsafeList<T>(IntPtr ptr)
+        where T : unmanaged
+    {
+        var listPtr = (UnsafeList<T>*)ptr;
+        Serialize(listPtr->Length);
+        foreach (T element in *listPtr)
+            Serialize(element);
+    }
+
+    private readonly void CallMethod(string name, Type typeArgument, void* data)
+    {
+        MethodInfo method = GetType().GetMethod(name, BindingFlags.NonPublic | BindingFlags.Instance);
+        method = method.MakeGenericMethod(typeArgument);
+        method.Invoke(this, new object[] { new IntPtr(data) });
+    }
+
+    public static class DefaultSerializers
+    {
+        public static void GetSerializers(Dictionary<Type, TypeSerializer> typeSerializers)
+        {
+            typeSerializers.Add(typeof(int), (s, data) => s.writer.Write(*(int*)data));
+            typeSerializers.Add(typeof(float), (s, data) => s.writer.Write(*(float*)data));
+            typeSerializers.Add(typeof(bool), (s, data) => s.writer.Write(*(bool*)data));
+            typeSerializers.Add(typeof(byte), (s, data) => s.writer.Write(*(byte*)data));
+            typeSerializers.Add(typeof(FixedString32Bytes), (s, data) => s.writer.Write(((FixedString32Bytes*)data)->ToString()));
+
+            // TODO: Native containers
         }
     }
 }

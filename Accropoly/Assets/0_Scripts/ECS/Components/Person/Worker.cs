@@ -3,6 +3,7 @@ using Unity.Mathematics;
 
 namespace Components
 {
+    [Save("Worker")]
     public struct Worker : IComponentData
     {
         public int2 employer;
@@ -11,5 +12,6 @@ namespace Components
 }
 namespace Tags
 {
+    [Save("Unemployed")]
     public struct Unemployed : IComponentData { }
 }

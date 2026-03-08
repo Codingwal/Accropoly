@@ -3,6 +3,7 @@ using Unity.Mathematics;
 
 namespace Components
 {
+    [Save("CameraTransform")]
     public partial struct CameraTransform : IComponentData
     {
         public float3 pos;

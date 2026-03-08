@@ -16,6 +16,16 @@ public abstract class ConfigData
     public static readonly SharedStatic<TimeConfig> timeConfig = SharedStatic<TimeConfig>.GetOrCreate<TimeConfigKey>();
     public static readonly SharedStatic<WaypointConfig> waypointConfig = SharedStatic<WaypointConfig>.GetOrCreate<WaypointConfigKey>();
 
+    public static void Dispose() // TODO: call
+    {
+        saveSystemConfig.Data.Dispose();
+        tileConfig.Data.Dispose();
+        populationConfig.Data.Dispose();
+        cameraConfig.Data.Dispose();
+        timeConfig.Data.Dispose();
+        waypointConfig.Data.Dispose();
+    }
+
     private class SaveSystemConfigKey { }
     private class TileConfigContextKey { }
     private class PopulationConfigKey { }
@@ -30,6 +40,7 @@ public struct SaveSystemConfig
     public bool deleteTemplates;
     public bool deleteSaves;
     public bool overwriteFiles;
+    public void Dispose() { }
 }
 
 [Serializable]
@@ -43,6 +54,7 @@ public struct TileConfig
         public int maxAge2;
     }
     public TileGrowing tileGrowing;
+    public void Dispose() { }
 }
 
 [Serializable]
@@ -68,6 +80,7 @@ public struct PopulationConfig
         public float taxPerHappiness;
     }
     public Taxes taxes;
+    public void Dispose() { }
 }
 
 [Serializable]
@@ -91,6 +104,7 @@ public struct CameraConfig
 
     // Sprinting
     public float sprintSpeedMultiplier;
+    public void Dispose() { }
 }
 
 [Serializable]
@@ -98,6 +112,7 @@ public struct TimeConfig
 {
     public float secondsPerDay;
     public readonly float TimeSpeed => 24 * 60 * 60 / secondsPerDay;
+    public void Dispose() { }
 }
 
 public struct WaypointConfig
@@ -125,6 +140,22 @@ public struct WaypointConfig
 
     public NativeHashMap<FixedString32Bytes, TileData> tiles;
     public NativeHashMap<FixedString32Bytes, ElementData> elements;
+    public void Dispose()
+    {
+        foreach (var pair in tiles)
+            pair.Value.elements.Dispose();
+
+        foreach (var pair in elements)
+        {
+            foreach (var waypoint in pair.Value.waypoints)
+                waypoint.connections.Dispose();
+
+            pair.Value.waypoints.Dispose();
+        }
+
+        tiles.Dispose();
+        elements.Dispose();
+    }
 }
 
 [Serializable]

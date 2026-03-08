@@ -13,10 +13,6 @@ namespace Systems
     /// </summary>
     public partial struct CameraSystem : ISystem
     {
-        public void OnCreate(ref SystemState state)
-        {
-            state.RequireForUpdate<Tags.RunGame>();
-        }
         public void OnUpdate(ref SystemState state)
         {
             var cameraTransform = SystemAPI.GetSingleton<CameraTransform>();
@@ -41,7 +37,7 @@ namespace Systems
                 config = ConfigData.cameraConfig.Data,
                 inputData = SystemAPI.GetSingleton<InputData>(),
                 deltaTime = Time.deltaTime,
-                mapSize = WorldDataSystem.worldData.map.tiles.GetLength(0),
+                mapSize = 20, // TODO
                 transform = cameraTransform,
                 transformHolder = SystemAPI.GetSingletonEntity<CameraTransform>(),
             }.Schedule(state.Dependency);

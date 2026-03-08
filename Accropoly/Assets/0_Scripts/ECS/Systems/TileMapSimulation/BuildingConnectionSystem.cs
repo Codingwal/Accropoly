@@ -17,7 +17,6 @@ namespace Systems
         private int frame;
         protected override void OnCreate()
         {
-            RequireForUpdate<RunGame>();
             RequireForUpdate<EntityGridHolder>();
         }
         protected override void OnUpdate()

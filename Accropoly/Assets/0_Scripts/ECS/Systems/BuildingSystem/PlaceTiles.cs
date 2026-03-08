@@ -4,6 +4,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using Tags;
 using Unity.Collections;
+using UnityEngine;
 
 namespace Systems
 {
@@ -41,6 +42,7 @@ namespace Systems
 
                 // Set the transform rotation according to the rotation of tileToPlace
                 RefRW<LocalTransform> transform = SystemAPI.GetComponentRW<LocalTransform>(entity);
+                transform.ValueRW.Position = 2 * new float3(tile.pos.x, 0, tile.pos.y);
                 transform.ValueRW.Rotation = quaternion.EulerXYZ(0, tileToPlaceInfo.rotation.ToRadians(), 0);
             }
         }
