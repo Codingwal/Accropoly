@@ -21,6 +21,7 @@ namespace Systems
         protected override void OnCreate()
         {
             employersWithSpaceQuery = new EntityQueryBuilder(Allocator.Temp).WithAll<ActiveTile, Employer, HasSpace, Tile>().Build(this);
+            RequireForUpdate<WaypointsData>();
         }
         protected override void OnUpdate()
         {

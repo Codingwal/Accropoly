@@ -18,14 +18,17 @@ namespace Systems
     [UpdateInGroup(typeof(LateSimulationSystemGroup))]
     public partial class WaypointSystem : SystemBase
     {
-        protected override void OnCreate()
-        {
-            // Create and initialize data
-            WaypointsData data = new() { waypoints = new(30, Allocator.Persistent) };
-            EntityManager.CreateSingleton(data);
-        }
+        private bool firstUpdate = true;
+
         protected override void OnUpdate()
         {
+            if (firstUpdate)
+            {
+                WaypointsData data = new() { waypoints = new(30, Allocator.Persistent) };
+                EntityManager.CreateSingleton(data);
+                firstUpdate = false;
+            }
+
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
             WaypointsData waypointsData = SystemAPI.GetComponent<WaypointsData>(SystemAPI.GetSingletonEntity<WaypointsData>());
 
