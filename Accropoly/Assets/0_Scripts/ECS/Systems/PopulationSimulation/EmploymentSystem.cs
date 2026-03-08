@@ -59,6 +59,7 @@ namespace Systems
                 pathfindingUtility = pathfindingUtility,
                 entityGrid = entityGrid,
                 employerLookup = SystemAPI.GetComponentLookup<Employer>(),
+                homelessLookup = SystemAPI.GetComponentLookup<Homeless>()
             }.Schedule();
 
             employerEntities.Dispose(Dependency);
@@ -66,6 +67,7 @@ namespace Systems
 
         [BurstCompile]
         [WithAll(typeof(Unemployed))]
+        [WithNone(typeof(Homeless))]
         private partial struct EmployPeopleJob : IJobEntity
         {
             public EntityCommandBuffer ecb;
@@ -73,7 +75,7 @@ namespace Systems
             public NativeList<Entity> employerEntities;
             public ComponentLookup<Employer> employerLookup;
             [ReadOnly] public ComponentLookup<Tile> tileLookup;
-            public void Execute(Entity entity, ref Worker worker, in Person person)
+            public void Execute(Entity entity, ref Worker worker, in LocalTransform transform)
             {
                 if (employerEntities.IsEmpty)
                     return;
@@ -85,9 +87,10 @@ namespace Systems
                     int2 employerPos = tileLookup[employerEntity].pos;
 
                     if (employer.freeSpace == 0) // HasSpace tag might still be present because the employer was filled in this frame
-                        Debug.LogError("!");
+                        continue;
 
-                    if (pathfindingUtility.CalculateTravelTime(person.homeTile, employerPos) == -1) // No valid path to the employer
+                    float3 employerWaypoint = Utility.TileToWaypoint(employerPos);
+                    if (pathfindingUtility.CalculateTravelTime(transform.Position, employerWaypoint) == -1) // No valid path to the employer
                         continue;
 
                     // Update employer
@@ -116,10 +119,17 @@ namespace Systems
             public PathfindingUtility pathfindingUtility;
             public DynamicBuffer<EntityBufferElement> entityGrid;
             public ComponentLookup<Employer> employerLookup;
+            public ComponentLookup<Homeless> homelessLookup;
             public void Execute(Entity entity, ref Worker worker, in Person person)
             {
-                if (pathfindingUtility.CalculateTravelTime(person.homeTile, worker.employer) != -1) // Valid path to employer
-                    return;
+                // Unemploy if homeless or no valid path
+                if (!homelessLookup.HasComponent(entity))
+                {
+                    float3 start = Utility.TileToWaypoint(person.homeTile);
+                    float3 dest = Utility.TileToWaypoint(worker.employer);
+                    if (pathfindingUtility.CalculateTravelTime(start, dest) != -1) // Valid path to employer
+                        return;
+                }
 
                 // Remove person from the workplace
 

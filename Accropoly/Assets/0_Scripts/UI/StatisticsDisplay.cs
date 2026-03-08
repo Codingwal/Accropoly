@@ -38,6 +38,7 @@ public class StatisticsDisplay : MonoBehaviour
     }
     private string Format(float value)
     {
+        value = math.round(value * 10) / 10; // round to one decimal point
         return value switch
         {
             > 1000000000 => $"{value / 1000000000}mrd",

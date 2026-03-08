@@ -22,6 +22,7 @@ namespace Systems
         {
             newTilesQuery = GetEntityQuery(typeof(NewTile));
             disabledTilesQuery = new EntityQueryBuilder(Allocator.Temp).WithAll<Tile>().WithDisabled<ActiveTile>().Build(this);
+            RequireForUpdate<WaypointsData>();
         }
         protected override void OnUpdate()
         {
@@ -48,13 +49,15 @@ namespace Systems
             Random rnd = new((uint)UnityEngine.Random.Range(1, 1000));
 
             // Make people homeless if their home is deactivated / has been replaced
+            var positions = SystemAPI.GetSingleton<WaypointsData>().waypoints.GetKeyArray(Allocator.TempJob); // List of all waypoint positions
             new MakeHomelessJob
             {
-                transformLookup = GetComponentLookup<LocalTransform>(),
                 tiles = tiles,
                 ecb = ecb,
+                positions = positions,
                 rnd = rnd,
             }.Schedule();
+            positions.Dispose(Dependency);
 
             // Make people unemployed if their employer is deactivated / has been replaced
             new MakeUnemployedJob
@@ -67,13 +70,13 @@ namespace Systems
         }
 
         [BurstCompile]
-        private partial struct MakeHomelessJob : IJobEntity 
+        private partial struct MakeHomelessJob : IJobEntity
         {
-            [ReadOnly] public ComponentLookup<LocalTransform> transformLookup;
             public NativeList<int2> tiles;
             public EntityCommandBuffer ecb;
+            public NativeArray<float3> positions;
             public Random rnd;
-            public void Execute(Entity entity, ref Person person)
+            public void Execute(Entity entity, ref Person person, ref LocalTransform transform)
             {
                 int2 homeTilePos = person.homeTile;
                 if (tiles.Contains(homeTilePos))
@@ -82,10 +85,8 @@ namespace Systems
                     person.homeTile = new(-1);
                     ecb.AddComponent<Homeless>(entity);
 
-                    // Homeless people are collected at a special position
-                    LocalTransform transform = transformLookup[entity];
-                    transform.Position = new(-1 + rnd.NextFloat(-0.5f, 0.5f), 0.5f, -1 + rnd.NextFloat(-0.5f, 0.5f));
-                    transformLookup[entity] = transform;
+                    // Teleport to a random position (on a waypoint)
+                    transform.Position = positions[rnd.NextInt(0, positions.Length - 1)];
                 }
             }
         }

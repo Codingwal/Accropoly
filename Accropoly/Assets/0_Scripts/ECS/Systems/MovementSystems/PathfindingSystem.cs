@@ -82,11 +82,8 @@ namespace Systems
         [ReadOnly] public WaypointsData waypointsData;
 
         /// <remarks>Returns -1 if no path is found</remarks>
-        public float CalculateTravelTime(int2 startTile, int2 destTile)
+        public float CalculateTravelTime(float3 start, float3 dest)
         {
-            float3 start = new(startTile.x * 2, 0.8f, startTile.y * 2);
-            float3 dest = new(destTile.x * 2, 0.8f, destTile.y * 2);
-
             UnsafeList<float3> path = new(10, Allocator.TempJob);
             float travelTime = 0;
 
