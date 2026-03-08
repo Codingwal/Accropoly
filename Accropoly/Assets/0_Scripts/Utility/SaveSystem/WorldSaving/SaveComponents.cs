@@ -19,7 +19,7 @@ public static class SaveComponents
             if (typeInfo.Type.GetCustomAttribute(typeof(SaveAttribute)) == null)
                 continue;
 
-            if (typeInfo.Category != TypeCategory.ComponentData)
+            if (typeInfo.Category != TypeCategory.ComponentData && typeInfo.Category != TypeCategory.BufferData)
                 continue;
 
             types.Add(typeInfo);

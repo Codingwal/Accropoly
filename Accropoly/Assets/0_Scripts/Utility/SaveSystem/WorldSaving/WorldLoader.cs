@@ -20,16 +20,52 @@ public class WorldLoader
     {
         foreach (var componentSave in save.componentSaves)
         {
-            TypeManager.TypeInfo type = GetTypeInfo(componentSave.name.ToString());
+            TypeManager.TypeInfo typeInfo = GetTypeInfo(componentSave.name.ToString());
 
-            // this.LoadComponent<type.Type>(entityManager);
-            MethodInfo method = GetType().GetMethod(nameof(LoadComponent), BindingFlags.NonPublic | BindingFlags.Instance);
-            method = method.MakeGenericMethod(type.Type);
-            method.Invoke(this, new object[] { componentSave });
+            if (typeInfo.Category == TypeManager.TypeCategory.ComponentData)
+            {
+                // this.LoadComponent<type.Type>(componentSave);
+                MethodInfo method = GetType().GetMethod(nameof(LoadComponent), BindingFlags.NonPublic | BindingFlags.Instance);
+                method = method.MakeGenericMethod(typeInfo.Type);
+                method.Invoke(this, new object[] { componentSave });
+            }
+            else if (typeInfo.Category == TypeManager.TypeCategory.BufferData)
+            {
+                // this.LoadBuffer<type.Type>(componentSave);
+                MethodInfo method = GetType().GetMethod(nameof(LoadBuffer), BindingFlags.NonPublic | BindingFlags.Instance);
+                method = method.MakeGenericMethod(typeInfo.Type);
+                method.Invoke(this, new object[] { componentSave });
+            }
+            else
+                Debug.Log($"Can't deserialize type {typeInfo.Type}");
         }
     }
 
-    private void LoadComponent<T>(WorldSave.ComponentSave save) where T : unmanaged, IComponentData
+    private void LoadBuffer<T>(WorldSave.ComponentSave save)
+        where T : unmanaged, IBufferElementData
+    {
+        Deserializer componentDeserializer = new(new NativeListReader(save.components));
+
+        for (int i = 0; i < save.entityIds.Length; i++)
+        {
+            int entityId = save.entityIds[i];
+
+            if (!entityMap.ContainsKey(entityId))
+                entityMap[entityId] = entityManager.CreateEntity();
+
+            var buffer = entityManager.AddBuffer<T>(entityMap[entityId]);
+
+            int length = componentDeserializer.Deserialize<int>();
+            for (int j = 0; j < length; j++)
+            {
+                T element = componentDeserializer.Deserialize<T>();
+                buffer.Add(element);
+            }
+        }
+    }
+
+    private void LoadComponent<T>(WorldSave.ComponentSave save)
+        where T : unmanaged, IComponentData
     {
         Deserializer componentDeserializer = new(new NativeListReader(save.components));
 

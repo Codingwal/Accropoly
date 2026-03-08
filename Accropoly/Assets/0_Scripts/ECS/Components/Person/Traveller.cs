@@ -18,6 +18,7 @@ namespace Components
         }
     }
 
+    [Save("Path")]
     public struct PathElement : IBufferElementData
     {
         public float3 waypoint;

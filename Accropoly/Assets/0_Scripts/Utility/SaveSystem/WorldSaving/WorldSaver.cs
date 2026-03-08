@@ -19,27 +19,83 @@ public class WorldSaver
     {
         WorldSave save = new() { componentSaves = new(5, Allocator.Persistent) };
 
-        foreach (var type in types)
+        foreach (var typeInfo in types)
         {
-            // TODO: Skip components with zero entities
+            if (typeInfo.Category == TypeManager.TypeCategory.ComponentData)
+            {
+                // this.SaveComponent<type.Type>();
+                var componentSave = (WorldSave.ComponentSave?)GetType().GetMethod(nameof(SaveComponent), BindingFlags.NonPublic | BindingFlags.Instance)
+                    .MakeGenericMethod(typeInfo.Type)
+                    .Invoke(this, new object[] { });
 
-            // this.SaveComponent<type.Type>(entityManager);
-            var componentSave = GetType().GetMethod(nameof(SaveComponent), BindingFlags.NonPublic | BindingFlags.Instance)
-                .MakeGenericMethod(type.Type)
-                .Invoke(this, new object[] { });
+                if (componentSave.HasValue) // Skip components with zero entities
+                    save.componentSaves.Add(componentSave.Value);
+            }
+            else if (typeInfo.Category == TypeManager.TypeCategory.BufferData)
+            {
+                // this.SaveBuffer<type.Type>();
+                var componentSave = (WorldSave.ComponentSave?)GetType().GetMethod(nameof(SaveBuffer), BindingFlags.NonPublic | BindingFlags.Instance)
+                    .MakeGenericMethod(typeInfo.Type)
+                    .Invoke(this, new object[] { });
 
-            save.componentSaves.Add((WorldSave.ComponentSave)componentSave);
+                if (componentSave.HasValue) // Skip components with zero entities
+                    save.componentSaves.Add(componentSave.Value);
+            }
+            else
+                Debug.LogWarning("Skipping type that is neither a component nor a buffer");
         }
 
         return save;
     }
 
-    private WorldSave.ComponentSave SaveComponent<T>()
+    private WorldSave.ComponentSave? SaveBuffer<T>()
+        where T : unmanaged, IBufferElementData
+    {
+        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithPresent<T>().Build(entityManager);
+
+        // Skip components with zero entities
+        if (query.CalculateEntityCount() == 0)
+            return null;
+
+        WorldSave.ComponentSave componentSave = new()
+        {
+            name = GetName(typeof(T)),
+            entityIds = new(Allocator.Persistent),
+            components = new(Allocator.Persistent),
+            enabled = new(Allocator.Persistent)
+        };
+
+        Serializer componentSerializer = new(new NativeListWriter(componentSave.components));
+
+        NativeArray<Entity> entities = query.ToEntityArray(Allocator.Temp);
+
+        foreach (Entity entity in entities)
+        {
+            componentSave.entityIds.Add(entity.Index);
+
+            var buffer = entityManager.GetBuffer<T>(entity);
+
+            componentSerializer.Serialize(buffer.Length);
+            foreach (T element in buffer)
+                componentSerializer.Serialize(element);
+
+            componentSave.enabled.Add(true);
+        }
+
+        return componentSave;
+    }
+    private WorldSave.ComponentSave? SaveComponent<T>()
         where T : unmanaged, IComponentData
     {
         EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithPresent<T>().Build(entityManager);
+
+        // Skip components with zero entities
+        if (query.CalculateEntityCount() == 0)
+            return null;
+
         WorldSave.ComponentSave componentSave = new()
         {
+            name = GetName(typeof(T)),
             entityIds = new(Allocator.Persistent),
             components = new(Allocator.Persistent),
             enabled = new(Allocator.Persistent)
@@ -51,8 +107,6 @@ public class WorldSaver
         NativeArray<Entity> entities = query.ToEntityArray(Allocator.Temp);
 
         bool isEnableable = TypeManager.GetTypeIndex(typeof(T)).IsEnableable;
-
-        componentSave.name = GetName(typeof(T));
 
         for (int i = 0; i < components.Length; i++)
         {

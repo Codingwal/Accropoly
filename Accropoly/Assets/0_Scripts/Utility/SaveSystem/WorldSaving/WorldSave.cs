@@ -23,13 +23,13 @@ public struct WorldSave : IDisposable
         {
             name = deserializer.Deserialize<FixedString32Bytes>();
 
-            Debug.Assert(deserializer.Deserialize<FixedString32Bytes>() == "Entities");
+            Debug.Assert(deserializer.Deserialize<FixedString32Bytes>() == "E:");
             entityIds = deserializer.Deserialize<NativeList<int>>();
 
-            Debug.Assert(deserializer.Deserialize<FixedString32Bytes>() == "Components", $"ERROR! {name}");
+            Debug.Assert(deserializer.Deserialize<FixedString32Bytes>() == "C:");
             components = deserializer.Deserialize<NativeList<byte>>();
 
-            Debug.Assert(deserializer.Deserialize<FixedString32Bytes>() == "Enabled");
+            Debug.Assert(deserializer.Deserialize<FixedString32Bytes>() == "A:");
             enabled = deserializer.Deserialize<NativeList<bool>>();
         }
 
@@ -37,13 +37,13 @@ public struct WorldSave : IDisposable
         {
             serializer.Serialize(name);
 
-            serializer.Serialize<FixedString32Bytes>("Entities");
+            serializer.Serialize<FixedString32Bytes>("E:");
             serializer.Serialize(entityIds);
 
-            serializer.Serialize<FixedString32Bytes>("Components");
+            serializer.Serialize<FixedString32Bytes>("C:");
             serializer.Serialize(components);
 
-            serializer.Serialize<FixedString32Bytes>("Enabled");
+            serializer.Serialize<FixedString32Bytes>("A:");
             serializer.Serialize(enabled);
         }
     }
