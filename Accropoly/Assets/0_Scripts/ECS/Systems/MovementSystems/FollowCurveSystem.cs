@@ -17,9 +17,11 @@ namespace Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            float deltaTime = SystemAPI.GetSingleton<GameInfo>().deltaTime;
+            int gameSecondsPerMovementSecond = ConfigData.populationConfig.Data.movement.gameSecondsPerMovementSecond;
             new FollowCurveJob()
             {
-                deltaTime = SystemAPI.GetSingleton<GameInfo>().deltaTime / MovementSystem.gameSecondsPerMovementSecond
+                deltaTime = deltaTime / gameSecondsPerMovementSecond
             }.Schedule();
         }
 

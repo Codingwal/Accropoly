@@ -101,7 +101,7 @@ namespace Systems
                     // float averageSpeed = (speedA + speedB) * 0.5f;
                     float averageSpeed = 8;
 
-                    travelTime += distance / averageSpeed * MovementSystem.gameSecondsPerMovementSecond;
+                    travelTime += distance / averageSpeed * ConfigData.populationConfig.Data.movement.gameSecondsPerMovementSecond;
                 }
             }
             else travelTime = -1; // If there is no path

@@ -1,6 +1,5 @@
 using Components;
 using Components.WaypointComponents;
-using Tags;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -17,9 +16,11 @@ namespace Systems
         }
         protected override void OnUpdate()
         {
+            float deltaTime = SystemAPI.GetSingleton<GameInfo>().deltaTime;
+            int gameSecondsPerMovementSecond = ConfigData.populationConfig.Data.movement.gameSecondsPerMovementSecond;
             new UpdateJunctionsJob()
             {
-                deltaTime = SystemAPI.GetSingleton<GameInfo>().deltaTime / MovementSystem.gameSecondsPerMovementSecond,
+                deltaTime = deltaTime / gameSecondsPerMovementSecond,
                 junctionLookup = SystemAPI.GetComponentLookup<Junction>()
             }.Schedule();
         }

@@ -9,5 +9,8 @@
     },
     "taxes": {
         "taxPerHappiness": 1
+    },
+    "movement": {
+        "gameSecondsPerMovementSecond": 5000
     }
 }

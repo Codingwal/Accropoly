@@ -2531,9 +2531,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdb9099aa8c7dae4a9c350a2b9a7ab76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugWaypoints: 1
+  debugWaypoints: 0
   displayJunctionInfo: 0
-  debugPath: 1
+  debugPath: 0
   debugRaycasts: 0
   debugCurrentTarget: 0
 --- !u!1 &596032858

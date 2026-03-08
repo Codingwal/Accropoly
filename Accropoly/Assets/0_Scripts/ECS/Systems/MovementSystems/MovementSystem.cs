@@ -1,11 +1,7 @@
 using Components;
-using Components.WaypointComponents;
 using Tags;
-using Unity.Burst;
-using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
 
@@ -18,13 +14,10 @@ namespace Systems
     [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
     public partial class MovementSystem : SystemBase
     {
-        public const float gameSecondsPerMovementSecond = 8000;
-
         protected override void OnUpdate()
         {
 
         }
-
         public void DrawGizmos(bool debugPath, bool debugCurrentTarget)
         {
             if (debugPath)

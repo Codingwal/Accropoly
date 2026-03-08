@@ -80,6 +80,14 @@ public struct PopulationConfig
         public float taxPerHappiness;
     }
     public Taxes taxes;
+
+    [Serializable]
+    public struct Movement
+    {
+        public int gameSecondsPerMovementSecond;
+    }
+    public Movement movement;
+
     public void Dispose() { }
 }
 
