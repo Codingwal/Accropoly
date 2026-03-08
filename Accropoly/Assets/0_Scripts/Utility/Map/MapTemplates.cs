@@ -42,12 +42,7 @@ public static class MapTemplates
                 cursorLocked = false,
             });
 
-            return new WorldData()
-            {
-                version = 1,
-                mapSize = size,
-                worldSave = builder.GetWorldSave(),
-            };
+            return new WorldData(size, builder.GetWorldSave());
         }
     }
 

@@ -15,13 +15,10 @@ public class DrawGizmos : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (World.DefaultGameObjectInjectionWorld == null)
+        if (!WorldManager.ActiveWorld)
             return;
 
         World world = World.DefaultGameObjectInjectionWorld;
-
-        if (world.Name != "My world")
-            return;
 
         if (debugWaypoints)
             world.GetExistingSystemManaged<WaypointSystem>().DrawGizmos(displayJunctionInfo);

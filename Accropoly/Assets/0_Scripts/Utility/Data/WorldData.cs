@@ -8,6 +8,14 @@ public struct WorldData : IDisposable, ICustomSaving
     public int version;
     public int mapSize;
     public WorldSave worldSave;
+
+    public WorldData(int mapSize, WorldSave worldSave)
+    {
+        version = 1;
+        this.mapSize = mapSize;
+        this.worldSave = worldSave;
+    }
+
     public void Dispose()
     {
         worldSave.Dispose();
